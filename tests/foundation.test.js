@@ -190,7 +190,19 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.strictEqual(index.defaultSite, 'AC-0001');
   assert.ok(index.testSites.indexOf('AC-0000') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0001') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0002') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
+});
+
+test('AC-0002 はENEOS磯子の独立した本番案件設定', function () {
+  var site = require('../sites/AC-0002.json');
+  assert.strictEqual(site.projectId, 'AC-0002');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, 'エネオス株式会社');
+  assert.strictEqual(site.moe.point, '46106');
+  assert.strictEqual(site.jma.warnCity, '1410012');
+  assert.strictEqual(site.contents.schedule.on, false);
+  assert.strictEqual(site.contents.typhoon.on, false);
 });
 
 test('AC-0000 は内部テスト・全共通Contents ON、未実装はOFF', function () {

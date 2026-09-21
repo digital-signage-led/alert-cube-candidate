@@ -11,6 +11,7 @@ var paths = [
   '/index.html',
   '/index.html?offseason=1',
   '/index.html?site=AC-0001',
+  '/index.html?site=AC-0002',
   '/index.html?site=AC-0000',
   '/index.html?site=bad',
   '/offseason.html',
@@ -44,7 +45,10 @@ var paths = [
   '/data/jma-weather-icons.js',
   '/services/remote.js',
   '/sites/AC-0001.json',
+  '/sites/AC-0002.json',
   '/sites/AC-0000.json',
+  '/assets/sites/AC-0002/eneos_logo.gif',
+  '/assets/sites/AC-0002/eneos_lockup.svg',
   '/sites/index.json'
 ];
 

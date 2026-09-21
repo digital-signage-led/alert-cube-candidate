@@ -9,6 +9,7 @@ var path = require('path');
 var icons = require('../data/jma-weather-icons.js');
 var site0 = require('../sites/AC-0000.json');
 var site1 = require('../sites/AC-0001.json');
+var site2 = require('../sites/AC-0002.json');
 var lastGood = require('../config/site-config.js');
 
 var passed = 0;
@@ -109,6 +110,18 @@ async function run() {
     assert.strictEqual(site0.moe.point, site1.moe.point);
   });
 
+  await test('AC-0002 は旧ENEOS磯子案件をV2.0設定として分離', function () {
+    assert.strictEqual(site2.status, 'active');
+    assert.strictEqual(site2.customer, 'エネオス株式会社');
+    assert.strictEqual(site2.siteName, '磯子区');
+    assert.strictEqual(site2.moe.point, '46106');
+    assert.strictEqual(site2.jma.warnCity, '1410012');
+    assert.strictEqual(site2.schedule.enabled, false);
+    assert.strictEqual(site2.contents.schedule.on, false);
+    assert.strictEqual(site2.contents.typhoon.on, false);
+    assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', 'sites', 'AC-0002', 'eneos_logo.gif')));
+  });
+
   var jmaFc = await fetchJson('https://www.jma.go.jp/bosai/forecast/data/forecast/' + site1.jma.forecastArea + '.json');
   await test('Weather: JMA予報JSONを取得できる', function () {
     assert.ok(jmaFc.ok, 'HTTP ' + jmaFc.status + ' ' + (jmaFc.error || ''));
@@ -120,6 +133,13 @@ async function run() {
   await test('Warning: JMA警報JSONを取得できる', function () {
     assert.ok(jmaWarn.ok, 'HTTP ' + jmaWarn.status + ' ' + (jmaWarn.error || ''));
     assert.ok(jmaWarn.json && (jmaWarn.json.areaTypes || jmaWarn.json.headlineText != null || jmaWarn.json.reportDatetime));
+  });
+
+  var eneosFc = await fetchJson('https://www.jma.go.jp/bosai/forecast/data/forecast/' + site2.jma.forecastArea + '.json');
+  var eneosWarn = await fetchJson('https://www.jma.go.jp/bosai/warning/data/warning/' + site2.jma.warnArea + '.json');
+  await test('AC-0002: 神奈川JMA予報・警報JSONを取得できる', function () {
+    assert.ok(eneosFc.ok && Array.isArray(eneosFc.json), 'forecast HTTP ' + eneosFc.status);
+    assert.ok(eneosWarn.ok && eneosWarn.json, 'warning HTTP ' + eneosWarn.status);
   });
 
   var jmaTy = await fetchJson('https://www.jma.go.jp/bosai/typhoon/data/targetTc.json');
@@ -137,6 +157,13 @@ async function run() {
     var shape = expectedGasShape(used);
     assert.ok(shape.ok, shape.reason);
     console.log('    GAS shape=' + shape.kind + ' keys=' + Object.keys(used).join(','));
+  });
+
+  var eneosGas = await fetchJson(gasUrl(site2, { type: 'bundle' }));
+  await test('AC-0002: 横浜46106でGAS Responseを得られる', function () {
+    assert.ok(eneosGas.ok, 'HTTP ' + eneosGas.status + ' ' + (eneosGas.error || ''));
+    var shape = expectedGasShape(eneosGas.json);
+    assert.ok(shape.ok, shape.reason);
   });
 
   await test('GAS 失敗時: 不正URLは ok=false になり Fallback 判定できる', function () {

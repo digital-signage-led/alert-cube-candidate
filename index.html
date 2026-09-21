@@ -2823,7 +2823,14 @@
     let lastAmedasSnapshot_ = null;
     let lastForecastWeatherCode_ = null;
     let lastJmaForecastByYmd_ = {};
-    const SIGNAGE_STATE_CACHE_KEY = 'alert_cube_signage_state_v1';
+    function signageStateCacheKey_() {
+        const cfg = siteCfg_();
+        const projectId = (window.AlertCubeSite && window.AlertCubeSite.siteId) || cfg.projectId || 'unknown';
+        const warnCity = (cfg.jma && cfg.jma.warnCity) || '';
+        return ['alert_cube_signage_state_v2', projectId, MOE_WBGT_POINT || '', warnCity]
+            .map(function (part) { return String(part).replace(/[^A-Za-z0-9_-]/g, '_'); })
+            .join('_');
+    }
     const SIGNAGE_STATE_CACHE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
     const MOE_GAS_FETCH_TIMEOUT_MS = 12000;
     const MOE_JSONP_TIMEOUT_MS = 10000;
@@ -3155,8 +3162,9 @@
     function persistSignageStateCache_() {
         if (DEMO_SIGNAGE_ACTIVE) return;
         try {
-            localStorage.setItem(SIGNAGE_STATE_CACHE_KEY, JSON.stringify({
-                v: 1,
+            localStorage.setItem(signageStateCacheKey_(), JSON.stringify({
+                v: 2,
+                projectId: (window.AlertCubeSite && window.AlertCubeSite.siteId) || siteCfg_().projectId || '',
                 point: MOE_WBGT_POINT,
                 savedAt: Date.now(),
                 wbgtOffSeason: !!wbgtOffSeason,
@@ -3169,9 +3177,11 @@
     function restoreSignageStateCache_() {
         if (DEMO_SIGNAGE_ACTIVE) return false;
         try {
-            const raw = localStorage.getItem(SIGNAGE_STATE_CACHE_KEY);
+            const raw = localStorage.getItem(signageStateCacheKey_());
             if (!raw) return false;
             const data = JSON.parse(raw);
+            const currentProjectId = (window.AlertCubeSite && window.AlertCubeSite.siteId) || siteCfg_().projectId || '';
+            if (!data || String(data.projectId || '') !== String(currentProjectId)) return false;
             if (!data || String(data.point) !== String(MOE_WBGT_POINT)) return false;
             if (Date.now() - (data.savedAt || 0) > SIGNAGE_STATE_CACHE_MAX_AGE_MS) return false;
             if (data.wbgtOffSeason) {
@@ -5940,7 +5950,7 @@
     let scene1AdvanceToken = 0;
     let s1Flow_ = null;
     const SCENE2_FACE_COUNT = 4;
-    const SCENE2_TYPE_ORDER = ['weather', 'temp', 'wbgt', 'humi', 'rain', 'wdir', 'wind', 'pres', 'tmaxmin'];
+    const SCENE2_TYPE_ORDER = ['weather', 'temp', 'wbgt', 'humi', 'rain', 'wdir', 'wind', 'pres', 'tmaxmin', 'gust'];
     const SCENE2_PANEL_COUNT = SCENE2_FACE_COUNT;
     const SCENE2_LAPS = 1;
     const SCENE2_SCROLL_PX = 0.8;
@@ -7642,6 +7652,8 @@
                 return '<div class="s2-panel-data s2-strip" data-s2="pres"><div class="s2-top-bar"><span class="s2-bar-label">気圧</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num pres-val"></span><span class="s2-unit">hPa</span></div></div></div>';
             case 'tmaxmin':
                 return '<div class="s2-panel-data s2-strip s2-panel-compact" data-s2="tmaxmin"><div class="s2-top-bar"><span class="s2-bar-label">最高/最低</span></div><div class="s2-body"><div class="s2-tmaxmin-card"><span class="s2-tmax-high tmaxmax-val">--</span><span class="s2-tmax-sep">/</span><span class="s2-tmax-low tmin-val">--</span><span class="s2-tmax-unit">℃</span></div></div></div>';
+            case 'gust':
+                return '<div class="s2-panel-data s2-strip s2-panel-compact" data-s2="gust"><div class="s2-top-bar"><span class="s2-bar-label">最大瞬間風速</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num gust-val"></span><span class="s2-unit">m/s</span></div></div></div>';
             default:
                 return '';
         }
@@ -7827,6 +7839,7 @@
         const wdir = amedasFieldValue(obs.windDirection);
         const maxT = amedasFieldValue(obs.maxTemp);
         const minT = amedasFieldValue(obs.minTemp);
+        const gust = amedasFieldValue(obs.gust);
         setTextAll('.temp-val', temp != null ? String(Math.round(Number(temp))) : '');
         setTextAll('.humi-val', humi != null ? String(Math.round(Number(humi))) : '');
         setTextAll('.rain-val', p10 != null ? Number(p10).toFixed(1) : '');
@@ -7839,6 +7852,7 @@
         const minTxt = minT != null ? Math.round(Number(minT)) : null;
         setTextAll('.tmaxmax-val', maxTxt != null ? String(maxTxt) : '--');
         setTextAll('.tmin-val', minTxt != null ? String(minTxt) : '--');
+        setTextAll('.gust-val', gust != null ? Number(gust).toFixed(1) : '');
         /* 暑さ指数は updateForecastSlots（環境省）側で .wbgt-val を更新 */
 
         lastAmedasRainNow = (p10 != null && Number(p10) > 0) || (p1h != null && Number(p1h) > 0);

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "projectId": "AC-0002",
+  "status": "active",
+  "customer": "エネオス株式会社",
+  "rental": "",
+  "projectName": "ENEOS磯子 通年気象・防災サイネージ",
+  "siteName": "磯子区",
+  "location": "横浜市磯子区鳳町1番1号",
+  "latitude": 35.412494,
+  "longitude": 139.636281,
+  "resolution": "512x128",
+  "layout": "AC-512",
+  "faces": 4,
+  "timeZone": "Asia/Tokyo",
+  "footSource": "出典：気象庁・環境省データ",
+  "releasePin": null,
+  "logo": {
+    "src": "./assets/sites/AC-0002/eneos_logo.gif?v=20260921-ac0002",
+    "corpSrc": "./assets/sites/AC-0002/eneos_logo.gif?v=20260921-ac0002",
+    "footSrc": "./assets/sites/AC-0002/eneos_logo.gif?v=20260921-ac0002",
+    "panelBg": "#ffffff",
+    "bannerSrc": "./assets/sites/AC-0002/eneos_lockup.svg?v=20260921-ac0002b"
+  },
+  "moe": {
+    "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
+    "point": "46106",
+    "fallbackPoint": "",
+    "pointName": "横浜",
+    "alertArea": "神奈川県",
+    "region": "03",
+    "prefecture": "46"
+  },
+  "jma": {
+    "amedasPoint": "46106",
+    "amedasSupplementPoint": "",
+    "forecastArea": "140000",
+    "forecastDetail": "140010",
+    "forecastLabel": "磯子区",
+    "warnArea": "140000",
+    "warnCity": "1410012",
+    "warnCityLabel": "磯子区"
+  },
+  "wbgt": {
+    "seasonStart": { "month": 4, "day": 22 },
+    "seasonEnd": { "month": 10, "day": 22 }
+  },
+  "season": {
+    "override": null
+  },
+  "updateSettings": {
+    "refreshMs": 60000
+  },
+  "schedule": {
+    "enabled": false,
+    "weekStartsOn": 1,
+    "items": []
+  },
+  "greeting": {
+    "enabled": false,
+    "title": "",
+    "lines": [],
+    "foot": ""
+  },
+  "contentOrder": ["clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
+  "contents": {
+    "clock": { "on": true },
+    "weather": { "on": true },
+    "temperature": { "on": true },
+    "rain": { "on": true },
+    "wind": { "on": true },
+    "humidity": { "on": true },
+    "pressure": { "on": true },
+    "temp-range": { "on": true },
+    "wbgt": { "on": true },
+    "wbgt-i18n": { "on": true },
+    "forecast": { "on": true },
+    "warning": { "on": true },
+    "warning-hero": { "on": true },
+    "rain-nowcast": { "on": true },
+    "typhoon": { "on": false },
+    "disaster": { "on": true },
+    "heat": { "on": true },
+    "schedule": { "on": false },
+    "pollen": { "on": false },
+    "pm25": { "on": false }
+  }
+}

@@ -50,6 +50,8 @@ function collectMetrics(page) {
       location: (cfg.site && cfg.site.locationLabel) || '',
       customer: (cfg.site && cfg.site.customer) || '',
       schedule0: cfg.schedule && cfg.schedule.items && cfg.schedule.items[0] && cfg.schedule.items[0].work,
+      logoSrc: (window.SIGNAGE_CONFIG && window.SIGNAGE_CONFIG.logoSrc) || '',
+      bannerSrc: (window.SIGNAGE_CONFIG && window.SIGNAGE_CONFIG.footBannerSrc) || '',
       contentsOn: cfg.contents ? Object.keys(cfg.contents).filter(function (k) { return cfg.contents[k] && cfg.contents[k].on; }) : [],
       scene1: box('#scene1'),
       scene2: box('#scene2'),
@@ -100,18 +102,24 @@ async function run() {
   var pDefault;
   var p0001;
   var p0000;
+  var p0002;
+  var pGust;
   try {
     pDefault = await openPage(browser, BASE + '/');
     p0001 = await openPage(browser, BASE + '/?site=AC-0001');
     p0000 = await openPage(browser, BASE + '/?site=AC-0000');
+    p0002 = await openPage(browser, BASE + '/?site=AC-0002');
+    pGust = await openPage(browser, BASE + '/?site=AC-0001&only=s2');
 
     var mDef = await collectMetrics(pDefault);
     var m1 = await collectMetrics(p0001);
     var m0 = await collectMetrics(p0000);
+    var m2 = await collectMetrics(p0002);
 
     await pDefault.screenshot({ path: path.join(outDir, 'local-default.png') });
     await p0001.screenshot({ path: path.join(outDir, 'local-AC-0001.png') });
     await p0000.screenshot({ path: path.join(outDir, 'local-AC-0000.png') });
+    await p0002.screenshot({ path: path.join(outDir, 'local-AC-0002.png') });
 
     try {
       assert.strictEqual(mDef.siteId, 'AC-0001');
@@ -129,6 +137,18 @@ async function run() {
       assert.strictEqual(m0.schedule0, '検証A');
       ok('AC-0000 はスナップショットではなく sites/AC-0000.json を表示する');
     } catch (e) { ng('AC-0000 スナップショット修正', e); }
+
+    try {
+      assert.strictEqual(m2.siteId, 'AC-0002');
+      assert.strictEqual(m2.location, '磯子区');
+      assert.strictEqual(m2.customer, 'エネオス株式会社');
+      assert.strictEqual(m2.schedule0, undefined);
+      assert.ok(m2.logoSrc.indexOf('assets/sites/AC-0002/eneos_logo.gif') >= 0);
+      assert.ok(m2.bannerSrc.indexOf('assets/sites/AC-0002/eneos_lockup.svg') >= 0);
+      assert.ok(m2.contentsOn.indexOf('schedule') < 0);
+      assert.ok(m2.contentsOn.indexOf('typhoon') < 0);
+      ok('旧ENEOS磯子案件をAC-0002のV2.0設定として適用');
+    } catch (e) { ng('AC-0002 案件適用', e); }
 
     try {
       sameLayout(mDef.scene1, m1.scene1, 'scene1 default vs AC-0001');
@@ -159,11 +179,42 @@ async function run() {
     try {
       assert.ok(!(p0000.__pageErrors && p0000.__pageErrors.length), 'AC-0000 pageerror ' + (p0000.__pageErrors || []).join('; '));
       assert.ok(!(p0001.__pageErrors && p0001.__pageErrors.length), 'AC-0001 pageerror ' + (p0001.__pageErrors || []).join('; '));
+      assert.ok(!(p0002.__pageErrors && p0002.__pageErrors.length), 'AC-0002 pageerror ' + (p0002.__pageErrors || []).join('; '));
       ok('ブラウザ例外なし');
     } catch (e) { ng('pageerror', e); }
 
+    try {
+      var gust = await pGust.evaluate(function () {
+        var idx = window.scene2TypesOn_().indexOf('gust');
+        window.paintScene2Type_(idx);
+        var panel = document.querySelector('#scene2 [data-s2="gust"]');
+        return {
+          count: document.querySelectorAll('#scene2 [data-s2="gust"]').length,
+          label: panel && panel.querySelector('.s2-bar-label') && panel.querySelector('.s2-bar-label').textContent
+        };
+      });
+      assert.strictEqual(gust.count, 4);
+      assert.strictEqual(gust.label, '最大瞬間風速');
+      ok('旧本番の最大瞬間風速を共通気象コンテンツとして表示');
+    } catch (e) { ng('最大瞬間風速', e); }
+
+    try {
+      await p0001.evaluate(function () { window.persistSignageStateCache_(); });
+      await p0000.evaluate(function () { window.persistSignageStateCache_(); });
+      await p0002.evaluate(function () { window.persistSignageStateCache_(); });
+      var cacheKeys = await p0001.evaluate(function () {
+        return Object.keys(localStorage).filter(function (key) {
+          return key.indexOf('alert_cube_signage_state_v2_') === 0;
+        });
+      });
+      assert.ok(cacheKeys.some(function (key) { return key.indexOf('_AC-0001_') >= 0; }));
+      assert.ok(cacheKeys.some(function (key) { return key.indexOf('_AC-0000_') >= 0; }));
+      assert.ok(cacheKeys.some(function (key) { return key.indexOf('_AC-0002_') >= 0; }));
+      ok('Last Known Good表示データを案件ID単位で分離');
+    } catch (e) { ng('案件別表示キャッシュ', e); }
+
     console.log('');
-    console.log(JSON.stringify({ default: mDef, ac0001: m1, ac0000: m0 }, null, 2));
+    console.log(JSON.stringify({ default: mDef, ac0001: m1, ac0000: m0, ac0002: m2 }, null, 2));
   } finally {
     await browser.close();
   }
