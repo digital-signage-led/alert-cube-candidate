@@ -118,7 +118,8 @@ async function run() {
     assert.strictEqual(site2.jma.warnCity, '1410012');
     assert.strictEqual(site2.schedule.enabled, false);
     assert.strictEqual(site2.contents.schedule.on, false);
-    assert.strictEqual(site2.contents.typhoon.on, false);
+    assert.strictEqual(site2.contents.typhoon.on, true);
+    assert.strictEqual(site2.presentation.observationMode, 'scroll');
     assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', 'sites', 'AC-0002', 'eneos_logo.gif')));
     assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', 'sites', 'AC-0002', 'eneos_lockup.png')));
   });

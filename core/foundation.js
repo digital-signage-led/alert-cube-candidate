@@ -277,6 +277,7 @@
       footSource: site.footSource || '出典：気象庁・環境省データ',
       schedule: site.schedule || { enabled: false, weekStartsOn: 1, items: [] },
       greeting: site.greeting || { enabled: false },
+      presentation: site.presentation || {},
       contents: site.contents,
       contentOrder: site.contentOrder,
       season: site.season,
@@ -307,6 +308,7 @@
     if (json.geo) base.geo = Object.assign({}, base.geo || {}, json.geo);
     if (json.schedule) base.schedule = json.schedule;
     if (json.greeting) base.greeting = json.greeting;
+    if (json.presentation) base.presentation = Object.assign({}, base.presentation || {}, json.presentation);
     if (json.faces != null) base.faces = json.faces;
     if (json.profile || json.layout) base.profile = json.layout || json.profile;
     if (json.timeZone) base.timeZone = json.timeZone;

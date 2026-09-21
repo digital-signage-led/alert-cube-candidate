@@ -595,6 +595,47 @@
             height: var(--led-col-main-h);
             overflow: hidden;
         }
+        #scene2.scene2-scroll-mode .s2-scroll-wrap {
+            height: 128px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 13;
+        }
+        #scene2.scene2-scroll-mode .s2-panel:not(.s2-logo-panel),
+        #scene2.scene2-scroll-mode .s2-panel-data {
+            height: var(--led-col-main-h);
+        }
+        #scene2 .s2-logo-panel {
+            width: 128px;
+            min-width: 128px;
+            max-width: 128px;
+            height: 128px;
+            flex: 0 0 128px;
+            padding: 0;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 13;
+        }
+        #scene2 .s2-logo-panel .s2-body {
+            width: 128px;
+            height: 128px;
+            padding: 0;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #scene2 .s2-logo-face-img {
+            width: 128px;
+            height: 128px;
+            object-fit: contain;
+            background: #ffffff;
+        }
+        #scene2.scene2-scroll-mode .s2-meta-bar { z-index: 12; }
         /* 気象種別切替: 現行は上へシュッ、次は下から */
         #scene2 .conveyor-track {
             position: absolute;
@@ -2528,6 +2569,15 @@
         return SCENE2_TYPE_ORDER.filter(function (type) {
             return !window.AlertCubeContent || window.AlertCubeContent.panelOn(type);
         });
+    }
+    function scene2ScrollMode_() {
+        const cfg = (siteCfg_() && siteCfg_().presentation) || {};
+        return cfg.observationMode === 'scroll';
+    }
+    function scene2ScrollLaps_() {
+        const cfg = (siteCfg_() && siteCfg_().presentation) || {};
+        const laps = Number(cfg.observationLaps);
+        return Number.isFinite(laps) && laps > 0 ? Math.min(2, Math.max(1, Math.floor(laps))) : 1;
     }
     /** 表示時刻は常に日本標準時（JST） */
     /** 表示・取得スケジュールは常に日本標準時 */
@@ -5951,6 +6001,7 @@
     let s1Flow_ = null;
     const SCENE2_FACE_COUNT = 4;
     const SCENE2_TYPE_ORDER = ['weather', 'temp', 'wbgt', 'humi', 'rain', 'wdir', 'wind', 'pres', 'tmaxmin', 'gust'];
+    const SCENE2_SCROLL_ORDER = ['weather', 'temp', 'rain', 'wdir', 'wind', 'humi', 'pres', 'tmaxmin', 'gust'];
     const SCENE2_PANEL_COUNT = SCENE2_FACE_COUNT;
     const SCENE2_LAPS = 1;
     const SCENE2_SCROLL_PX = 0.8;
@@ -6733,7 +6784,8 @@
         bootDisplayHold_ = false;
         updateClock();
         if (!wbgtOffSeason) wbgtUnavailable = false;
-        buildScene2Conveyor_(SCENE2_TYPE_ORDER[0]);
+        if (scene2ScrollMode_()) buildScene2ScrollConveyor_();
+        else buildScene2Conveyor_(SCENE2_TYPE_ORDER[0]);
         compactScene2Panels();
         syncWbgtSlotsToDomIfReady_();
         refreshSignageBgIfChanged_(true);
@@ -7629,7 +7681,7 @@
     }
     const SCENE2_META_LABELS = {
         weather: '天気', temp: '気温', wbgt: '暑さ指数', humi: '湿度', rain: '降水量',
-        wdir: '風向き', wind: '風速', pres: '気圧', tmaxmin: '最高/最低'
+        wdir: '風向き', wind: '風速', pres: '気圧', tmaxmin: '最高/最低', gust: '最大瞬間風速'
     };
     const SCENE2_META_ORDER = SCENE2_TYPE_ORDER;
     function scene2PanelHtml_(type) {
@@ -7682,6 +7734,7 @@
     }
     function buildScene2Conveyor_(type) {
         if (!conveyor) return;
+        if (s2) s2.classList.remove('scene2-scroll-mode');
         const t = type || SCENE2_TYPE_ORDER[0];
         const cell = scene2PanelHtml_(t);
         let html = '';
@@ -7691,6 +7744,28 @@
         conveyor.style.width = scene2SetWidth + 'px';
         conveyor.style.transition = 'none';
         applyScrollX_(conveyor, 0);
+    }
+    function buildScene2ScrollConveyor_() {
+        if (!conveyor) return [];
+        const enabled = scene2TypesOn_();
+        const types = SCENE2_SCROLL_ORDER.filter(function (type) {
+            return enabled.indexOf(type) >= 0;
+        });
+        let setHtml = types.map(scene2PanelHtml_).join('');
+        const presentation = (siteCfg_() && siteCfg_().presentation) || {};
+        const brand = window.SIGNAGE_CONFIG || {};
+        if (presentation.observationTrailingLogo !== false && brand.logoSrc) {
+            setHtml += '<div class="s2-panel s2-logo-panel" data-s2="logo"><div class="s2-body">' +
+                '<img class="s2-logo-face-img" src="' + escapeS1Html(brand.logoSrc) + '" alt="' +
+                escapeS1Html(brand.logoAlt || '') + '" decoding="async"></div></div>';
+        }
+        conveyor.innerHTML = setHtml + setHtml;
+        scene2SetWidth = Math.max(128, (types.length + (setHtml.indexOf('s2-logo-panel') >= 0 ? 1 : 0)) * 128);
+        conveyor.style.width = (scene2SetWidth * 2) + 'px';
+        conveyor.style.transition = 'none';
+        applyScrollX_(conveyor, 0);
+        if (s2) s2.classList.add('scene2-scroll-mode');
+        return types;
     }
     function paintScene2Type_(typeIdx) {
         const type = SCENE2_TYPE_ORDER[typeIdx];
@@ -7788,7 +7863,9 @@
     }
     function buildScene2MetaGroups_(obs) {
         const map = new Map();
-        SCENE2_META_ORDER.forEach(function (type) {
+        const order = scene2ScrollMode_() ? SCENE2_SCROLL_ORDER : SCENE2_META_ORDER;
+        const enabled = scene2TypesOn_();
+        order.filter(function (type) { return enabled.indexOf(type) >= 0; }).forEach(function (type) {
             const foot = scene2FootTextForType_(type, obs);
             if (!map.has(foot)) map.set(foot, []);
             map.get(foot).push(SCENE2_META_LABELS[type] || type);
@@ -7960,6 +8037,11 @@
     /* 気象庁アメダス + 環境省WBGT: WN比較用9項目を固定順でスクロール */
     function compactScene2Panels() {
         if (!conveyor) return;
+        if (scene2ScrollMode_()) {
+            if (!conveyor.querySelector('.s2-logo-panel')) buildScene2ScrollConveyor_();
+            conveyor.style.width = (scene2SetWidth * 2) + 'px';
+            return;
+        }
         const typesOn = scene2TypesOn_();
         if (!conveyor.children.length) buildScene2Conveyor_(typesOn[0] || SCENE2_TYPE_ORDER[0]);
         Array.from(conveyor.children).forEach(function (p) { p.style.display = 'flex'; });
@@ -8249,7 +8331,7 @@
         return String(text || '').length > 18;
     }
     function escapeS1Html(s) {
-        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
     function buildEvenCharSpans(text, chClass) {
         return [...text].map(ch => `<span class="${chClass}">${escapeS1Html(ch)}</span>`).join('');
@@ -9443,6 +9525,43 @@
         if (!s3) { gotoAfterScene3_(); return; }
         transitionToScene(s3, playScene3);
     }
+    function playScene2Scroll_() {
+        const types = buildScene2ScrollConveyor_();
+        if (!types.length) {
+            gotoSceneAfterScene2_();
+            return;
+        }
+        if (lastAmedasSnapshot_) applyAmedasSnapshot_(lastAmedasSnapshot_);
+        buildScene2MetaTrack(lastAmedasObsTime);
+        fitScene2BodyText();
+        if (typeof SignageBg !== 'undefined' && SignageBg.refreshScene2) {
+            SignageBg.refreshScene2(getSignageBgLevel_(), getSignageDisplayMode_());
+        }
+        const totalPx = Math.max(128, scene2SetWidth * scene2ScrollLaps_() - 512);
+        let totalScrolled = 0;
+        applyScrollX_(conveyor, 0);
+        applyScrollX_(s2MetaTrack, 0);
+        function finishScroll_() {
+            scene2AnimId = null;
+            stopLogoSpinInterval();
+            if (demoOnlyLoop_('s2', playScene2)) return;
+            runAfterSceneEndHold_(gotoSceneAfterScene2_);
+        }
+        function animateScroll_() {
+            const speed = getScrollSpeedPx_();
+            totalScrolled = Math.min(totalPx, totalScrolled + speed);
+            applyScrollX_(conveyor, -totalScrolled);
+            applyScrollX_(s2MetaTrack, wrapScrollX_(-totalScrolled, scene2MetaLapPx));
+            if (totalScrolled >= totalPx) {
+                finishScroll_();
+                return;
+            }
+            scene2AnimId = requestAnimationFrame(animateScroll_);
+        }
+        runSceneScrollAfterHold_(function () {
+            scene2AnimId = requestAnimationFrame(animateScroll_);
+        });
+    }
     function playScene2() {
         applyDisplayRefreshAtSceneEntry_();
         applyPendingSignageBgAtScene_();
@@ -9450,6 +9569,10 @@
         clearScene2SlideLayers_();
         if (scene2AnimId) { cancelAnimationFrame(scene2AnimId); scene2AnimId = null; }
         stepLogo90(420, true);
+        if (scene2ScrollMode_()) {
+            playScene2Scroll_();
+            return;
+        }
         if (isFullDemoStep_()) {
             paintScene2Type_(0);
             scheduleDemoStep_(gotoSceneAfterScene2_);

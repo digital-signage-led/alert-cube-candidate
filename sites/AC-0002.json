@@ -62,6 +62,11 @@
     "lines": [],
     "foot": ""
   },
+  "presentation": {
+    "observationMode": "scroll",
+    "observationLaps": 2,
+    "observationTrailingLogo": true
+  },
   "contentOrder": ["clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
@@ -78,7 +83,7 @@
     "warning": { "on": true },
     "warning-hero": { "on": true },
     "rain-nowcast": { "on": true },
-    "typhoon": { "on": false },
+    "typhoon": { "on": true },
     "disaster": { "on": true },
     "heat": { "on": true },
     "schedule": { "on": false },

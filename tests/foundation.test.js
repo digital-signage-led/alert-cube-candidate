@@ -202,7 +202,8 @@ test('AC-0002 はENEOS磯子の独立した本番案件設定', function () {
   assert.strictEqual(site.moe.point, '46106');
   assert.strictEqual(site.jma.warnCity, '1410012');
   assert.strictEqual(site.contents.schedule.on, false);
-  assert.strictEqual(site.contents.typhoon.on, false);
+  assert.strictEqual(site.contents.typhoon.on, true);
+  assert.strictEqual(site.presentation.observationMode, 'scroll');
 });
 
 test('AC-0000 は内部テスト・全共通Contents ON、未実装はOFF', function () {

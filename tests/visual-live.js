@@ -104,12 +104,14 @@ async function run() {
   var p0000;
   var p0002;
   var pGust;
+  var pScroll;
   try {
     pDefault = await openPage(browser, BASE + '/');
     p0001 = await openPage(browser, BASE + '/?site=AC-0001');
     p0000 = await openPage(browser, BASE + '/?site=AC-0000');
     p0002 = await openPage(browser, BASE + '/?site=AC-0002');
     pGust = await openPage(browser, BASE + '/?site=AC-0001&only=s2');
+    pScroll = await openPage(browser, BASE + '/?site=AC-0002&only=s2');
 
     var mDef = await collectMetrics(pDefault);
     var m1 = await collectMetrics(p0001);
@@ -120,6 +122,7 @@ async function run() {
     await p0001.screenshot({ path: path.join(outDir, 'local-AC-0001.png') });
     await p0000.screenshot({ path: path.join(outDir, 'local-AC-0000.png') });
     await p0002.screenshot({ path: path.join(outDir, 'local-AC-0002.png') });
+    await pScroll.screenshot({ path: path.join(outDir, 'local-AC-0002-scroll.png') });
 
     try {
       assert.strictEqual(mDef.siteId, 'AC-0001');
@@ -146,7 +149,7 @@ async function run() {
       assert.ok(m2.logoSrc.indexOf('assets/sites/AC-0002/eneos_logo.gif') >= 0);
       assert.ok(m2.bannerSrc.indexOf('assets/sites/AC-0002/eneos_lockup.png') >= 0);
       assert.ok(m2.contentsOn.indexOf('schedule') < 0);
-      assert.ok(m2.contentsOn.indexOf('typhoon') < 0);
+      assert.ok(m2.contentsOn.indexOf('typhoon') >= 0);
       ok('旧ENEOS磯子案件をAC-0002のV2.0設定として適用');
     } catch (e) { ng('AC-0002 案件適用', e); }
 
@@ -197,6 +200,25 @@ async function run() {
       assert.strictEqual(gust.label, '最大瞬間風速');
       ok('旧本番の最大瞬間風速を共通気象コンテンツとして表示');
     } catch (e) { ng('最大瞬間風速', e); }
+
+    try {
+      var scroll = await pScroll.evaluate(function () {
+        var types = window.buildScene2ScrollConveyor_();
+        return {
+          types: types,
+          mode: document.querySelector('#scene2').classList.contains('scene2-scroll-mode'),
+          panels: document.querySelectorAll('#scene2 #conveyor > [data-s2]').length,
+          logos: document.querySelectorAll('#scene2 #conveyor > [data-s2="logo"]').length,
+          width: document.querySelector('#scene2 #conveyor').style.width
+        };
+      });
+      assert.deepStrictEqual(scroll.types, ['weather', 'temp', 'rain', 'wdir', 'wind', 'humi', 'pres', 'tmaxmin', 'gust']);
+      assert.strictEqual(scroll.mode, true);
+      assert.strictEqual(scroll.panels, 20);
+      assert.strictEqual(scroll.logos, 2);
+      assert.strictEqual(scroll.width, '2560px');
+      ok('AC-0002 気象観測は9項目＋末尾ロゴを2周横スクロール');
+    } catch (e) { ng('AC-0002 気象観測スクロール', e); }
 
     try {
       await p0001.evaluate(function () { window.persistSignageStateCache_(); });
