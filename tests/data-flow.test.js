@@ -120,6 +120,7 @@ async function run() {
     assert.strictEqual(site2.contents.schedule.on, false);
     assert.strictEqual(site2.contents.typhoon.on, false);
     assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', 'sites', 'AC-0002', 'eneos_logo.gif')));
+    assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', 'sites', 'AC-0002', 'eneos_lockup.png')));
   });
 
   var jmaFc = await fetchJson('https://www.jma.go.jp/bosai/forecast/data/forecast/' + site1.jma.forecastArea + '.json');

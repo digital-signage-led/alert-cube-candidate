@@ -144,7 +144,7 @@ async function run() {
       assert.strictEqual(m2.customer, 'エネオス株式会社');
       assert.strictEqual(m2.schedule0, undefined);
       assert.ok(m2.logoSrc.indexOf('assets/sites/AC-0002/eneos_logo.gif') >= 0);
-      assert.ok(m2.bannerSrc.indexOf('assets/sites/AC-0002/eneos_lockup.svg') >= 0);
+      assert.ok(m2.bannerSrc.indexOf('assets/sites/AC-0002/eneos_lockup.png') >= 0);
       assert.ok(m2.contentsOn.indexOf('schedule') < 0);
       assert.ok(m2.contentsOn.indexOf('typhoon') < 0);
       ok('旧ENEOS磯子案件をAC-0002のV2.0設定として適用');

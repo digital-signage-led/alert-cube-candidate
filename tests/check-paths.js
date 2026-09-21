@@ -48,7 +48,7 @@ var paths = [
   '/sites/AC-0002.json',
   '/sites/AC-0000.json',
   '/assets/sites/AC-0002/eneos_logo.gif',
-  '/assets/sites/AC-0002/eneos_lockup.svg',
+  '/assets/sites/AC-0002/eneos_lockup.png',
   '/sites/index.json'
 ];
 

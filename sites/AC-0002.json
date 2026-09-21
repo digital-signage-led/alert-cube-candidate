@@ -16,11 +16,11 @@
   "footSource": "出典：気象庁・環境省データ",
   "releasePin": null,
   "logo": {
-    "src": "./assets/sites/AC-0002/eneos_logo.gif?v=20260921-ac0002",
-    "corpSrc": "./assets/sites/AC-0002/eneos_logo.gif?v=20260921-ac0002",
-    "footSrc": "./assets/sites/AC-0002/eneos_logo.gif?v=20260921-ac0002",
+    "src": "./assets/sites/AC-0002/eneos_logo.gif?v=20260921-ac0002-user1",
+    "corpSrc": "./assets/sites/AC-0002/eneos_logo.gif?v=20260921-ac0002-user1",
+    "footSrc": "./assets/sites/AC-0002/eneos_logo.gif?v=20260921-ac0002-user1",
     "panelBg": "#ffffff",
-    "bannerSrc": "./assets/sites/AC-0002/eneos_lockup.svg?v=20260921-ac0002b"
+    "bannerSrc": "./assets/sites/AC-0002/eneos_lockup.png?v=20260921-ac0002-user1"
   },
   "moe": {
     "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
