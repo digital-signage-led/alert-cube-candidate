@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "projectId": "AC-0000",
+  "status": "active",
+  "customer": "",
+  "rental": "",
+  "projectName": "",
+  "siteName": "",
+  "location": "",
+  "latitude": 0,
+  "longitude": 0,
+  "resolution": "512x128",
+  "layout": "AC-512",
+  "faces": 4,
+  "timeZone": "Asia/Tokyo",
+  "footSource": "出典：気象庁・環境省データ",
+  "releasePin": null,
+  "logo": {
+    "src": "./images/logo.svg?v=20260921-suminoe",
+    "panelBg": "#ffffff",
+    "bannerSrc": ""
+  },
+  "moe": {
+    "gasUrl": "",
+    "point": "",
+    "fallbackPoint": "",
+    "pointName": "",
+    "alertArea": "",
+    "region": "",
+    "prefecture": ""
+  },
+  "jma": {
+    "amedasPoint": "",
+    "amedasSupplementPoint": "",
+    "forecastArea": "",
+    "forecastDetail": "",
+    "forecastLabel": "",
+    "warnArea": "",
+    "warnCity": "",
+    "warnCityLabel": ""
+  },
+  "wbgt": {
+    "seasonStart": { "month": 4, "day": 22 },
+    "seasonEnd": { "month": 10, "day": 22 }
+  },
+  "season": { "override": null },
+  "updateSettings": { "refreshMs": 60000 },
+  "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "contentOrder": ["clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
+  "contents": {
+    "clock": { "on": true },
+    "weather": { "on": true },
+    "temperature": { "on": true },
+    "rain": { "on": true },
+    "wind": { "on": true },
+    "humidity": { "on": true },
+    "pressure": { "on": true },
+    "temp-range": { "on": true },
+    "wbgt": { "on": true },
+    "wbgt-i18n": { "on": true },
+    "forecast": { "on": true },
+    "warning": { "on": true },
+    "warning-hero": { "on": true },
+    "rain-nowcast": { "on": true },
+    "typhoon": { "on": true },
+    "disaster": { "on": true },
+    "heat": { "on": true },
+    "schedule": { "on": true },
+    "pollen": { "on": false },
+    "pm25": { "on": false }
+  }
+}

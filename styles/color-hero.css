@@ -1,0 +1,273 @@
+/* 色3段（警戒レベル）正: 320_警報情報/signage-512.html #heroLevel
+   上40 黄 / 中48 金（白字黒縁 42px） / 下40 黄・2行
+   1セット=256px（2面）。白3段 (.hero.is-white) には触れない */
+
+#sceneWarnHero {
+  width: 512px;
+  height: 128px;
+  overflow: hidden;
+  background: #f2e700;
+}
+#sceneWarnHero.active {
+  display: block !important;
+  z-index: 3;
+}
+#sceneWarnHero .hero {
+  width: 512px;
+  height: 128px;
+  min-height: 128px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0;
+  background: #fa2900;
+  font-family: "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", Meiryo, "Hiragino Sans", sans-serif;
+}
+#sceneWarnHero .hero.is-advisory { background: #f2e700; }
+#sceneWarnHero .hero.is-warning { background: #fa2900; }
+#sceneWarnHero .hero.is-danger { background: #ab00aa; }
+#sceneWarnHero .hero.is-special { background: #000000; }
+
+#sceneWarnHero .band {
+  position: relative;
+  width: 512px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+#sceneWarnHero .band-top { height: 40px; max-height: 40px; flex: 0 0 40px; }
+#sceneWarnHero .band-mid { height: 48px; max-height: 48px; flex: 0 0 48px; }
+#sceneWarnHero .band-bot { height: 40px; max-height: 40px; flex: 0 0 40px; }
+
+/* 中段の色は帯そのものに塗る（inset 非対応 / ::before 欠落でも見える） */
+#sceneWarnHero .hero.is-advisory .band-mid { background: #cdb800; }
+#sceneWarnHero .hero.is-warning .band-mid { background: #c82400; }
+#sceneWarnHero .hero.is-danger .band-mid { background: #7a0078; }
+#sceneWarnHero .hero.is-special .band-mid { background: #333333; }
+
+#sceneWarnHero .band-mid::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+}
+#sceneWarnHero .hero.is-advisory .band-mid::before { background: #cdb800; }
+#sceneWarnHero .hero.is-warning .band-mid::before { background: #c82400; }
+#sceneWarnHero .hero.is-danger .band-mid::before { background: #7a0078; }
+#sceneWarnHero .hero.is-special .band-mid::before { background: #333333; }
+
+#sceneWarnHero .track {
+  position: relative;
+  z-index: 1;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  height: 100%;
+  width: max-content;
+  will-change: auto;
+}
+#sceneWarnHero .seg {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 256px;
+  width: 256px;
+  min-width: 256px;
+  max-width: 256px;
+  height: 100%;
+  padding: 0 4px;
+  gap: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+#sceneWarnHero .band-mid .track,
+#sceneWarnHero .band-mid .seg { align-items: center; }
+#sceneWarnHero .band-mid .seg {
+  height: 48px;
+  width: 256px;
+  min-width: 256px;
+  max-width: 256px;
+  flex: 0 0 256px;
+  padding: 0 4px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+#sceneWarnHero .top-label,
+#sceneWarnHero .bot-txt,
+#sceneWarnHero .mid-chip {
+  font-weight: 900;
+  font-family: inherit;
+}
+
+#sceneWarnHero .unit {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 100%;
+  gap: 2px;
+  min-width: 0;
+  overflow: visible;
+  margin: 0 auto;
+}
+#sceneWarnHero .top-place,
+#sceneWarnHero .top-label,
+#sceneWarnHero .top-sep,
+#sceneWarnHero .top-time {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  line-height: 1;
+  font-weight: 900;
+}
+#sceneWarnHero .top-place {
+  font-size: 22px;
+  letter-spacing: 0.02em;
+}
+#sceneWarnHero .top-sep {
+  opacity: 0.4;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 0 1px;
+}
+#sceneWarnHero .top-label {
+  font-size: 24px;
+  letter-spacing: 0.01em;
+  overflow: visible;
+  text-align: center;
+  max-height: none;
+  max-width: none;
+}
+#sceneWarnHero .top-time {
+  font-size: 18px;
+  letter-spacing: 0.02em;
+  padding: 2px 5px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.2);
+}
+#sceneWarnHero .bot-txt {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  max-height: 38px;
+  overflow: hidden;
+  white-space: pre-line;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  text-align: center;
+  font-size: 17px;
+  line-height: 1.05;
+  letter-spacing: 0;
+  margin: 0 auto;
+}
+#sceneWarnHero .mid-chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 100%;
+  height: 48px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 42px;
+  line-height: 1;
+  letter-spacing: 0;
+  transform: none;
+  color: #fff;
+  padding: 0 2px;
+  box-sizing: border-box;
+  margin: 0 auto;
+  -webkit-text-stroke: 0;
+  paint-order: normal;
+  text-shadow: none;
+}
+#sceneWarnHero .mid-chip-stroke,
+#sceneWarnHero .mid-chip-fill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  font-family: inherit;
+}
+#sceneWarnHero .mid-chip-stroke {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  color: #fff;
+  -webkit-text-stroke: 3px #000;
+  z-index: 0;
+}
+#sceneWarnHero .mid-chip-fill {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+  -webkit-text-stroke: 0;
+}
+
+#sceneWarnHero .badge {
+  flex: 0 0 auto;
+  background: #fff;
+  padding: 2px 5px;
+  border-radius: 2px;
+  line-height: 1;
+}
+#sceneWarnHero .badge span {
+  display: block;
+  color: #1a1a1a;
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+#sceneWarnHero .hero.is-demo .badge { background: #111; }
+#sceneWarnHero .hero.is-demo .badge span { color: #f2e700; }
+
+#sceneWarnHero .hero.is-advisory .top-place,
+#sceneWarnHero .hero.is-advisory .top-sep,
+#sceneWarnHero .hero.is-advisory .top-label,
+#sceneWarnHero .hero.is-advisory .top-time,
+#sceneWarnHero .hero.is-advisory .bot-txt { color: #1a1a1a; }
+#sceneWarnHero .hero.is-advisory .top-time { background: rgba(0,0,0,0.14); }
+#sceneWarnHero .hero.is-advisory .mid-chip { color: #fff; }
+#sceneWarnHero .hero.is-warning .top-place,
+#sceneWarnHero .hero.is-warning .top-sep,
+#sceneWarnHero .hero.is-warning .top-label,
+#sceneWarnHero .hero.is-warning .top-time,
+#sceneWarnHero .hero.is-warning .bot-txt,
+#sceneWarnHero .hero.is-warning .mid-chip,
+#sceneWarnHero .hero.is-danger .top-place,
+#sceneWarnHero .hero.is-danger .top-sep,
+#sceneWarnHero .hero.is-danger .top-label,
+#sceneWarnHero .hero.is-danger .top-time,
+#sceneWarnHero .hero.is-danger .bot-txt,
+#sceneWarnHero .hero.is-danger .mid-chip,
+#sceneWarnHero .hero.is-special .top-place,
+#sceneWarnHero .hero.is-special .top-sep,
+#sceneWarnHero .hero.is-special .top-label,
+#sceneWarnHero .hero.is-special .top-time,
+#sceneWarnHero .hero.is-special .bot-txt,
+#sceneWarnHero .hero.is-special .mid-chip { color: #fff; }
+

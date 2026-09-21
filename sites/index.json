@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "defaultSite": "AC-0001",
+  "productionSites": ["AC-0001"],
+  "testSites": ["AC-0000"],
+  "notes": "AC-0000 は内部システムテスト専用（status=test、本番端末へ登録しない）。AC-0001 が本番（status=active）。発行済みIDは再利用しない。",
+  "sites": [
+    { "projectId": "AC-0000", "status": "test" },
+    { "projectId": "AC-0001", "status": "active" }
+  ]
+}

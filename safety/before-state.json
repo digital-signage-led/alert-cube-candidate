@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-09-21T17:14:00+09:00",
+  "build": "20260921-suminoe",
+  "site": {
+    "assignedId": "AC-0001",
+    "label": "住之江区",
+    "profile": "AC-512",
+    "faces": 4,
+    "resolution": "512x128"
+  },
+  "urls": [
+    "./index.html",
+    "./index.html?offseason=1",
+    "./offseason.html",
+    "./index.html?native640=1",
+    "./index.html?embed=1",
+    "./?site=AC-0001",
+    "./?site=AC-0000"
+  ],
+  "notes": [
+    "本番は config/site-config.js と sites/AC-0001.json。",
+    "AC-0000 は内部テスト専用。表示は 512×128 4面。地点は大阪 62078。"
+  ]
+}

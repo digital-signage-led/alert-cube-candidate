@@ -1,0 +1,3 @@
+/* 表示フォントは Google Fonts の Inter / Noto Sans JP。
+   family 名を local() で上書きしない（游ゴシック・Segoe 化を防ぐ）。
+   未取得時は index.html の font-family フォールバックを使う。 */

@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "projectId": "AC-0000",
+  "status": "test",
+  "customer": "",
+  "rental": "",
+  "projectName": "内部システムテスト（本番端末へ登録しない）",
+  "siteName": "内部テスト",
+  "location": "内部テスト（顧客案件ではない）",
+  "latitude": 34.605184,
+  "longitude": 135.470949,
+  "resolution": "512x128",
+  "layout": "AC-512",
+  "faces": 4,
+  "timeZone": "Asia/Tokyo",
+  "footSource": "出典：気象庁・環境省データ",
+  "releasePin": null,
+  "logo": {
+    "src": "./images/logo.svg?v=20260921-suminoe",
+    "panelBg": "#ffffff",
+    "bannerSrc": ""
+  },
+  "moe": {
+    "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
+    "point": "62078",
+    "fallbackPoint": "62091",
+    "pointName": "大阪",
+    "alertArea": "大阪府",
+    "region": "07",
+    "prefecture": "62"
+  },
+  "jma": {
+    "amedasPoint": "62078",
+    "amedasSupplementPoint": "62091",
+    "forecastArea": "270000",
+    "forecastDetail": "270010",
+    "forecastLabel": "大阪市",
+    "warnArea": "270000",
+    "warnCity": "2710000",
+    "warnCityLabel": "大阪市"
+  },
+  "wbgt": {
+    "seasonStart": { "month": 4, "day": 22 },
+    "seasonEnd": { "month": 10, "day": 22 }
+  },
+  "season": {
+    "override": null
+  },
+  "updateSettings": {
+    "refreshMs": 60000
+  },
+  "schedule": {
+    "enabled": true,
+    "weekStartsOn": 1,
+    "items": [
+      { "work": "検証A", "sub": "内部確認" },
+      { "work": "検証B", "sub": "内部確認" },
+      { "work": "検証C", "sub": "内部確認" },
+      { "work": "検証D", "sub": "内部確認" }
+    ]
+  },
+  "greeting": {
+    "enabled": false,
+    "title": "",
+    "lines": [],
+    "foot": ""
+  },
+  "contentOrder": ["clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
+  "contents": {
+    "clock": { "on": true },
+    "weather": { "on": true },
+    "temperature": { "on": true },
+    "rain": { "on": true },
+    "wind": { "on": true },
+    "humidity": { "on": true },
+    "pressure": { "on": true },
+    "temp-range": { "on": true },
+    "wbgt": { "on": true },
+    "wbgt-i18n": { "on": true },
+    "forecast": { "on": true },
+    "warning": { "on": true },
+    "warning-hero": { "on": true },
+    "rain-nowcast": { "on": true },
+    "typhoon": { "on": true },
+    "disaster": { "on": true },
+    "heat": { "on": true },
+    "schedule": { "on": true },
+    "pollen": { "on": false },
+    "pm25": { "on": false }
+  }
+}
