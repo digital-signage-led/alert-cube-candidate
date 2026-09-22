@@ -259,11 +259,14 @@ async function run() {
           return a.getAttribute('href');
         });
       });
-      assert.strictEqual(hub.length, 8);
+      assert.strictEqual(hub.length, 11);
       assert.ok(hub.some(function (href) { return href.indexOf('observation=fixed') >= 0; }));
       assert.ok(hub.some(function (href) { return href.indexOf('observation=scroll') >= 0; }));
       assert.ok(hub.some(function (href) { return href.indexOf('only=s5&live=1') >= 0; }));
-      ok('V2.0コンテンツ一覧から各確認画面と2種類の気象観測を開ける');
+      assert.ok(hub.some(function (href) { return href.indexOf('only=rainwarn') >= 0; }));
+      assert.ok(hub.some(function (href) { return href.indexOf('only=typhoon') >= 0; }));
+      assert.ok(hub.some(function (href) { return href.indexOf('only=alert') >= 0; }));
+      ok('V2.0コンテンツ一覧から通常・防災コンテンツを個別に開ける');
     } catch (e) { ng('コンテンツ一覧ページ', e); }
 
     try {
