@@ -12,6 +12,7 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/?site=AC-0001
 - http://127.0.0.1:3200/?site=AC-0002 （ENEOS磯子 V2.0）
 - http://127.0.0.1:3200/?site=AC-0000 （内部テスト。本番端末へ登録しない）
+- http://127.0.0.1:3200/contents/ （V2.0コンテンツ確認一覧）
 - http://127.0.0.1:3200/?offseason=1
 
 ## 中身
@@ -22,11 +23,11 @@ offseason.html      期間外プレビュー
 config/             本番 last-good site-config.js
 scripts/            既存エンジン
 styles/             フォント・警報CSS
-images/             ロゴ・気象庁アイコン
+images/             共通ロゴ
 core/               起動・案件・ON/OFF・隔離
 contents/           共通コンテンツ
 services/           データ取得
-data/               天気コード・地域
+data/               気象庁天気コード・地域
 sites/              AC-0000 テスト / AC-0001以降 本番案件
 custom/             案件専用
 safety/             Version / Fallback / Retry / Rollback
@@ -61,3 +62,4 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0001: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0001
 - AC-0002: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0002
 - AC-0000: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0000
+- コンテンツ一覧: https://digital-signage-led.github.io/alert-cube-candidate/contents/

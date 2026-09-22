@@ -30,6 +30,7 @@ var paths = [
   '/core/foundation.js',
   '/contents/registry.js',
   '/contents/modules.js',
+  '/contents/index.html',
   '/contents/weather/index.js',
   '/contents/pressure/index.js',
   '/contents/typhoon/index.js',

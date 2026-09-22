@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Alert Cube V2.0 コンテンツ確認</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, "Noto Sans JP", "Yu Gothic UI", sans-serif;
+      background: #0b0f17;
+      color: #f4f7fb;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 28px 20px 48px; }
+    main { width: min(100%, 1040px); margin: 0 auto; }
+    header { margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: clamp(24px, 4vw, 38px); }
+    p { margin: 6px 0; color: #aeb9c9; line-height: 1.65; }
+    .notice {
+      margin: 18px 0 26px;
+      padding: 14px 16px;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      background: #121a28;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      display: flex;
+      min-height: 120px;
+      padding: 17px;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      color: inherit;
+      text-decoration: none;
+      border: 1px solid #263449;
+      border-radius: 14px;
+      background: #111827;
+      transition: border-color .15s ease, transform .15s ease, background .15s ease;
+    }
+    .card:hover, .card:focus-visible {
+      border-color: #4ea4ff;
+      background: #152238;
+      transform: translateY(-2px);
+      outline: none;
+    }
+    .title { font-size: 20px; font-weight: 800; }
+    .meta { color: #91a0b5; font-size: 13px; line-height: 1.5; }
+    .open { color: #65b5ff; font-weight: 700; }
+    .variant { border-color: #7258d8; }
+    footer { margin-top: 26px; color: #7f8da2; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Alert Cube V2.0 コンテンツ確認</h1>
+      <p>AC-0000（内部テスト）で共通コンテンツを個別に確認します。</p>
+    </header>
+
+    <div class="notice">
+      <strong>確認専用ページ</strong>
+      <p>ここでは設定を保存しません。デザイン変更は共通コードへ行い、AC-0000で確認後に各案件を再テストします。</p>
+    </div>
+
+    <section class="grid" aria-label="コンテンツ一覧">
+      <a class="card" href="../?site=AC-0000&amp;only=s1" target="_blank" rel="noopener">
+        <span class="title">時刻・日付</span>
+        <span class="meta">4面表示 / scene1</span>
+        <span class="open">確認画面を開く →</span>
+      </a>
+
+      <a class="card" href="../?site=AC-0000&amp;only=s2&amp;observation=fixed" target="_blank" rel="noopener">
+        <span class="title">気象観測</span>
+        <span class="meta">4面同一・項目切替 / weather・気温・降水・風・湿度・気圧</span>
+        <span class="open">4面固定を開く →</span>
+      </a>
+
+      <a class="card variant" href="../?site=AC-0000&amp;only=s2&amp;observation=scroll" target="_blank" rel="noopener">
+        <span class="title">気象観測</span>
+        <span class="meta">9項目横スクロール / AC-0000確認用バリアント</span>
+        <span class="open">横スクロールを開く →</span>
+      </a>
+
+      <a class="card" href="../?site=AC-0000&amp;only=s4" target="_blank" rel="noopener">
+        <span class="title">WBGT</span>
+        <span class="meta">4面個別・現在から9時間後 / scene4</span>
+        <span class="open">確認画面を開く →</span>
+      </a>
+
+      <a class="card" href="../?site=AC-0000&amp;only=s3" target="_blank" rel="noopener">
+        <span class="title">多言語WBGT</span>
+        <span class="meta">多言語スクロール / scene3</span>
+        <span class="open">確認画面を開く →</span>
+      </a>
+
+      <a class="card" href="../?site=AC-0000&amp;only=s5" target="_blank" rel="noopener">
+        <span class="title">4日間天気予報</span>
+        <span class="meta">4面個別・今日から明々後日 / scene5</span>
+        <span class="open">確認画面を開く →</span>
+      </a>
+
+      <a class="card" href="../?site=AC-0000&amp;only=schedule" target="_blank" rel="noopener">
+        <span class="title">工程表</span>
+        <span class="meta">横スクロール / sceneSchedule</span>
+        <span class="open">確認画面を開く →</span>
+      </a>
+
+      <a class="card" href="../?site=AC-0000" target="_blank" rel="noopener">
+        <span class="title">全体ループ</span>
+        <span class="meta">全activeコンテンツ・防災割込みを含む</span>
+        <span class="open">AC-0000を開く →</span>
+      </a>
+    </section>
+
+    <footer>AC-0000は内部検証専用です。本番端末には登録しません。</footer>
+  </main>
+</body>
+</html>

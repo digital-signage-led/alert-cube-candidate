@@ -2562,6 +2562,13 @@
         });
     }
     function scene2ScrollMode_() {
+        const siteId = String((window.AlertCubeSite && window.AlertCubeSite.siteId) || siteCfg_().projectId || '');
+        const previewMode = String(query.get('observation') || '').toLowerCase();
+        const observationOnly = String(query.get('only') || '').toLowerCase() === 's2';
+        if (siteId === 'AC-0000' && observationOnly) {
+            if (previewMode === 'scroll') return true;
+            if (previewMode === 'fixed') return false;
+        }
         const cfg = (siteCfg_() && siteCfg_().presentation) || {};
         return cfg.observationMode === 'scroll';
     }

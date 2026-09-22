@@ -105,6 +105,10 @@ async function run() {
   var p0002;
   var pGust;
   var pScroll;
+  var p0000Fixed;
+  var p0000Scroll;
+  var p0001Override;
+  var pHub;
   try {
     pDefault = await openPage(browser, BASE + '/');
     p0001 = await openPage(browser, BASE + '/?site=AC-0001');
@@ -112,6 +116,11 @@ async function run() {
     p0002 = await openPage(browser, BASE + '/?site=AC-0002');
     pGust = await openPage(browser, BASE + '/?site=AC-0001&only=s2');
     pScroll = await openPage(browser, BASE + '/?site=AC-0002&only=s2');
+    p0000Fixed = await openPage(browser, BASE + '/?site=AC-0000&only=s2&observation=fixed');
+    p0000Scroll = await openPage(browser, BASE + '/?site=AC-0000&only=s2&observation=scroll');
+    p0001Override = await openPage(browser, BASE + '/?site=AC-0001&only=s2&observation=scroll');
+    pHub = await browser.newPage();
+    await pHub.goto(BASE + '/contents/', { waitUntil: 'domcontentloaded', timeout: 60000 });
 
     var mDef = await collectMetrics(pDefault);
     var m1 = await collectMetrics(p0001);
@@ -219,6 +228,40 @@ async function run() {
       assert.strictEqual(scroll.width, '2560px');
       ok('AC-0002 気象観測は9項目＋末尾ロゴを2周横スクロール');
     } catch (e) { ng('AC-0002 気象観測スクロール', e); }
+
+    try {
+      var previewModes = {
+        fixed: await p0000Fixed.evaluate(function () {
+          return document.querySelector('#scene2').classList.contains('scene2-scroll-mode');
+        }),
+        scroll: await p0000Scroll.evaluate(function () {
+          return {
+            mode: document.querySelector('#scene2').classList.contains('scene2-scroll-mode'),
+            types: window.buildScene2ScrollConveyor_()
+          };
+        }),
+        productionOverride: await p0001Override.evaluate(function () {
+          return document.querySelector('#scene2').classList.contains('scene2-scroll-mode');
+        })
+      };
+      assert.strictEqual(previewModes.fixed, false);
+      assert.strictEqual(previewModes.scroll.mode, true);
+      assert.deepStrictEqual(previewModes.scroll.types, ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin']);
+      assert.strictEqual(previewModes.productionOverride, false);
+      ok('AC-0000だけURLで気象観測の4面固定・横スクロールを切替');
+    } catch (e) { ng('AC-0000 気象観測バリアント', e); }
+
+    try {
+      var hub = await pHub.evaluate(function () {
+        return Array.from(document.querySelectorAll('a.card')).map(function (a) {
+          return a.getAttribute('href');
+        });
+      });
+      assert.strictEqual(hub.length, 8);
+      assert.ok(hub.some(function (href) { return href.indexOf('observation=fixed') >= 0; }));
+      assert.ok(hub.some(function (href) { return href.indexOf('observation=scroll') >= 0; }));
+      ok('V2.0コンテンツ一覧から各確認画面と2種類の気象観測を開ける');
+    } catch (e) { ng('コンテンツ一覧ページ', e); }
 
     try {
       var weatherV2 = await p0002.evaluate(function () {
