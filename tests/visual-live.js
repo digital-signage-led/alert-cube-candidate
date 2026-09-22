@@ -110,6 +110,7 @@ async function run() {
   var p0001Override;
   var pHub;
   var pForecastLive;
+  var pT3DarkText;
   try {
     pDefault = await openPage(browser, BASE + '/');
     p0001 = await openPage(browser, BASE + '/?site=AC-0001');
@@ -121,6 +122,7 @@ async function run() {
     p0000Scroll = await openPage(browser, BASE + '/?site=AC-0000&only=s2&observation=scroll');
     p0001Override = await openPage(browser, BASE + '/?site=AC-0001&only=s2&observation=scroll');
     pForecastLive = await openPage(browser, BASE + '/?site=AC-0000&only=s5&live=1');
+    pT3DarkText = await openPage(browser, BASE + '/?site=AC-0000&only=s3&level=3');
     pHub = await browser.newPage();
     await pHub.goto(BASE + '/contents/', { waitUntil: 'domcontentloaded', timeout: 60000 });
 
@@ -289,6 +291,37 @@ async function run() {
       await pForecastLive.screenshot({ path: path.join(outDir, 'local-AC-0000-forecast-live.png') });
       ok('4日予報は気象庁の最新値を日付順の4面固定で表示');
     } catch (e) { ng('4日予報の最新実データ表示', e); }
+
+    try {
+      var t3Colors = await pT3DarkText.evaluate(function () {
+        var label = document.querySelector('#scene3 .t3-lv-label');
+        var message = document.querySelector('#scene3 .t3-l2');
+        return {
+          label: label && getComputedStyle(label).color,
+          message: message && getComputedStyle(message).color
+        };
+      });
+      assert.strictEqual(t3Colors.label, 'rgb(0, 0, 0)');
+      assert.strictEqual(t3Colors.message, 'rgb(0, 0, 0)');
+      await p0000.evaluate(function () { showOnlyScene_(s3, playScene3); });
+      await new Promise(function (resolve) { setTimeout(resolve, 100); });
+      var t3LiveColors = await p0000.evaluate(function () {
+        var level = getSignageBgLevel_();
+        var label = document.querySelector('#scene3 .t3-lv-label');
+        var message = document.querySelector('#scene3 .t3-l2');
+        return {
+          level: level,
+          label: label && getComputedStyle(label).color,
+          message: message && getComputedStyle(message).color
+        };
+      });
+      if (t3LiveColors.level === 1 || t3LiveColors.level === 2) {
+        assert.strictEqual(t3LiveColors.label, 'rgb(0, 0, 0)');
+        assert.strictEqual(t3LiveColors.message, 'rgb(0, 0, 0)');
+      }
+      await p0000.screenshot({ path: path.join(outDir, 'local-AC-0000-wbgt-i18n.png') });
+      ok('多言語WBGTの注意・警戒背景では文字を黒で表示');
+    } catch (e) { ng('多言語WBGTの黒文字', e); }
 
     try {
       var weatherV2 = await p0002.evaluate(function () {

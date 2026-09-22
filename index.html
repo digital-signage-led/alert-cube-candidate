@@ -9464,6 +9464,12 @@
         applyDisplayRefreshAtSceneEntry_();
         buildTicker();
         applyPendingSignageBgAtScene_();
+        /* 非表示中にWBGT値が更新された場合も、シーン3の文字色を現在レベルへ必ず同期する。 */
+        if (typeof SignageBg !== 'undefined' && typeof SignageBg.refreshTicker === 'function') {
+            const t3Mode = getSignageDisplayMode_();
+            const t3Level = t3Mode === 'normal' ? getSignageBgLevel_() : -1;
+            SignageBg.refreshTicker(t3Level, t3Mode);
+        }
         t3Messages_ = getT3Messages_();
         buildT3GuideTrack();
         const guidTrack = document.getElementById('t3-guid-track');
