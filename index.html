@@ -6041,8 +6041,8 @@
     let scene1AdvanceToken = 0;
     let s1Flow_ = null;
     const SCENE2_FACE_COUNT = 4;
-    const SCENE2_TYPE_ORDER = ['weather', 'temp', 'wbgt', 'humi', 'rain', 'wdir', 'wind', 'pres', 'tmaxmin', 'gust'];
-    const SCENE2_SCROLL_ORDER = ['weather', 'temp', 'rain', 'wdir', 'wind', 'humi', 'pres', 'tmaxmin', 'gust'];
+    const SCENE2_TYPE_ORDER = ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin'];
+    const SCENE2_SCROLL_ORDER = ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin'];
     const SCENE2_PANEL_COUNT = SCENE2_FACE_COUNT;
     const SCENE2_LAPS = 1;
     const SCENE2_SCROLL_PX = 0.8;
@@ -8611,7 +8611,7 @@
         if (!s2) return;
         transitionToScene(s2, playScene2);
     }
-    /* シーン3（多言語WBGT）の後 → シーン1 */
+    /* 多言語WBGTの後 → 4日予報 */
     function gotoAfterScene3Tail_() {
         if (WBGT_ONLY) { finishMainLoopToS1_(); return; }
         if (wbgtNormalDisplay_() && heatAlertActive.length && sceneAlert) {
@@ -8622,7 +8622,7 @@
         gotoAfterRainWarnOrScene1_();
     }
     function gotoAfterScene3_() {
-        gotoAfterScene3Tail_();
+        transitionToScene(s5, playScene5);
     }
     /* 256×128スロット中央に収まるサイズ（256÷128=2 のパネル内で中央揃え） */
     function sizeHeatAlertText_() {
@@ -9570,13 +9570,13 @@
         if (!s4) { gotoSceneAfterScene4_(); return; }
         transitionToScene(s4, playScene4);
     }
-    /* シーン3（WBGT表示）の次はシーン4（4日予報） */
+    /* WBGTの次は多言語WBGT */
     function gotoSceneAfterScene4_() {
-        transitionToScene(s5, playScene5);
-    }
-    /* シーン4（4日予報）の次はシーン5（多言語WBGT）※工程表はループ先頭 */
-    function gotoSceneAfterScene5_() {
         gotoScene3OrAfter_();
+    }
+    /* 4日予報の後は防災割込を確認し、工程表またはループ先頭へ */
+    function gotoSceneAfterScene5_() {
+        gotoAfterScene3Tail_();
     }
     function isScheduleEnabled_() {
         const cfg = (siteCfg_() && siteCfg_().schedule) || {};

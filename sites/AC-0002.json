@@ -67,7 +67,7 @@
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },

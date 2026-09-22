@@ -204,6 +204,7 @@ test('AC-0002 はENEOS磯子の独立した本番案件設定', function () {
   assert.strictEqual(site.contents.schedule.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.presentation.observationMode, 'scroll');
+  assert.deepStrictEqual(site.contentOrder, ['clock', 'observation', 'wbgt', 'wbgt-i18n', 'forecast']);
 });
 
 test('AC-0000 は内部テスト・全共通Contents ON、未実装はOFF', function () {
@@ -231,6 +232,8 @@ test('AC-0000 は内部テスト・全共通Contents ON、未実装はOFF', func
   assert.strictEqual(prod.status, 'active');
   assert.strictEqual(prod.customer, 'デジタルサイネージ');
   assert.strictEqual(prod.location, '〒559-0066 大阪市住之江区新北島1-9-13');
+  assert.deepStrictEqual(site.contentOrder, ['clock', 'observation', 'wbgt', 'wbgt-i18n', 'forecast', 'schedule']);
+  assert.deepStrictEqual(prod.contentOrder, ['clock', 'observation', 'wbgt', 'wbgt-i18n', 'forecast', 'schedule']);
 });
 
 test('applyToGlobals: 既存 SignageConfig 参照を置き換えず中身を更新する', function () {

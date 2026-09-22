@@ -65,7 +65,7 @@
     "lines": ["工事期間中はご迷惑をおかけします", "安全第一で作業を進めてまいります"],
     "foot": "ご理解・ご協力をお願いいたします"
   },
-  "contentOrder": ["clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "schedule"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },

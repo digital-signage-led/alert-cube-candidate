@@ -212,7 +212,7 @@ async function run() {
           width: document.querySelector('#scene2 #conveyor').style.width
         };
       });
-      assert.deepStrictEqual(scroll.types, ['weather', 'temp', 'rain', 'wdir', 'wind', 'humi', 'pres', 'tmaxmin', 'gust']);
+      assert.deepStrictEqual(scroll.types, ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin']);
       assert.strictEqual(scroll.mode, true);
       assert.strictEqual(scroll.panels, 20);
       assert.strictEqual(scroll.logos, 2);

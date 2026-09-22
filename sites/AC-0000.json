@@ -65,7 +65,7 @@
     "lines": [],
     "foot": ""
   },
-  "contentOrder": ["clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "schedule"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },
