@@ -148,12 +148,12 @@ test('カレンダー: 夏はWBGT、冬は気温（API不明・未初期化時�
   }), core.TEMPERATURE_MODE);
 });
 
-test('防災取得失敗で誤解除しない', function () {
+test('防災取得失敗では古い発表を表示しない', function () {
   var prev = { status: 'ok', issued: true, items: [{ kind: 'rain' }], updatedAt: 1 };
   var next = core.mergeDisasterWatch(prev, { fetchOk: false });
-  assert.strictEqual(next.issued, true);
-  assert.strictEqual(next.held, true);
-  assert.strictEqual(next.items[0].kind, 'rain');
+  assert.strictEqual(next.issued, false);
+  assert.strictEqual(next.held, false);
+  assert.strictEqual(next.items.length, 0);
 });
 
 test('防災発表なし（正常）は表示しない', function () {

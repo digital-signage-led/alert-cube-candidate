@@ -221,6 +221,37 @@ async function run() {
     } catch (e) { ng('AC-0002 気象観測スクロール', e); }
 
     try {
+      var freshness = await p0002.evaluate(function () {
+        var oldAmedas = Date.now() - (31 * 60 * 1000);
+        var oldForecast = Date.now() - (15 * 60 * 60 * 1000);
+        lastAmedasObsTime = new Date(oldAmedas);
+        lastAmedasSnapshot_ = { time: new Date(oldAmedas).toISOString(), temp: 99 };
+        document.querySelectorAll('.temp-val').forEach(function (el) { el.textContent = '99'; });
+        lastForecastSuccessAtMs_ = oldForecast;
+        document.querySelectorAll('#scene5 .d5-temp').forEach(function (el) { el.textContent = '99'; });
+        rainNowcastAlert = {
+          level: 'approaching',
+          messageJp: '古い雨情報',
+          updatedAt: new Date(oldAmedas).toISOString()
+        };
+        expireStaleDisplayedData_();
+        return {
+          amedasTime: lastAmedasObsTime,
+          amedasText: document.querySelector('.temp-val').textContent,
+          forecastSuccessAt: lastForecastSuccessAtMs_,
+          forecastText: document.querySelector('#scene5 .d5-temp').textContent,
+          rainText: getRainAlertMessageJp()
+        };
+      });
+      assert.strictEqual(freshness.amedasTime, null);
+      assert.strictEqual(freshness.amedasText, '--');
+      assert.strictEqual(freshness.forecastSuccessAt, null);
+      assert.strictEqual(freshness.forecastText, '--');
+      assert.strictEqual(freshness.rainText, '');
+      ok('期限切れのAMeDAS・天気予報・雨雲情報を表示しない');
+    } catch (e) { ng('データ鮮度期限', e); }
+
+    try {
       await p0001.evaluate(function () { window.persistSignageStateCache_(); });
       await p0000.evaluate(function () { window.persistSignageStateCache_(); });
       await p0002.evaluate(function () { window.persistSignageStateCache_(); });

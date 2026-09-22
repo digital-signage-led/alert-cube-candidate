@@ -225,20 +225,16 @@
     return { ok: !!ok, reason: reason || (ok ? 'ok' : 'error') };
   }
 
-  /**
-   * 防災「発表なし」と「取得失敗」を分離する。
-   * 失敗時は lastIssued を消さない。
-   */
+  /** 防災「発表なし」と「取得失敗」を分離し、失敗時は古い発表を表示しない。 */
   function mergeDisasterWatch(prev, next) {
-    var prevState = prev || { status: 'unknown', issued: false, items: [], updatedAt: 0 };
     if (!next || next.fetchOk === false) {
       return {
         status: 'error',
-        issued: !!prevState.issued,
-        items: prevState.items || [],
-        updatedAt: prevState.updatedAt || 0,
+        issued: false,
+        items: [],
+        updatedAt: 0,
         errorAt: Date.now(),
-        held: true
+        held: false
       };
     }
     var items = Array.isArray(next.items) ? next.items : [];

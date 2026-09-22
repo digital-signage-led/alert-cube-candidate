@@ -2881,7 +2881,10 @@
             .map(function (part) { return String(part).replace(/[^A-Za-z0-9_-]/g, '_'); })
             .join('_');
     }
-    const SIGNAGE_STATE_CACHE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+    const AMEDAS_MAX_AGE_MS = 30 * 60 * 1000;
+    const WBGT_MAX_AGE_MS = 45 * 60 * 1000;
+    const FORECAST_MAX_AGE_MS = 14 * 60 * 60 * 1000;
+    const SIGNAGE_STATE_CACHE_MAX_AGE_MS = 30 * 60 * 1000;
     const MOE_GAS_FETCH_TIMEOUT_MS = 12000;
     const MOE_JSONP_TIMEOUT_MS = 10000;
     /* 環境省WBGTの提供期間外（冬季など）は true。WBGT表示を全て隠す */
@@ -2891,6 +2894,8 @@
     const WBGT_UNAVAILABLE_GRACE_MS = 60000;
     let wbgtFailSinceMs_ = null;
     let lastGoodWbgtSlots_ = null;
+    let lastWbgtSuccessAtMs_ = null;
+    let lastForecastSuccessAtMs_ = null;
     let wbgtUnavailableTimerId_ = null;
 
     const multi = [
@@ -3209,6 +3214,45 @@
         if (snap.weatherCode) lastForecastWeatherCode_ = snap.weatherCode;
         applyJmaAmedasToDom(obs, when && !isNaN(when.getTime()) ? when : null);
     }
+    function clearStaleAmedasDisplay_() {
+        lastAmedasSnapshot_ = null;
+        lastAmedasObsTime = null;
+        setTextAll('.temp-val, .humi-val, .rain-val, .pres-val, .wind-val, .gust-val', '--');
+        setTextAll('.dir-val', '--');
+        setTextAll('.tmaxmax-val, .tmin-val', '--');
+        console.warn('[鮮度] AMeDAS表示を期限切れのため消去');
+    }
+    function clearStaleForecastDisplay_() {
+        lastForecastSuccessAtMs_ = null;
+        lastForecastWeatherCode_ = null;
+        lastJmaForecastByYmd_ = {};
+        document.querySelectorAll('#scene5 .d5-temp').forEach(function (el) { el.textContent = '--'; });
+        document.querySelectorAll('#scene5 .d5-foot-min').forEach(function (el) { el.textContent = '--℃'; });
+        document.querySelectorAll('#scene5 .d5-foot-pop').forEach(function (el) { el.textContent = '--%'; });
+        document.querySelectorAll('#scene5 img.weather-icon-img').forEach(function (el) { el.style.visibility = 'hidden'; });
+        console.warn('[鮮度] 天気予報表示を期限切れのため消去');
+    }
+    function expireStaleDisplayedData_() {
+        const now = getNowMs();
+        if (lastAmedasObsTime && now - lastAmedasObsTime.getTime() > AMEDAS_MAX_AGE_MS) {
+            clearStaleAmedasDisplay_();
+        }
+        if (lastForecastSuccessAtMs_ && now - lastForecastSuccessAtMs_ > FORECAST_MAX_AGE_MS) {
+            clearStaleForecastDisplay_();
+        }
+        if (!wbgtOffSeason && lastWbgtSuccessAtMs_ && now - lastWbgtSuccessAtMs_ > WBGT_MAX_AGE_MS) {
+            lastGoodWbgtSlots_ = null;
+            lastWbgtSlots = null;
+            currentWbgtLevel = -1;
+            wbgtFailSinceMs_ = now - WBGT_UNAVAILABLE_GRACE_MS;
+            applyWbgtUnavailableToDom_();
+        }
+        const rainUpdated = rainNowcastAlert && rainNowcastAlert.updatedAt
+            ? Date.parse(rainNowcastAlert.updatedAt) : NaN;
+        if (Number.isFinite(rainUpdated) && now - rainUpdated > RAIN_NOWC_MAX_AGE_MS) {
+            rainNowcastAlert = { level: 'none', messageJp: '', leadMin: null, updatedAt: null, stale: true };
+        }
+    }
     function persistSignageStateCache_() {
         if (DEMO_SIGNAGE_ACTIVE) return;
         try {
@@ -3217,6 +3261,7 @@
                 projectId: (window.AlertCubeSite && window.AlertCubeSite.siteId) || siteCfg_().projectId || '',
                 point: MOE_WBGT_POINT,
                 savedAt: Date.now(),
+                wbgtFetchedAt: lastWbgtSuccessAtMs_,
                 wbgtOffSeason: !!wbgtOffSeason,
                 slots: lastGoodWbgtSlots_,
                 level: currentWbgtLevel,
@@ -3234,24 +3279,32 @@
             if (!data || String(data.projectId || '') !== String(currentProjectId)) return false;
             if (!data || String(data.point) !== String(MOE_WBGT_POINT)) return false;
             if (Date.now() - (data.savedAt || 0) > SIGNAGE_STATE_CACHE_MAX_AGE_MS) return false;
-            if (data.wbgtOffSeason) {
+            const now = Date.now();
+            const wbgtFetchedAt = Number(data.wbgtFetchedAt || data.savedAt || 0);
+            const wbgtFresh = wbgtFetchedAt > 0 && now - wbgtFetchedAt <= WBGT_MAX_AGE_MS;
+            const amedasAt = data.amedas && data.amedas.time ? Date.parse(data.amedas.time) : NaN;
+            const amedasFresh = Number.isFinite(amedasAt) && now - amedasAt <= AMEDAS_MAX_AGE_MS;
+            if (data.wbgtOffSeason && wbgtFresh) {
                 wbgtOffSeason = true;
                 wbgtUnavailable = false;
                 currentWbgtLevel = -1;
+                if (amedasFresh) applyAmedasSnapshot_(data.amedas);
                 return true;
             }
-            if (data.slots && hasFull4Slots(data.slots)) {
+            if (wbgtFresh && data.slots && hasFull4Slots(data.slots)) {
                 lastGoodWbgtSlots_ = cloneWbgtSlots_(data.slots);
                 lastWbgtSlots = lastGoodWbgtSlots_;
+                lastWbgtSuccessAtMs_ = wbgtFetchedAt;
                 wbgtOffSeason = false;
                 wbgtUnavailable = false;
                 syncWbgtLevelFromSlots(lastGoodWbgtSlots_);
                 syncWbgtSlotsToDomIfReady_();
-            } else if (Number.isInteger(data.level) && data.level >= 0) {
+            } else if (wbgtFresh && Number.isInteger(data.level) && data.level >= 0) {
+                lastWbgtSuccessAtMs_ = wbgtFetchedAt;
                 currentWbgtLevel = data.level;
             }
-            if (data.amedas) applyAmedasSnapshot_(data.amedas);
-            return !!(data.slots || data.wbgtOffSeason || Number.isInteger(data.level));
+            if (amedasFresh) applyAmedasSnapshot_(data.amedas);
+            return !!((wbgtFresh && (data.slots || data.wbgtOffSeason || Number.isInteger(data.level))) || amedasFresh);
         } catch (_) { return false; }
     }
 
@@ -4338,18 +4391,13 @@
             const list = JSON.parse(await listRes.text());
             const targets = Array.isArray(list) ? list : (list && list.tropicalCyclone ? [list] : []);
             if (!targets.length) {
-                if (typhoonMapModels_.length && typhoonMapModels_[0] !== DEMO_TYPHOON_MAP_) {
-                    console.log('[台風] 発表なし。直前の実況を維持');
-                    return;
-                }
                 typhoonMapModels_ = [];
+                typhoonMapModel_ = null;
+                setTyphoonSlides_([]);
                 if (typhoonForced || DEMO_TYPHOON_ONLY) {
                     typhoonMapModels_ = [DEMO_TYPHOON_MAP_];
                     typhoonMapModel_ = DEMO_TYPHOON_MAP_;
                     setTyphoonSlides_(DEMO_TYPHOON_SLIDES_);
-                } else {
-                    typhoonMapModel_ = null;
-                    setTyphoonSlides_([]);
                 }
                 console.log('[台風] 発表なし');
                 return;
@@ -4441,7 +4489,9 @@
             console.log('[台風] 地図', typhoonMapModels_.length, '件 / スライド', typhoonSlidesActive.length, '件');
         } catch (e) {
             console.warn('[台風] 取得失敗:', e && e.message ? e.message : e);
-            if (typhoonMapModels_.length && typhoonMapModels_[0] !== DEMO_TYPHOON_MAP_) return;
+            typhoonMapModels_ = [];
+            typhoonMapModel_ = null;
+            setTyphoonSlides_([]);
             if (typhoonForced || DEMO_TYPHOON_ONLY) {
                 typhoonMapModels_ = [DEMO_TYPHOON_MAP_];
                 typhoonMapModel_ = DEMO_TYPHOON_MAP_;
@@ -6660,6 +6710,7 @@
     function noteWbgtFetchSuccess_(slots) {
         clearWbgtUnavailableGrace_();
         lastGoodWbgtSlots_ = cloneWbgtSlots_(slots);
+        lastWbgtSuccessAtMs_ = getNowMs();
         wbgtUnavailable = false;
         persistSignageStateCache_();
     }
@@ -6672,6 +6723,13 @@
     /** 直前の成功値があれば灰色・取得不可にせず表示を維持する */
     function keepLastGoodWbgtDisplay_(reason) {
         if (!(lastGoodWbgtSlots_ && hasFull4Slots(lastGoodWbgtSlots_))) return false;
+        if (!lastWbgtSuccessAtMs_ || getNowMs() - lastWbgtSuccessAtMs_ > WBGT_MAX_AGE_MS) {
+            lastGoodWbgtSlots_ = null;
+            lastWbgtSlots = null;
+            currentWbgtLevel = -1;
+            console.warn('[WBGT] 直前値が有効期限を超えたため破棄');
+            return false;
+        }
         wbgtUnavailable = false;
         syncWbgtLevelFromSlots(lastGoodWbgtSlots_);
         updateForecastSlotsIfAllowed_(lastGoodWbgtSlots_);
@@ -6740,10 +6798,9 @@
     /* 提供期間外: WBGTレベルを無効化し、WBGT表示を全て隠す（該当シーンはループでスキップ） */
     function applyWbgtOffSeason_() {
         /* 直前の実測がある間は提供期間外の灰色へ落とさない（誤検知・欠測の一時応答対策） */
-        if (lastGoodWbgtSlots_ && hasFull4Slots(lastGoodWbgtSlots_)) {
+        if (lastGoodWbgtSlots_ && hasFull4Slots(lastGoodWbgtSlots_) && keepLastGoodWbgtDisplay_('off-season応答')) {
             console.warn('[WBGT] off-season応答だが直前値があるため維持');
             applyWbgtInSeason_();
-            keepLastGoodWbgtDisplay_('off-season応答');
             return;
         }
         wbgtOffSeason = true;
@@ -6907,35 +6964,53 @@
         if (plan.jma) {
             jobs.push((async function () {
                 const s = performance.now();
+                let localOk = true;
+                let live = { todayMaxTemp: null };
                 try {
-                    const tasks = [fetchJmaAmedasObservation_()];
-                    if (plan.forecast) tasks.push(fetchJmaForecast_());
-                    const results = await Promise.all(tasks);
-                    const { latest, obs } = results[0];
+                    const amedas = await fetchJmaAmedasObservation_();
+                    const { latest, obs } = amedas;
                     if (timeSync.baseUtcMs == null) applySyncedUtcMs(Date.now(), 'local-fallback');
-                    const live = applyJmaAmedasToDom(obs, latest);
-                    if (plan.forecast && results[1]) {
-                        applyJmaDailyForecastToDom(results[1], live.todayMaxTemp);
-                    }
+                    live = applyJmaAmedasToDom(obs, latest);
                     compactScene2Panels();
                     queueDisplayRefresh_();
-                    if (contentOn_('warning') || contentOn_('disaster') || contentOn_('rain-nowcast')) {
-                        const sWarn = performance.now();
-                        await updateRainWarnFromGas_();
-                        timings['大雨警報'] = Math.round(performance.now() - sWarn);
-                    }
-                    if (contentOn_('typhoon')) {
-                        const sTy = performance.now();
-                        await updateTyphoonFromJma_();
-                        timings['台風'] = Math.round(performance.now() - sTy);
-                    }
-                    jmaOk = true;
                 } catch (error) {
-                    console.error('JMA fetch error:', error);
-                    jmaOk = false;
-                } finally {
-                    timings['気象庁'] = Math.round(performance.now() - s);
+                    console.error('JMA AMeDAS fetch error:', error);
+                    localOk = false;
+                    expireStaleDisplayedData_();
                 }
+                if (plan.forecast) {
+                    try {
+                        const forecast = await fetchJmaForecast_();
+                        applyJmaDailyForecastToDom(forecast, live.todayMaxTemp);
+                    } catch (error) {
+                        console.error('JMA forecast fetch error:', error);
+                        localOk = false;
+                        expireStaleDisplayedData_();
+                    }
+                }
+                if (contentOn_('warning') || contentOn_('disaster') || contentOn_('rain-nowcast')) {
+                    const sWarn = performance.now();
+                    try {
+                        await updateRainWarnFromGas_();
+                    } catch (error) {
+                        console.error('JMA warning fetch error:', error);
+                        applyRainWarnLevel_('none');
+                        localOk = false;
+                    }
+                    timings['大雨警報'] = Math.round(performance.now() - sWarn);
+                }
+                if (contentOn_('typhoon')) {
+                    const sTy = performance.now();
+                    try {
+                        await updateTyphoonFromJma_();
+                    } catch (error) {
+                        console.error('JMA typhoon fetch error:', error);
+                        localOk = false;
+                    }
+                    timings['台風'] = Math.round(performance.now() - sTy);
+                }
+                jmaOk = localOk;
+                timings['気象庁'] = Math.round(performance.now() - s);
             })());
         }
         await Promise.all(jobs);
@@ -6943,6 +7018,7 @@
         const tag = (plan.labels || []).join(', ');
         const deferNote = shouldDeferDisplayRefresh_() ? ' · ループ中のため表示組み替えは保留' : '';
         console.log('[取得] ' + tag + ' 合計 ' + total + 'ms', timings, deferNote.trim());
+        expireStaleDisplayedData_();
         queueDisplayRefresh_();
         if (!shouldDeferDisplayRefresh_()) flushDisplayRefresh_(false);
         lastFetchFail = (plan.jma && !jmaOk) || (plan.moe && !moeOk);
@@ -7244,6 +7320,7 @@
             img.decoding = 'async';
             cell.appendChild(img);
         }
+        img.style.visibility = 'visible';
         cell.querySelectorAll('svg.weather-svg').forEach(function (svg) { svg.remove(); });
         const url = resolveJmaWeatherIconUrl_(code);
         const fallback = jmaTelopsIconUrl_('100');
@@ -7398,6 +7475,9 @@
     }
     async function fetchJmaAmedasObservation_() {
         const latest = await fetchJmaLatestTime_();
+        if (getNowMs() - latest.getTime() > AMEDAS_MAX_AGE_MS) {
+            throw new Error('JMA AMeDAS stale ' + latest.toISOString());
+        }
         const fmt = new Intl.DateTimeFormat('en-CA', {
             timeZone: CLOCK_TZ, year: 'numeric', month: '2-digit', day: '2-digit',
             hour: '2-digit', minute: '2-digit', hour12: false
@@ -7437,7 +7517,12 @@
     async function fetchJmaForecast_() {
         const res = await fetch(JMA_FORECAST_URL, JMA_FETCH_HEADERS);
         if (!res.ok) throw new Error('JMA forecast HTTP ' + res.status);
-        return res.json();
+        const json = await res.json();
+        const issued = json && json[0] && json[0].reportDatetime ? Date.parse(json[0].reportDatetime) : NaN;
+        if (Number.isFinite(issued) && getNowMs() - issued > FORECAST_MAX_AGE_MS) {
+            throw new Error('JMA forecast stale ' + json[0].reportDatetime);
+        }
+        return json;
     }
     function d5DateLabel_(dayOffset) {
         const now = jstPartsFromMs(getNowMs());
@@ -7636,6 +7721,7 @@
     }
     function applyJmaDailyForecastToDom(forecastJson, todayMaxTemp) {
         const days = extractJmaDailyForecastDays_(forecastJson);
+        lastForecastSuccessAtMs_ = getNowMs();
         lastJmaForecastByYmd_ = {};
         days.forEach(function (row) {
             if (row && row.ymd) lastJmaForecastByYmd_[row.ymd] = row;
@@ -8195,6 +8281,9 @@
             if (!getActiveScene()) flushDisplayRefresh_();
         } catch (e) {
             console.warn('[雨雲] ナウキャスト取得失敗:', e.message || e);
+            rainNowcastAlert = { level: 'none', messageJp: '', leadMin: null, updatedAt: null, stale: true };
+            queueDisplayRefresh_();
+            queueOrRefreshS1FootBar_();
         }
     }
     function getRainAlertMessageJp() {
