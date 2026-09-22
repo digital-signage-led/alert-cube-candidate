@@ -109,6 +109,7 @@ async function run() {
   var p0000Scroll;
   var p0001Override;
   var pHub;
+  var pForecastLive;
   try {
     pDefault = await openPage(browser, BASE + '/');
     p0001 = await openPage(browser, BASE + '/?site=AC-0001');
@@ -119,6 +120,7 @@ async function run() {
     p0000Fixed = await openPage(browser, BASE + '/?site=AC-0000&only=s2&observation=fixed');
     p0000Scroll = await openPage(browser, BASE + '/?site=AC-0000&only=s2&observation=scroll');
     p0001Override = await openPage(browser, BASE + '/?site=AC-0001&only=s2&observation=scroll');
+    pForecastLive = await openPage(browser, BASE + '/?site=AC-0000&only=s5&live=1');
     pHub = await browser.newPage();
     await pHub.goto(BASE + '/contents/', { waitUntil: 'domcontentloaded', timeout: 60000 });
 
@@ -260,8 +262,30 @@ async function run() {
       assert.strictEqual(hub.length, 8);
       assert.ok(hub.some(function (href) { return href.indexOf('observation=fixed') >= 0; }));
       assert.ok(hub.some(function (href) { return href.indexOf('observation=scroll') >= 0; }));
+      assert.ok(hub.some(function (href) { return href.indexOf('only=s5&live=1') >= 0; }));
       ok('V2.0コンテンツ一覧から各確認画面と2種類の気象観測を開ける');
     } catch (e) { ng('コンテンツ一覧ページ', e); }
+
+    try {
+      await pForecastLive.waitForFunction(function () {
+        return document.querySelector('#scene5').style.display !== 'none'
+          && document.querySelector('#d5-conveyor').style.transform === 'translateX(0px)'
+          && Array.from(document.querySelectorAll('#scene5 .d5-temp')).slice(0, 4)
+            .every(function (el) { return el.textContent.trim() !== '--'; });
+      }, { timeout: 30000 });
+      var forecastLive = await pForecastLive.evaluate(function () {
+        return {
+          labels: Array.from(document.querySelectorAll('#scene5 .d5-panel')).slice(0, 4)
+            .map(function (panel) { return panel.querySelector('.s2-bar-label').textContent; }),
+          expected: [0, 1, 2, 3].map(function (day) { return d5DateLabel_(day); }),
+          transform: document.querySelector('#d5-conveyor').style.transform
+        };
+      });
+      assert.deepStrictEqual(forecastLive.labels, forecastLive.expected);
+      assert.strictEqual(forecastLive.transform, 'translateX(0px)');
+      await pForecastLive.screenshot({ path: path.join(outDir, 'local-AC-0000-forecast-live.png') });
+      ok('4日予報は気象庁の最新値を日付順の4面固定で表示');
+    } catch (e) { ng('4日予報の最新実データ表示', e); }
 
     try {
       var weatherV2 = await p0002.evaluate(function () {

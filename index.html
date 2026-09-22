@@ -2613,6 +2613,7 @@
         alert: '熱中症アラート', rainwarn: '大雨警報', typhoon: '防災情報・台風'
     };
     const DEMO_ONLY = normalizeOnlyParam_(query.get('only'));
+    const ONLY_LIVE_DATA = !!DEMO_ONLY && query.get('live') === '1';
     const DEMO_EMBED = query.get('embed') === '1';  /* 確認ボード iframe 用（バッジ非表示） */
     /* 640×128 ネイティブ: embed / native640=1 / フルデモ順送り */
     const NATIVE_640 = query.get('native640') === '1' || DEMO_EMBED
@@ -6082,6 +6083,7 @@
     const SCENE5_SCROLL_PX = 0.8;
     let scene5SetWidth = SCENE5_PANEL_COUNT * 128;
     let scene5AnimId = null;
+    let scene5HoldTimerId = null;
     const SCENE_SCHEDULE_PANEL_COUNT = 4;
     const SCENE_SCHEDULE_LAPS = 2;
     let sceneScheduleSetWidth = SCENE_SCHEDULE_PANEL_COUNT * 128;
@@ -6205,6 +6207,7 @@
         clearScene2TypeTimer_();
         clearScene4Timers();
         if (scene5AnimId) { cancelAnimationFrame(scene5AnimId); scene5AnimId = null; }
+        if (scene5HoldTimerId) { clearTimeout(scene5HoldTimerId); scene5HoldTimerId = null; }
         if (sceneScheduleAnimId) { cancelAnimationFrame(sceneScheduleAnimId); sceneScheduleAnimId = null; }
         if (sceneScheduleHoldTimerId) { clearTimeout(sceneScheduleHoldTimerId); sceneScheduleHoldTimerId = null; }
         clearGreetingHoldTimer_();
@@ -9742,6 +9745,7 @@
         }
         if (!s5 || !d5Conveyor) { gotoSceneAfterScene5_(); return; }
         if (scene5AnimId) cancelAnimationFrame(scene5AnimId);
+        if (scene5HoldTimerId) clearTimeout(scene5HoldTimerId);
         applyDisplayRefreshAtSceneEntry_();
         compactScene5Panels();
         fitD5PanelText_();
@@ -9753,30 +9757,16 @@
             scheduleDemoStep_(gotoSceneAfterScene5_);
             return;
         }
-        const scene5ScrollTotal = scene5SetWidth * SCENE5_LAPS;
-        if (!scene5SetWidth || scene5SetWidth <= 0) {
-            gotoSceneAfterScene5_();
-            return;
-        }
-        let totalScrolled = 0;
-        applyGlobalScroll_(d5Conveyor, scene5SetWidth);
+        /* 4日分は512pxに収まるため、日付順を崩さず4面固定で表示する。 */
+        globalScrollX = 0;
+        d5Conveyor.style.transform = 'translateX(0px)';
         d5Conveyor.style.transition = 'none';
-        function animateScene5() {
-            advanceGlobalScroll_(getScrollSpeedPx_());
-            totalScrolled += getScrollSpeedPx_();
-            applyGlobalScroll_(d5Conveyor, scene5SetWidth);
-            if (totalScrolled >= scene5ScrollTotal) {
-                scene5AnimId = null;
-                stopLogoSpinInterval();
-                if (demoOnlyLoop_('s5', playScene5)) return;
-                runAfterSceneEndHold_(gotoSceneAfterScene5_);
-                return;
-            }
-            scene5AnimId = requestAnimationFrame(animateScene5);
-        }
-        runSceneScrollAfterHold_(function () {
-            scene5AnimId = requestAnimationFrame(animateScene5);
-        });
+        scene5HoldTimerId = setTimeout(function () {
+            scene5HoldTimerId = null;
+            stopLogoSpinInterval();
+            if (demoOnlyLoop_('s5', playScene5)) return;
+            runAfterSceneEndHold_(gotoSceneAfterScene5_);
+        }, contentDurationMs_('forecast', 12000));
     }
 
     /* ===== 工程表 / 近隣挨拶 ===== */
@@ -10350,10 +10340,12 @@
         }
     }
     function startSingleSceneDemo_() {
-        try { applyReviewEnv_(); } catch (err) { console.warn('[only-scene] review', err); }
+        if (!ONLY_LIVE_DATA) {
+            try { applyReviewEnv_(); } catch (err) { console.warn('[only-scene] review', err); }
+        }
         const badge = document.getElementById('demo-badge');
         const onlyLabels = SCENE_LABEL_BY_KEY;
-        if (badge && shouldShowDemoBadge_()) {
+        if (badge && shouldShowDemoBadge_() && !ONLY_LIVE_DATA) {
             badge.hidden = false;
             badge.textContent = '確認 · ' + (onlyLabels[DEMO_ONLY] || DEMO_ONLY);
         } else if (badge) {
@@ -10475,6 +10467,30 @@
             setInterval(function () {
                 syncTimeFromNetwork().then(function () { updateClock(); }).catch(function () {});
             }, CLOCK_SYNC_INTERVAL_MS);
+            if (ONLY_LIVE_DATA) {
+                try {
+                    if (DEMO_ONLY === 's2') {
+                        const amedas = await fetchJmaAmedasObservation_();
+                        const live = applyJmaAmedasToDom(amedas.obs, amedas.latest);
+                        const forecast = await fetchJmaForecast_();
+                        applyJmaDailyForecastToDom(forecast, live.todayMaxTemp);
+                    } else if (DEMO_ONLY === 's5') {
+                        const forecast = await fetchJmaForecast_();
+                        applyJmaDailyForecastToDom(forecast, null);
+                    } else if (DEMO_ONLY === 's1' || DEMO_ONLY === 's3' || DEMO_ONLY === 's4') {
+                        const slots = await fetchWbgtFromMoeApi();
+                        applyWbgtSlotsToDom(slots);
+                    }
+                } catch (e) {
+                    console.warn('[only-scene] live fetch', e && e.message ? e.message : e);
+                }
+                scheduleDataRefresh();
+                startSingleSceneDemo_();
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('./sw.js?v=20260921-suminoe').catch(function () {});
+                }
+                return;
+            }
             if (DEMO_ONLY !== 'schedule') applyDemoWeatherStatic();
             if (DEMO_PREVIEW === 's1' || DEMO_PREVIEW === 's3') {
                 startPreviewDemo_(DEMO_PREVIEW);
