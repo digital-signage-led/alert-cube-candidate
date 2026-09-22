@@ -41,13 +41,13 @@ test('既存コア: WBGT本番色は維持（プロンプト色へ置換しな�
   assert.strictEqual(core.wbgtBand(32).bg, '#ED1A3D');
 });
 
-test('天気コード: V2共通アイコンへ解決', function () {
+test('天気コード: 気象庁公式アイコンへ解決', function () {
   assert.strictEqual(icons.resolveFile('100').file, '100');
   assert.strictEqual(icons.resolveFile('414').file, '414');
   assert.strictEqual(icons.resolveFile(101).unknown, false);
 });
 
-test('天気コード: 別名はV2アイコンへ寄せる', function () {
+test('天気コード: 別名は気象庁公式アイコンへ寄せる', function () {
   assert.strictEqual(icons.resolveFile('103').file, '102');
   assert.strictEqual(icons.resolveFile('450').file, '400');
 });
@@ -56,8 +56,7 @@ test('天気コード: 未知でも停止せず fallback 100', function () {
   var r = icons.resolveFile('999');
   assert.strictEqual(r.file, '100');
   assert.strictEqual(r.unknown, true);
-  assert.strictEqual(icons.kind('not-a-code'), 'clear');
-  assert.strictEqual(icons.href('not-a-code').indexOf('data:image/svg+xml') === 0, true);
+  assert.strictEqual(icons.href('not-a-code'), 'https://www.jma.go.jp/bosai/forecast/img/100.svg');
 });
 
 test('案件ID: 空は AC-0001、不正は fallback', function () {

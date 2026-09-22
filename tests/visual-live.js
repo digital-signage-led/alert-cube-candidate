@@ -228,16 +228,14 @@ async function run() {
         return {
           src: img && img.src,
           visibility: img && getComputedStyle(img).visibility,
-          backing: cell && getComputedStyle(cell, '::before').content,
-          kind: window.AlertCubeWeatherIcons.kind('200')
+          backing: cell && getComputedStyle(cell, '::before').content
         };
       });
-      assert.ok(weatherV2.src.indexOf('data:image/svg+xml') === 0);
+      assert.strictEqual(weatherV2.src, 'https://www.jma.go.jp/bosai/forecast/img/200.svg');
       assert.strictEqual(weatherV2.visibility, 'visible');
       assert.ok(weatherV2.backing === 'none' || weatherV2.backing === 'normal');
-      assert.strictEqual(weatherV2.kind, 'cloud');
-      ok('気象庁コードをV2新アイコンで表示し、旧SVG・白丸背景を使わない');
-    } catch (e) { ng('V2天気アイコン', e); }
+      ok('V2.0は気象庁公式アイコンを表示し、独自アイコン・白丸背景を使わない');
+    } catch (e) { ng('気象庁公式天気アイコン', e); }
 
     try {
       var freshness = await p0002.evaluate(function () {
