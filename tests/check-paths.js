@@ -26,8 +26,6 @@ var paths = [
   '/styles/color-hero.css',
   '/styles/fonts.css',
   '/images/logo.svg',
-  '/images/jma-icons/100.svg',
-  '/images/jma-icons/414.svg',
   '/safety/version.js',
   '/core/foundation.js',
   '/contents/registry.js',

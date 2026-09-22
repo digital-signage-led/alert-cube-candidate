@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260922-freshness1';
+var CACHE_NAME = 'alert-cube-sites-20260922-weather-v2';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -26,37 +26,7 @@ var PRECACHE = [
   './sites/AC-0002.json',
   './sites/AC-0000.json',
   './assets/sites/AC-0002/eneos_logo.gif?v=20260921-ac0002-user1',
-  './assets/sites/AC-0002/eneos_lockup.png?v=20260921-ac0002-user1',
-  './images/jma-icons/100.svg',
-  './images/jma-icons/101.svg',
-  './images/jma-icons/102.svg',
-  './images/jma-icons/104.svg',
-  './images/jma-icons/110.svg',
-  './images/jma-icons/112.svg',
-  './images/jma-icons/115.svg',
-  './images/jma-icons/200.svg',
-  './images/jma-icons/201.svg',
-  './images/jma-icons/202.svg',
-  './images/jma-icons/204.svg',
-  './images/jma-icons/210.svg',
-  './images/jma-icons/212.svg',
-  './images/jma-icons/215.svg',
-  './images/jma-icons/300.svg',
-  './images/jma-icons/301.svg',
-  './images/jma-icons/302.svg',
-  './images/jma-icons/303.svg',
-  './images/jma-icons/308.svg',
-  './images/jma-icons/311.svg',
-  './images/jma-icons/313.svg',
-  './images/jma-icons/314.svg',
-  './images/jma-icons/400.svg',
-  './images/jma-icons/401.svg',
-  './images/jma-icons/402.svg',
-  './images/jma-icons/403.svg',
-  './images/jma-icons/406.svg',
-  './images/jma-icons/411.svg',
-  './images/jma-icons/413.svg',
-  './images/jma-icons/414.svg'
+  './assets/sites/AC-0002/eneos_lockup.png?v=20260921-ac0002-user1'
 ];
 
 self.addEventListener('install', function (event) {

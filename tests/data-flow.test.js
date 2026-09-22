@@ -46,15 +46,17 @@ function fetchJson(url, ms) {
 }
 
 function iconFilesExist() {
-  var dir = path.join(__dirname, '..', 'images', 'jma-icons');
-  Object.keys(icons.PRESENT_FILES).forEach(function (code) {
-    var p = path.join(dir, code + '.svg');
-    assert.ok(fs.existsSync(p), 'missing ' + code + '.svg');
-  });
   Object.keys(icons.ALIAS).forEach(function (code) {
     var mapped = icons.ALIAS[code];
-    assert.ok(icons.PRESENT_FILES[mapped], 'alias ' + code + ' -> missing file ' + mapped);
+    assert.ok(icons.PRESENT_FILES[mapped], 'alias ' + code + ' -> missing V2 mapping ' + mapped);
   });
+  Object.keys(icons.PRESENT_FILES).forEach(function (code) {
+    assert.ok(/^data:image\/svg\+xml/.test(icons.href(code, false)), 'missing V2 SVG ' + code);
+  });
+  assert.strictEqual(icons.kind('100'), 'clear');
+  assert.strictEqual(icons.kind('200'), 'cloud');
+  assert.strictEqual(icons.kind('300'), 'rain');
+  assert.strictEqual(icons.kind('400'), 'snow');
 }
 
 function lastGoodMatchesAc0001() {
@@ -93,7 +95,7 @@ function gasUrl(site, extra) {
 }
 
 async function run() {
-  await test('Weather Icon: 実在SVGとALIASに欠落なし', function () {
+  await test('Weather Icon: 旧SVGを使わずV2アイコンとALIASに欠落なし', function () {
     iconFilesExist();
     assert.strictEqual(icons.resolveFile('999').file, '100');
     assert.strictEqual(icons.resolveFile('103').file, '102');

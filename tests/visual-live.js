@@ -221,6 +221,25 @@ async function run() {
     } catch (e) { ng('AC-0002 気象観測スクロール', e); }
 
     try {
+      var weatherV2 = await p0002.evaluate(function () {
+        applyD5WeatherIcon_(0, '200');
+        var cell = document.querySelector('#scene5 .d5-day-0 .weather-icon-cell');
+        var img = cell && cell.querySelector('img.weather-icon-img');
+        return {
+          src: img && img.src,
+          visibility: img && getComputedStyle(img).visibility,
+          backing: cell && getComputedStyle(cell, '::before').content,
+          kind: window.AlertCubeWeatherIcons.kind('200')
+        };
+      });
+      assert.ok(weatherV2.src.indexOf('data:image/svg+xml') === 0);
+      assert.strictEqual(weatherV2.visibility, 'visible');
+      assert.ok(weatherV2.backing === 'none' || weatherV2.backing === 'normal');
+      assert.strictEqual(weatherV2.kind, 'cloud');
+      ok('気象庁コードをV2新アイコンで表示し、旧SVG・白丸背景を使わない');
+    } catch (e) { ng('V2天気アイコン', e); }
+
+    try {
       var freshness = await p0002.evaluate(function () {
         var oldAmedas = Date.now() - (31 * 60 * 1000);
         var oldForecast = Date.now() - (15 * 60 * 60 * 1000);
