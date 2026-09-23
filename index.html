@@ -935,9 +935,9 @@
             background: #ffffff; flex-shrink: 0;
         }
         /* シーン5: 時刻と同型 上32 + 中72 + 下24（列内フッタ） */
-        #scene5 .d5-panel .s2-top-bar { height: 32px; flex-shrink: 0; }
-        #scene5 .d5-panel .s2-body { height: var(--led-col-body-h); flex-shrink: 0; max-width: 128px; }
-        #scene5 .d5-panel .s2-foot { height: var(--led-foot-bar-h); flex-shrink: 0; background: var(--led-foot-bar-bg); }
+        #scene5 .d5-panel .s2-top-bar { height: 32px; flex-shrink: 0; z-index: 1; }
+        #scene5 .d5-panel .s2-body { height: var(--led-col-body-h); flex-shrink: 0; max-width: 128px; overflow: visible; z-index: 12; }
+        #scene5 .d5-panel .s2-foot { height: var(--led-foot-bar-h); flex-shrink: 0; background: var(--led-foot-bar-bg); z-index: 1; }
         #scene5 .d5-panel .col-bg-foot { display: block; background: var(--led-foot-bar-bg); }
         #scene5 .col-bg-host { flex-shrink: 0; }
         #scene5 .col-bg-layer { width: calc(100% + 1px); }
@@ -961,25 +961,30 @@
             gap: 2px;
             max-width: 124px;
             max-height: var(--led-col-body-h);
-            overflow: hidden;
+            overflow: visible;
+            position: relative;
+            z-index: 2;
             flex-shrink: 0;
         }
         #scene5 .d5-body .weather-icon-cell {
             width: 54px; height: 54px;
             margin-right: 0;
-            overflow: hidden;
+            overflow: visible;
             border-radius: 4px;
-            z-index: 1;
+            z-index: 3;
             flex-shrink: 0;
         }
         #scene5 .d5-body .weather-icon-cell::before {
             width: 52px; height: 52px;
+            z-index: 0;
         }
-        #scene5 .d5-body .weather-svg {
+        #scene5 .d5-body .weather-svg,
+        #scene5 .d5-body img.weather-svg.weather-icon-img {
             width: 54px; height: 54px;
             max-width: 54px; max-height: 54px;
             flex-shrink: 0;
             object-fit: contain;
+            z-index: 2;
             transform: translate(-50%, -50%) scale(1.22);
         }
         /* 全列: ほぼ安全など=白文字 / 注意・警戒=黒文字（下帯の気温/湿度は色分け固定） */
