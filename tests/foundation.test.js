@@ -310,6 +310,7 @@ test('AC-0004 は佐藤工業福山の本番設定で、共通コンテンツに
   assert.strictEqual(site.presentation.observationLaps, 2);
   assert.strictEqual(site.presentation.scrollSpeedPx, 1.35);
   assert.deepStrictEqual(site.contentOrder, ['warning', 'clock', 'observation', 'wbgt', 'forecast', 'news', 'boards', 'wbgt-i18n']);
+  assert.strictEqual(site.contents.observation.on, true);
   assert.strictEqual(site.contents.news.on, true);
   assert.strictEqual(site.contents.boards.on, true);
   assert.strictEqual(site.contents['logo-scroll'].on, false);
@@ -369,6 +370,7 @@ test('AC-0004 は佐藤工業福山の本番設定で、共通コンテンツに
   assert.ok(page.indexOf('function playSceneLogoScroll()') >= 0);
   assert.ok(page.indexOf('function startContentOrder_()') >= 0);
   assert.ok(page.indexOf("p.sequence === 'contentOrder'") >= 0);
+  assert.ok(page.indexOf("if (id === 'observation') return observationInPlaylist_()") >= 0);
 });
 
 console.log('');

@@ -11160,9 +11160,17 @@
         const p = (siteCfg_() && siteCfg_().presentation) || {};
         return p.sequence === 'contentOrder';
     }
+    function observationInPlaylist_() {
+        const item = siteCfg_() && siteCfg_().contents && siteCfg_().contents.observation;
+        if (item && item.on === false) return false;
+        return scene2TypesOn_().length > 0;
+    }
     function playlistIds_() {
         const order = (siteCfg_() && siteCfg_().contentOrder) || [];
-        return order.filter(function (id) { return contentOn_(id); });
+        return order.filter(function (id) {
+            if (id === 'observation') return observationInPlaylist_();
+            return contentOn_(id);
+        });
     }
     function playlistWarningActive_() {
         if (!contentOn_('warning')) return false;

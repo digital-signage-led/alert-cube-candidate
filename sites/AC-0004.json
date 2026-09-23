@@ -118,6 +118,7 @@
   "contentOrder": ["warning", "clock", "observation", "wbgt", "forecast", "news", "boards", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
+    "observation": { "on": true },
     "weather": { "on": true },
     "temperature": { "on": true },
     "rain": { "on": true },
