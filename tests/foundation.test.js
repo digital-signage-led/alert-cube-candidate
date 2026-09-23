@@ -311,7 +311,7 @@ test('AC-0004 は佐藤工業福山の本番設定で、共通コンテンツに
   assert.strictEqual(site.presentation.scrollSpeedPx, undefined);
   assert.strictEqual(site.news.speed, 1);
   assert.strictEqual(site.boards.speed, 1);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'clock', 'observation', 'wbgt', 'forecast', 'news', 'boards', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'wbgt', 'forecast', 'news', 'boards', 'wbgt-i18n']);
   assert.strictEqual(site.contents.observation.on, true);
   assert.strictEqual(site.contents.news.on, true);
   assert.strictEqual(site.contents.boards.on, true);
@@ -320,7 +320,7 @@ test('AC-0004 は佐藤工業福山の本番設定で、共通コンテンツに
   assert.strictEqual(site.contents.warning.on, true);
   assert.strictEqual(site.contents['warning-hero'].on, false);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
-  assert.strictEqual(site.contents.typhoon.on, false);
+  assert.strictEqual(site.contents.typhoon.on, true);
   assert.ok(site.contentOrder.indexOf('logo-scroll') < 0);
   ['AC-0001', 'AC-0002', 'AC-0003'].forEach(function (id) {
     var other = require('../sites/' + id + '.json');

@@ -683,8 +683,16 @@
         #scene2 .s2-num { font-size: 44px; }
         #scene2 .s2-dir-text.dir-val { font-size: 34px; }
         #scene2 .s2-unit { font-size: 20px; }
+        #scene2 .s2-panel[data-s2="weather"] {
+            overflow: visible;
+            position: relative;
+            z-index: 20;
+        }
+        #scene2 .s2-panel[data-s2="weather"] .s2-top-bar { position: relative; z-index: 1; }
         #scene2 .s2-panel[data-s2="weather"] .s2-body {
-            overflow: hidden;
+            overflow: visible;
+            position: relative;
+            z-index: 3;
             align-items: center;
             justify-content: center;
         }
@@ -693,11 +701,14 @@
             max-width: 60px; max-height: 60px;
             object-fit: contain;
             transform: translate(-50%, -50%) scale(1.22);
+            z-index: 2;
         }
         #scene2 .weather-icon-cell {
             width: 60px; height: 60px;
             max-width: 60px; max-height: 60px;
-            overflow: hidden;
+            overflow: visible;
+            position: relative;
+            z-index: 4;
             border-radius: 4px;
             flex-shrink: 0;
         }
@@ -907,7 +918,7 @@
         .kotei-col {
             width: 128px; height: 128px; flex: 0 0 128px; box-sizing: border-box;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: #071428; color: #fff; overflow: hidden; padding: 4px 2px;
+            background: #071428; color: #fff; overflow: hidden; padding: 4px 6px;
         }
         .kotei-col-wide { width: 256px; flex: 0 0 256px; }
         .kotei-col-logo { background: #ffffff; }
@@ -916,14 +927,19 @@
         }
         .kotei-warn-label-2 { display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .kotei-triangle { width: 72px; height: 64px; display: block; }
-        .kotei-date-reiwa, .kotei-date-md, .kotei-work-line {
+        .kotei-work-line {
             color: #fff; -webkit-text-stroke: 1.6px #E31B23; paint-order: stroke fill; font-weight: 900; white-space: nowrap;
         }
-        .kotei-date-reiwa { font-size: 22px; }
-        .kotei-date-md { font-size: 30px; }
-        .kotei-date-youbi { font-size: 20px; font-weight: 800; }
-        .kotei-work-small { font-size: 13px; font-weight: 800; color: #d8e0ea; margin-bottom: 4px; }
+        .kotei-date-reiwa, .kotei-date-md {
+            color: #fff; -webkit-text-stroke: 1px #E31B23; paint-order: stroke fill;
+            font-weight: 900; white-space: nowrap; line-height: 1;
+        }
+        .kotei-date-reiwa { font-size: 18px; }
+        .kotei-date-md { font-size: 22px; margin: 2px 0; letter-spacing: 0; }
+        .kotei-date-youbi { font-size: 18px; font-weight: 800; line-height: 1; color: #fff; }
+        .kotei-work-small { font-size: 13px; font-weight: 800; color: #d8e0ea; margin-bottom: 4px; white-space: nowrap; }
         .kotei-work-line { font-size: 26px; text-align: center; }
+        .kotei-work-line-long { font-size: 18px; -webkit-text-stroke: 1px #E31B23; }
         .kotei-safety-line { font-size: 26px; font-weight: 900; text-align: center; white-space: nowrap; }
         .kotei-logo-img { display: block; width: 78px; height: 78px; object-fit: contain; }
         .kotei-logo-name { font-size: 13px; font-weight: 900; color: #111; letter-spacing: 0.12em; }
@@ -936,7 +952,7 @@
         }
         /* シーン5: 時刻と同型 上32 + 中72 + 下24（列内フッタ） */
         #scene5 .d5-panel .s2-top-bar { height: 32px; flex-shrink: 0; z-index: 1; }
-        #scene5 .d5-panel .s2-body { height: var(--led-col-body-h); flex-shrink: 0; max-width: 128px; overflow: visible; z-index: 12; }
+        #scene5 .d5-panel .s2-body { height: var(--led-col-body-h); flex-shrink: 0; max-width: 128px; overflow: visible; position: relative; z-index: 20; }
         #scene5 .d5-panel .s2-foot { height: var(--led-foot-bar-h); flex-shrink: 0; background: var(--led-foot-bar-bg); z-index: 1; }
         #scene5 .d5-panel .col-bg-foot { display: block; background: var(--led-foot-bar-bg); }
         #scene5 .col-bg-host { flex-shrink: 0; }
@@ -1023,7 +1039,7 @@
             box-sizing: border-box;
             border: 2px solid #ebebeb;
             pointer-events: none;
-            z-index: 10;
+            z-index: 4;
         }
         /* 今日枠は日付ラベルと同じ色 */
         #scene5 .d5-panel.d5-today-focus.col-bg-dark-text .d5-today-frame {
@@ -3875,9 +3891,19 @@
             + '<line x1="' + (x + s).toFixed(1) + '" y1="' + (y - s).toFixed(1) + '" x2="' + (x - s).toFixed(1) + '" y2="' + (y + s).toFixed(1) + '"/>'
             + '</g>';
         if (no) {
-            svg += '<text x="' + (x + 6.5).toFixed(1) + '" y="' + (y + 3.2).toFixed(1)
-                + '" fill="#00d4e4" font-size="9" font-weight="800" font-family="Noto Sans JP,sans-serif">'
-                + escapeS1Html(String(no)) + '</text>';
+            const label = String(no);
+            const tw = Math.max(16, label.length * 6.4 + 6);
+            const th = 13;
+            let lx = x + 6;
+            let ly = y - th / 2;
+            if (lx + tw > 127) lx = Math.max(1, x - 6 - tw);
+            if (ly < 1) ly = 1;
+            if (ly + th > 127) ly = 114;
+            svg += '<rect x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" width="' + tw.toFixed(1)
+                + '" height="' + th + '" rx="2" fill="#111111"/>'
+                + '<text x="' + (lx + tw / 2).toFixed(1) + '" y="' + (ly + 9.6).toFixed(1)
+                + '" fill="#ffffff" font-size="10" font-weight="800" font-family="Noto Sans JP,sans-serif" text-anchor="middle">'
+                + escapeS1Html(label) + '</text>';
         }
         return svg;
     }
@@ -4725,7 +4751,7 @@
         }
         if (!typhoonMapModels_.length) {
             if (DEMO_TYPHOON_ONLY) return;
-            const nextFn = (DEMO_SIGNAGE && !DEMO_ONLY) ? advanceDemoLevel : gotoSceneScheduleOrNext_;
+            const nextFn = (DEMO_SIGNAGE && !DEMO_ONLY) ? advanceDemoLevel : afterTyphoonScene_;
             tyHoldTimerId = setTimeout(function () { runAfterSceneEndHold_(nextFn); }, TY_MAP_HOLD_MS);
             return;
         }
@@ -4739,7 +4765,7 @@
                 playStorm_();
                 return;
             }
-            const nextFn = (DEMO_SIGNAGE && !DEMO_ONLY) ? advanceDemoLevel : gotoSceneScheduleOrNext_;
+            const nextFn = (DEMO_SIGNAGE && !DEMO_ONLY) ? advanceDemoLevel : afterTyphoonScene_;
             nextFn();
         }
         function playStorm_() {
@@ -9617,7 +9643,7 @@
                 typhoonMapModels_ = [DEMO_TYPHOON_MAP_];
                 typhoonSlidesActive = DEMO_TYPHOON_SLIDES_.slice();
             } else {
-                gotoSceneScheduleOrNext_();
+                afterTyphoonScene_();
                 return;
             }
         }
@@ -9671,7 +9697,7 @@
                             return;
                         } else {
                             tyAnimId = null; tyFlow_ = null;
-                            runAfterSceneEndHold_(gotoSceneScheduleOrNext_);
+                            runAfterSceneEndHold_(afterTyphoonScene_);
                             return;
                         }
                     }
@@ -9707,6 +9733,10 @@
         else if (badge) { badge.hidden = true; }
         if (!DEMO_EMBED) document.title = '防災情報・台風 デモ';
         playSceneTyphoon(0);
+    }
+    function afterTyphoonScene_() {
+        if (playlistHandoff_()) return;
+        gotoSceneScheduleOrNext_();
     }
     function gotoAfterTyphoonOrSchedule_() {
         if (playlistHandoff_()) return;
@@ -11324,6 +11354,14 @@
             case 'warning':
                 if (!playlistWarningActive_()) { advanceContentOrder_(); break; }
                 transitionToScene(sceneRainWarn, function () { playSceneRainWarn(0); });
+                break;
+            case 'typhoon':
+                if (NO_TYPHOON || !sceneTyphoon || (!typhoonSlidesActive.length && !typhoonMapModel_ && !(typhoonMapModels_ && typhoonMapModels_.length))) {
+                    advanceContentOrder_();
+                    break;
+                }
+                prepTyphoon_(0);
+                transitionToScene(sceneTyphoon, function () { playSceneTyphoon(0); });
                 break;
             default: advanceContentOrder_(); break;
         }

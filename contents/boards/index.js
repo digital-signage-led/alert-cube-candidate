@@ -80,9 +80,13 @@
     }
     if (kind === 'work') {
       var works = Array.isArray(col.lines) ? col.lines : [];
+      var longCol = works.some(function (t) { return String(t).length > 4; });
       return '<div class="kotei-col">' +
         (col.note ? '<div class="kotei-work-small">' + escapeHtml(col.note) + '</div>' : '') +
-        works.map(function (t) { return '<div class="kotei-work-line">' + escapeHtml(t) + '</div>'; }).join('') +
+        works.map(function (t) {
+          var long = longCol ? ' kotei-work-line-long' : '';
+          return '<div class="kotei-work-line' + long + '">' + escapeHtml(t) + '</div>';
+        }).join('') +
         '</div>';
     }
     if (kind === 'message') {
