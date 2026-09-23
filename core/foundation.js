@@ -280,6 +280,9 @@
       presentation: site.presentation || {},
       contents: site.contents,
       contentOrder: site.contentOrder,
+      news: site.news || null,
+      boards: site.boards || null,
+      logoScroll: site.logoScroll || null,
       season: site.season,
       status: site.status || null
     };
@@ -294,7 +297,8 @@
       logoPanelBg: logo.panelBg || '#ffffff',
       logoCorpSrc: logo.corpSrc || src,
       footLogoSrc: logo.footSrc || src,
-      footBannerSrc: logo.bannerSrc || ''
+      footBannerSrc: logo.bannerSrc || '',
+      logoWideSrc: logo.wideSrc || ''
     };
   }
 
@@ -309,6 +313,9 @@
     if (json.schedule) base.schedule = json.schedule;
     if (json.greeting) base.greeting = json.greeting;
     if (json.presentation) base.presentation = Object.assign({}, base.presentation || {}, json.presentation);
+    if (json.news) base.news = json.news;
+    if (json.boards) base.boards = json.boards;
+    if (json.logoScroll) base.logoScroll = json.logoScroll;
     if (json.faces != null) base.faces = json.faces;
     if (json.profile || json.layout) base.profile = json.layout || json.profile;
     if (json.timeZone) base.timeZone = json.timeZone;
@@ -325,6 +332,7 @@
       base.site.label = json.siteName;
       base.site.locationLabel = json.siteName;
     }
+    if (json.label && base.site) base.site.label = json.label;
     if (json.location && base.site) base.site.address = json.location;
     if (json.latitude != null) {
       base.geo = base.geo || {};

@@ -65,6 +65,35 @@
     "lines": [],
     "foot": ""
   },
+  "logoScroll": {
+    "laps": 1,
+    "panelWidth": 128,
+    "direction": "rtl",
+    "end": "complete",
+    "background": "#ffffff",
+    "images": [{ "src": "./images/logo.svg?v=20260921-suminoe", "alt": "" }]
+  },
+  "news": {
+    "badge": "新着情報",
+    "laps": 1,
+    "speed": 1.75,
+    "maxItems": 3,
+    "items": [{ "date": "09/01", "title": "確認用ニュース" }]
+  },
+  "boards": {
+    "laps": 1,
+    "speed": 0.95,
+    "background": "#071428",
+    "phases": [
+      {
+        "layout": "cards",
+        "cards": [
+          { "theme": "dark", "era": "確認", "highlight": "ボード", "title": "共通表示", "sub": "" },
+          { "theme": "light", "era": "確認", "highlight": "ボード", "title": "共通表示", "sub": "" }
+        ]
+      }
+    ]
+  },
   "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "schedule"],
   "contents": {
     "clock": { "on": true },
@@ -85,6 +114,9 @@
     "disaster": { "on": true },
     "heat": { "on": true },
     "schedule": { "on": true },
+    "news": { "on": true },
+    "boards": { "on": true },
+    "logo-scroll": { "on": true },
     "pollen": { "on": false },
     "pm25": { "on": false }
   }

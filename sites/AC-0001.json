@@ -85,6 +85,9 @@
     "disaster": { "on": true },
     "heat": { "on": true },
     "schedule": { "on": true },
+    "news": { "on": false },
+    "boards": { "on": false },
+    "logo-scroll": { "on": false },
     "pollen": { "on": false },
     "pm25": { "on": false }
   }

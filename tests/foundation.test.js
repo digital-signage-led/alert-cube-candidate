@@ -191,6 +191,8 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.ok(index.testSites.indexOf('AC-0000') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0001') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0002') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0003') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0004') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
 });
 
@@ -205,6 +207,31 @@ test('AC-0002 はENEOS磯子の独立した本番案件設定', function () {
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.presentation.observationMode, 'scroll');
   assert.deepStrictEqual(site.contentOrder, ['clock', 'observation', 'wbgt', 'wbgt-i18n', 'forecast']);
+});
+
+test('AC-0003 は但南建設の本番案件設定', function () {
+  var site = require('../sites/AC-0003.json');
+  assert.strictEqual(site.projectId, 'AC-0003');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '但南建設株式会社');
+  assert.strictEqual(site.label, '但南建設');
+  assert.strictEqual(site.siteName, '朝来市');
+  assert.strictEqual(site.moe.point, '63201');
+  assert.strictEqual(site.moe.fallbackPoint, '');
+  assert.strictEqual(site.jma.amedasPoint, '63201');
+  assert.strictEqual(site.jma.amedasSupplementPoint, '63518');
+  assert.strictEqual(site.jma.warnCity, '2822500');
+  assert.strictEqual(site.contents.heat.on, false);
+  assert.strictEqual(site.contents.warning.on, false);
+  assert.strictEqual(site.contents.typhoon.on, false);
+  assert.strictEqual(site.contents.schedule.on, false);
+  assert.strictEqual(site.contents['rain-nowcast'].on, true);
+  assert.strictEqual(site.presentation.observationMode, 'scroll');
+  var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
+  assert.strictEqual(merged.site.locationLabel, '朝来市');
+  assert.strictEqual(merged.site.label, '但南建設');
+  assert.strictEqual(foundation.isContentOn(site, 'heat'), false);
+  assert.strictEqual(foundation.isContentOn(site, 'wbgt'), true);
 });
 
 test('AC-0000 は内部テスト・全共通Contents ON、未実装はOFF', function () {
@@ -257,6 +284,91 @@ test('applyToGlobals: 既存 SignageConfig 参照を置き換えず中身を更�
   assert.strictEqual(held.projectId, 'AC-0000');
   assert.strictEqual(held.site.locationLabel, '内部テスト');
   assert.strictEqual(held.schedule.items[0].work, '検証A');
+});
+
+test('AC-0004 は佐藤工業福山の本番設定で、共通コンテンツに社名を埋め込まない', function () {
+  var fs = require('fs');
+  var path = require('path');
+  var site = require('../sites/AC-0004.json');
+  assert.strictEqual(site.projectId, 'AC-0004');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '佐藤工業');
+  assert.strictEqual(site.siteName, '福山市');
+  assert.strictEqual(site.moe.point, '67401');
+  assert.strictEqual(site.moe.region, '08');
+  assert.strictEqual(site.moe.prefecture, '67');
+  assert.strictEqual(site.moe.alertArea, '広島県');
+  assert.strictEqual(site.jma.forecastArea, '340000');
+  assert.strictEqual(site.jma.warnArea, '340000');
+  assert.strictEqual(site.jma.warnCity, '3420700');
+  assert.strictEqual(site.latitude, 34.4433);
+  assert.strictEqual(site.longitude, 133.2486);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.presentation.sequence, 'contentOrder');
+  assert.strictEqual(site.presentation.observationMode, 'scroll');
+  assert.strictEqual(site.presentation.observationLaps, 2);
+  assert.strictEqual(site.presentation.scrollSpeedPx, 1.35);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'clock', 'observation', 'wbgt', 'forecast', 'news', 'boards', 'wbgt-i18n']);
+  assert.strictEqual(site.contents.news.on, true);
+  assert.strictEqual(site.contents.boards.on, true);
+  assert.strictEqual(site.contents['logo-scroll'].on, false);
+  assert.strictEqual(site.contents.heat.on, false);
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents['warning-hero'].on, false);
+  assert.strictEqual(site.contents['rain-nowcast'].on, true);
+  assert.strictEqual(site.contents.typhoon.on, false);
+  assert.ok(site.contentOrder.indexOf('logo-scroll') < 0);
+  ['AC-0001', 'AC-0002', 'AC-0003'].forEach(function (id) {
+    var other = require('../sites/' + id + '.json');
+    assert.notStrictEqual(other.presentation && other.presentation.sequence, 'contentOrder');
+    assert.strictEqual(other.contents.news.on, false);
+    assert.strictEqual(other.contents.boards.on, false);
+    assert.strictEqual(other.contents['logo-scroll'].on, false);
+  });
+  var news = require('../contents/news/index.js');
+  var boards = require('../contents/boards/index.js');
+  var logo = require('../contents/logo-scroll/index.js');
+  var sample = './assets/sites/AC-EXAMPLE/mark.png';
+  var newsHtml = news.buildTrackHtml(
+    [{ date: '09/01', title: '確認用ニュース' }],
+    { logoSrc: sample, badge: '新着情報' }
+  ).html;
+  var boardHtml = boards.buildPhaseHtml({
+    layout: 'columns',
+    columns: [
+      { kind: 'message', lines: ['共通表示'] },
+      { kind: 'logo', src: sample, name: '確認', en: 'EXAMPLE' }
+    ]
+  }, '').html;
+  var logoHtml = logo.buildTrackHtml({
+    laps: 1,
+    panelWidth: 256,
+    images: [{ src: sample, alt: 'example' }]
+  }).html;
+  [newsHtml, boardHtml, logoHtml].forEach(function (html) {
+    assert.ok(html.indexOf(sample) >= 0);
+    assert.ok(html.indexOf('佐藤') < 0);
+    assert.ok(html.indexOf('sato') < 0);
+    assert.ok(html.indexOf('福山') < 0);
+    assert.ok(html.indexOf('67401') < 0);
+  });
+  assert.strictEqual(logo.lapsOf({ laps: 1 }), 1);
+  assert.strictEqual(news.lapsOf({ laps: 1 }), 1);
+  assert.strictEqual(boards.speedOf({ speed: 0.95 }), 0.95);
+  ['contents/news/index.js', 'contents/boards/index.js', 'contents/logo-scroll/index.js'].forEach(function (rel) {
+    var text = fs.readFileSync(path.join(__dirname, '..', rel), 'utf8');
+    assert.ok(text.indexOf('佐藤') < 0, rel);
+    assert.ok(text.indexOf('福山') < 0, rel);
+    assert.ok(text.indexOf('67401') < 0, rel);
+  });
+  var page = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.ok(page.indexOf('function playlistHandoff_()') >= 0);
+  assert.ok(page.indexOf('function playSceneNews()') >= 0);
+  assert.ok(page.indexOf('function playSceneBoards()') >= 0);
+  assert.ok(page.indexOf('function playSceneLogoScroll()') >= 0);
+  assert.ok(page.indexOf('function startContentOrder_()') >= 0);
+  assert.ok(page.indexOf("p.sequence === 'contentOrder'") >= 0);
 });
 
 console.log('');

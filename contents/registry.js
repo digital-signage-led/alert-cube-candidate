@@ -24,6 +24,27 @@
     { id: 'disaster', label: '防災割込', scene: 'sceneAlert', fetch: ['jma-warning', 'moe-heat'], existing: true, lifecycle: 'active', safety: true },
     { id: 'heat', label: '熱中症アラート', scene: 'sceneAlert', fetch: ['moe-heat'], existing: true, lifecycle: 'active', seasonal: 'summer', safety: true },
     { id: 'schedule', label: '工程表', scene: 'sceneSchedule', fetch: [], existing: true, lifecycle: 'active' },
+    {
+      id: 'news', label: 'ニュース', scene: 'sceneNews', fetch: [], existing: true, lifecycle: 'active',
+      end: 'animation', reusable: true, resolution: '512x128',
+      purpose: '日付と見出しを横に流し、指定周回で次へ進む',
+      required: ['news.urls or news.items'], optional: ['badge', 'laps', 'speed', 'logo'],
+      assets: 'site logo', source: 'site news json'
+    },
+    {
+      id: 'boards', label: '告知ボード', scene: 'sceneBoards', fetch: [], existing: true, lifecycle: 'active',
+      end: 'animation', reusable: true, resolution: '512x128',
+      purpose: 'カードまたは列の告知面を1周ごとに切り替え、全周完了で次へ進む',
+      required: ['boards.phases'], optional: ['laps', 'speed', 'background'],
+      assets: 'site logo', source: 'site config'
+    },
+    {
+      id: 'logo-scroll', label: 'スクローリングロゴ', scene: 'sceneLogo', fetch: [], existing: true, lifecycle: 'active',
+      end: 'animation', reusable: true, resolution: '512x128',
+      purpose: '画像を横に流し、指定周回の完了で次へ進む',
+      required: ['logoScroll.images'], optional: ['laps', 'panelWidth', 'direction', 'background'],
+      assets: 'site images', source: 'site config'
+    },
     { id: 'pollen', label: '花粉', scene: null, fetch: ['pollen'], existing: false, lifecycle: 'retired', seasonal: 'spring' },
     { id: 'pm25', label: 'PM2.5', scene: null, fetch: ['pm25'], existing: false, lifecycle: 'retired', seasonal: 'spring-autumn-winter' }
   ];

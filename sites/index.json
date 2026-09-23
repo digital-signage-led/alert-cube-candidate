@@ -1,12 +1,14 @@
 {
   "schemaVersion": 1,
   "defaultSite": "AC-0001",
-  "productionSites": ["AC-0001", "AC-0002"],
+  "productionSites": ["AC-0001", "AC-0002", "AC-0003", "AC-0004"],
   "testSites": ["AC-0000"],
   "notes": "AC-0000 は内部システムテスト専用（status=test、本番端末へ登録しない）。AC-0001以降が本番案件（status=active）。発行済みIDは再利用しない。",
   "sites": [
     { "projectId": "AC-0000", "status": "test" },
     { "projectId": "AC-0001", "status": "active" },
-    { "projectId": "AC-0002", "status": "active" }
+    { "projectId": "AC-0002", "status": "active" },
+    { "projectId": "AC-0003", "status": "active" },
+    { "projectId": "AC-0004", "status": "active" }
   ]
 }

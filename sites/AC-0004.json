@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "projectId": "AC-0004",
+  "status": "active",
+  "customer": "佐藤工業",
+  "rental": "佐藤工業",
+  "label": "佐藤工業",
+  "projectName": "佐藤工業 WBGTサイネージ",
+  "siteName": "福山市",
+  "location": "広島県福山市",
+  "latitude": 34.4433,
+  "longitude": 133.2486,
+  "resolution": "512x128",
+  "layout": "AC-512",
+  "faces": 4,
+  "timeZone": "Asia/Tokyo",
+  "footSource": "データ提供：気象庁、環境省",
+  "releasePin": null,
+  "logo": {
+    "src": "./assets/sites/AC-0004/logo_stack.png?v=6",
+    "wideSrc": "./assets/sites/AC-0004/logo_wide.png?v=3",
+    "corpSrc": "",
+    "footSrc": "",
+    "panelBg": "#ffffff",
+    "bannerSrc": "./assets/sites/AC-0004/logo_foot.png?v=1"
+  },
+  "moe": {
+    "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
+    "point": "67401",
+    "fallbackPoint": "",
+    "pointName": "福山",
+    "alertArea": "広島県",
+    "region": "08",
+    "prefecture": "67"
+  },
+  "jma": {
+    "amedasPoint": "67401",
+    "amedasSupplementPoint": "",
+    "forecastArea": "340000",
+    "forecastDetail": "",
+    "forecastLabel": "福山市",
+    "warnArea": "340000",
+    "warnCity": "3420700",
+    "warnCityLabel": "福山市"
+  },
+  "wbgt": {
+    "seasonStart": { "month": 4, "day": 22 },
+    "seasonEnd": { "month": 10, "day": 22 }
+  },
+  "season": { "override": null },
+  "updateSettings": { "refreshMs": 60000 },
+  "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "greeting": { "enabled": false, "title": "", "lines": [], "foot": "" },
+  "presentation": {
+    "sequence": "contentOrder",
+    "observationMode": "scroll",
+    "observationLaps": 2,
+    "observationTrailingLogo": true,
+    "scrollSpeedPx": 1.35
+  },
+  "news": {
+    "badge": "新着情報",
+    "laps": 1,
+    "speed": 1.75,
+    "maxItems": 3,
+    "refreshMs": 600000,
+    "urls": [
+      "./assets/sites/AC-0004/news.json",
+      "https://digital-signage-led.github.io/wbgt-cube/%E5%BA%83%E5%B3%B6_%E4%BD%90%E8%97%A4%E5%B7%A5%E6%A5%AD_SS/data/news.json"
+    ],
+    "cacheKey": "AC-0004-news"
+  },
+  "boards": {
+    "laps": 1,
+    "speed": 0.95,
+    "background": "#071428",
+    "phases": [
+      {
+        "id": "term",
+        "layout": "cards",
+        "cards": [
+          { "theme": "dark", "era": "令和8年", "highlight": "9月から12月", "title": "ポンプ棟躯体構築", "sub": "（地下部）" },
+          { "theme": "light", "era": "令和8年", "highlight": "9月から12月", "title": "ポンプ棟躯体構築", "sub": "（地下部）" }
+        ]
+      },
+      {
+        "id": "week",
+        "layout": "columns",
+        "columns": [
+          { "kind": "alert", "lines": ["重要工程"] },
+          { "kind": "date", "era": "令和8年", "md": "10月3日", "weekday": "（土）" },
+          { "kind": "work", "note": "令和8年10月3日", "lines": ["コンクリート", "打設"] },
+          { "kind": "logo", "name": "佐藤工業", "en": "SATO KOGYO CO.,LTD." }
+        ]
+      },
+      {
+        "id": "safety",
+        "layout": "columns",
+        "columns": [
+          { "kind": "alert", "lines": ["安全", "ミッション"] },
+          { "kind": "message", "wide": true, "lines": ["保護具の", "着用！！"] },
+          { "kind": "logo", "name": "佐藤工業", "en": "SATO KOGYO CO.,LTD." }
+        ]
+      }
+    ]
+  },
+  "logoScroll": {
+    "laps": 1,
+    "panelWidth": 256,
+    "direction": "rtl",
+    "end": "complete",
+    "background": "#ffffff",
+    "images": [
+      { "src": "./assets/sites/AC-0004/logo_wide.png?v=3", "panelWidth": 256 },
+      { "src": "./assets/sites/AC-0004/logo_stack.png?v=6", "panelWidth": 256 }
+    ]
+  },
+  "contentOrder": ["warning", "clock", "observation", "wbgt", "forecast", "news", "boards", "wbgt-i18n"],
+  "contents": {
+    "clock": { "on": true },
+    "weather": { "on": true },
+    "temperature": { "on": true },
+    "rain": { "on": true },
+    "wind": { "on": true },
+    "humidity": { "on": true },
+    "pressure": { "on": true },
+    "temp-range": { "on": true },
+    "wbgt": { "on": true },
+    "wbgt-i18n": { "on": true },
+    "forecast": { "on": true },
+    "warning": { "on": true },
+    "warning-hero": { "on": false },
+    "rain-nowcast": { "on": true },
+    "typhoon": { "on": false },
+    "disaster": { "on": false },
+    "heat": { "on": false },
+    "schedule": { "on": false },
+    "news": { "on": true },
+    "boards": { "on": true },
+    "logo-scroll": { "on": false },
+    "pollen": { "on": false },
+    "pm25": { "on": false }
+  }
+}

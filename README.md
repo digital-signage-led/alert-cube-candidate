@@ -11,6 +11,8 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/ （本番 AC-0001）
 - http://127.0.0.1:3200/?site=AC-0001
 - http://127.0.0.1:3200/?site=AC-0002 （ENEOS磯子 V2.0）
+- http://127.0.0.1:3200/?site=AC-0003 （但南建設。本番URLは未切替）
+- http://127.0.0.1:3200/?site=AC-0004 （佐藤工業 福山）
 - http://127.0.0.1:3200/?site=AC-0000 （内部テスト。本番端末へ登録しない）
 - http://127.0.0.1:3200/contents/ （V2.0コンテンツ確認一覧）
 - http://127.0.0.1:3200/?offseason=1
@@ -41,6 +43,8 @@ docs/               運用
 | AC-0000 | test | 内部システムテスト。本番端末へ登録しない |
 | AC-0001 | active | デジタルサイネージ / 〒559-0066 大阪市住之江区新北島1-9-13 |
 | AC-0002 | active | エネオス株式会社 / 横浜市磯子区鳳町1番1号 |
+| AC-0003 | active | 但南建設株式会社 / 兵庫県朝来市生野町円山862-1 |
+| AC-0004 | active | 佐藤工業 / 広島県福山市 |
 
 発行済み ID は再利用しない。追加するときは `sites/_template.json` を新しい番号へ複製する。
 
@@ -61,5 +65,6 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0001: https://digital-signage-led.github.io/alert-cube-candidate/
 - AC-0001: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0001
 - AC-0002: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0002
+- AC-0004: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0004
 - AC-0000: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0000
 - コンテンツ一覧: https://digital-signage-led.github.io/alert-cube-candidate/contents/
