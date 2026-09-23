@@ -371,6 +371,14 @@ test('AC-0004 は佐藤工業福山の本番設定で、共通コンテンツに
   assert.ok(page.indexOf('function startContentOrder_()') >= 0);
   assert.ok(page.indexOf("p.sequence === 'contentOrder'") >= 0);
   assert.ok(page.indexOf("if (id === 'observation') return observationInPlaylist_()") >= 0);
+  var humStart = page.indexOf('function saturationVaporPressureHpa_');
+  var humEnd = page.indexOf('function d5FootHtml_');
+  assert.ok(humStart >= 0 && humEnd > humStart);
+  var forecastHumidityPct_ = new Function(page.slice(humStart, humEnd) + '\nreturn forecastHumidityPct_;')();
+  assert.strictEqual(forecastHumidityPct_(32, 21), 52);
+  assert.strictEqual(forecastHumidityPct_(30, 20), 55);
+  assert.strictEqual(forecastHumidityPct_(30, 30), null);
+  assert.strictEqual(forecastHumidityPct_(null, 20), null);
 });
 
 console.log('');

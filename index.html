@@ -8332,6 +8332,31 @@
         const n = lastAmedasSnapshot_ && lastAmedasSnapshot_.humi != null ? Number(lastAmedasSnapshot_.humi) : NaN;
         return Number.isFinite(n) ? String(Math.round(n)) : '--';
     }
+    /** 飽和水蒸気圧（hPa）。Magnus 式 */
+    function saturationVaporPressureHpa_(tempC) {
+        const t = Number(tempC);
+        if (!Number.isFinite(t)) return null;
+        return 6.112 * Math.exp((17.67 * t) / (t + 243.5));
+    }
+    /**
+     * 予報に湿度が無い日の相対湿度（%）。
+     * 日最低を露点とみなし、表示する最高気温での湿度を計算する。全案件共通。
+     */
+    function forecastHumidityPct_(maxC, minC) {
+        const max = Number(maxC);
+        const min = Number(minC);
+        if (!Number.isFinite(max) || !Number.isFinite(min) || min >= max) return null;
+        const esMax = saturationVaporPressureHpa_(max);
+        const esMin = saturationVaporPressureHpa_(min);
+        if (esMax == null || esMin == null || esMax <= 0) return null;
+        const rh = 100 * esMin / esMax;
+        if (!Number.isFinite(rh)) return null;
+        return Math.max(0, Math.min(100, Math.round(rh)));
+    }
+    function forecastHumidityStr_(maxC, minC) {
+        const pct = forecastHumidityPct_(maxC, minC);
+        return pct == null ? '--' : String(pct);
+    }
     function d5FootHtml_(tempStr, humiStr) {
         return '<span class="d5-foot-temp"><span class="d5-temp">' + tempStr + '</span>℃</span>'
             + '<span class="d5-foot-sep"> / </span>'
@@ -8339,6 +8364,7 @@
     }
     function applyD5ObservedHumidity_() {
         const humiStr = observedHumidityStr_();
+        if (humiStr === '--') return;
         document.querySelectorAll('#scene5 .d5-day-0 .d5-foot-humi').forEach(function (el) {
             el.textContent = humiStr + '%';
         });
@@ -8430,7 +8456,8 @@
             let temp = row.max;
             if (day === 0 && todayMaxTemp != null && Number.isFinite(todayMaxTemp)) temp = todayMaxTemp;
             const tempStr = temp != null && Number.isFinite(temp) ? String(Math.round(temp)) : '--';
-            const humiStr = day === 0 ? observedHumidityStr_() : '--';
+            const observed = day === 0 ? observedHumidityStr_() : '--';
+            const humiStr = observed !== '--' ? observed : forecastHumidityStr_(temp, row.min);
             applyD5WeatherIcon_(day, row.weatherCode);
             document.querySelectorAll(`.d5-day-${day} .d5-foot-txt`).forEach(el => {
                 el.innerHTML = d5FootHtml_(tempStr, humiStr);
