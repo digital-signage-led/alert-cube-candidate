@@ -84,22 +84,30 @@
       },
       {
         "id": "week",
-        "layout": "columns",
-        "columns": [
-          { "kind": "alert", "lines": ["重要工程"] },
-          { "kind": "date", "era": "令和8年", "md": "10月3日", "weekday": "（土）" },
-          { "kind": "work", "note": "令和8年10月3日", "lines": ["コンクリート", "打設"] },
-          { "kind": "logo", "name": "佐藤工業", "en": "SATO KOGYO CO.,LTD." }
-        ]
+        "layout": "safety",
+        "width": 640,
+        "copies": 2,
+        "card": {
+          "theme": "dark",
+          "badge": "１週間の重要工程",
+          "date": "令和８年１０月３日",
+          "line": "コンクリート打設",
+          "lineSize": "sm"
+        },
+        "logo": { "name": "佐藤工業", "en": "SATO KOGYO CO.,LTD." }
       },
       {
         "id": "safety",
-        "layout": "columns",
-        "columns": [
-          { "kind": "alert", "lines": ["安全", "ミッション"] },
-          { "kind": "message", "wide": true, "lines": ["保護具の", "着用！！"] },
-          { "kind": "logo", "name": "佐藤工業", "en": "SATO KOGYO CO.,LTD." }
-        ]
+        "layout": "safety",
+        "width": 640,
+        "copies": 2,
+        "card": {
+          "theme": "dark",
+          "badge": "今週の安全ミッション",
+          "line": "保護具の着用！！",
+          "lineSize": "one"
+        },
+        "logo": { "name": "佐藤工業", "en": "SATO KOGYO CO.,LTD." }
       }
     ]
   },

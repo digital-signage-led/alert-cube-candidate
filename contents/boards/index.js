@@ -20,7 +20,9 @@
 
   function phasesOf(cfg) {
     var list = cfg && Array.isArray(cfg.phases) ? cfg.phases : [];
-    return list.filter(function (p) { return p && (p.layout === 'cards' || p.layout === 'columns'); });
+    return list.filter(function (p) {
+      return p && (p.layout === 'cards' || p.layout === 'columns' || p.layout === 'safety');
+    });
   }
 
   function lapsOf(cfg) {
@@ -99,18 +101,63 @@
     return '';
   }
 
+  function safetyLineClass(card) {
+    var size = card && card.lineSize;
+    if (size === 'sm') return 'kotei-safety-line kotei-safety-line-sm';
+    if (size === 'one') return 'kotei-safety-line kotei-safety-line-one';
+    if (size === 'term') return 'kotei-safety-line kotei-safety-line-term';
+    return 'kotei-safety-line';
+  }
+
+  function safetyCardHtml(card) {
+    var c = card || {};
+    var light = c.theme === 'light' ? ' kotei-col-light' : '';
+    var date = c.date ? '<div class="kotei-safety-date">' + escapeHtml(c.date) + '</div>' : '';
+    var line = c.line ? '<div class="' + safetyLineClass(c) + '">' + escapeHtml(c.line) + '</div>' : '';
+    return '<div class="kotei-col kotei-col-safety' + light + '"><div class="kotei-safety-panel">' +
+      '<div class="kotei-safety-badge">' + escapeHtml(c.badge || '') + '</div>' +
+      '<div class="kotei-safety-hero">' +
+      '<div class="kotei-safety-icon">' + TRI + '</div>' +
+      '<div class="kotei-safety-hero-text">' + date + line + '</div>' +
+      '</div></div></div>';
+  }
+
+  function safetySetHtml(phase, logoSrc) {
+    var copies = Number(phase && phase.copies);
+    if (!Number.isFinite(copies) || copies < 1) copies = 2;
+    var html = '';
+    for (var i = 0; i < copies; i++) html += safetyCardHtml(phase.card);
+    if (phase && phase.logo) html += logoColHtml(phase.logo, logoSrc);
+    return html;
+  }
+
+  function setWidthOf(phase) {
+    var stated = Number(phase && phase.width);
+    if (Number.isFinite(stated) && stated > 0) return stated;
+    if (phase.layout === 'cards') return Math.max(256, (phase.cards || []).length * 256);
+    if (phase.layout === 'safety') {
+      var copies = Number(phase.copies);
+      if (!Number.isFinite(copies) || copies < 1) copies = 2;
+      return copies * 256 + (phase.logo ? 128 : 0);
+    }
+    return 512;
+  }
+
   function buildPhaseHtml(phase, logoSrc) {
     if (!phase) return { html: '', setWidth: 0 };
     var inner = '';
     if (phase.layout === 'cards') {
       (phase.cards || []).forEach(function (card) { inner += cardHtml(card); });
+    } else if (phase.layout === 'safety') {
+      inner = safetySetHtml(phase, logoSrc);
     } else if (phase.layout === 'columns') {
       var cols = '';
       (phase.columns || []).forEach(function (col) { cols += columnHtml(col, logoSrc); });
-      inner = '<div class="kotei-set">' + cols + '</div>';
+      inner = cols;
     }
     if (!inner) return { html: '', setWidth: 0 };
-    return { html: inner + inner, setWidth: 512 };
+    var set = '<div class="kotei-set">' + inner + '</div>';
+    return { html: set + set, setWidth: setWidthOf(phase) };
   }
 
   var api = {
