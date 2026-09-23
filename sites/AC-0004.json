@@ -55,13 +55,12 @@
     "sequence": "contentOrder",
     "observationMode": "scroll",
     "observationLaps": 2,
-    "observationTrailingLogo": true,
-    "scrollSpeedPx": 1.35
+    "observationTrailingLogo": true
   },
   "news": {
     "badge": "新着情報",
     "laps": 1,
-    "speed": 1.75,
+    "speed": 1,
     "maxItems": 3,
     "refreshMs": 600000,
     "urls": [
@@ -72,7 +71,7 @@
   },
   "boards": {
     "laps": 1,
-    "speed": 0.95,
+    "speed": 1,
     "background": "#071428",
     "phases": [
       {

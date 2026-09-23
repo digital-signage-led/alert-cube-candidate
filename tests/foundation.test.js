@@ -308,7 +308,9 @@ test('AC-0004 は佐藤工業福山の本番設定で、共通コンテンツに
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.presentation.observationMode, 'scroll');
   assert.strictEqual(site.presentation.observationLaps, 2);
-  assert.strictEqual(site.presentation.scrollSpeedPx, 1.35);
+  assert.strictEqual(site.presentation.scrollSpeedPx, undefined);
+  assert.strictEqual(site.news.speed, 1);
+  assert.strictEqual(site.boards.speed, 1);
   assert.deepStrictEqual(site.contentOrder, ['warning', 'clock', 'observation', 'wbgt', 'forecast', 'news', 'boards', 'wbgt-i18n']);
   assert.strictEqual(site.contents.observation.on, true);
   assert.strictEqual(site.contents.news.on, true);

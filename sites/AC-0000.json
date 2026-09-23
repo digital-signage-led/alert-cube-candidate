@@ -76,13 +76,13 @@
   "news": {
     "badge": "新着情報",
     "laps": 1,
-    "speed": 1.75,
+    "speed": 1,
     "maxItems": 3,
     "items": [{ "date": "09/01", "title": "確認用ニュース" }]
   },
   "boards": {
     "laps": 1,
-    "speed": 0.95,
+    "speed": 1,
     "background": "#071428",
     "phases": [
       {
