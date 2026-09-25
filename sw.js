@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260923-ac0004';
+var CACHE_NAME = 'alert-cube-sites-20260925-ac0004-boards';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -9,7 +9,7 @@ var PRECACHE = [
   './contents/registry.js?v=20260923-ac0004',
   './contents/modules.js?v=20260923-ac0004',
   './contents/news/index.js?v=20260923-ac0004',
-  './contents/boards/index.js?v=20260923-ac0004',
+  './contents/boards/index.js?v=20260925-ac0004-boards',
   './contents/logo-scroll/index.js?v=20260923-ac0004',
   './contents/index.html',
   './data/jma-weather-icons.js?v=20260921-suminoe',
