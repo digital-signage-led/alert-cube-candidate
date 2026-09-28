@@ -94,6 +94,11 @@
       }
     ]
   },
+  "presentation": {
+    "observationMode": "scroll",
+    "observationLaps": 2,
+    "observationTrailingLogo": true
+  },
   "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "schedule"],
   "contents": {
     "clock": { "on": true },

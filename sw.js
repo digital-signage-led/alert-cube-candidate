@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260925-ac0004-boards';
+var CACHE_NAME = 'alert-cube-sites-20260928-observation-scroll';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -31,6 +31,17 @@ var PRECACHE = [
   './sites/AC-0000.json',
   './sites/AC-0003.json',
   './sites/AC-0004.json',
+  './sites/AC-0005.json',
+  './sites/AC-0006.json',
+  './sites/AC-0007.json',
+  './assets/sites/AC-0007/logo_mark.png?v=2',
+  './assets/sites/AC-0007/logo_foot.png?v=2',
+  './assets/sites/AC-0007/logo_banner.png?v=3',
+  './assets/sites/AC-0007/news.json',
+  './assets/sites/AC-0006/logo_stack.png?v=1',
+  './assets/sites/AC-0006/logo_wide.png?v=1',
+  './assets/sites/AC-0005/logo_128.png?v=1',
+  './assets/sites/AC-0005/logo_foot.png?v=1',
   './assets/sites/AC-0004/logo_stack.png?v=6',
   './assets/sites/AC-0004/logo_wide.png?v=3',
   './assets/sites/AC-0004/logo_foot.png?v=1',

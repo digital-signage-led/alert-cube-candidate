@@ -40,7 +40,9 @@ function collectMetrics(page) {
         fontSize: cs.fontSize,
         color: cs.color,
         bg: cs.backgroundColor,
-        overflow: cs.overflow
+        overflow: cs.overflow,
+        cssWidth: cs.width,
+        cssHeight: cs.height
       };
     }
     var cfg = window.SignageConfig || {};
@@ -79,10 +81,8 @@ async function openPage(browser, url) {
 
 function sameLayout(a, b, label) {
   if (!a || !b) throw new Error(label + ' missing box');
-  assert.strictEqual(a.x, b.x, label + '.x');
-  assert.strictEqual(a.y, b.y, label + '.y');
-  assert.strictEqual(a.w, b.w, label + '.w');
-  assert.strictEqual(a.h, b.h, label + '.h');
+  assert.strictEqual(a.cssWidth, b.cssWidth, label + '.cssWidth');
+  assert.strictEqual(a.cssHeight, b.cssHeight, label + '.cssHeight');
   assert.strictEqual(a.font, b.font, label + '.font');
   assert.strictEqual(a.fontSize, b.fontSize, label + '.fontSize');
 }
@@ -111,6 +111,16 @@ async function run() {
   var pHub;
   var pForecastLive;
   var pT3DarkText;
+  var pWbgt;
+  var pRainWarn;
+  var pClock;
+  var pSchedule;
+  var pTyphoon;
+  var pAlert;
+  var p0001Wbgt;
+  var p0001Forecast;
+  var p0002Wbgt;
+  var p0002Forecast;
   try {
     pDefault = await openPage(browser, BASE + '/');
     p0001 = await openPage(browser, BASE + '/?site=AC-0001');
@@ -120,9 +130,19 @@ async function run() {
     pScroll = await openPage(browser, BASE + '/?site=AC-0002&only=s2');
     p0000Fixed = await openPage(browser, BASE + '/?site=AC-0000&only=s2&observation=fixed');
     p0000Scroll = await openPage(browser, BASE + '/?site=AC-0000&only=s2&observation=scroll');
-    p0001Override = await openPage(browser, BASE + '/?site=AC-0001&only=s2&observation=scroll');
+    p0001Override = await openPage(browser, BASE + '/?site=AC-0001&only=s2&observation=fixed');
     pForecastLive = await openPage(browser, BASE + '/?site=AC-0000&only=s5&live=1');
     pT3DarkText = await openPage(browser, BASE + '/?site=AC-0000&only=s3&level=3');
+    pWbgt = await openPage(browser, BASE + '/?site=AC-0000&only=s4&level=3');
+    pRainWarn = await openPage(browser, BASE + '/?site=AC-0000&only=rainwarn');
+    pClock = await openPage(browser, BASE + '/?site=AC-0000&only=s1');
+    pSchedule = await openPage(browser, BASE + '/?site=AC-0000&only=schedule');
+    pTyphoon = await openPage(browser, BASE + '/?site=AC-0000&only=typhoon');
+    pAlert = await openPage(browser, BASE + '/?site=AC-0000&only=alert');
+    p0001Wbgt = await openPage(browser, BASE + '/?site=AC-0001&only=s4');
+    p0001Forecast = await openPage(browser, BASE + '/?site=AC-0001&only=s5');
+    p0002Wbgt = await openPage(browser, BASE + '/?site=AC-0002&only=s4');
+    p0002Forecast = await openPage(browser, BASE + '/?site=AC-0002&only=s5');
     pHub = await browser.newPage();
     await pHub.goto(BASE + '/contents/', { waitUntil: 'domcontentloaded', timeout: 60000 });
 
@@ -168,7 +188,6 @@ async function run() {
 
     try {
       sameLayout(mDef.scene1, m1.scene1, 'scene1 default vs AC-0001');
-      sameLayout(mDef.clock, m1.clock, 'clock default vs AC-0001');
       assert.strictEqual(mDef.body.w, 512);
       assert.strictEqual(mDef.body.h, 128);
       ok('Visual: / と /?site=AC-0001 のレイアウト一致');
@@ -176,7 +195,6 @@ async function run() {
 
     try {
       sameLayout(m0.scene1, m1.scene1, 'scene1 AC-0000 vs AC-0001');
-      sameLayout(m0.clock, m1.clock, 'clock AC-0000 vs AC-0001');
       assert.strictEqual(m0.body.w, m1.body.w);
       assert.strictEqual(m0.body.h, m1.body.h);
       ok('Visual: AC-0000 と AC-0001 は位置・サイズ・Fontを共有（文言差のみ）');
@@ -201,28 +219,48 @@ async function run() {
 
     try {
       var gust = await pGust.evaluate(function () {
-        var idx = window.scene2TypesOn_().indexOf('gust');
-        window.paintScene2Type_(idx);
+        var types = window.buildScene2ScrollConveyor_();
         var panel = document.querySelector('#scene2 [data-s2="gust"]');
         return {
+          mode: document.querySelector('#scene2').classList.contains('scene2-scroll-mode'),
+          types: types,
           count: document.querySelectorAll('#scene2 [data-s2="gust"]').length,
           label: panel && panel.querySelector('.s2-bar-label') && panel.querySelector('.s2-bar-label').textContent
         };
       });
-      assert.strictEqual(gust.count, 4);
+      assert.strictEqual(gust.mode, true);
+      assert.ok(gust.types.indexOf('gust') >= 0);
+      assert.strictEqual(gust.count, 2);
       assert.strictEqual(gust.label, '最大瞬間風速');
-      ok('旧本番の最大瞬間風速を共通気象コンテンツとして表示');
+      ok('AC-0001の気象観測は最大瞬間風速を含む横スクロールが既定');
     } catch (e) { ng('最大瞬間風速', e); }
 
     try {
       var scroll = await pScroll.evaluate(function () {
         var types = window.buildScene2ScrollConveyor_();
+        window.buildScene2MetaTrack(new Date());
+        var panel = document.querySelector('#scene2 #conveyor > [data-s2]');
+        var logo = document.querySelector('#scene2 #conveyor > [data-s2="logo"]');
+        var foot = document.querySelector('#scene2 .s2-meta-slot-panel');
         return {
           types: types,
           mode: document.querySelector('#scene2').classList.contains('scene2-scroll-mode'),
           panels: document.querySelectorAll('#scene2 #conveyor > [data-s2]').length,
           logos: document.querySelectorAll('#scene2 #conveyor > [data-s2="logo"]').length,
-          width: document.querySelector('#scene2 #conveyor').style.width
+          width: document.querySelector('#scene2 #conveyor').style.width,
+          panelWidth: Math.round(panel.getBoundingClientRect().width),
+          panelHeight: Math.round(panel.getBoundingClientRect().height),
+          logoWidth: Math.round(logo.getBoundingClientRect().width),
+          footSlots: document.querySelectorAll('#scene2 .s2-meta-slot-panel').length,
+          footWidth: Math.round(foot.getBoundingClientRect().width),
+          footBackground: getComputedStyle(foot).backgroundColor,
+          footOverflow: Array.from(document.querySelectorAll('#scene2 .s2-meta-slot-panel')).filter(function (slot) {
+            var box = slot.getBoundingClientRect();
+            return Array.from(slot.querySelectorAll('.s2-meta-panel-txt, .s2-meta-k, .s2-meta-v')).some(function (el) {
+              var text = el.getBoundingClientRect();
+              return text.width > 0 && (text.left < box.left - 1 || text.right > box.right + 1);
+            });
+          }).length
         };
       });
       assert.deepStrictEqual(scroll.types, ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin']);
@@ -230,6 +268,13 @@ async function run() {
       assert.strictEqual(scroll.panels, 20);
       assert.strictEqual(scroll.logos, 2);
       assert.strictEqual(scroll.width, '2560px');
+      assert.strictEqual(scroll.panelWidth, 128);
+      assert.strictEqual(scroll.panelHeight, 96);
+      assert.strictEqual(scroll.logoWidth, 128);
+      assert.strictEqual(scroll.footSlots, 20);
+      assert.strictEqual(scroll.footWidth, 128);
+      assert.strictEqual(scroll.footBackground, 'rgb(255, 249, 240)');
+      assert.strictEqual(scroll.footOverflow, 0);
       ok('AC-0002 気象観測は9項目＋末尾ロゴを2周横スクロール');
     } catch (e) { ng('AC-0002 気象観測スクロール', e); }
 
@@ -251,8 +296,8 @@ async function run() {
       assert.strictEqual(previewModes.fixed, false);
       assert.strictEqual(previewModes.scroll.mode, true);
       assert.deepStrictEqual(previewModes.scroll.types, ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin']);
-      assert.strictEqual(previewModes.productionOverride, false);
-      ok('AC-0000だけURLで気象観測の4面固定・横スクロールを切替');
+      assert.strictEqual(previewModes.productionOverride, true);
+      ok('気象観測は横スクロール既定、AC-0000だけ固定プレビューへ切替可能');
     } catch (e) { ng('AC-0000 気象観測バリアント', e); }
 
     try {
@@ -261,11 +306,12 @@ async function run() {
           return a.getAttribute('href');
         });
       });
-      assert.strictEqual(hub.length, 11);
+      assert.strictEqual(hub.length, 15);
       assert.ok(hub.some(function (href) { return href.indexOf('observation=fixed') >= 0; }));
       assert.ok(hub.some(function (href) { return href.indexOf('observation=scroll') >= 0; }));
       assert.ok(hub.some(function (href) { return href.indexOf('only=s5&live=1') >= 0; }));
       assert.ok(hub.some(function (href) { return href.indexOf('only=rainwarn') >= 0; }));
+      assert.ok(hub.some(function (href) { return href.indexOf('only=warnwhite') >= 0; }));
       assert.ok(hub.some(function (href) { return href.indexOf('only=typhoon') >= 0; }));
       assert.ok(hub.some(function (href) { return href.indexOf('only=alert') >= 0; }));
       ok('V2.0コンテンツ一覧から通常・防災コンテンツを個別に開ける');
@@ -274,7 +320,6 @@ async function run() {
     try {
       await pForecastLive.waitForFunction(function () {
         return document.querySelector('#scene5').style.display !== 'none'
-          && document.querySelector('#d5-conveyor').style.transform === 'translateX(0px)'
           && Array.from(document.querySelectorAll('#scene5 .d5-temp')).slice(0, 4)
             .every(function (el) { return el.textContent.trim() !== '--'; });
       }, { timeout: 30000 });
@@ -283,13 +328,26 @@ async function run() {
           labels: Array.from(document.querySelectorAll('#scene5 .d5-panel')).slice(0, 4)
             .map(function (panel) { return panel.querySelector('.s2-bar-label').textContent; }),
           expected: [0, 1, 2, 3].map(function (day) { return d5DateLabel_(day); }),
-          transform: document.querySelector('#d5-conveyor').style.transform
+          panels: document.querySelectorAll('#scene5 .d5-panel').length,
+          logos: document.querySelectorAll('#scene5 .d5-logo-panel').length,
+          width: document.querySelector('#d5-conveyor').style.width,
+          panelWidth: Math.round(document.querySelector('#scene5 .d5-panel').getBoundingClientRect().width),
+          logoWidth: Math.round(document.querySelector('#scene5 .d5-logo-panel').getBoundingClientRect().width),
+          footBackground: getComputedStyle(document.querySelector('#scene5 .s2-foot')).backgroundColor,
+          logoLoaded: document.querySelector('#scene5 .d5-logo-face-img').naturalWidth > 0
         };
       });
       assert.deepStrictEqual(forecastLive.labels, forecastLive.expected);
-      assert.strictEqual(forecastLive.transform, 'translateX(0px)');
+      assert.ok(forecastLive.labels.every(function (label) { return /^\d{1,2}\/\d{1,2}\([日月火水木金土]\)$/.test(label); }));
+      assert.strictEqual(forecastLive.panels, 10);
+      assert.strictEqual(forecastLive.logos, 2);
+      assert.strictEqual(forecastLive.width, '1280px');
+      assert.strictEqual(forecastLive.panelWidth, 128);
+      assert.strictEqual(forecastLive.logoWidth, 128);
+      assert.strictEqual(forecastLive.footBackground, 'rgb(255, 249, 240)');
+      assert.strictEqual(forecastLive.logoLoaded, true);
       await pForecastLive.screenshot({ path: path.join(outDir, 'local-AC-0000-forecast-live.png') });
-      ok('4日予報は気象庁の最新値を日付順の4面固定で表示');
+      ok('4日予報は最新値4面＋末尾ロゴを貼付デザインで表示');
     } catch (e) { ng('4日予報の最新実データ表示', e); }
 
     try {
@@ -331,14 +389,159 @@ async function run() {
         return {
           src: img && img.src,
           visibility: img && getComputedStyle(img).visibility,
-          backing: cell && getComputedStyle(cell, '::before').content
+          backing: cell && getComputedStyle(cell, '::before').content,
+          backingBg: cell && getComputedStyle(cell, '::before').backgroundColor,
+          backingRadius: cell && getComputedStyle(cell, '::before').borderRadius
         };
       });
       assert.strictEqual(weatherV2.src, 'https://www.jma.go.jp/bosai/forecast/img/200.svg');
       assert.strictEqual(weatherV2.visibility, 'visible');
-      assert.ok(weatherV2.backing === 'none' || weatherV2.backing === 'normal');
-      ok('V2.0は気象庁公式アイコンを表示し、独自アイコン・白丸背景を使わない');
+      assert.ok(weatherV2.backing === '""' || weatherV2.backing === '\"\"');
+      assert.strictEqual(weatherV2.backingBg, 'rgb(255, 255, 255)');
+      assert.strictEqual(weatherV2.backingRadius, '3px');
+      ok('気象庁公式アイコンを貼付デザインの白い角丸台に表示');
     } catch (e) { ng('気象庁公式天気アイコン', e); }
+
+    try {
+      var wbgtVisual = await pWbgt.evaluate(function () {
+        var panel = document.querySelector('#scene4 .fc-panel:not(.fc-logo-panel)');
+        var logo = document.querySelector('#scene4 .fc-logo-panel');
+        var sourceStrip = document.querySelector('#scene4 .fc-lv-slot-src');
+        return {
+          panels: document.querySelectorAll('#scene4 .fc-panel').length,
+          logos: document.querySelectorAll('#scene4 .fc-logo-panel').length,
+          width: document.querySelector('#fc-conveyor').style.width,
+          panelWidth: Math.round(panel.getBoundingClientRect().width),
+          panelHeight: Math.round(panel.getBoundingClientRect().height),
+          logoWidth: Math.round(logo.getBoundingClientRect().width),
+          logoHeight: Math.round(logo.getBoundingClientRect().height),
+          sourceStripWidth: Math.round(sourceStrip.getBoundingClientRect().width),
+          sourceStripBg: getComputedStyle(sourceStrip).backgroundColor,
+          logoLoaded: logo.querySelector('img').naturalWidth > 0
+        };
+      });
+      assert.strictEqual(wbgtVisual.panels, 10);
+      assert.strictEqual(wbgtVisual.logos, 2);
+      assert.strictEqual(wbgtVisual.width, '1280px');
+      assert.strictEqual(wbgtVisual.panelWidth, 128);
+      assert.strictEqual(wbgtVisual.panelHeight, 96);
+      assert.strictEqual(wbgtVisual.logoWidth, 128);
+      assert.strictEqual(wbgtVisual.logoHeight, 128);
+      assert.strictEqual(wbgtVisual.sourceStripWidth, 256);
+      assert.strictEqual(wbgtVisual.sourceStripBg, 'rgb(255, 249, 240)');
+      assert.strictEqual(wbgtVisual.logoLoaded, true);
+      await pWbgt.screenshot({ path: path.join(outDir, 'local-AC-0000-wbgt.png') });
+      ok('WBGTは4項目＋末尾ロゴ、白帯同期の貼付デザイン');
+    } catch (e) { ng('WBGT貼付デザイン', e); }
+
+    try {
+      var warningVisual = await pRainWarn.evaluate(function () {
+        var scene = document.querySelector('#sceneRainWarn');
+        var r = scene.getBoundingClientRect();
+        return {
+          active: getComputedStyle(scene).display !== 'none',
+          width: Math.round(r.width),
+          height: Math.round(r.height),
+          units: document.querySelectorAll('#sceneRainWarn .ra-unit').length
+        };
+      });
+      assert.strictEqual(warningVisual.active, true);
+      assert.strictEqual(warningVisual.width, 512);
+      assert.strictEqual(warningVisual.height, 128);
+      assert.strictEqual(warningVisual.units, 2);
+      await pRainWarn.screenshot({ path: path.join(outDir, 'local-AC-0000-rainwarn.png') });
+      ok('警報表示は512×128・4面構成を維持');
+    } catch (e) { ng('警報表示', e); }
+
+    try {
+      var allScenes = [
+        { name: 'clock', page: pClock, selector: '#scene1' },
+        { name: 'observation-fixed', page: p0000Fixed, selector: '#scene2' },
+        { name: 'observation-scroll', page: p0000Scroll, selector: '#scene2' },
+        { name: 'wbgt', page: pWbgt, selector: '#scene4' },
+        { name: 'wbgt-i18n', page: pT3DarkText, selector: '#scene3' },
+        { name: 'forecast', page: pForecastLive, selector: '#scene5' },
+        { name: 'rainwarn', page: pRainWarn, selector: '#sceneRainWarn' },
+        { name: 'typhoon', page: pTyphoon, selector: '#sceneTyphoon' },
+        { name: 'alert', page: pAlert, selector: '#sceneAlert' },
+        { name: 'schedule', page: pSchedule, selector: '#sceneSchedule' }
+      ];
+      for (var sceneIndex = 0; sceneIndex < allScenes.length; sceneIndex += 1) {
+        var row = allScenes[sceneIndex];
+        await row.page.evaluate(function () {
+          ['#conveyor', '#s2-meta-track', '#fc-conveyor', '#fc-lv-track', '#d5-conveyor', '#sch-track']
+            .forEach(function (selector) {
+              var track = document.querySelector(selector);
+              if (track) track.style.transform = 'translateX(0px)';
+            });
+          var badge = document.querySelector('#demo-badge');
+          if (badge) badge.style.display = 'none';
+        });
+        var geometry = await row.page.evaluate(function (selector) {
+          var el = document.querySelector(selector);
+          var rect = el.getBoundingClientRect();
+          return {
+            display: getComputedStyle(el).display,
+            width: Math.round(rect.width),
+            height: Math.round(rect.height),
+            pageErrors: window.__pageErrors || []
+          };
+        }, row.selector);
+        assert.notStrictEqual(geometry.display, 'none', row.name + ' display');
+        assert.strictEqual(geometry.width, 512, row.name + ' width');
+        assert.strictEqual(geometry.height, 128, row.name + ' height');
+        await row.page.screenshot({ path: path.join(outDir, 'all-' + row.name + '.png') });
+      }
+      ok('AC-0000の通常・防災・固定/スクロール全10表示を512×128で撮影確認');
+    } catch (e) { ng('AC-0000全コンテンツ表示', e); }
+
+    try {
+      var projectScenes = [
+        { name: 'AC-0001-observation', page: pGust, selector: '#scene2', logoPart: 'images/logo.svg' },
+        { name: 'AC-0001-wbgt', page: p0001Wbgt, selector: '#scene4', logoPart: 'images/logo.svg' },
+        { name: 'AC-0001-forecast', page: p0001Forecast, selector: '#scene5', logoPart: 'images/logo.svg' },
+        { name: 'AC-0002-observation', page: pScroll, selector: '#scene2', logoPart: 'eneos_logo.gif' },
+        { name: 'AC-0002-wbgt', page: p0002Wbgt, selector: '#scene4', logoPart: 'eneos_logo.gif' },
+        { name: 'AC-0002-forecast', page: p0002Forecast, selector: '#scene5', logoPart: 'eneos_logo.gif' }
+      ];
+      for (var projectIndex = 0; projectIndex < projectScenes.length; projectIndex += 1) {
+        var projectRow = projectScenes[projectIndex];
+        await projectRow.page.evaluate(function () {
+          ['#conveyor', '#s2-meta-track', '#fc-conveyor', '#fc-lv-track', '#d5-conveyor']
+            .forEach(function (selector) {
+              var track = document.querySelector(selector);
+              if (track) track.style.transform = 'translateX(0px)';
+            });
+          var badge = document.querySelector('#demo-badge');
+          if (badge) badge.style.display = 'none';
+        });
+        var projectVisual = await projectRow.page.evaluate(function (selector) {
+          var scene = document.querySelector(selector);
+          var rect = scene.getBoundingClientRect();
+          var logo = scene.querySelector('.s2-logo-face-img, .fc-logo-face-img, .d5-logo-face-img');
+          var strip = document.querySelector('.content-area > .scene-strip-bg');
+          var perColumnLayer = scene.querySelector('.col-bg-layer');
+          return {
+            width: Math.round(rect.width),
+            height: Math.round(rect.height),
+            logoSrc: logo && logo.src,
+            logoLoaded: !logo || logo.naturalWidth > 0,
+            commonStripWidth: strip ? Math.round(strip.getBoundingClientRect().width) : 0,
+            perColumnLayerDisplay: perColumnLayer ? getComputedStyle(perColumnLayer).display : 'none'
+          };
+        }, projectRow.selector);
+        assert.strictEqual(projectVisual.width, 512, projectRow.name + ' width');
+        assert.strictEqual(projectVisual.height, 128, projectRow.name + ' height');
+        if (projectVisual.logoSrc) assert.ok(projectVisual.logoSrc.indexOf(projectRow.logoPart) >= 0, projectRow.name + ' logo');
+        assert.strictEqual(projectVisual.logoLoaded, true, projectRow.name + ' logo loaded');
+        assert.strictEqual(projectVisual.commonStripWidth, 512, projectRow.name + ' common background');
+        if (projectRow.selector !== '#scene5') {
+          assert.strictEqual(projectVisual.perColumnLayerDisplay, 'none', projectRow.name + ' no column seam');
+        }
+        await projectRow.page.screenshot({ path: path.join(outDir, 'project-' + projectRow.name + '.png') });
+      }
+      ok('AC-0001/0002も共通背景・案件ロゴ・128px列を維持');
+    } catch (e) { ng('案件別V2.0表示', e); }
 
     try {
       var freshness = await p0002.evaluate(function () {

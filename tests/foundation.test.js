@@ -166,9 +166,11 @@ test('気圧パネルは共通pressureに対応', function () {
   assert.strictEqual(foundation.isScene2PanelOn(cfg, 'temp'), true);
 });
 
-test('Project Lifecycle: test/active のみ通信可。ended/archived は停止', function () {
+test('Project Lifecycle: test/demo/active のみ通信可。ended/archived は停止', function () {
   assert.strictEqual(foundation.isStatusOperable('test', 'AC-0000'), true);
   assert.strictEqual(foundation.isStatusOperable('active', 'AC-0001'), true);
+  assert.strictEqual(foundation.isStatusOperable('demo', 'AC-0008'), true);
+  assert.strictEqual(foundation.isStatusOperable('demo', 'AC-0000'), false);
   assert.strictEqual(foundation.isStatusOperable('test', 'AC-0001'), false);
   assert.strictEqual(foundation.isStatusOperable('ended', 'AC-0001'), false);
   assert.strictEqual(foundation.isStatusOperable('archived', 'AC-0001'), false);
@@ -187,13 +189,23 @@ test('durationMs 未指定は fallback を使う', function () {
 test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.strictEqual(foundation.DEFAULT_SITE, 'AC-0001');
   var index = require('../sites/index.json');
+  var defaultSite = require('../sites/AC-0001.json');
   assert.strictEqual(index.defaultSite, 'AC-0001');
+  assert.strictEqual(defaultSite.presentation.observationMode, 'scroll');
   assert.ok(index.testSites.indexOf('AC-0000') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0001') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0002') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0003') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0004') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0005') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0006') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0007') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
+  assert.ok(Array.isArray(index.demoSites));
+  index.demoSites.forEach(function (id) {
+    assert.ok(index.productionSites.indexOf(id) < 0, id + ' is both demo and production');
+    assert.ok(index.testSites.indexOf(id) < 0, id + ' is both demo and test');
+  });
 });
 
 test('AC-0002 はENEOS磯子の独立した本番案件設定', function () {
@@ -222,8 +234,8 @@ test('AC-0003 は但南建設の本番案件設定', function () {
   assert.strictEqual(site.jma.amedasSupplementPoint, '63518');
   assert.strictEqual(site.jma.warnCity, '2822500');
   assert.strictEqual(site.contents.heat.on, false);
-  assert.strictEqual(site.contents.warning.on, false);
-  assert.strictEqual(site.contents.typhoon.on, false);
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.schedule.on, false);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.presentation.observationMode, 'scroll');
@@ -259,6 +271,7 @@ test('AC-0000 は内部テスト・全共通Contents ON、未実装はOFF', func
   assert.strictEqual(prod.status, 'active');
   assert.strictEqual(prod.customer, 'デジタルサイネージ');
   assert.strictEqual(prod.location, '〒559-0066 大阪市住之江区新北島1-9-13');
+  assert.strictEqual(site.presentation.observationMode, 'scroll');
   assert.deepStrictEqual(site.contentOrder, ['clock', 'observation', 'wbgt', 'wbgt-i18n', 'forecast', 'schedule']);
   assert.deepStrictEqual(prod.contentOrder, ['clock', 'observation', 'wbgt', 'wbgt-i18n', 'forecast', 'schedule']);
 });
@@ -381,6 +394,97 @@ test('AC-0004 は佐藤工業福山の本番設定で、共通コンテンツに
   assert.strictEqual(forecastHumidityPct_(30, 20), 55);
   assert.strictEqual(forecastHumidityPct_(30, 30), null);
   assert.strictEqual(forecastHumidityPct_(null, 20), null);
+});
+
+test('AC-0005 はレイズネクスト摂津の4面本番設定', function () {
+  var site = require('../sites/AC-0005.json');
+  assert.strictEqual(site.projectId, 'AC-0005');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, 'レイズネクスト');
+  assert.strictEqual(site.label, 'レイズネクスト');
+  assert.strictEqual(site.siteName, '摂津市');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.layout, 'AC-512');
+  assert.strictEqual(site.moe.point, '62078');
+  assert.strictEqual(site.moe.fallbackPoint, '');
+  assert.strictEqual(site.moe.pointName, '大阪');
+  assert.strictEqual(site.moe.region, '07');
+  assert.strictEqual(site.moe.prefecture, '62');
+  assert.strictEqual(site.moe.alertArea, '大阪府');
+  assert.strictEqual(site.jma.amedasPoint, '62078');
+  assert.strictEqual(site.jma.forecastArea, '270000');
+  assert.strictEqual(site.jma.warnCity, '2722400');
+  assert.strictEqual(site.latitude, 34.7774);
+  assert.strictEqual(site.longitude, 135.5619);
+  assert.strictEqual(site.presentation.sequence, 'contentOrder');
+  assert.strictEqual(site.presentation.observationMode, 'scroll');
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.strictEqual(site.contents.heat.on, false);
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents['warning-hero'].on, false);
+  assert.strictEqual(site.contents.typhoon.on, true);
+  assert.strictEqual(site.contents.disaster.on, false);
+  assert.strictEqual(site.contents['rain-nowcast'].on, true);
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0005/logo_foot.png') >= 0);
+  assert.ok(site.logo.src.indexOf('AC-0005/logo_128.png') >= 0);
+  var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
+  assert.strictEqual(merged.site.locationLabel, '摂津市');
+  assert.strictEqual(merged.site.label, 'レイズネクスト');
+  assert.strictEqual(merged.faces, 4);
+  assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
+test('AC-0006 は錦建設広島市中区の通常版', function () {
+  var site = require('../sites/AC-0006.json');
+  assert.strictEqual(site.projectId, 'AC-0006');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '錦建設株式会社');
+  assert.strictEqual(site.label, '錦建設');
+  assert.strictEqual(site.siteName, '広島市中区');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.moe.point, '67437');
+  assert.strictEqual(site.moe.pointName, '広島');
+  assert.strictEqual(site.moe.alertArea, '広島県');
+  assert.strictEqual(site.jma.amedasPoint, '67437');
+  assert.strictEqual(site.jma.forecastArea, '340000');
+  assert.strictEqual(site.jma.warnCity, '3410100');
+  assert.strictEqual(site.presentation.sequence, 'contentOrder');
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.typhoon.on, true);
+  assert.strictEqual(site.contents.disaster.on, true);
+  assert.strictEqual(site.contents.news.on, false);
+  assert.strictEqual(site.contents.boards.on, false);
+  assert.ok(site.logo.src.indexOf('AC-0006/logo_stack.png') >= 0);
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0006/logo_wide.png') >= 0);
+  assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
+test('AC-0007 は佐々木建設北島町の4面本番設定', function () {
+  var site = require('../sites/AC-0007.json');
+  assert.strictEqual(site.projectId, 'AC-0007');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '佐々木建設株式会社');
+  assert.strictEqual(site.label, '佐々木建設');
+  assert.strictEqual(site.siteName, '北島町');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.moe.point, '71106');
+  assert.strictEqual(site.moe.alertArea, '徳島県');
+  assert.strictEqual(site.jma.amedasPoint, '71106');
+  assert.strictEqual(site.jma.forecastArea, '360000');
+  assert.strictEqual(site.jma.warnCity, '3640200');
+  assert.strictEqual(site.presentation.sequence, 'contentOrder');
+  assert.strictEqual(site.presentation.observationMode, 'scroll');
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'wbgt', 'forecast', 'news', 'wbgt-i18n']);
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.typhoon.on, true);
+  assert.strictEqual(site.contents.news.on, true);
+  assert.ok(site.logo.src.indexOf('AC-0007/logo_mark.png') >= 0);
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0007/logo_banner.png') >= 0);
+  assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
 console.log('');

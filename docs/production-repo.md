@@ -9,13 +9,21 @@
 
 修正: `siteCfg_()` で常に現行設定を読む。`applyToGlobals` は既存オブジェクトを更新する。`bootAsync` 完了後に `refreshSiteDerived_()` する。
 
-## 新規案件
+## 新規本番案件
 
-1. 未使用の次番号を発行する（再利用しない）
+1. 未使用の次番号を発行する（再利用しない。デモ番号は使わない）
 2. `sites/_template.json` を `sites/AC-xxxx.json` に複製
 3. 会社名・地点・ON/OFF を書く（`status: active`）
 4. `sites/index.json` の `sites` / `productionSites` に追加
 5. `/?site=AC-xxxx` で確認 → 実機 → 承認後に端末登録
+
+## 新規デモ案件
+
+1. 未使用の次番号をデモ専用として発行する（再利用しない。あとから `productionSites` へ移さない）
+2. `sites/_template.json` を `sites/AC-xxxx.json` に複製
+3. `status: demo`、`projectName` は「デモ …」とする。AC-0000 は上書きしない
+4. `sites/index.json` の `sites` / `demoSites` に追加する。`productionSites` には入れない
+5. 見せるときは `/?site=AC-xxxx&demo=1`。端末には登録しない
 
 ## 案件終了
 

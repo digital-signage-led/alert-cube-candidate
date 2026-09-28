@@ -46,7 +46,12 @@
   "season": { "override": null },
   "updateSettings": { "refreshMs": 60000 },
   "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
-  "contentOrder": ["clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
+  "presentation": {
+    "observationMode": "scroll",
+    "observationLaps": 2,
+    "observationTrailingLogo": true
+  },
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },

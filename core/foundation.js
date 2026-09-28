@@ -12,7 +12,7 @@
   var lastGoodConfig_ = null;
   var catalog_ = null;
 
-  var OPERABLE_STATUS = { test: 1, active: 1 };
+  var OPERABLE_STATUS = { test: 1, demo: 1, active: 1 };
 
   function normalizeStatus(status, siteId) {
     var s = status != null && status !== '' ? String(status).toLowerCase() : '';
@@ -25,6 +25,7 @@
     var id = String(siteId || '').toUpperCase();
     var s = normalizeStatus(status, id);
     if (s === 'test') return id === 'AC-0000';
+    if (s === 'demo') return SITE_RE.test(id) && id !== 'AC-0000';
     return !!OPERABLE_STATUS[s] && s === 'active';
   }
 

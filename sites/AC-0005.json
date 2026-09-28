@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
-  "projectId": "AC-0003",
+  "projectId": "AC-0005",
   "status": "active",
-  "customer": "但南建設株式会社",
+  "customer": "レイズネクスト",
   "rental": "",
-  "label": "但南建設",
-  "projectName": "但南建設 WBGTサイネージ",
-  "siteName": "朝来市",
-  "location": "兵庫県朝来市生野町円山862-1",
-  "latitude": 35.1845,
-  "longitude": 134.7876,
+  "label": "レイズネクスト",
+  "projectName": "レイズネクスト WBGTサイネージ",
+  "siteName": "摂津市",
+  "location": "〒566-0044 大阪府摂津市西一津屋1-1",
+  "latitude": 34.7774,
+  "longitude": 135.5619,
   "resolution": "512x128",
   "layout": "AC-512",
   "faces": 4,
@@ -17,60 +17,49 @@
   "footSource": "出典：気象庁・環境省データ",
   "releasePin": null,
   "logo": {
-    "src": "./assets/sites/AC-0003/tannan_logo_128.png",
-    "corpSrc": "./assets/sites/AC-0003/tannan_logo_128.png",
-    "footSrc": "./assets/sites/AC-0003/tannan_logo.png",
+    "src": "./assets/sites/AC-0005/logo_128.png?v=1",
+    "corpSrc": "./assets/sites/AC-0005/logo_128.png?v=1",
+    "footSrc": "",
     "panelBg": "#ffffff",
-    "bannerSrc": "./assets/sites/AC-0003/tannan_logo.png"
+    "bannerSrc": "./assets/sites/AC-0005/logo_foot.png?v=1"
   },
   "moe": {
     "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
-    "point": "63201",
+    "point": "62078",
     "fallbackPoint": "",
-    "pointName": "生野",
-    "alertArea": "兵庫県",
+    "pointName": "大阪",
+    "alertArea": "大阪府",
     "region": "07",
-    "prefecture": "63"
+    "prefecture": "62"
   },
   "jma": {
-    "amedasPoint": "63201",
-    "amedasSupplementPoint": "63518",
-    "forecastArea": "280000",
+    "amedasPoint": "62078",
+    "amedasSupplementPoint": "",
+    "forecastArea": "270000",
     "forecastDetail": "",
-    "forecastLabel": "朝来市",
-    "warnArea": "280000",
-    "warnCity": "2822500",
-    "warnCityLabel": "朝来市"
+    "forecastLabel": "摂津市",
+    "warnArea": "270000",
+    "warnCity": "2722400",
+    "warnCityLabel": "摂津市"
   },
   "wbgt": {
     "seasonStart": { "month": 4, "day": 22 },
     "seasonEnd": { "month": 10, "day": 22 }
   },
-  "season": {
-    "override": null
-  },
-  "updateSettings": {
-    "refreshMs": 60000
-  },
-  "schedule": {
-    "enabled": false,
-    "weekStartsOn": 1,
-    "items": []
-  },
-  "greeting": {
-    "enabled": false,
-    "title": "",
-    "lines": [],
-    "foot": ""
-  },
+  "season": { "override": null },
+  "updateSettings": { "refreshMs": 60000 },
+  "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "greeting": { "enabled": false, "title": "", "lines": [], "foot": "" },
   "presentation": {
+    "sequence": "contentOrder",
     "observationMode": "scroll",
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "wbgt", "wbgt-i18n", "forecast"],
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
+    "observation": { "on": true },
     "weather": { "on": true },
     "temperature": { "on": true },
     "rain": { "on": true },
