@@ -114,6 +114,42 @@ test('Retry間隔は段階的で上限がある', function () {
   assert.ok(foundation.backoffMs(3) > foundation.backoffMs(1));
 });
 
+test('起動はURLの案件だけ。別案件や全コンテンツ初期値では始めない', function () {
+  var site7 = {
+    projectId: 'AC-0007',
+    resolution: '512x128',
+    contents: { clock: { on: true }, schedule: { on: false } }
+  };
+  var site1 = {
+    projectId: 'AC-0001',
+    resolution: '512x128',
+    contents: { clock: { on: true }, schedule: { on: true } }
+  };
+  var fromNet = foundation.chooseBootConfig('AC-0007', site7, site1);
+  assert.strictEqual(fromNet.ready, true);
+  assert.strictEqual(fromNet.source, 'network');
+  assert.strictEqual(fromNet.json.projectId, 'AC-0007');
+  var fromCache = foundation.chooseBootConfig('AC-0007', null, site7);
+  assert.strictEqual(fromCache.ready, true);
+  assert.strictEqual(fromCache.source, 'cache');
+  assert.strictEqual(fromCache.json.projectId, 'AC-0007');
+  var wrongCache = foundation.chooseBootConfig('AC-0007', null, site1);
+  assert.strictEqual(wrongCache.ready, false);
+  assert.strictEqual(wrongCache.source, 'waiting');
+  var none = foundation.chooseBootConfig('AC-0007', null, null);
+  assert.strictEqual(none.ready, false);
+  var store = {};
+  global.localStorage = {
+    setItem: function (k, v) { store[k] = v; },
+    getItem: function (k) { return Object.prototype.hasOwnProperty.call(store, k) ? store[k] : null; }
+  };
+  foundation.rememberSiteJson('AC-0007', site7);
+  foundation.rememberSiteJson('AC-0007', site1);
+  assert.strictEqual(foundation.readRememberedSiteJson('AC-0007').projectId, 'AC-0007');
+  assert.strictEqual(foundation.readRememberedSiteJson('AC-0001'), null);
+  delete global.localStorage;
+});
+
 test('共通更新で案件設定を消さない merge', function () {
   var legacy = {
     projectId: 'AC-0001',
@@ -452,11 +488,45 @@ test('AC-0006 は錦建設広島市中区の通常版', function () {
   assert.strictEqual(site.jma.forecastArea, '340000');
   assert.strictEqual(site.jma.warnCity, '3410100');
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'wbgt', 'forecast', 'news', 'wbgt-i18n']);
   assert.strictEqual(site.contents.warning.on, true);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.disaster.on, true);
-  assert.strictEqual(site.contents.news.on, false);
+  assert.strictEqual(site.contents.news.on, true);
+  var news = require('../contents/news/index.js');
+  assert.strictEqual(site.news.pageUrl, 'https://str-nishiki.co.jp/');
+  assert.strictEqual(site.news.maxItems, 2);
+  assert.ok(site.news.urls[0].indexOf('AC-0006/news.json') >= 0);
+  var live = news.parsePage([
+    '2026-09-25',
+    '',
+    '[令和8年度ひろしま企業健康宣言「健康づくり優良事業所」認定について](https://str-nishiki.co.jp/pages/1)_NEW_',
+    '',
+    '2026-09-02',
+    '',
+    '[優良建設工事表彰を受賞しました。](https://str-nishiki.co.jp/pages/1)',
+    '',
+    '2026-08-12',
+    '',
+    '[工事だより](https://str-nishiki.co.jp/pages/1)'
+  ].join('\n'), 2);
+  assert.strictEqual(live.length, 2);
+  assert.strictEqual(live[0].date, '2026年09月25日');
+  assert.strictEqual(live[0].title, '令和8年度ひろしま企業健康宣言「健康づくり優良事業所」認定について');
+  assert.strictEqual(live[1].title, '優良建設工事表彰を受賞しました。');
+  var htmlNews = news.parsePage(
+    '<div data-switch="date"><span></span>2026-09-25</div>' +
+    '<span data-field="title">健康宣言</span>' +
+    '<div data-switch="date">2026-09-02</div>' +
+    '<span data-field="title">表彰</span>',
+    2
+  );
+  assert.strictEqual(htmlNews.length, 2);
+  assert.strictEqual(htmlNews[0].title, '健康宣言');
+  assert.deepStrictEqual(news.pageFetchUrls('https://str-nishiki.co.jp/'), [
+    'https://str-nishiki.co.jp/',
+    'https://r.jina.ai/https://str-nishiki.co.jp/'
+  ]);
   assert.strictEqual(site.contents.boards.on, false);
   assert.ok(site.logo.src.indexOf('AC-0006/logo_stack.png') >= 0);
   assert.ok(site.logo.bannerSrc.indexOf('AC-0006/logo_wide.png') >= 0);
@@ -531,7 +601,7 @@ test('AC-0009 は大島組・米岡橋梁下部工の4面本番設定', function
   assert.strictEqual(site.label, '大島組');
   assert.strictEqual(site.siteName, '米岡橋梁下部工');
   assert.strictEqual(site.location, '〒943-0104 新潟県上越市鶴町52');
-  assert.strictEqual(site.memo, 'レンタルはニッケン上越営業所');
+  assert.strictEqual(site.memo, 'レンタルのニッケン上越営業');
   assert.strictEqual(site.faces, 4);
   assert.strictEqual(site.resolution, '512x128');
   assert.strictEqual(site.moe.point, '54651');

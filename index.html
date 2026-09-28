@@ -7,14 +7,14 @@
     <meta charset="UTF-8">
     <script src="./config/site-config.js?v=20260921-suminoe"></script>
     <script src="./safety/version.js?v=20260921-suminoe"></script>
-    <script src="./contents/registry.js?v=20260923-ac0004"></script>
+    <script src="./contents/registry.js?v=20260928-news-live"></script>
     <script src="./contents/modules.js?v=20260923-ac0004"></script>
-    <script src="./contents/news/index.js?v=20260928-news-logo"></script>
+    <script src="./contents/news/index.js?v=20260928-news-live"></script>
     <script src="./contents/boards/index.js?v=20260925-ac0004-boards"></script>
     <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
-    <script src="./core/foundation.js?v=20260923-ac0004"></script>
+    <script src="./core/foundation.js?v=20260928-site-hold"></script>
     <script src="./services/remote.js?v=20260921-suminoe"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
     <script src="./safety/fallback.js?v=20260921-suminoe"></script>
@@ -3039,6 +3039,13 @@
         return null;
     })();
     const DEMO_SIGNAGE_ACTIVE = DEMO_SIGNAGE || !!DEMO_ONLY;
+    /* デモ再生の警報は実発表に見せない。札は「発表中」ではなく「デモ」 */
+    function demoPlayback_() {
+        return DEMO_SIGNAGE || DEMO_RAINWARN_ONLY || DEMO_ALERT_ONLY || DEMO_TYPHOON_ONLY;
+    }
+    function alertIssueLabel_() {
+        return demoPlayback_() ? 'デモ' : '発表中';
+    }
     /* フルデモ警報: 色付き3段（L2〜L5）→ 白ベース3段（L2〜L5）を順に流す */
     const DEMO_RAIN_PASS_ORDER = ['hero', 'white'];
     let demoRainPassIdx_ = 0;
@@ -4881,14 +4888,16 @@
             }
             paintTyphoonFaces_(0);
             applySignageLogoPanel_();
-            tyHoldTimerId = setTimeout(function () {
-                if (n <= 1) {
-                    finishStorm_();
-                    return;
-                }
-                tyMapStepIdx_ = 1;
-                tick_();
-            }, TY_EDGE_HOLD_MS);
+            whenSceneSlideSettled_(function () {
+                tyHoldTimerId = setTimeout(function () {
+                    if (n <= 1) {
+                        finishStorm_();
+                        return;
+                    }
+                    tyMapStepIdx_ = 1;
+                    tick_();
+                }, TY_EDGE_HOLD_MS);
+            });
         }
         playStorm_();
     }
@@ -5406,7 +5415,8 @@
         badge.className = 'ra-hero-chrome-badge';
         const status = document.createElement('span');
         status.className = 'ra-hero-chrome-status';
-        status.textContent = '発表中';
+        status.textContent = alertIssueLabel_();
+        if (demoPlayback_()) badge.classList.add('is-demo');
         badge.appendChild(status);
         seg.appendChild(place);
         seg.appendChild(clock);
@@ -6244,7 +6254,11 @@
         document.querySelectorAll('#sceneRainWarn .ra-hero-txt').forEach(function (n) {
             n.textContent = txt.name;
         });
-        document.querySelectorAll('#sceneRainWarn .ra-top-status').forEach(function (n) { n.textContent = '発表中'; });
+        document.querySelectorAll('#sceneRainWarn .ra-top-status').forEach(function (n) {
+            n.textContent = alertIssueLabel_();
+            const badge = n.closest('.ra-top-badge');
+            if (badge) badge.classList.toggle('is-demo', demoPlayback_());
+        });
         document.querySelectorAll('#sceneRainWarn .ra-top-level').forEach(function (n) {
             n.textContent = '警戒レベル' + (RAIN_WARN_LEVEL_NUM[key] || '');
         });
@@ -6581,7 +6595,8 @@
         const badge = document.createElement('span');
         badge.className = 'badge';
         const badgeTxt = document.createElement('span');
-        badgeTxt.textContent = '発表中';
+        badgeTxt.textContent = alertIssueLabel_();
+        if (demoPlayback_()) badge.classList.add('is-demo');
         badge.appendChild(badgeTxt);
         seg.appendChild(area);
         seg.appendChild(issued);
@@ -6914,6 +6929,7 @@
         return GLOBAL_SCROLL_SPEED_PX;
     }
     let sceneSlideAnimId = null;
+    let sceneSlideSettledFn_ = null;
     let sceneEndHoldTimerId_ = null;
     let scenePostHoldTimerId_ = null;
     /** 全シーン共通スクロール位置（下帯・本体とも継ぎ目でリセットしない） */
@@ -6959,13 +6975,19 @@
             scenePostHoldTimerId_ = null;
         }
     }
-    /** スクロール開始前に1秒静止 */
+    /** 画面の切替が終わってから1秒静止し、その後にスクロールを始める */
+    function whenSceneSlideSettled_(fn) {
+        if (sceneSlideAnimId == null) { fn(); return; }
+        sceneSlideSettledFn_ = fn;
+    }
     function runSceneScrollAfterHold_(fn) {
         clearSceneEndHoldTimer_();
-        sceneEndHoldTimerId_ = setTimeout(function () {
-            sceneEndHoldTimerId_ = null;
-            fn();
-        }, SCENE_SCROLL_HOLD_MS);
+        whenSceneSlideSettled_(function () {
+            sceneEndHoldTimerId_ = setTimeout(function () {
+                sceneEndHoldTimerId_ = null;
+                fn();
+            }, SCENE_SCROLL_HOLD_MS);
+        });
     }
     /** スクロール終了後に1秒静止してから次へ */
     function runAfterSceneEndHold_(fn) {
@@ -6987,6 +7009,7 @@
             cancelAnimationFrame(sceneSlideAnimId);
             sceneSlideAnimId = null;
         }
+        sceneSlideSettledFn_ = null;
     }
     function detectScrollLapCrossed_(prevX, newX) {
         return newX > prevX;
@@ -7221,7 +7244,7 @@
                 if (!hadController) { hadController = true; return; }
                 reloadNow_();
             });
-            navigator.serviceWorker.register('./sw.js?v=20260928-fast', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20260928-news-live', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, 20000);
             }).catch(function () {});
         }
@@ -9494,6 +9517,9 @@
                 hideSceneEl(current);
                 applyScrollX_(nextEl, 0);
                 nextEl.style.zIndex = '';
+                const settled = sceneSlideSettledFn_;
+                sceneSlideSettledFn_ = null;
+                if (settled) settled();
             }
         }
         sceneSlideAnimId = requestAnimationFrame(tick);
@@ -11467,41 +11493,93 @@
     function newsCfg_() {
         return (siteCfg_() && siteCfg_().news) || {};
     }
+    function fetchNewsText_(url, timeoutMs) {
+        return new Promise(function (resolve, reject) {
+            const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+            const timer = ctrl ? setTimeout(function () { ctrl.abort(); }, timeoutMs) : null;
+            fetch(url, ctrl ? { signal: ctrl.signal, cache: 'no-store' } : { cache: 'no-store' })
+                .then(function (res) {
+                    if (timer) clearTimeout(timer);
+                    if (!res.ok) throw new Error('news ' + res.status);
+                    return res.text();
+                })
+                .then(resolve)
+                .catch(function (err) {
+                    if (timer) clearTimeout(timer);
+                    reject(err);
+                });
+        });
+    }
+    function rememberNews_(cfg, items) {
+        newsLoadedAt_ = Date.now();
+        return window.AlertCubeNews.remember(cfg, items);
+    }
+    function loadNewsJson_(cfg) {
+        const api = window.AlertCubeNews;
+        const urls = Array.isArray(cfg.urls) ? cfg.urls.filter(Boolean) : [];
+        return new Promise(function (resolve) {
+            let i = 0;
+            function next() {
+                if (i >= urls.length) { resolve([]); return; }
+                fetchNewsText_(urls[i++], 8000)
+                    .then(function (text) {
+                        const items = api.normalizeItems(JSON.parse(text), cfg.maxItems);
+                        if (!items.length) { next(); return; }
+                        resolve(items);
+                    })
+                    .catch(function () { next(); });
+            }
+            next();
+        });
+    }
+    function loadNewsPage_(cfg) {
+        const api = window.AlertCubeNews;
+        const urls = api.pageFetchUrls(cfg.pageUrl);
+        return new Promise(function (resolve) {
+            let i = 0;
+            function next() {
+                if (i >= urls.length) { resolve([]); return; }
+                fetchNewsText_(urls[i++], 18000)
+                    .then(function (text) {
+                        const items = api.parsePage(text, cfg.maxItems);
+                        if (!items.length) { next(); return; }
+                        resolve(items);
+                    })
+                    .catch(function () { next(); });
+            }
+            next();
+        });
+    }
     function loadNewsItems_(cfg) {
         const api = window.AlertCubeNews;
         if (!api) return Promise.resolve([]);
         const inline = api.normalizeItems(cfg, cfg.maxItems);
-        if (inline.length) return Promise.resolve(api.remember(cfg, inline));
         const cached = api.itemsOf(cfg);
+        const pageUrl = cfg.pageUrl ? String(cfg.pageUrl).trim() : '';
         const refreshMs = Number(cfg.refreshMs);
-        if (cached.length && Number.isFinite(refreshMs) && refreshMs > 0 && newsLoadedAt_ && (Date.now() - newsLoadedAt_) < refreshMs) {
+        const pageRefreshMs = pageUrl ? (Number.isFinite(refreshMs) && refreshMs > 0 ? refreshMs : 30 * 60 * 1000) : refreshMs;
+        const fresh = cached.length && Number.isFinite(pageRefreshMs) && pageRefreshMs > 0 && newsLoadedAt_ && (Date.now() - newsLoadedAt_) < pageRefreshMs;
+        if (!pageUrl) {
+            if (inline.length) return Promise.resolve(api.remember(cfg, inline));
+            if (fresh) return Promise.resolve(cached);
+            return loadNewsJson_(cfg).then(function (items) {
+                return items.length ? rememberNews_(cfg, items) : cached;
+            });
+        }
+        if (fresh) return Promise.resolve(cached);
+        const job = loadNewsPage_(cfg).then(function (items) {
+            if (items.length) return rememberNews_(cfg, items);
+            return loadNewsJson_(cfg).then(function (jsonItems) {
+                if (jsonItems.length) return rememberNews_(cfg, jsonItems);
+                if (cached.length) return cached;
+                return inline.length ? api.remember(cfg, inline) : [];
+            });
+        });
+        if (cached.length) {
+            job.catch(function () {});
             return Promise.resolve(cached);
         }
-        const urls = Array.isArray(cfg.urls) ? cfg.urls.filter(Boolean) : [];
-        if (!urls.length) return Promise.resolve(cached);
-        return new Promise(function (resolve) {
-            let i = 0;
-            function next() {
-                if (i >= urls.length) { resolve(cached); return; }
-                const url = urls[i++];
-                const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-                const timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 8000) : null;
-                fetch(url, ctrl ? { signal: ctrl.signal, cache: 'no-store' } : { cache: 'no-store' })
-                    .then(function (res) { if (!res.ok) throw new Error('news ' + res.status); return res.json(); })
-                    .then(function (data) {
-                        if (timer) clearTimeout(timer);
-                        const items = api.normalizeItems(data, cfg.maxItems);
-                        if (!items.length) { next(); return; }
-                        newsLoadedAt_ = Date.now();
-                        resolve(api.remember(cfg, items));
-                    })
-                    .catch(function () {
-                        if (timer) clearTimeout(timer);
-                        next();
-                    });
-            }
-            next();
-        });
+        return job;
     }
     function finishNewsScene_(gen) {
         if (gen !== newsPlayGen_) return;
@@ -11681,6 +11759,20 @@
                 refreshSiteDerived_();
             }
         } catch (bootErr) { console.warn('[AC bootAsync]', bootErr && bootErr.message); }
+        if (!window.AlertCubeSite || !window.AlertCubeSite.configReady) {
+            bootDisplayHold_ = true;
+            ALL_SCENES_.forEach(hideSceneEl);
+            var siteWaitBusy_ = false;
+            setInterval(function () {
+                if (siteWaitBusy_ || !window.AlertCubeFoundation || !window.AlertCubeFoundation.bootAsync) return;
+                siteWaitBusy_ = true;
+                window.AlertCubeFoundation.bootAsync().then(function (result) {
+                    siteWaitBusy_ = false;
+                    if (result && result.configReady) location.reload();
+                }).catch(function () { siteWaitBusy_ = false; });
+            }, 5000);
+            return;
+        }
         if (window.AlertCubeRuntime && window.AlertCubeRuntime.applyFixedShell) {
             try { window.AlertCubeRuntime.applyFixedShell(); } catch (_) {}
         }

@@ -393,11 +393,43 @@
     }
   };
 
+  var SITE_CACHE_PREFIX = 'alertcube.site.v1.';
+
+  function sameSiteJson_(siteId, json) {
+    if (!json || !validateSiteConfig(json).ok) return false;
+    return String(json.projectId || '').toUpperCase() === String(siteId || '').toUpperCase();
+  }
+
+  function chooseBootConfig(siteId, networkJson, rememberedJson) {
+    if (sameSiteJson_(siteId, networkJson)) return { ready: true, source: 'network', json: networkJson };
+    if (sameSiteJson_(siteId, rememberedJson)) return { ready: true, source: 'cache', json: rememberedJson };
+    return { ready: false, source: 'waiting', json: null };
+  }
+
+  function rememberSiteJson(siteId, json) {
+    try {
+      if (!sameSiteJson_(siteId, json) || !global.localStorage) return;
+      global.localStorage.setItem(SITE_CACHE_PREFIX + String(siteId).toUpperCase(), JSON.stringify(json));
+    } catch (_) {}
+  }
+
+  function readRememberedSiteJson(siteId) {
+    try {
+      if (!global.localStorage) return null;
+      var raw = global.localStorage.getItem(SITE_CACHE_PREFIX + String(siteId).toUpperCase());
+      if (!raw) return null;
+      var json = JSON.parse(raw);
+      return sameSiteJson_(siteId, json) ? json : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   function bootSync() {
     var resolved = resolveSiteId();
+    resolved.configReady = false;
     var legacy = global.SignageConfig || null;
-    if (legacy) {
-      legacy.projectId = legacy.projectId || resolved.siteId;
+    if (legacy && String(legacy.projectId || '').toUpperCase() === resolved.siteId) {
       applyContentsDefaults(legacy);
       rememberGoodConfig(legacy);
     }
@@ -431,34 +463,48 @@
 
   function bootAsync() {
     var resolved = global.AlertCubeSite || bootSync();
+    resolved.configReady = false;
     return loadCatalog().then(function () {
       return loadSiteJson(resolved.siteId);
     }).then(function (result) {
-      var jsonStatus = result && result.json && result.json.status;
-      resolved.status = normalizeStatus(jsonStatus || catalogStatus(resolved.siteId), resolved.siteId);
-      resolved.operable = isStatusOperable(resolved.status, resolved.siteId);
+      var networkJson = result && result.ok ? result.json : null;
+      var chosen = chooseBootConfig(resolved.siteId, networkJson, readRememberedSiteJson(resolved.siteId));
       global.AlertCubeSite = resolved;
-      if (result && result.ok && result.json) {
-        var merged = mergeJsonOntoLegacy(result.json, global.SignageConfig);
-        merged.status = resolved.status;
-        applyToGlobals(merged, toLegacyBrand(result.json));
-        if (global.AlertCubeRuntime && global.AlertCubeRuntime.applyFixedShell) {
-          isolate('shell', function () { global.AlertCubeRuntime.applyFixedShell(); });
-        }
-        if (!resolved.operable) {
-          Log.warn('lifecycle', resolved.siteId + ' status=' + resolved.status + ' — live fetch disabled');
-        } else {
-          Log.info('config', 'applied ' + resolved.siteId + ' status=' + resolved.status);
-        }
-      } else if (global.SignageConfig) {
-        applyContentsDefaults(global.SignageConfig);
-        Log.info('config', 'using last-known site-config.js');
+      if (!chosen.ready) {
+        resolved.configReady = false;
+        resolved.configSource = 'waiting';
+        resolved.operable = false;
+        Log.warn('config', resolved.siteId + ' is not available; holding until that site file loads');
+        return {
+          site: resolved,
+          config: currentConfig(),
+          jsonOk: false,
+          operable: false,
+          configReady: false
+        };
+      }
+      if (chosen.source === 'network') rememberSiteJson(resolved.siteId, chosen.json);
+      resolved.status = normalizeStatus(chosen.json.status || catalogStatus(resolved.siteId), resolved.siteId);
+      resolved.operable = isStatusOperable(resolved.status, resolved.siteId);
+      resolved.configReady = true;
+      resolved.configSource = chosen.source;
+      var merged = mergeJsonOntoLegacy(chosen.json, global.SignageConfig);
+      merged.status = resolved.status;
+      applyToGlobals(merged, toLegacyBrand(chosen.json));
+      if (global.AlertCubeRuntime && global.AlertCubeRuntime.applyFixedShell) {
+        isolate('shell', function () { global.AlertCubeRuntime.applyFixedShell(); });
+      }
+      if (!resolved.operable) {
+        Log.warn('lifecycle', resolved.siteId + ' status=' + resolved.status + ' — live fetch disabled');
+      } else {
+        Log.info('config', 'applied ' + resolved.siteId + ' status=' + resolved.status + ' via ' + chosen.source);
       }
       return {
         site: resolved,
         config: currentConfig(),
-        jsonOk: !!(result && result.ok),
-        operable: resolved.operable
+        jsonOk: chosen.source === 'network',
+        operable: resolved.operable,
+        configReady: true
       };
     });
   }
@@ -483,6 +529,9 @@
     applyToGlobals: applyToGlobals,
     currentConfig: currentConfig,
     Content: Content,
+    chooseBootConfig: chooseBootConfig,
+    rememberSiteJson: rememberSiteJson,
+    readRememberedSiteJson: readRememberedSiteJson,
     bootSync: bootSync,
     bootAsync: bootAsync,
     loadSiteJson: loadSiteJson,

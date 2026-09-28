@@ -1,20 +1,20 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260928-ac0009';
+var CACHE_NAME = 'alert-cube-sites-20260928-site-hold';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
   './safety/fallback.js?v=20260921-suminoe',
   './safety/retry.js?v=20260921-suminoe',
   './safety/rollback.js?v=20260921-suminoe',
-  './contents/registry.js?v=20260923-ac0004',
+  './contents/registry.js?v=20260928-news-live',
   './contents/modules.js?v=20260923-ac0004',
-  './contents/news/index.js?v=20260928-news-logo',
+  './contents/news/index.js?v=20260928-news-live',
   './contents/boards/index.js?v=20260925-ac0004-boards',
   './contents/logo-scroll/index.js?v=20260923-ac0004',
   './contents/index.html',
   './data/jma-weather-icons.js?v=20260921-suminoe',
   './data/jma-regions.js?v=20260921-suminoe',
-  './core/foundation.js?v=20260923-ac0004',
+  './core/foundation.js?v=20260928-site-hold',
   './services/remote.js?v=20260921-suminoe',
   './services/typhoon/index.js?v=20260921-suminoe',
   './scripts/alert-cube-core.js?v=20260921-suminoe',
@@ -47,6 +47,7 @@ var PRECACHE = [
   './assets/sites/AC-0007/news.json',
   './assets/sites/AC-0006/logo_stack.png?v=1',
   './assets/sites/AC-0006/logo_wide.png?v=1',
+  './assets/sites/AC-0006/news.json',
   './assets/sites/AC-0005/logo_128.png?v=1',
   './assets/sites/AC-0005/logo_foot.png?v=1',
   './assets/sites/AC-0004/logo_stack.png?v=6',
@@ -80,7 +81,7 @@ self.addEventListener('activate', function (event) {
 });
 
 function isApiRequest_(url) {
-  return /jma\.go\.jp|googleapis\.com|script\.google|timeapi\.io|worldtimeapi/.test(url.hostname);
+  return /jma\.go\.jp|googleapis\.com|script\.google|timeapi\.io|worldtimeapi|r\.jina\.ai/.test(url.hostname);
 }
 
 self.addEventListener('fetch', function (event) {
@@ -89,6 +90,21 @@ self.addEventListener('fetch', function (event) {
   var url = new URL(req.url);
   if (isApiRequest_(url)) return;
   if (/\/sw\.js$/i.test(url.pathname)) return;
+
+  if (/\/sites\/(?:index|AC-\d{4})\.json$/i.test(url.pathname)) {
+    event.respondWith(
+      fetch(req).then(function (res) {
+        if (res && res.ok) {
+          var copy = res.clone();
+          caches.open(CACHE_NAME).then(function (cache) { cache.put(req, copy); });
+        }
+        return res;
+      }).catch(function () {
+        return caches.match(req).then(function (hit) { return hit || Response.error(); });
+      })
+    );
+    return;
+  }
 
   var isHtml = url.pathname === '/' || /\.html$/i.test(url.pathname);
   if (isHtml) {
