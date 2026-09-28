@@ -200,6 +200,7 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.ok(index.productionSites.indexOf('AC-0005') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0006') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0007') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0009') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
   assert.ok(Array.isArray(index.demoSites));
   index.demoSites.forEach(function (id) {
@@ -518,6 +519,41 @@ test('AC-0008 は太陽建機レンタル名古屋市のデモ', function () {
   assert.strictEqual(merged.site.locationLabel, '名古屋市');
   assert.strictEqual(merged.site.label, '太陽建機レンタル');
   assert.strictEqual(merged.status, 'demo');
+  assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
+test('AC-0009 は大島組・米岡橋梁下部工の4面本番設定', function () {
+  var site = require('../sites/AC-0009.json');
+  var index = require('../sites/index.json');
+  assert.strictEqual(site.projectId, 'AC-0009');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '株式会社大島組');
+  assert.strictEqual(site.label, '大島組');
+  assert.strictEqual(site.siteName, '米岡橋梁下部工');
+  assert.strictEqual(site.location, '〒943-0104 新潟県上越市鶴町52');
+  assert.strictEqual(site.memo, 'レンタルはニッケン上越営業所');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.moe.point, '54651');
+  assert.strictEqual(site.moe.pointName, '高田');
+  assert.strictEqual(site.moe.alertArea, '新潟県');
+  assert.strictEqual(site.moe.region, '06');
+  assert.strictEqual(site.moe.prefecture, '54');
+  assert.strictEqual(site.jma.amedasPoint, '54651');
+  assert.strictEqual(site.jma.forecastArea, '150000');
+  assert.strictEqual(site.jma.forecastDetail, '150031');
+  assert.strictEqual(site.jma.warnCity, '1522200');
+  assert.strictEqual(site.jma.warnCityLabel, '上越市');
+  assert.strictEqual(site.latitude, 37.1292);
+  assert.strictEqual(site.longitude, 138.3062);
+  assert.strictEqual(site.contents.news.on, true);
+  assert.ok(site.logo.src.indexOf('AC-0009/logo_mark.png') >= 0);
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0009/logo_banner.png') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0009') >= 0);
+  assert.ok(index.demoSites.indexOf('AC-0009') < 0);
+  var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
+  assert.strictEqual(merged.site.locationLabel, '米岡橋梁下部工');
+  assert.strictEqual(merged.site.label, '大島組');
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 

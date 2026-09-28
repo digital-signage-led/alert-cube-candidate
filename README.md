@@ -17,6 +17,7 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/?site=AC-0006 （錦建設 広島市中区）
 - http://127.0.0.1:3200/?site=AC-0007 （佐々木建設 北島町）
 - http://127.0.0.1:3200/?site=AC-0008&demo=1 （デモ 太陽建機レンタル 名古屋市。本番端末へ登録しない）
+- http://127.0.0.1:3200/?site=AC-0009 （大島組 米岡橋梁下部工）
 - http://127.0.0.1:3200/?site=AC-0000 （内部テスト。本番端末へ登録しない）
 - http://127.0.0.1:3200/contents/ （V2.0コンテンツ確認一覧）
 - http://127.0.0.1:3200/?offseason=1
@@ -53,6 +54,7 @@ docs/               運用
 | AC-0006 | active | 錦建設株式会社 / 広島県広島市中区舟入本町7 |
 | AC-0007 | active | 佐々木建設株式会社 / 徳島県板野郡北島町 |
 | AC-0008 | demo | 太陽建機レンタル株式会社 / 愛知県名古屋市。本番端末へ登録しない |
+| AC-0009 | active | 株式会社大島組 / 〒943-0104 新潟県上越市鶴町52 |
 
 発行済み ID は再利用しない。追加するときは `sites/_template.json` を新しい番号へ複製する。デモは別番号で `status: demo` とし、`demoSites` にだけ入れる。`?demo=1` は演出で、外してもその番号は本番にならない。
 
@@ -79,5 +81,6 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0006: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0006
 - AC-0007: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0007
 - AC-0008: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0008&demo=1
+- AC-0009: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0009
 - AC-0000: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0000
 - コンテンツ一覧: https://digital-signage-led.github.io/alert-cube-candidate/contents/
