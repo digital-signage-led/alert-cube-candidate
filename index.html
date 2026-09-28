@@ -736,19 +736,7 @@
             font-family: "Noto Sans JP", sans-serif; text-align: center;
             letter-spacing: 0; flex: 1 1 auto; box-sizing: border-box;
         }
-        /* 横スクロール: 128px枠に項目名と時刻を2行で収める */
-        #scene2.scene2-scroll-mode .s2-meta-slot-panel .s2-meta-panel-stack {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100%; line-height: 1.05; white-space: nowrap; text-overflow: clip;
-            font-size: 12px; gap: 0;
-        }
-        #scene2.scene2-scroll-mode .s2-meta-k,
-        #scene2.scene2-scroll-mode .s2-meta-v {
-            display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
-            white-space: nowrap; font-weight: 700; letter-spacing: 0;
-        }
-        #scene2.scene2-scroll-mode .s2-meta-k { font-size: 11px; line-height: 13px; }
-        #scene2.scene2-scroll-mode .s2-meta-v { font-size: 12px; line-height: 14px; }
+        /* 横スクロール: 白帯は項目名の1行 */
         #scene2 .s2-tmax-high, #scene2 .s2-tmax-low { font-size: 40px; }
         #scene2 .s2-tmax-sep { font-size: 40px; font-weight: 800; }
         #scene2 .s2-tmax-unit { font-size: 16px; }
@@ -2924,7 +2912,8 @@
             if (previewMode === 'fixed') return false;
         }
         const cfg = (siteCfg_() && siteCfg_().presentation) || {};
-        return cfg.observationMode === 'scroll';
+        /* 気象観測は横スクロールを標準とし、案件が明示した場合だけ4面固定にする。 */
+        return cfg.observationMode !== 'fixed';
     }
     function scene2ScrollLaps_() {
         const cfg = (siteCfg_() && siteCfg_().presentation) || {};
@@ -8794,15 +8783,10 @@
                 return scene2TypesOn_().indexOf(type) >= 0;
             });
             let slots = types.map(function (type) {
-                const foot = scene2FootTextForType_(type, obs);
                 const label = type === 'weather'
                     ? (getSiteLocationLabel_() || '天気')
                     : (SCENE2_META_LABELS[type] || type);
-                const text = type === 'weather'
-                    ? '<span class="s2-meta-panel-txt">' + escapeS1Html(label) + '</span>'
-                    : '<span class="s2-meta-panel-txt s2-meta-panel-stack">' +
-                        '<span class="s2-meta-k">' + escapeS1Html(label) + '</span>' +
-                        '<span class="s2-meta-v">' + escapeS1Html(foot) + '</span></span>';
+                const text = '<span class="s2-meta-panel-txt">' + escapeS1Html(label) + '</span>';
                 return '<div class="s2-meta-slot s2-meta-slot-panel">' + text + '</div>';
             }).join('');
             const presentation = (siteCfg_() && siteCfg_().presentation) || {};
