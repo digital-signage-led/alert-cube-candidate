@@ -664,6 +664,16 @@
             max-width: 108px;
             max-height: 108px;
         }
+        /* AC-0009: 円形マークが枠いっぱいに当たるので、白余白を残す */
+        html.site-ac-0009 #scene2 .s2-logo-face-img,
+        html.site-ac-0009 #scene4 .fc-logo-panel .fc-logo-face-img,
+        html.site-ac-0009 #scene5 .d5-logo-panel .d5-logo-face-img,
+        html.site-ac-0009 #sceneLogo .logo-face-img {
+            width: 104px;
+            height: 104px;
+            max-width: 104px;
+            max-height: 104px;
+        }
         #scene2.scene2-scroll-mode .s2-meta-bar { z-index: 12; }
         /* 気象種別切替: 現行は上へシュッ、次は下から */
         #scene2 .conveyor-track {
@@ -2889,6 +2899,7 @@
         if (!query.get('warnArea') && jma.warnArea) JMA_WARN_AREA = jma.warnArea;
         if (!query.get('warnCity') && jma.warnCity) JMA_WARN_CITY = jma.warnCity;
         document.documentElement.classList.toggle('site-ac-0007', String(c.projectId || '') === 'AC-0007');
+        document.documentElement.classList.toggle('site-ac-0009', String(c.projectId || '') === 'AC-0009');
         if (typeof MOE_POINT_CFG !== 'undefined') MOE_POINT_CFG.pointName = getSiteLocationLabel_();
         if (typeof rainWarnMeta !== 'undefined') {
             rainWarnMeta.cityName = (JMA_WARN_CITY_LABELS && JMA_WARN_CITY_LABELS[JMA_WARN_CITY]) || getSiteLocationLabel_();
