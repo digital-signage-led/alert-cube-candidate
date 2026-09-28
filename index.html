@@ -7180,6 +7180,43 @@
         fitS1DateFontSize_();
         fitClockHmFontSize_();
     }
+    function watchLiveUpdates_() {
+        var reloading = false;
+        function reloadNow_() {
+            if (reloading) return;
+            reloading = true;
+            location.reload();
+        }
+        if ('serviceWorker' in navigator) {
+            var hadController = !!navigator.serviceWorker.controller;
+            navigator.serviceWorker.addEventListener('controllerchange', function () {
+                if (!hadController) { hadController = true; return; }
+                reloadNow_();
+            });
+            navigator.serviceWorker.register('./sw.js?v=20260928-fast', { updateViaCache: 'none' }).then(function (reg) {
+                setInterval(function () { reg.update().catch(function () {}); }, 20000);
+            }).catch(function () {});
+        }
+        var siteId = String((window.AlertCubeSite && window.AlertCubeSite.siteId) || '');
+        var siteUrl = /^AC-\d{4}$/.test(siteId) ? './sites/' + siteId + '.json' : '';
+        var seenHtml = null;
+        var seenSite = null;
+        setInterval(function () {
+            var jobs = [
+                fetch('./index.html', { cache: 'no-store' }).then(function (res) { return res.ok ? res.text() : ''; })
+            ];
+            if (siteUrl) {
+                jobs.push(fetch(siteUrl, { cache: 'no-store' }).then(function (res) { return res.ok ? res.text() : ''; }));
+            }
+            Promise.all(jobs).then(function (parts) {
+                var html = parts[0] || '';
+                var site = parts[1] || '';
+                if (!html) return;
+                if (seenHtml == null) { seenHtml = html; seenSite = site; return; }
+                if (html !== seenHtml || (siteUrl && site && site !== seenSite)) reloadNow_();
+            }).catch(function () {});
+        }, 20000);
+    }
     function startClockTicker() {
         if (clockIntervalId != null) { clearTimeout(clockIntervalId); clockIntervalId = null; }
         if (clockBackupIntervalId != null) { clearInterval(clockBackupIntervalId); clockBackupIntervalId = null; }
@@ -11709,9 +11746,7 @@
                 }
                 scheduleDataRefresh();
                 startSingleSceneDemo_();
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('./sw.js?v=20260921-suminoe').catch(function () {});
-                }
+                watchLiveUpdates_();
                 return;
             }
             if (DEMO_ONLY !== 'schedule') applyDemoWeatherStatic();
@@ -11747,9 +11782,7 @@
             try { transitionToScene(s1, playScene1); } catch (e2) { console.error('fallback playScene1', e2); }
         }
         startBackgroundFetch_({ jma: true, moe: true, nowc: true, forecast: true, labels: ['起動'] });
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20260921-suminoe').catch(function () {});
-        }
+        watchLiveUpdates_();
         document.addEventListener('visibilitychange', function() {
             if (document.visibilityState === 'visible') {
                 syncTimeFromNetwork().then(function () { updateClock(); startClockTicker(); }).catch(function () { startClockTicker(); });

@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260928-observation-scroll';
+var CACHE_NAME = 'alert-cube-sites-20260928-fast-update';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -81,6 +81,7 @@ self.addEventListener('fetch', function (event) {
   if (req.method !== 'GET') return;
   var url = new URL(req.url);
   if (isApiRequest_(url)) return;
+  if (/\/sw\.js$/i.test(url.pathname)) return;
 
   var isHtml = url.pathname === '/' || /\.html$/i.test(url.pathname);
   if (isHtml) {
