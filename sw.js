@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260928-fast-update';
+var CACHE_NAME = 'alert-cube-sites-20260928-ac0008';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -8,7 +8,7 @@ var PRECACHE = [
   './safety/rollback.js?v=20260921-suminoe',
   './contents/registry.js?v=20260923-ac0004',
   './contents/modules.js?v=20260923-ac0004',
-  './contents/news/index.js?v=20260923-ac0004',
+  './contents/news/index.js?v=20260928-news-logo',
   './contents/boards/index.js?v=20260925-ac0004-boards',
   './contents/logo-scroll/index.js?v=20260923-ac0004',
   './contents/index.html',
@@ -34,6 +34,9 @@ var PRECACHE = [
   './sites/AC-0005.json',
   './sites/AC-0006.json',
   './sites/AC-0007.json',
+  './sites/AC-0008.json',
+  './assets/sites/AC-0008/logo_mark.png?v=1',
+  './assets/sites/AC-0008/logo_banner.png?v=1',
   './assets/sites/AC-0007/logo_mark.png?v=2',
   './assets/sites/AC-0007/logo_foot.png?v=2',
   './assets/sites/AC-0007/logo_banner.png?v=3',

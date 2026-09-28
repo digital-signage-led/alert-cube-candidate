@@ -63,7 +63,7 @@
     function badgeHtml() {
       if (!logo && !badge) return '';
       return '<div class="news-badge">' +
-        (logo ? '<img class="news-badge-logo" src="' + escapeHtml(logo) + '" alt="" decoding="sync">' : '') +
+        (logo ? '<span class="news-badge-logo-plate"><img class="news-badge-logo" src="' + escapeHtml(logo) + '" alt="" decoding="sync"></span>' : '') +
         (badge ? '<span class="news-badge-label">' + escapeHtml(badge) + '</span>' : '') +
         '</div>';
     }

@@ -9,7 +9,7 @@
     <script src="./safety/version.js?v=20260921-suminoe"></script>
     <script src="./contents/registry.js?v=20260923-ac0004"></script>
     <script src="./contents/modules.js?v=20260923-ac0004"></script>
-    <script src="./contents/news/index.js?v=20260923-ac0004"></script>
+    <script src="./contents/news/index.js?v=20260928-news-logo"></script>
     <script src="./contents/boards/index.js?v=20260925-ac0004-boards"></script>
     <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
@@ -654,6 +654,16 @@
             object-fit: contain;
             background: #ffffff;
         }
+        /* AC-0007: 面ロゴの吉は枠いっぱいに当たるので、少し内側へ */
+        html.site-ac-0007 #scene2 .s2-logo-face-img,
+        html.site-ac-0007 #scene4 .fc-logo-panel .fc-logo-face-img,
+        html.site-ac-0007 #scene5 .d5-logo-panel .d5-logo-face-img,
+        html.site-ac-0007 #sceneLogo .logo-face-img {
+            width: 108px;
+            height: 108px;
+            max-width: 108px;
+            max-height: 108px;
+        }
         #scene2.scene2-scroll-mode .s2-meta-bar { z-index: 12; }
         /* 気象種別切替: 現行は上へシュッ、次は下から */
         #scene2 .conveyor-track {
@@ -878,9 +888,15 @@
             gap: 20px; padding: 0 28px; box-sizing: border-box; white-space: nowrap;
         }
         .news-badge { flex-shrink: 0; display: flex; flex-direction: row; align-items: center; gap: 12px; height: 128px; }
-        .news-badge-logo {
-            display: block; width: 96px; height: 96px; flex: 0 0 96px; object-fit: contain;
+        .news-badge-logo-plate {
+            display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+            box-sizing: border-box; height: 104px; padding: 14px 10px;
             background: #ffffff; border-radius: 8px;
+        }
+        .news-badge-logo {
+            display: block; width: auto; height: 76px; max-width: 84px; max-height: 76px;
+            object-fit: contain; object-position: center center;
+            background: #ffffff;
         }
         .news-badge-label { font-size: 28px; font-weight: 800; letter-spacing: 0.06em; color: #C8E8F5; white-space: nowrap; }
         .news-sep { flex-shrink: 0; font-size: 22px; font-weight: 800; color: #57B8ED; }
@@ -2872,6 +2888,7 @@
         if (!query.get('rainLon')) RAIN_ALERT_LON = parseFloat(DEFAULT_GEO_LON);
         if (!query.get('warnArea') && jma.warnArea) JMA_WARN_AREA = jma.warnArea;
         if (!query.get('warnCity') && jma.warnCity) JMA_WARN_CITY = jma.warnCity;
+        document.documentElement.classList.toggle('site-ac-0007', String(c.projectId || '') === 'AC-0007');
         if (typeof MOE_POINT_CFG !== 'undefined') MOE_POINT_CFG.pointName = getSiteLocationLabel_();
         if (typeof rainWarnMeta !== 'undefined') {
             rainWarnMeta.cityName = (JMA_WARN_CITY_LABELS && JMA_WARN_CITY_LABELS[JMA_WARN_CITY]) || getSiteLocationLabel_();

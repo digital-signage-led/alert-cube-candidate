@@ -487,6 +487,40 @@ test('AC-0007 は佐々木建設北島町の4面本番設定', function () {
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
+test('AC-0008 は太陽建機レンタル名古屋市のデモ', function () {
+  var site = require('../sites/AC-0008.json');
+  var index = require('../sites/index.json');
+  assert.strictEqual(site.projectId, 'AC-0008');
+  assert.strictEqual(site.status, 'demo');
+  assert.strictEqual(site.customer, '太陽建機レンタル株式会社');
+  assert.strictEqual(site.label, '太陽建機レンタル');
+  assert.strictEqual(site.projectName, 'デモ 太陽建機レンタル');
+  assert.strictEqual(site.siteName, '名古屋市');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.moe.point, '51106');
+  assert.strictEqual(site.moe.pointName, '名古屋');
+  assert.strictEqual(site.moe.alertArea, '愛知県');
+  assert.strictEqual(site.moe.region, '05');
+  assert.strictEqual(site.moe.prefecture, '51');
+  assert.strictEqual(site.jma.amedasPoint, '51106');
+  assert.strictEqual(site.jma.forecastArea, '230000');
+  assert.strictEqual(site.jma.forecastDetail, '230010');
+  assert.strictEqual(site.jma.warnCity, '2310000');
+  assert.strictEqual(site.jma.warnCityLabel, '名古屋市');
+  assert.strictEqual(site.latitude, 35.1667);
+  assert.strictEqual(site.longitude, 136.965);
+  assert.ok(site.logo.src.indexOf('AC-0008/logo_mark.png') >= 0);
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0008/logo_banner.png') >= 0);
+  assert.ok(index.demoSites.indexOf('AC-0008') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0008') < 0);
+  var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
+  assert.strictEqual(merged.site.locationLabel, '名古屋市');
+  assert.strictEqual(merged.site.label, '太陽建機レンタル');
+  assert.strictEqual(merged.status, 'demo');
+  assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
 console.log('');
 console.log(passed + ' passed, ' + failed + ' failed');
 if (failed) process.exit(1);
