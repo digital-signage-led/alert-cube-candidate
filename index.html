@@ -9,7 +9,7 @@
     <script src="./safety/version.js?v=20260921-suminoe"></script>
     <script src="./contents/registry.js?v=20260928-news-live"></script>
     <script src="./contents/modules.js?v=20260923-ac0004"></script>
-    <script src="./contents/news/index.js?v=20260928-news-live"></script>
+    <script src="./contents/news/index.js?v=20260928-news-latest"></script>
     <script src="./contents/boards/index.js?v=20260925-ac0004-boards"></script>
     <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
@@ -20,7 +20,7 @@
     <script src="./safety/fallback.js?v=20260921-suminoe"></script>
     <script src="./safety/retry.js?v=20260921-suminoe"></script>
     <script src="./safety/rollback.js?v=20260921-suminoe"></script>
-    <script src="./scripts/alert-cube-core.js?v=20260921-suminoe"></script>
+    <script src="./scripts/alert-cube-core.js?v=20260929-annual"></script>
     <script src="./scripts/alert-cube-runtime.js?v=20260921-suminoe"></script>
     <script>
     (function () {
@@ -2570,8 +2570,13 @@
         return row ? { bgColor: row.bgColor, barColor: row.barColor } : UNKNOWN;
     }
 
-    /** displayMode: 'normal' | 'unavailable' | 'offseason' — 濃い灰は unavailable / offseason のみ */
+    let temperatureColors_ = null;
+
+    /** displayMode: 'normal' | 'unavailable' | 'offseason' | 'temperature' */
     function colorsForDisplay(levelIdx, displayMode) {
+        if (displayMode === 'temperature' && temperatureColors_) {
+            return { bgColor: temperatureColors_.bg, barColor: temperatureColors_.bar };
+        }
         if (displayMode === 'offseason') return OFF_SEASON;
         if (displayMode === 'unavailable') return UNKNOWN;
         if (levelIdx == null || levelIdx < 0) return colorsForLevel(0);
@@ -2584,6 +2589,7 @@
     }
 
     function isDarkTextForDisplay(levelIdx, displayMode) {
+        if (displayMode === 'temperature' && temperatureColors_) return !!temperatureColors_.darkText;
         if (displayMode === 'offseason' || displayMode === 'unavailable') return false;
         return isDarkTextLevel(levelIdx);
     }
@@ -2841,6 +2847,7 @@
         KIND,
         colorsForLevel,
         colorsForDisplay,
+        setTemperatureColors: function (colors) { temperatureColors_ = colors || null; },
         isDarkTextLevel,
         initHosts,
         initSignageLogo_,
@@ -3268,9 +3275,14 @@
     const SIGNAGE_STATE_CACHE_MAX_AGE_MS = 30 * 60 * 1000;
     const MOE_GAS_FETCH_TIMEOUT_MS = 12000;
     const MOE_JSONP_TIMEOUT_MS = 10000;
-    /* 環境省WBGTの提供期間外（冬季など）は true。WBGT表示を全て隠す */
+    /* 環境省が提供期間外と返したときだけ true。取得失敗では true にしない */
     let wbgtOffSeason = false;
     let wbgtUnavailable = false;
+    let moeService_ = null;
+    let wbgtFetchOk_ = null;
+    let annualMode_ = 'UNKNOWN';
+    let lastAmedasTempC_ = null;
+    let annualLogKey_ = '';
     /** 連続取得失敗がこの時間を超えたときだけ「取得不可」表示（ms） */
     const WBGT_UNAVAILABLE_GRACE_MS = 60000;
     let wbgtFailSinceMs_ = null;
@@ -3334,7 +3346,7 @@
     const MOE_ALERT_MINUTE = 3;
 
     function getS1WbgtLevelForDisplay_() {
-        if (wbgtOffSeason || wbgtUnavailable) return -1;
+        if (temperatureDisplay_() || wbgtOffSeason || wbgtUnavailable) return -1;
         if (currentWbgtLevel >= 0) return currentWbgtLevel;
         const row = (lastGoodWbgtSlots_ && lastGoodWbgtSlots_[0]) ||
             (lastWbgtSlots && lastWbgtSlots[0]);
@@ -3369,7 +3381,98 @@
         }
         currentWbgtLevel = wbgtLevel(row.wbgt);
     }
+    function temperatureDisplay_() {
+        return annualMode_ === 'WBGT_TEMP_ERROR' || String(annualMode_).indexOf('TEMPERATURE_') === 0;
+    }
+    function jstPartsNow_() {
+        return jstPartsFromMs(getNowMs());
+    }
+    function annualSeasonCfg_() {
+        return { start: { month: 4, day: 22 }, end: { month: 10, day: 22 } };
+    }
+    function wbgtCacheFresh_() {
+        return !!(lastGoodWbgtSlots_ && hasFull4Slots(lastGoodWbgtSlots_) && lastWbgtSuccessAtMs_ &&
+            (getNowMs() - lastWbgtSuccessAtMs_) <= WBGT_MAX_AGE_MS);
+    }
+    function formatTempLabel_(value) {
+        const n = window.AlertCubeCore ? window.AlertCubeCore.parseTemperature(value) : null;
+        if (n == null) return '';
+        const tenths = Math.round(n * 10) / 10;
+        const body = Number.isInteger(tenths) ? String(tenths) : tenths.toFixed(1);
+        return body + '℃';
+    }
+    function formatTempHtml_(value) {
+        const label = formatTempLabel_(value);
+        if (!label) return '--';
+        const body = label.replace('℃', '');
+        return '<span class="fc-wbgt-num">' + body + '</span><span class="fc-wbgt-unit">℃</span>';
+    }
+    function logAnnualState_(color) {
+        const temp = window.AlertCubeCore ? window.AlertCubeCore.parseTemperature(lastAmedasTempC_) : null;
+        const wbgt = lastGoodWbgtSlots_ && lastGoodWbgtSlots_[0] ? lastGoodWbgtSlots_[0].wbgt : '';
+        if (annualMode_ === 'WBGT_ACTIVE' && wbgtFetchOk_ !== true) return;
+        const key = annualMode_ + '|' + (color ? color.colorType : '') + '|' + (temp == null ? '' : temp) + '|' + wbgt;
+        if (key === annualLogKey_) return;
+        annualLogKey_ = key;
+        if (annualMode_ === 'WBGT_TEMP_ERROR') {
+            console.log('[AlertCube][WBGT] season=ACTIVE fetch=FAILED cache=EXPIRED fallback=TEMPERATURE mode=WBGT_TEMP_ERROR');
+            return;
+        }
+        if (String(annualMode_).indexOf('TEMPERATURE_') === 0) {
+            console.log('[AlertCube][Temperature] mode=' + annualMode_ +
+                ' temperature=' + (temp == null ? '' : temp) +
+                ' colorType=' + (color ? color.colorType : '') +
+                ' source=JMA');
+            return;
+        }
+        console.log('[AlertCube][WBGT] season=ACTIVE fetch=SUCCESS wbgt=' + wbgt + ' mode=' + annualMode_);
+    }
+    function paintTemperatureDom_() {
+        const html = formatTempHtml_(lastAmedasTempC_);
+        document.querySelectorAll('#scene4 .fc-track .fc-panel').forEach(function (panel) {
+            if (panel.classList.contains('fc-logo-panel') || panel.getAttribute('data-fc') === 'logo') return;
+            panel.querySelectorAll('.fc-bar-label').forEach(function (el) { el.textContent = '気温'; });
+            panel.querySelectorAll('.fc-val-live').forEach(function (el) { el.innerHTML = html; });
+        });
+        document.querySelectorAll('#scene3 .t3-lv-static').forEach(function (el) { el.textContent = '気温'; });
+        document.querySelectorAll('#scene4 .fc-scroll-wrap, #scene4 .fc-lv-bar').forEach(function (el) {
+            el.style.display = '';
+        });
+    }
+    function syncAnnualMode_() {
+        if (!window.AlertCubeCore || !window.AlertCubeCore.resolveAnnualMode) return annualMode_;
+        const parts = jstPartsNow_();
+        const next = window.AlertCubeCore.resolveAnnualMode({
+            apiInService: moeService_,
+            previewOffseason: DEMO_WBGT_OFF,
+            currentMode: moeService_ === true
+                ? window.AlertCubeCore.WBGT_MODE
+                : (moeService_ === false ? window.AlertCubeCore.TEMPERATURE_MODE : undefined),
+            jstParts: parts,
+            seasonCfg: annualSeasonCfg_(),
+            fetchOk: wbgtFetchOk_ === true ? true : (wbgtFetchOk_ === false ? false : undefined),
+            cacheFresh: wbgtCacheFresh_()
+        });
+        annualMode_ = next;
+        wbgtOffSeason = String(next).indexOf('TEMPERATURE_') === 0;
+        if (!temperatureDisplay_()) {
+            if (window.SignageBg && window.SignageBg.setTemperatureColors) window.SignageBg.setTemperatureColors(null);
+            logAnnualState_(null);
+            return annualMode_;
+        }
+        const season = window.AlertCubeCore.climateSeason(parts, annualSeasonCfg_());
+        const color = window.AlertCubeCore.getTemperatureDisplayColor(lastAmedasTempC_, season);
+        if (window.SignageBg && window.SignageBg.setTemperatureColors) {
+            window.SignageBg.setTemperatureColors(color);
+        }
+        paintTemperatureDom_();
+        logAnnualState_(color);
+        queueOrRefreshS1FootBar_();
+        refreshSignageBgIfChanged_(true);
+        return annualMode_;
+    }
     function getSignageDisplayMode_() {
+        if (temperatureDisplay_()) return 'temperature';
         if (wbgtOffSeason) return 'offseason';
         if (wbgtUnavailable) return 'unavailable';
         return 'normal';
@@ -7244,7 +7347,7 @@
                 if (!hadController) { hadController = true; return; }
                 reloadNow_();
             });
-            navigator.serviceWorker.register('./sw.js?v=20260928-news-live', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20260928-news-latest', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, 20000);
             }).catch(function () {});
         }
@@ -7397,6 +7500,11 @@
         return num.textContent !== expected;
     }
     function updateForecastSlots(slots) {
+        if (temperatureDisplay_()) {
+            paintTemperatureDom_();
+            refreshSignageBgIfChanged_();
+            return;
+        }
         if (slots && lastWbgtSlots && hasFull4Slots(slots) && hasFull4Slots(lastWbgtSlots) &&
             wbgtSlotsEqual_(slots, lastWbgtSlots) && !scene4WbgtDomNeedsRefresh_(slots)) {
             return;
@@ -7615,6 +7723,14 @@
         if (wbgtOffSeason || !wbgtUnavailableGraceElapsed_()) return;
         /* 一度でも成功値があれば長期灰色（取得不可）にしない */
         if (keepLastGoodWbgtDisplay_('取得継続失敗')) return;
+        wbgtFetchOk_ = false;
+        if (window.AlertCubeCore && window.AlertCubeCore.parseTemperature(lastAmedasTempC_) != null) {
+            wbgtUnavailable = false;
+            syncAnnualMode_();
+            queueDisplayRefresh_();
+            if (!shouldDeferDisplayRefresh_()) flushDisplayRefresh_(false);
+            return;
+        }
         wbgtUnavailable = true;
         syncWbgtDependentAlerts_();
         const nullSlot = { wbgt: null, hour: '取得不可' };
@@ -7667,28 +7783,15 @@
         }
         return false;
     }
-    /* 提供期間外: WBGTレベルを無効化し、WBGT表示を全て隠す（該当シーンはループでスキップ） */
+    /* 提供期間外: 同じ枠を気温表示へ切り替える。シーンは消さない。再生位置も戻さない */
     function applyWbgtOffSeason_() {
-        /* 直前の実測がある間は提供期間外の灰色へ落とさない（誤検知・欠測の一時応答対策） */
-        if (lastGoodWbgtSlots_ && hasFull4Slots(lastGoodWbgtSlots_) && keepLastGoodWbgtDisplay_('off-season応答')) {
-            console.warn('[WBGT] off-season応答だが直前値があるため維持');
-            applyWbgtInSeason_();
-            return;
-        }
-        wbgtOffSeason = true;
+        moeService_ = false;
+        wbgtFetchOk_ = true;
         wbgtUnavailable = false;
         clearWbgtUnavailableGrace_();
-        lastGoodWbgtSlots_ = null;
         currentWbgtLevel = -1;
-        lastWbgtSlots = null;
-        syncWbgtDependentAlerts_();
-        document.querySelectorAll('#scene4 .fc-scroll-wrap, #scene4 .fc-lv-bar').forEach(function (el) {
-            el.style.display = 'none';
-        });
-        document.querySelectorAll('#scene1 .s1-wbgt-bar').forEach(function (el) {
-            el.style.display = 'none';
-        });
-        refreshSignageBgIfChanged_(true);
+        applyWbgtInSeason_();
+        syncAnnualMode_();
         persistSignageStateCache_();
         queueDisplayRefresh_();
         if (!shouldDeferDisplayRefresh_()) flushDisplayRefresh_(false);
@@ -7808,18 +7911,14 @@
                     const wbgtSlots = await fetchWbgtData_();
                     timings['WBGT(GAS)'] = Math.round(performance.now() - sWbgt);
                     if (wbgtSlots === 'offseason') {
-                        if (lastGoodWbgtSlots_ && hasFull4Slots(lastGoodWbgtSlots_)) {
-                            console.log('[WBGT] off-season応答 — 更新中は直前値を維持');
-                            applyWbgtInSeason_();
-                            syncWbgtSlotsToDomIfReady_();
-                            moeOk = true;
-                        } else {
-                            applyWbgtOffSeason_();
-                            moeOk = true;
-                        }
+                        applyWbgtOffSeason_();
+                        moeOk = true;
                     } else {
+                        moeService_ = true;
+                        wbgtFetchOk_ = true;
                         applyWbgtInSeason_();
                         moeOk = applyWbgtSlotsToDom(wbgtSlots);
+                        syncAnnualMode_();
                     }
                     if (!NO_HEAT_ALERT && contentOn_('heat')) {
                         const sAlert = performance.now();
@@ -7828,7 +7927,8 @@
                     }
                 } catch (e) {
                     console.warn('[取得] WBGT系:', e.message || e);
-                    applyWbgtSlotsToDom(null);  // 直前値維持パスを通す
+                    wbgtFetchOk_ = false;
+                    applyWbgtSlotsToDom(null);
                     moeOk = false;
                 }
             })());
@@ -8914,6 +9014,8 @@
         if (latest) lastAmedasObsTime = latest instanceof Date ? latest : new Date(latest);
         applyScene2WeatherIcon_(lastForecastWeatherCode_ || amedasToTelopsCode_(obs));
         const temp = amedasFieldValue(obs.temp);
+        const parsedTemp = window.AlertCubeCore ? window.AlertCubeCore.parseTemperature(temp) : (Number.isFinite(Number(temp)) ? Number(temp) : null);
+        if (parsedTemp != null) lastAmedasTempC_ = parsedTemp;
         const humi = amedasFieldValue(obs.humidity);
         const p10 = amedasFieldValue(obs.precipitation10m);
         const p1h = amedasFieldValue(obs.precipitation1h);
@@ -8923,7 +9025,8 @@
         const maxT = amedasFieldValue(obs.maxTemp);
         const minT = amedasFieldValue(obs.minTemp);
         const gust = amedasFieldValue(obs.gust);
-        setTextAll('.temp-val', temp != null ? String(Math.round(Number(temp))) : '');
+        setTextAll('.temp-val', parsedTemp != null ? String(Math.round(parsedTemp)) : '');
+        if (parsedTemp != null) syncAnnualMode_();
         setTextAll('.humi-val', humi != null ? String(Math.round(Number(humi))) : '');
         setTextAll('.rain-val', p10 != null ? Number(p10).toFixed(1) : '');
         setTextAll('.pres-val', pres != null ? String(Math.round(Number(pres))) : '');
@@ -9211,7 +9314,7 @@
         return rainNowcastAlert && rainNowcastAlert.messageJp ? rainNowcastAlert.messageJp : '';
     }
     function getWbgtOnlyMessageJp() {
-        if (wbgtOffSeason) return '';
+        if (temperatureDisplay_() || wbgtOffSeason) return '';
         if (wbgtUnavailable) return unknownMsg.jp;
         const lv = getS1WbgtLevelForDisplay_();
         if (lv < 0) return '';
@@ -9219,7 +9322,7 @@
     }
     /* 下帯: 1分以上取得不可のときだけ「取得不可」。それ以外は直前値のWBGT文言＋雨タグ */
     function getS1WbgtMessageJp() {
-        if (wbgtOffSeason) return '';
+        if (temperatureDisplay_() || wbgtOffSeason) return '';
         if (wbgtUnavailable) return unknownMsg.jp;
         const lv = getS1WbgtLevelForDisplay_();
         const rain = getRainAlertMessageJp();
@@ -9882,6 +9985,12 @@
     }
     /* シーン3（多言語枠）: 日・英・インドネシア・フィリピン・ベトナム */
     function getT3Messages_() {
+        if (temperatureDisplay_()) {
+            const shown = formatTempLabel_(lastAmedasTempC_);
+            if (!shown) return [];
+            const words = { jp: '気温', en: 'Temperature', id: 'Suhu', fil: 'Temperatura', vn: 'Nhiệt độ' };
+            return T3_LANG_KEYS.map(function (key) { return { l1: words[key] || '気温', l2: shown }; });
+        }
         if (wbgtOffSeason) return [];
         if (wbgtUnavailable) {
             const all = T3_LANG_KEYS.map(function (key) { return splitT3Message_(unknownMsg[key]); });
@@ -9928,6 +10037,7 @@
         return heatAlertActive.length > 0;
     }
     function getT3GuideTierForDisplay_() {
+        if (temperatureDisplay_()) return null;
         if (isHeatAlertPublishedForGuide_()) {
             if (heatAlertActive.includes('special')) return T3_WBGT_GUIDE_TIERS[0];
             if (heatAlertActive.includes('warning')) return T3_WBGT_GUIDE_TIERS[1];
@@ -10039,7 +10149,7 @@
             staticTopBar.classList.remove('col-bg-dark-text');
         }
         if (!alertTop) {
-            const lvLabel = (wbgtUnavailable || lv < 0) ? '--' : levelNames[lv];
+            const lvLabel = temperatureDisplay_() ? '気温' : ((wbgtUnavailable || lv < 0) ? '--' : levelNames[lv]);
             document.querySelectorAll('#scene3 .t3-lv-static').forEach(function (n) { n.textContent = lvLabel; });
         }
         buildT3GuideTrack();
@@ -10380,11 +10490,6 @@
             gotoAfterScene3_();
             return;
         }
-        if (wbgtOffSeason) {
-            if (previewOffSeasonHold_('s3', playScene3)) return;
-            gotoAfterScene3_();
-            return;
-        }
         markPlaylistHeld_();
         applyDisplayRefreshAtSceneEntry_();
         buildTicker();
@@ -10648,11 +10753,7 @@
             finishScene4();
             return;
         }
-        if (wbgtOffSeason) {
-            if (previewOffSeasonHold_('s4', playScene4)) return;
-            finishScene4();
-            return;
-        }
+        if (temperatureDisplay_()) paintTemperatureDom_();
         markPlaylistHeld_();
         if (!lastWbgtSlots && DEMO_SIGNAGE_ACTIVE && currentWbgtLevel >= 0) {
             updateForecastSlots(mockSlotsForDemoLevel(currentWbgtLevel));
@@ -11858,8 +11959,20 @@
                         const forecast = await fetchJmaForecast_();
                         applyJmaDailyForecastToDom(forecast, todayMax);
                     } else if (DEMO_ONLY === 's1' || DEMO_ONLY === 's3' || DEMO_ONLY === 's4') {
+                        try {
+                            const amedas = await fetchJmaAmedasObservation_();
+                            applyJmaAmedasToDom(amedas.obs, amedas.latest);
+                        } catch (amedasErr) {
+                            console.warn('[only-scene] amedas', amedasErr && amedasErr.message ? amedasErr.message : amedasErr);
+                        }
                         const slots = await fetchWbgtFromMoeApi();
-                        applyWbgtSlotsToDom(slots);
+                        if (slots === 'offseason') applyWbgtOffSeason_();
+                        else {
+                            moeService_ = true;
+                            wbgtFetchOk_ = true;
+                            applyWbgtSlotsToDom(slots);
+                            syncAnnualMode_();
+                        }
                     }
                 } catch (e) {
                     console.warn('[only-scene] live fetch', e && e.message ? e.message : e);

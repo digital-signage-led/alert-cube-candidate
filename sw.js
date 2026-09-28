@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260928-site-hold';
+var CACHE_NAME = 'alert-cube-sites-20260929-annual';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -8,7 +8,7 @@ var PRECACHE = [
   './safety/rollback.js?v=20260921-suminoe',
   './contents/registry.js?v=20260928-news-live',
   './contents/modules.js?v=20260923-ac0004',
-  './contents/news/index.js?v=20260928-news-live',
+  './contents/news/index.js?v=20260928-news-latest',
   './contents/boards/index.js?v=20260925-ac0004-boards',
   './contents/logo-scroll/index.js?v=20260923-ac0004',
   './contents/index.html',
@@ -17,7 +17,7 @@ var PRECACHE = [
   './core/foundation.js?v=20260928-site-hold',
   './services/remote.js?v=20260921-suminoe',
   './services/typhoon/index.js?v=20260921-suminoe',
-  './scripts/alert-cube-core.js?v=20260921-suminoe',
+  './scripts/alert-cube-core.js?v=20260929-annual',
   './scripts/alert-cube-runtime.js?v=20260921-suminoe',
   './scripts/alert-cube-typhoon.js?v=20260921-suminoe',
   './scripts/jma-warning-kinds.js?v=20260921-suminoe',

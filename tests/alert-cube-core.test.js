@@ -186,6 +186,84 @@ test('防災優先で背景は警報色', function () {
   assert.strictEqual(bg.colors.bgColor, '#FA2900');
 });
 
+test('年間気温: 15℃以上は既存WBGT色で、判定名は付けない', function () {
+  function bg(temp) { return core.getTemperatureDisplayColor(temp, 'AUTUMN').bg; }
+  assert.strictEqual(bg(20.9), core.wbgtBand(20.9).bg);
+  assert.strictEqual(bg(21.0), core.wbgtBand(21.0).bg);
+  assert.strictEqual(bg(32), '#ED1A3D');
+  assert.strictEqual(bg(29), '#F39800');
+  assert.strictEqual(bg(26), '#FFEE00');
+  assert.strictEqual(bg(23), '#67C1EA');
+  assert.strictEqual(bg(18), '#3181BD');
+  assert.strictEqual(core.getTemperatureDisplayColor(29, 'AUTUMN').judgment, false);
+  assert.strictEqual(core.wbgtBand(32).bg, '#ED1A3D');
+});
+
+test('年間気温: 10〜15℃未満は季節色', function () {
+  assert.strictEqual(core.getTemperatureDisplayColor(12, 'AUTUMN').bg, '#9A5A2E');
+  assert.strictEqual(core.getTemperatureDisplayColor(12, 'WINTER').bg, '#EAF7FF');
+  assert.strictEqual(core.getTemperatureDisplayColor(12, 'SPRING').bg, '#E85A9B');
+  assert.strictEqual(core.getTemperatureDisplayColor(12, 'WINTER').ink, '#102A43');
+});
+
+test('年間気温: 0℃以上10℃未満は季節に関係なくアイスホワイト', function () {
+  assert.strictEqual(core.getTemperatureDisplayColor(5, 'AUTUMN').bg, '#EAF7FF');
+  assert.strictEqual(core.getTemperatureDisplayColor(5, 'SPRING').bg, '#EAF7FF');
+  assert.strictEqual(core.getTemperatureDisplayColor(0, 'WINTER').bg, '#EAF7FF');
+  assert.strictEqual(core.getTemperatureDisplayColor(9.9, 'AUTUMN').colorType, 'COLD');
+});
+
+test('年間気温: 0℃未満だけ紫', function () {
+  assert.strictEqual(core.getTemperatureDisplayColor(-0.1, 'SPRING').bg, '#7030A0');
+  assert.strictEqual(core.getTemperatureDisplayColor(-5, 'WINTER').bg, '#7030A0');
+  assert.strictEqual(core.getTemperatureDisplayColor(0.0, 'WINTER').bg, '#EAF7FF');
+});
+
+test('年間気温: 異常値は色を返さない', function () {
+  assert.strictEqual(core.parseTemperature(null), null);
+  assert.strictEqual(core.parseTemperature(undefined), null);
+  assert.strictEqual(core.parseTemperature(NaN), null);
+  assert.strictEqual(core.parseTemperature('NaN℃'), null);
+  assert.strictEqual(core.getTemperatureDisplayColor('undefined', 'AUTUMN'), null);
+});
+
+test('年間モード: 取得失敗は期間終了にしない', function () {
+  var mode = core.resolveAnnualMode({
+    apiInService: null,
+    currentMode: core.WBGT_MODE,
+    jstParts: { month: 8, day: 1 },
+    fetchOk: false,
+    cacheFresh: true
+  });
+  assert.strictEqual(mode, core.ANNUAL_MODE.WBGT_ACTIVE);
+  var expired = core.resolveAnnualMode({
+    apiInService: null,
+    currentMode: core.WBGT_MODE,
+    jstParts: { month: 8, day: 1 },
+    fetchOk: false,
+    cacheFresh: false
+  });
+  assert.strictEqual(expired, core.ANNUAL_MODE.WBGT_TEMP_ERROR);
+});
+
+test('年間モード: 期間外は秋冬春、再開でWBGTへ戻る', function () {
+  assert.strictEqual(core.climateSeason({ month: 10, day: 23 }), 'AUTUMN');
+  assert.strictEqual(core.climateSeason({ month: 11, day: 30 }), 'AUTUMN');
+  assert.strictEqual(core.climateSeason({ month: 12, day: 1 }), 'WINTER');
+  assert.strictEqual(core.climateSeason({ month: 2, day: 28 }), 'WINTER');
+  assert.strictEqual(core.climateSeason({ month: 3, day: 1 }), 'SPRING');
+  assert.strictEqual(core.climateSeason({ month: 4, day: 21 }), 'SPRING');
+  assert.strictEqual(core.resolveAnnualMode({
+    apiInService: false,
+    jstParts: { month: 1, day: 15 }
+  }), core.ANNUAL_MODE.TEMPERATURE_WINTER);
+  assert.strictEqual(core.resolveAnnualMode({
+    apiInService: true,
+    jstParts: { month: 1, day: 15 },
+    fetchOk: true
+  }), core.ANNUAL_MODE.WBGT_ACTIVE);
+});
+
 console.log('');
 console.log(passed + ' passed, ' + failed + ' failed');
 if (failed) process.exit(1);

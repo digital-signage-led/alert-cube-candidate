@@ -360,6 +360,8 @@ test('AC-0004 は佐藤工業福山の本番設定で、共通コンテンツに
   assert.strictEqual(site.presentation.observationLaps, 2);
   assert.strictEqual(site.presentation.scrollSpeedPx, undefined);
   assert.strictEqual(site.news.speed, 1);
+  assert.strictEqual(site.news.pageUrl, 'https://www.satokogyo.co.jp/news/');
+  assert.strictEqual(site.news.maxItems, 2);
   assert.strictEqual(site.boards.speed, 1);
   assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'wbgt', 'forecast', 'news', 'boards', 'wbgt-i18n']);
   assert.strictEqual(site.contents.observation.on, true);
@@ -553,6 +555,8 @@ test('AC-0007 は佐々木建設北島町の4面本番設定', function () {
   assert.strictEqual(site.contents.warning.on, true);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.news.on, true);
+  assert.strictEqual(site.news.pageUrl, 'https://www.ssk-con.co.jp/wp-json/wp/v2/posts?per_page=5&_fields=date,title');
+  assert.strictEqual(site.news.maxItems, 2);
   assert.ok(site.logo.src.indexOf('AC-0007/logo_mark.png') >= 0);
   assert.ok(site.logo.bannerSrc.indexOf('AC-0007/logo_banner.png') >= 0);
   assert.ok(foundation.validateSiteConfig(site).ok);
@@ -617,6 +621,8 @@ test('AC-0009 は大島組・米岡橋梁下部工の4面本番設定', function
   assert.strictEqual(site.latitude, 37.1292);
   assert.strictEqual(site.longitude, 138.3062);
   assert.strictEqual(site.contents.news.on, true);
+  assert.strictEqual(site.news.pageUrl, 'https://www.ooshimagumi.com/wp-json/wp/v2/posts?per_page=5&_fields=date,title');
+  assert.strictEqual(site.news.maxItems, 2);
   assert.ok(site.logo.src.indexOf('AC-0009/logo_mark.png') >= 0);
   assert.ok(site.logo.bannerSrc.indexOf('AC-0009/logo_banner.png') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0009') >= 0);
@@ -625,6 +631,28 @@ test('AC-0009 は大島組・米岡橋梁下部工の4面本番設定', function
   assert.strictEqual(merged.site.locationLabel, '米岡橋梁下部工');
   assert.strictEqual(merged.site.label, '大島組');
   assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
+test('ニュースは各社の最新見出しを2件に揃える', function () {
+  var news = require('../contents/news/index.js');
+  var sato = news.parsePage('[＜協力会社のみなさまへ＞通報・相談窓口を設置しました お知らせ 2026年09月01日](https://www.satokogyo.co.jp/news/)\n[令和8年熊本地震へのお見舞いと対応について お知らせ 2026年08月07日](https://www.satokogyo.co.jp/news/)\n[古い記事 お知らせ 2026年07月01日](https://www.satokogyo.co.jp/news/)', 2);
+  assert.strictEqual(sato.length, 2);
+  assert.strictEqual(sato[0].date, '2026年09月01日');
+  assert.strictEqual(sato[0].title, '＜協力会社のみなさまへ＞通報・相談窓口を設置しました');
+  var ssk = news.parsePage(JSON.stringify([
+    { date: '2026-07-16T19:16:30', title: { rendered: '富士インパルス株式会社  三好工場  増築工事　地鎮祭' } },
+    { date: '2026-07-05T19:15:18', title: { rendered: 'アドプト・プログラム吉野川に参加' } },
+    { date: '2026-06-19T19:19:23', title: { rendered: '佐々木建設安全衛生協力会通常総会・安全大会開催' } }
+  ]), 2);
+  assert.strictEqual(ssk.length, 2);
+  assert.strictEqual(ssk[0].date, '2026年07月16日');
+  assert.strictEqual(ssk[0].title, '富士インパルス株式会社 三好工場 増築工事 地鎮祭');
+  var oshima = news.parsePage(JSON.stringify([
+    { date: '2026-07-06T13:19:20', title: { rendered: 'オオシまガジン更新！' } },
+    { date: '2026-07-06T13:18:26', title: { rendered: 'ホームページリニューアルのお知らせ' } }
+  ]), 2);
+  assert.strictEqual(oshima[0].title, 'オオシまガジン更新！');
+  assert.strictEqual(oshima[1].title, 'ホームページリニューアルのお知らせ');
 });
 
 console.log('');

@@ -28,8 +28,8 @@
       id: 'news', label: 'ニュース', scene: 'sceneNews', fetch: [], existing: true, lifecycle: 'active',
       end: 'animation', reusable: true, resolution: '512x128',
       purpose: '日付と見出しを横に流し、指定周回で次へ進む',
-      required: ['news.urls or news.items'], optional: ['badge', 'laps', 'speed', 'logo'],
-      assets: 'site logo', source: 'site news json'
+      required: ['news.pageUrl or news.urls or news.items'], optional: ['badge', 'laps', 'speed', 'logo', 'refreshMs', 'maxItems'],
+      assets: 'site logo', source: 'site homepage or news json'
     },
     {
       id: 'boards', label: '告知ボード', scene: 'sceneBoards', fetch: [], existing: true, lifecycle: 'active',

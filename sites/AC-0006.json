@@ -58,7 +58,17 @@
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
+  "news": {
+    "badge": "新着情報",
+    "laps": 1,
+    "speed": 1,
+    "maxItems": 2,
+    "pageUrl": "https://str-nishiki.co.jp/",
+    "refreshMs": 1800000,
+    "urls": ["./assets/sites/AC-0006/news.json"],
+    "cacheKey": "AC-0006-news"
+  },
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "wbgt", "forecast", "news", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -79,7 +89,7 @@
     "disaster": { "on": true },
     "heat": { "on": false },
     "schedule": { "on": false },
-    "news": { "on": false },
+    "news": { "on": true },
     "boards": { "on": false },
     "logo-scroll": { "on": false },
     "pollen": { "on": false },

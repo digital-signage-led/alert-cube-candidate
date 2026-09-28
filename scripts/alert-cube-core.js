@@ -201,6 +201,135 @@
     };
   }
 
+  var ANNUAL_MODE = {
+    WBGT_ACTIVE: 'WBGT_ACTIVE',
+    WBGT_TEMP_ERROR: 'WBGT_TEMP_ERROR',
+    TEMPERATURE_AUTUMN: 'TEMPERATURE_AUTUMN',
+    TEMPERATURE_WINTER: 'TEMPERATURE_WINTER',
+    TEMPERATURE_SPRING: 'TEMPERATURE_SPRING',
+    UNKNOWN: 'UNKNOWN'
+  };
+
+  /** 15℃未満の季節色。WBGTの5色とは別。全案件はこの定義だけを見る。 */
+  var SEASON_COLORS = {
+    autumn: { bg: '#9A5A2E', bar: '#B56B3C', ink: '#FFFFFF', colorType: 'AUTUMN' },
+    winter: { bg: '#EAF7FF', bar: '#D4EEF8', ink: '#102A43', colorType: 'WINTER' },
+    spring: { bg: '#E85A9B', bar: '#F07BB0', ink: '#FFFFFF', colorType: 'SPRING' },
+    cold: { bg: '#EAF7FF', bar: '#D4EEF8', ink: '#102A43', colorType: 'COLD' },
+    freezing: { bg: '#7030A0', bar: '#8A4BB8', ink: '#FFFFFF', colorType: 'FREEZING' }
+  };
+
+  function wbgtColorById_(id) {
+    for (var i = 0; i < WBGT_BANDS.length; i++) {
+      if (WBGT_BANDS[i].id === id) return WBGT_BANDS[i];
+    }
+    return WBGT_BANDS[WBGT_BANDS.length - 1];
+  }
+
+  function paintFromWbgtId_(id, colorType) {
+    var band = wbgtColorById_(id);
+    var dark = id === 'caution' || id === 'warning';
+    return {
+      bg: band.bg,
+      bar: band.bar,
+      ink: dark ? '#1a1a1a' : '#FFFFFF',
+      colorType: colorType,
+      judgment: false,
+      darkText: dark
+    };
+  }
+
+  function paintFromSeason_(key) {
+    var row = SEASON_COLORS[key];
+    return {
+      bg: row.bg,
+      bar: row.bar,
+      ink: row.ink,
+      colorType: row.colorType,
+      judgment: false,
+      darkText: row.ink !== '#FFFFFF'
+    };
+  }
+
+  /**
+   * 表示してよい気温だけ返す。null / 非数 / 異常値は null。
+   * 0℃境界は 0.1℃単位で丸めてから判定する。
+   */
+  function parseTemperature(value) {
+    if (value == null || value === '') return null;
+    if (typeof value === 'string' && !/^-?\d+(\.\d+)?$/.test(String(value).trim())) return null;
+    var n = typeof value === 'string' ? Number(String(value).trim()) : Number(value);
+    if (!Number.isFinite(n) || n < -60 || n > 60) return null;
+    return n;
+  }
+
+  function temperatureTenths_(value) {
+    var n = parseTemperature(value);
+    if (n == null) return null;
+    return Math.round(n * 10);
+  }
+
+  /**
+   * WBGT期間外の季節。日本時間の月日。
+   * 12/1〜2月末=冬、3/1〜提供開始前日=春、それ以外の期間外=秋。
+   */
+  function climateSeason(jstParts, seasonCfg) {
+    if (!jstParts || jstParts.month == null || jstParts.day == null) return null;
+    var month = Number(jstParts.month);
+    var day = Number(jstParts.day);
+    if (!Number.isFinite(month) || !Number.isFinite(day)) return null;
+    var start = parseMd_(seasonCfg && (seasonCfg.start || seasonCfg.seasonStart), 4, 22);
+    if (month === 12 || month === 1 || month === 2) return 'WINTER';
+    if (month > 2 && mdToKey_(month, day) < mdToKey_(start.month, start.day)) return 'SPRING';
+    return 'AUTUMN';
+  }
+
+  /**
+   * 気温モードの色。15℃以上は既存WBGTの5色を再利用し、判定名は付けない。
+   */
+  function getTemperatureDisplayColor(temperature, season) {
+    var tenths = temperatureTenths_(temperature);
+    if (tenths == null) return null;
+    if (tenths >= 310) return paintFromWbgtId_('danger', 'DANGER');
+    if (tenths >= 280) return paintFromWbgtId_('severe', 'SEVERE');
+    if (tenths >= 250) return paintFromWbgtId_('warning', 'WARNING');
+    if (tenths >= 210) return paintFromWbgtId_('caution', 'CAUTION');
+    if (tenths >= 150) return paintFromWbgtId_('almostSafe', 'SAFE');
+    if (tenths >= 100) {
+      if (season === 'WINTER') return paintFromSeason_('winter');
+      if (season === 'SPRING') return paintFromSeason_('spring');
+      return paintFromSeason_('autumn');
+    }
+    if (tenths >= 0) return paintFromSeason_('cold');
+    return paintFromSeason_('freezing');
+  }
+
+  /**
+   * 提供期間と取得成否を分ける。
+   * fetchOk=false だけでは期間外にしない。
+   * キャッシュが新しい間は WBGT_ACTIVE。期限切れだけ WBGT_TEMP_ERROR。
+   */
+  function resolveAnnualMode(input) {
+    input = input || {};
+    var seasonMode = resolveSeasonMode({
+      apiInService: input.apiInService,
+      previewOffseason: input.previewOffseason,
+      currentMode: input.currentMode,
+      jstParts: input.jstParts,
+      seasonCfg: input.seasonCfg
+    });
+    if (seasonMode === TEMPERATURE_MODE) {
+      var season = climateSeason(input.jstParts, input.seasonCfg);
+      if (season === 'WINTER') return ANNUAL_MODE.TEMPERATURE_WINTER;
+      if (season === 'SPRING') return ANNUAL_MODE.TEMPERATURE_SPRING;
+      if (season === 'AUTUMN') return ANNUAL_MODE.TEMPERATURE_AUTUMN;
+      return ANNUAL_MODE.UNKNOWN;
+    }
+    if (input.fetchOk === true || input.cacheFresh === true) return ANNUAL_MODE.WBGT_ACTIVE;
+    if (input.fetchOk === false) return ANNUAL_MODE.WBGT_TEMP_ERROR;
+    return ANNUAL_MODE.WBGT_ACTIVE;
+  }
+
   function isDarkInk(colors) {
     return !!(colors && colors.ink && colors.ink !== '#ffffff' && colors.ink !== '#fff');
   }
@@ -258,6 +387,8 @@
   var api = {
     WBGT_MODE: WBGT_MODE,
     TEMPERATURE_MODE: TEMPERATURE_MODE,
+    ANNUAL_MODE: ANNUAL_MODE,
+    SEASON_COLORS: SEASON_COLORS,
     WBGT_BANDS: WBGT_BANDS,
     TEMP_BANDS: TEMP_BANDS,
     ALERT_COLORS: ALERT_COLORS,
@@ -267,6 +398,10 @@
     temperatureLevelIndex: temperatureLevelIndex,
     isCalendarWbgtSeason: isCalendarWbgtSeason,
     resolveSeasonMode: resolveSeasonMode,
+    resolveAnnualMode: resolveAnnualMode,
+    climateSeason: climateSeason,
+    parseTemperature: parseTemperature,
+    getTemperatureDisplayColor: getTemperatureDisplayColor,
     resolveBackground: resolveBackground,
     isDarkInk: isDarkInk,
     isDisasterSceneId: isDisasterSceneId,
