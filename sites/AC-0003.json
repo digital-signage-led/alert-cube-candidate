@@ -19,9 +19,9 @@
   "logo": {
     "src": "./assets/sites/AC-0003/tannan_logo_128.png?v=1",
     "corpSrc": "./assets/sites/AC-0003/tannan_logo_128.png?v=1",
-    "footSrc": "./assets/sites/AC-0003/tannan_logo.png",
+    "footSrc": "./assets/sites/AC-0003/tannan_logo.png?v=1",
     "panelBg": "#ffffff",
-    "bannerSrc": "./assets/sites/AC-0003/tannan_logo.png"
+    "bannerSrc": "./assets/sites/AC-0003/tannan_logo.png?v=1"
   },
   "moe": {
     "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
