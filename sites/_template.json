@@ -46,6 +46,14 @@
   "season": { "override": null },
   "updateSettings": { "refreshMs": 60000 },
   "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "greeting": {
+    "enabled": false,
+    "title": "",
+    "lines": ["ここに文言"],
+    "foot": "",
+    "fill": "body",
+    "scrollLaps": 2
+  },
   "presentation": {
     "observationMode": "scroll",
     "observationLaps": 2,

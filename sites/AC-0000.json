@@ -60,10 +60,12 @@
     ]
   },
   "greeting": {
-    "enabled": false,
+    "enabled": true,
     "title": "",
-    "lines": [],
-    "foot": ""
+    "lines": ["ここに文言"],
+    "foot": "",
+    "fill": "body",
+    "scrollLaps": 2
   },
   "logoScroll": {
     "laps": 1,
@@ -99,7 +101,7 @@
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "schedule"],
+  "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "schedule", "greeting"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },
@@ -122,6 +124,7 @@
     "news": { "on": true },
     "boards": { "on": true },
     "logo-scroll": { "on": true },
+    "greeting": { "on": true },
     "pollen": { "on": false },
     "pm25": { "on": false }
   }

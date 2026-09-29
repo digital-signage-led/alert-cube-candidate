@@ -54,7 +54,9 @@
     "enabled": true,
     "title": "",
     "lines": ["レンタルはフジケン長崎へ"],
-    "foot": ""
+    "foot": "",
+    "fill": "body",
+    "scrollLaps": 2
   },
   "presentation": {
     "sequence": "contentOrder",

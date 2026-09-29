@@ -679,17 +679,22 @@
             mix-blend-mode: normal;
             background: transparent;
         }
-        /* AC-0010: 「レンタルはフジケン長崎へ」を画面いっぱいに大きく流す */
-        html.site-ac-0010 #sceneGreeting .ng-top,
-        html.site-ac-0010 #sceneGreeting .ng-foot { display: none; }
-        html.site-ac-0010 #sceneGreeting .ng-body {
+        /* greeting.fill=body: 真ん中の帯色を画面全体に。終わると下帯へ戻る */
+        #sceneGreeting.greeting-fill,
+        #sceneGreeting.greeting-fill .ng-shell {
+            height: 128px;
+        }
+        #sceneGreeting.greeting-fill .ng-top,
+        #sceneGreeting.greeting-fill .ng-foot { display: none; }
+        #sceneGreeting.greeting-fill .ng-body {
             height: 128px;
             padding: 0;
             align-items: flex-start;
             justify-content: center;
             overflow: hidden;
+            background: transparent;
         }
-        html.site-ac-0010 #sceneGreeting .ng-line-0 {
+        #sceneGreeting.greeting-fill .ng-line-0 {
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -703,8 +708,8 @@
             letter-spacing: 0.04em;
             text-overflow: clip;
         }
-        html.site-ac-0010 #sceneGreeting .ng-rental-copy,
-        html.site-ac-0010 #sceneGreeting .ng-rental-gap {
+        #sceneGreeting.greeting-fill .ng-rental-copy,
+        #sceneGreeting.greeting-fill .ng-rental-gap {
             flex: 0 0 auto;
             white-space: nowrap;
         }
@@ -2844,6 +2849,19 @@
         const el = document.getElementById('sceneGreeting');
         if (!el) return;
         el.classList.toggle('col-bg-dark-text', isDarkTextForDisplay(levelIdx, displayMode));
+        const g = (global.SignageConfig && global.SignageConfig.greeting) || {};
+        const fill = g.fill === 'body';
+        el.classList.toggle('greeting-fill', fill);
+        const shell = el.querySelector('.ng-shell');
+        if (!fill) {
+            el.style.backgroundColor = '';
+            if (shell) shell.style.backgroundColor = '';
+            return;
+        }
+        const colors = colorsForDisplay(levelIdx, displayMode);
+        const bg = (colors && colors.bgColor) || '';
+        el.style.backgroundColor = bg;
+        if (shell) shell.style.backgroundColor = bg;
     }
 
     function refreshTicker(levelIdx, displayMode) {
@@ -7452,7 +7470,7 @@
                 if (!hadController) { hadController = true; return; }
                 reloadNow_();
             });
-            navigator.serviceWorker.register('./sw.js?v=20260929-ac0010-full', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20260929-ac0010-fill', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, 20000);
             }).catch(function () {});
         }
@@ -11332,8 +11350,16 @@
         applyGreetingTextColors_();
         fitGreetingText_();
     }
-    function isAc0010Greeting_() {
-        return String((siteCfg_() && siteCfg_().projectId) || '') === 'AC-0010';
+    function greetingCfg_() {
+        return (siteCfg_() && siteCfg_().greeting) || {};
+    }
+    function greetingFillMode_() {
+        return greetingCfg_().fill === 'body';
+    }
+    function greetingScrollLaps_() {
+        const n = Number(greetingCfg_().scrollLaps);
+        if (!Number.isFinite(n) || n < 1) return 2;
+        return Math.min(8, Math.floor(n));
     }
     function applyGreetingTextColors_() {
         const mode = getSignageDisplayMode_();
@@ -11348,7 +11374,7 @@
         });
     }
     function fitGreetingText_() {
-        if (isAc0010Greeting_()) {
+        if (greetingFillMode_()) {
             document.querySelectorAll('#sceneGreeting .ng-line-0').forEach(function (el) {
                 el.style.fontSize = AC0010_RENTAL_FONT_PX + 'px';
                 el.style.maxWidth = 'none';
@@ -11408,7 +11434,7 @@
             sceneGreetingHoldTimerId = setTimeout(finishGreetingScene_, SCENE_GREETING_HOLD_MS);
             return;
         }
-        const total = lap * AC0010_RENTAL_LAPS;
+        const total = lap * greetingScrollLaps_();
         let x = 0;
         function step() {
             x -= getScrollSpeedPx_();
@@ -11444,7 +11470,7 @@
             scheduleDemoStep_(function () { transitionToScene(s1, playScene1); });
             return;
         }
-        if (isAc0010Greeting_()) {
+        if (greetingFillMode_()) {
             playAc0010RentalScroll_();
             return;
         }

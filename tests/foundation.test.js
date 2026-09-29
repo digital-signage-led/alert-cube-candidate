@@ -310,7 +310,11 @@ test('AC-0000 は内部テスト・全共通Contents ON、未実装はOFF', func
   assert.strictEqual(prod.customer, 'デジタルサイネージ');
   assert.strictEqual(prod.location, '〒559-0066 大阪市住之江区新北島1-9-13');
   assert.strictEqual(site.presentation.observationMode, 'scroll');
-  assert.deepStrictEqual(site.contentOrder, ['clock', 'observation', 'wbgt', 'wbgt-i18n', 'forecast', 'schedule']);
+  assert.deepStrictEqual(site.contentOrder, ['clock', 'observation', 'wbgt', 'wbgt-i18n', 'forecast', 'schedule', 'greeting']);
+  assert.strictEqual(site.greeting.fill, 'body');
+  assert.strictEqual(site.greeting.scrollLaps, 2);
+  assert.strictEqual(site.greeting.lines[0], 'ここに文言');
+  assert.strictEqual(site.contents.greeting.on, true);
   assert.deepStrictEqual(prod.contentOrder, ['clock', 'observation', 'wbgt', 'wbgt-i18n', 'forecast', 'schedule']);
 });
 
@@ -663,6 +667,8 @@ test('AC-0010 はフジケン長崎・諫早市永昌町の4面本番設定', fu
   assert.strictEqual(site.contents.greeting.on, true);
   assert.strictEqual(site.greeting.enabled, true);
   assert.strictEqual(site.greeting.lines[0], 'レンタルはフジケン長崎へ');
+  assert.strictEqual(site.greeting.fill, 'body');
+  assert.strictEqual(site.greeting.scrollLaps, 2);
   assert.strictEqual(site.logo.src, '');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0010/logo_banner.png') >= 0);
   assert.strictEqual(site.presentation.observationTrailingLogo, false);
