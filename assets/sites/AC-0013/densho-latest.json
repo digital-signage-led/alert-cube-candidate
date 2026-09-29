@@ -1,0 +1,36 @@
+{
+  "format_version": "1.0",
+  "term": [
+    {
+      "id": "1",
+      "name": "山本8号",
+      "data_intr_time": 600,
+      "data": [
+        {
+          "date": "20260929152620",
+          "power_voltage": "12.0",
+          "sensu15xx": {
+            "temp": 22.5,
+            "cumtemp": 4507.6,
+            "humi": 82.0,
+            "uv": 222,
+            "uvi": 1,
+            "illumi": 16761.0,
+            "rain": 0.0,
+            "rain_1h": 0.0,
+            "rain_24h": 21.5,
+            "rain_bgn": 71.4,
+            "wind_dir": 103,
+            "wind_dir_str": "東南東",
+            "wind_speed": 0.1,
+            "max_wind_speed": 1.0,
+            "wbgt": 22,
+            "wbgt_str": "注意"
+          },
+          "atmos": 995,
+          "sea_level_pressure": 1011
+        }
+      ]
+    }
+  ]
+}

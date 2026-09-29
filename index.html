@@ -2910,7 +2910,29 @@
         applySceneStripBg(content, levelIdx, displayMode);
     }
 
-    /** 右端 128×128（513以降）: WBGT色は使わず固定背景 */
+    /** 右端 128×128。AC-0014 は左画面の真ん中と同じ地色 */
+    function logoPanelFollowsContent_() {
+        const site = global.SignageConfig || {};
+        return String(site.projectId || '') === 'AC-0014'
+            || document.documentElement.classList.contains('site-ac-0014');
+    }
+    function contentMiddleBg_() {
+        const content = document.querySelector('.content-area');
+        if (!content) return '';
+        const rect = content.getBoundingClientRect();
+        if (rect.width < 8 || rect.height < 8) return '';
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        const stack = document.elementsFromPoint(x, y);
+        for (let i = 0; i < stack.length; i++) {
+            const el = stack[i];
+            if (!el || el === document.documentElement || el === document.body) continue;
+            const bg = getComputedStyle(el).backgroundColor;
+            if (!bg || bg === 'transparent' || bg === 'rgba(0, 0, 0, 0)') continue;
+            return bg;
+        }
+        return '';
+    }
     function initSignageLogo_() {
         const img = document.getElementById('signage-logo') || document.querySelector('.logo-img');
         const cfg = global.SIGNAGE_CONFIG;
@@ -2924,7 +2946,12 @@
         panel.querySelectorAll('.col-bg-layer').forEach(function (el) { el.remove(); });
         panel.classList.remove('col-bg-host', 'col-bg-dark-text', 'wbgt-off-season', 'wbgt-unavailable');
         const cfg = global.SIGNAGE_CONFIG || {};
-        panel.style.backgroundColor = cfg.logoPanelBg || '#ffffff';
+        let bg = cfg.logoPanelBg || '#ffffff';
+        if (logoPanelFollowsContent_()) {
+            const colors = colorsForDisplay(levelIdx, displayMode);
+            bg = contentMiddleBg_() || (colors && colors.bgColor) || bg;
+        }
+        panel.style.backgroundColor = bg;
     }
 
     function refreshAll(currentLevelIdx, displayMode) {
@@ -8181,10 +8208,12 @@
     async function fetchDenshoLatest_() {
         const apiUrl = String((siteCfg_().densho && siteCfg_().densho.apiUrl) || '');
         const proxy = denshoProxyUrl_(apiUrl);
-        if (!proxy || !window.AlertCubeDensho) {
+        const snapshot = String((siteCfg_().densho && siteCfg_().densho.snapshotUrl) || '').trim();
+        const url = proxy || snapshot;
+        if (!url || !window.AlertCubeDensho) {
             throw new Error('見守り伝書鳩の取得口がありません');
         }
-        const res = await fetch(proxy, { cache: 'no-store' });
+        const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) throw new Error('Densho HTTP ' + res.status);
         return window.AlertCubeDensho.parseLatest(await res.json());
     }
@@ -9800,6 +9829,7 @@
     function getS1SiteLogoSrc_() {
         const cfg = (typeof window !== 'undefined' && window.SIGNAGE_CONFIG) || {};
         if (String(cfg.footBannerSrc || '').trim()) return '';
+        if (cfg.hideFootMark) return '';
         return cfg.footLogoSrc || cfg.logoSrc || '';
     }
     function getS1FootBannerSrc_() {
@@ -10004,6 +10034,7 @@
             if (current) hideSceneEl(current);
             applyScrollX_(nextEl, 0);
             nextEl.style.zIndex = '';
+            applySignageLogoPanel_();
             runSceneCallback_(onComplete);
             return;
         }
@@ -10025,6 +10056,7 @@
                 hideSceneEl(current);
                 applyScrollX_(nextEl, 0);
                 nextEl.style.zIndex = '';
+                applySignageLogoPanel_();
                 const settled = sceneSlideSettledFn_;
                 sceneSlideSettledFn_ = null;
                 if (settled) settled();

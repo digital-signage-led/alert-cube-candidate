@@ -858,8 +858,13 @@ test('AC-0013 は宮川興業・見守り伝書鳩の4面本番設定', function
   assert.strictEqual(site.news.pageUrl, 'https://www.miyagawa-a2.co.jp/news/');
   assert.strictEqual(site.contents.forecast.on, true);
   assert.strictEqual(site.contents.wbgt.on, true);
-  assert.strictEqual(site.presentation.observationTrailingLogo, false);
-  assert.strictEqual(site.logo.src, '');
+  assert.strictEqual(site.presentation.observationTrailingLogo, true);
+  assert.ok(site.logo.src.indexOf('AC-0013/logo_mark.png') >= 0);
+  assert.strictEqual(site.logo.bannerSrc, '');
+  assert.ok(site.densho.snapshotUrl.indexOf('densho-latest.json') >= 0);
+  assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('logo_mark.png') >= 0);
+  assert.strictEqual(foundation.toLegacyBrand(site).footBannerSrc, '');
+  assert.strictEqual(foundation.toLegacyBrand(site).hideFootMark, true);
   assert.deepStrictEqual(site.contentOrder, ['warning', 'warning-hero', 'typhoon', 'clock', 'observation', 'forecast', 'wbgt-i18n', 'wbgt', 'news']);
   assert.ok(index.productionSites.indexOf('AC-0013') >= 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {}, moe: {}, jma: {} });

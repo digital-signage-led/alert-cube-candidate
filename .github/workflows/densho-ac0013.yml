@@ -1,0 +1,27 @@
+name: Update Miyagawa densho snapshot
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch 見守り伝書鳩
+        run: |
+          curl -fsSL -o assets/sites/AC-0013/densho-latest.json \
+            "https://densho-bato.com/member/get_json_data_latest?term_id=1&pgn=miyagawa01"
+      - name: Publish snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/sites/AC-0013/densho-latest.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Update Miyagawa densho snapshot"
+          git push

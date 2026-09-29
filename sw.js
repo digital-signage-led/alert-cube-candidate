@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260929-ac0015-news';
+var CACHE_NAME = 'alert-cube-sites-20260929-ac0013-logo';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -49,6 +49,8 @@ var PRECACHE = [
   './sites/AC-0012.json',
   './sites/AC-0013.json',
   './assets/sites/AC-0013/news.json',
+  './assets/sites/AC-0013/logo_mark.png?v=1',
+  './assets/sites/AC-0013/densho-latest.json',
   './sites/AC-0014.json',
   './assets/sites/AC-0014/logo_mark.png?v=1',
   './assets/sites/AC-0014/logo_banner.png?v=1',

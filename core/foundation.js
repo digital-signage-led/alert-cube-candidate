@@ -313,7 +313,8 @@
       logoAlt: (site && site.customer) || (site && site.siteName) || '',
       logoPanelBg: logo.panelBg || '#ffffff',
       logoCorpSrc: logo.corpSrc || src,
-      footLogoSrc: logo.footSrc || src,
+      footLogoSrc: (logo.footSrc === '' && !String(logo.bannerSrc || '').trim()) ? '' : (logo.footSrc || src),
+      hideFootMark: logo.footSrc === '' && !String(logo.bannerSrc || '').trim() && !!String(src || '').trim(),
       footBannerSrc: logo.bannerSrc || '',
       logoWideSrc: logo.wideSrc || ''
     };
