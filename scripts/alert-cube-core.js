@@ -330,6 +330,11 @@
     return ANNUAL_MODE.WBGT_ACTIVE;
   }
 
+  /** 期間外（気温モード）は多言語を出さない。提供中の取得失敗では残す。 */
+  function showsWbgtMultilingual(annualMode) {
+    return String(annualMode || '').indexOf('TEMPERATURE_') !== 0;
+  }
+
   function isDarkInk(colors) {
     return !!(colors && colors.ink && colors.ink !== '#ffffff' && colors.ink !== '#fff');
   }
@@ -400,6 +405,7 @@
     resolveSeasonMode: resolveSeasonMode,
     resolveAnnualMode: resolveAnnualMode,
     climateSeason: climateSeason,
+    showsWbgtMultilingual: showsWbgtMultilingual,
     parseTemperature: parseTemperature,
     getTemperatureDisplayColor: getTemperatureDisplayColor,
     resolveBackground: resolveBackground,

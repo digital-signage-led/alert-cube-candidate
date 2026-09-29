@@ -20,7 +20,7 @@
     <script src="./safety/fallback.js?v=20260921-suminoe"></script>
     <script src="./safety/retry.js?v=20260921-suminoe"></script>
     <script src="./safety/rollback.js?v=20260921-suminoe"></script>
-    <script src="./scripts/alert-cube-core.js?v=20260929-annual"></script>
+    <script src="./scripts/alert-cube-core.js?v=20260929-i18n-off"></script>
     <script src="./scripts/alert-cube-runtime.js?v=20260921-suminoe"></script>
     <script>
     (function () {
@@ -7347,7 +7347,7 @@
                 if (!hadController) { hadController = true; return; }
                 reloadNow_();
             });
-            navigator.serviceWorker.register('./sw.js?v=20260928-news-latest', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20260929-i18n-off', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, 20000);
             }).catch(function () {});
         }
@@ -9984,7 +9984,14 @@
         return { l1: '', l2: s };
     }
     /* シーン3（多言語枠）: 日・英・インドネシア・フィリピン・ベトナム */
+    function wbgtMultilingualOn_() {
+        if (window.AlertCubeCore && window.AlertCubeCore.showsWbgtMultilingual) {
+            return window.AlertCubeCore.showsWbgtMultilingual(annualMode_);
+        }
+        return !wbgtOffSeason;
+    }
     function getT3Messages_() {
+        if (!wbgtMultilingualOn_()) return [];
         if (temperatureDisplay_()) {
             const shown = formatTempLabel_(lastAmedasTempC_);
             if (!shown) return [];
@@ -10486,6 +10493,10 @@
     }
     function playScene3() {
         if (tickerAnimId) { cancelAnimationFrame(tickerAnimId); tickerAnimId = null; }
+        if (!wbgtMultilingualOn_()) {
+            gotoAfterScene3_();
+            return;
+        }
         if (window.AlertCubeContent && !window.AlertCubeContent.isOn('wbgt-i18n')) {
             gotoAfterScene3_();
             return;
@@ -11570,7 +11581,10 @@
             case 'observation': transitionToScene(s2, playScene2); break;
             case 'wbgt': transitionToScene(s4, playScene4); break;
             case 'forecast': transitionToScene(s5, playScene5); break;
-            case 'wbgt-i18n': transitionToScene(s3, playScene3); break;
+            case 'wbgt-i18n':
+                if (!wbgtMultilingualOn_()) { advanceContentOrder_(); break; }
+                transitionToScene(s3, playScene3);
+                break;
             case 'schedule': transitionToScene(sceneSchedule, playSceneSchedule); break;
             case 'greeting': transitionToScene(sceneGreeting, playSceneGreeting); break;
             case 'news': transitionToScene(sceneNews, playSceneNews); break;

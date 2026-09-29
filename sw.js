@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260929-annual';
+var CACHE_NAME = 'alert-cube-sites-20260929-i18n-off';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -17,7 +17,7 @@ var PRECACHE = [
   './core/foundation.js?v=20260928-site-hold',
   './services/remote.js?v=20260921-suminoe',
   './services/typhoon/index.js?v=20260921-suminoe',
-  './scripts/alert-cube-core.js?v=20260929-annual',
+  './scripts/alert-cube-core.js?v=20260929-i18n-off',
   './scripts/alert-cube-runtime.js?v=20260921-suminoe',
   './scripts/alert-cube-typhoon.js?v=20260921-suminoe',
   './scripts/jma-warning-kinds.js?v=20260921-suminoe',

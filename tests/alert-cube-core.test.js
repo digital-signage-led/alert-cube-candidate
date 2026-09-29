@@ -262,6 +262,11 @@ test('年間モード: 期間外は秋冬春、再開でWBGTへ戻る', function
     jstParts: { month: 1, day: 15 },
     fetchOk: true
   }), core.ANNUAL_MODE.WBGT_ACTIVE);
+  assert.strictEqual(core.showsWbgtMultilingual(core.ANNUAL_MODE.TEMPERATURE_AUTUMN), false);
+  assert.strictEqual(core.showsWbgtMultilingual(core.ANNUAL_MODE.TEMPERATURE_WINTER), false);
+  assert.strictEqual(core.showsWbgtMultilingual(core.ANNUAL_MODE.TEMPERATURE_SPRING), false);
+  assert.strictEqual(core.showsWbgtMultilingual(core.ANNUAL_MODE.WBGT_ACTIVE), true);
+  assert.strictEqual(core.showsWbgtMultilingual(core.ANNUAL_MODE.WBGT_TEMP_ERROR), true);
 });
 
 console.log('');
