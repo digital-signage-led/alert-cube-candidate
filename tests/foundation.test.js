@@ -281,6 +281,9 @@ test('AC-0003 は但南建設の本番案件設定', function () {
   assert.strictEqual(site.contents.schedule.on, false);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.presentation.observationMode, 'scroll');
+  assert.strictEqual(site.presentation.observationTrailingLogo, true);
+  assert.ok(site.logo.src.indexOf('AC-0003/tannan_logo_128.png') >= 0);
+  assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('tannan_logo_128.png') >= 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
   assert.strictEqual(merged.site.locationLabel, '朝来市');
   assert.strictEqual(merged.site.label, '但南建設');
@@ -865,11 +868,11 @@ test('AC-0013 は宮川興業・見守り伝書鳩の4面本番設定', function
   assert.strictEqual(site.contents.wbgt.on, true);
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.ok(site.logo.src.indexOf('AC-0013/logo_mark.png') >= 0);
-  assert.strictEqual(site.logo.bannerSrc, '');
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0013/logo_banner.png') >= 0);
   assert.ok(site.densho.snapshotUrl.indexOf('densho-latest.json') >= 0);
   assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('logo_mark.png') >= 0);
-  assert.strictEqual(foundation.toLegacyBrand(site).footBannerSrc, '');
-  assert.strictEqual(foundation.toLegacyBrand(site).hideFootMark, true);
+  assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('logo_banner.png') >= 0);
+  assert.strictEqual(foundation.toLegacyBrand(site).hideFootMark, false);
   assert.deepStrictEqual(site.contentOrder, ['warning', 'warning-hero', 'typhoon', 'clock', 'observation', 'forecast', 'wbgt-i18n', 'wbgt', 'news']);
   assert.ok(index.productionSites.indexOf('AC-0013') >= 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {}, moe: {}, jma: {} });

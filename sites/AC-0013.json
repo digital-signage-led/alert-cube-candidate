@@ -10,7 +10,7 @@
   "location": "広島県広島市安佐南区山本6丁目地内",
   "latitude": 34.4366,
   "longitude": 132.4382,
-  "memo": "現地の暑さ指数と気象は見守り伝書鳩。4日予報・警報・台風・雨雲は気象庁。ニュースは公式サイト。社名は時刻下の白帯。ロゴは観測・予報・暑さ指数の末尾。",
+  "memo": "現地の暑さ指数と気象は見守り伝書鳩。4日予報・警報・台風・雨雲は気象庁。ニュースは公式サイト。時刻下の白帯は社名ロゴ。末尾はマーク。",
   "resolution": "512x128",
   "layout": "AC-512",
   "faces": 4,
@@ -23,7 +23,7 @@
     "corpSrc": "./assets/sites/AC-0013/logo_mark.png?v=1",
     "footSrc": "",
     "panelBg": "#ffffff",
-    "bannerSrc": ""
+    "bannerSrc": "./assets/sites/AC-0013/logo_banner.png?v=2"
   },
   "densho": {
     "apiUrl": "https://densho-bato.com/member/get_json_data_latest?term_id=1&pgn=miyagawa01",

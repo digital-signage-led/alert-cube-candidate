@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260929-densho-extra';
+var CACHE_NAME = 'alert-cube-sites-20260929-ac0003-logo';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -34,6 +34,7 @@ var PRECACHE = [
   './sites/AC-0002.json',
   './sites/AC-0000.json',
   './sites/AC-0003.json',
+  './assets/sites/AC-0003/tannan_logo_128.png?v=1',
   './sites/AC-0004.json',
   './sites/AC-0005.json',
   './sites/AC-0006.json',
@@ -50,6 +51,7 @@ var PRECACHE = [
   './sites/AC-0013.json',
   './assets/sites/AC-0013/news.json',
   './assets/sites/AC-0013/logo_mark.png?v=1',
+  './assets/sites/AC-0013/logo_banner.png?v=2',
   './assets/sites/AC-0013/densho-latest.json',
   './sites/AC-0014.json',
   './assets/sites/AC-0014/logo_mark.png?v=1',
