@@ -17,8 +17,8 @@
   "footSource": "出典：気象庁・環境省データ",
   "releasePin": null,
   "logo": {
-    "src": "./assets/sites/AC-0003/tannan_logo_128.png",
-    "corpSrc": "./assets/sites/AC-0003/tannan_logo_128.png",
+    "src": "./assets/sites/AC-0003/tannan_logo_128.png?v=1",
+    "corpSrc": "./assets/sites/AC-0003/tannan_logo_128.png?v=1",
     "footSrc": "./assets/sites/AC-0003/tannan_logo.png",
     "panelBg": "#ffffff",
     "bannerSrc": "./assets/sites/AC-0003/tannan_logo.png"
