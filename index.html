@@ -12,6 +12,8 @@
     <script src="./contents/news/index.js?v=20260928-news-latest"></script>
     <script src="./contents/boards/index.js?v=20260925-ac0004-boards"></script>
     <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
+    <script src="./contents/hazard/evaluate.js?v=20260929-hazard3"></script>
+    <script src="./contents/hazard/player.js?v=20260929-hazard3"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
     <script src="./core/foundation.js?v=20260929-ac0010"></script>
@@ -12107,6 +12109,9 @@
             }, 5000);
             return;
         }
+        try {
+            if (window.AlertCubeHazard && window.AlertCubeHazard.start) window.AlertCubeHazard.start();
+        } catch (hazardErr) { console.warn('[hazard]', hazardErr && hazardErr.message); }
         if (window.AlertCubeRuntime && window.AlertCubeRuntime.applyFixedShell) {
             try { window.AlertCubeRuntime.applyFixedShell(); } catch (_) {}
         }
