@@ -98,7 +98,7 @@
     "rain-nowcast": { "on": true },
     "typhoon": { "on": false },
     "disaster": { "on": false },
-    "heat": { "on": true },
+    "heat": { "on": false },
     "schedule": { "on": false },
     "greeting": { "on": true },
     "news": { "on": false },

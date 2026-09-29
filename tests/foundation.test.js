@@ -664,7 +664,7 @@ test('AC-0010 はフジケン長崎・諫早市永昌町の4面本番設定', fu
   assert.strictEqual(site.latitude, 32.8842);
   assert.strictEqual(site.longitude, 130.0431);
   assert.strictEqual(site.contents.warning.on, false);
-  assert.strictEqual(site.contents.heat.on, true);
+  assert.strictEqual(site.contents.heat.on, false);
   assert.strictEqual(site.contents.greeting.on, true);
   assert.strictEqual(site.greeting.enabled, true);
   assert.strictEqual(site.greeting.lines[0], 'レンタルはフジケン長崎へ');
