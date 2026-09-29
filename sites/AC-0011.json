@@ -17,9 +17,9 @@
   "footSource": "出典：気象庁・環境省データ",
   "releasePin": null,
   "logo": {
-    "src": "./assets/sites/AC-0011/logo_mark.png?v=2",
+    "src": "./assets/sites/AC-0011/logo_mark.png?v=3",
     "wideSrc": "",
-    "corpSrc": "./assets/sites/AC-0011/logo_mark.png?v=2",
+    "corpSrc": "./assets/sites/AC-0011/logo_mark.png?v=3",
     "footSrc": "",
     "panelBg": "#ffffff",
     "bannerSrc": "./assets/sites/AC-0011/logo_banner.png?v=3"
