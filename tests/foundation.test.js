@@ -238,6 +238,7 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.ok(index.productionSites.indexOf('AC-0007') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0009') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0010') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0011') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
   assert.ok(Array.isArray(index.demoSites));
   index.demoSites.forEach(function (id) {
@@ -687,6 +688,55 @@ test('AC-0010 はフジケン長崎・諫早市永昌町の4面本番設定', fu
   assert.strictEqual(foundation.toLegacyBrand(site).logoSrc, '');
   assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('AC-0010/logo_banner.png') >= 0);
   assert.ok(foundation.toLegacyBrand({ customer: 'x' }).logoSrc.indexOf('logo.svg') >= 0);
+  assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
+test('AC-0011 は起産建設・博多区の4面本番設定', function () {
+  var site = require('../sites/AC-0011.json');
+  var index = require('../sites/index.json');
+  assert.strictEqual(site.projectId, 'AC-0011');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '起産建設株式会社');
+  assert.strictEqual(site.label, '起産建設');
+  assert.strictEqual(site.siteName, '博多区');
+  assert.strictEqual(site.location, '〒812-0041 福岡県福岡市博多区吉塚4丁目9-31');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.timeZone, 'Asia/Tokyo');
+  assert.strictEqual(site.moe.point, '82182');
+  assert.strictEqual(site.moe.pointName, '福岡');
+  assert.strictEqual(site.moe.alertArea, '福岡県');
+  assert.strictEqual(site.moe.region, '10');
+  assert.strictEqual(site.moe.prefecture, '82');
+  assert.strictEqual(site.jma.amedasPoint, '82182');
+  assert.strictEqual(site.jma.forecastArea, '400000');
+  assert.strictEqual(site.jma.forecastDetail, '400010');
+  assert.strictEqual(site.jma.forecastLabel, '博多区');
+  assert.strictEqual(site.jma.warnArea, '400000');
+  assert.strictEqual(site.jma.warnCity, '4013000');
+  assert.strictEqual(site.jma.warnCityLabel, '博多区');
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents['warning-hero'].on, false);
+  assert.strictEqual(site.contents.typhoon.on, true);
+  assert.strictEqual(site.contents.disaster.on, true);
+  assert.strictEqual(site.contents.heat.on, true);
+  assert.strictEqual(site.contents['wbgt-i18n'].on, true);
+  assert.strictEqual(site.contents.wbgt.on, true);
+  assert.strictEqual(site.contents.forecast.on, true);
+  assert.strictEqual(site.presentation.observationLaps, 2);
+  assert.strictEqual(site.presentation.observationTrailingLogo, true);
+  assert.strictEqual(site.presentation.sequence, 'contentOrder');
+  assert.strictEqual(site.presentation.wording, 'public');
+  assert.ok(site.logo.src.indexOf('AC-0011/logo_mark.png') >= 0);
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0011/logo_banner.png') >= 0);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'forecast', 'wbgt-i18n', 'wbgt', 'heat']);
+  assert.ok(index.productionSites.indexOf('AC-0011') >= 0);
+  assert.ok(index.demoSites.indexOf('AC-0011') < 0);
+  var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
+  assert.strictEqual(merged.site.locationLabel, '博多区');
+  assert.strictEqual(merged.site.label, '起産建設');
+  assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('logo_mark.png') >= 0);
+  assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('logo_banner.png') >= 0);
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
