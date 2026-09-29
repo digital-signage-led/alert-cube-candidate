@@ -664,7 +664,9 @@ test('AC-0010 はフジケン長崎・諫早市永昌町の4面本番設定', fu
   assert.strictEqual(site.greeting.enabled, true);
   assert.strictEqual(site.greeting.lines[0], 'レンタルはフジケン長崎へ');
   assert.strictEqual(site.logo.src, '');
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0010/logo_banner.png') >= 0);
   assert.strictEqual(site.presentation.observationTrailingLogo, false);
+  assert.strictEqual(site.presentation.wording, 'public');
   assert.deepStrictEqual(site.contentOrder, ['clock', 'observation', 'forecast', 'greeting', 'wbgt-i18n', 'wbgt', 'heat']);
   assert.ok(index.productionSites.indexOf('AC-0010') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0010') < 0);
@@ -673,6 +675,7 @@ test('AC-0010 はフジケン長崎・諫早市永昌町の4面本番設定', fu
   assert.strictEqual(merged.site.label, 'フジケン長崎');
   assert.strictEqual(merged.site.locationLabel, '諫早市永昌町');
   assert.strictEqual(foundation.toLegacyBrand(site).logoSrc, '');
+  assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('AC-0010/logo_banner.png') >= 0);
   assert.ok(foundation.toLegacyBrand({ customer: 'x' }).logoSrc.indexOf('logo.svg') >= 0);
   assert.ok(foundation.validateSiteConfig(site).ok);
 });

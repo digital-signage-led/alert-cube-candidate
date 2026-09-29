@@ -674,6 +674,31 @@
             max-width: 104px;
             max-height: 104px;
         }
+        /* AC-0010: 赤地に白文字。multiply だと白文字が下帯に溶ける */
+        html.site-ac-0010 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
+            mix-blend-mode: normal;
+            background: transparent;
+        }
+        /* AC-0010: 「レンタルはフジケン長崎へ」を画面いっぱいに大きく流す */
+        html.site-ac-0010 #sceneGreeting .ng-top,
+        html.site-ac-0010 #sceneGreeting .ng-foot { display: none; }
+        html.site-ac-0010 #sceneGreeting .ng-body {
+            height: 128px;
+            padding: 0;
+            align-items: flex-start;
+            justify-content: center;
+            overflow: hidden;
+        }
+        html.site-ac-0010 #sceneGreeting .ng-line-0 {
+            font-size: 72px;
+            font-weight: 900;
+            line-height: 128px;
+            max-width: none;
+            width: max-content;
+            flex: 0 0 auto;
+            letter-spacing: 0.04em;
+            text-overflow: clip;
+        }
         #scene2.scene2-scroll-mode .s2-meta-bar { z-index: 12; }
         /* 気象種別切替: 現行は上へシュッ、次は下から */
         #scene2 .conveyor-track {
@@ -2922,6 +2947,7 @@
         if (!query.get('warnCity') && jma.warnCity) JMA_WARN_CITY = jma.warnCity;
         document.documentElement.classList.toggle('site-ac-0007', String(c.projectId || '') === 'AC-0007');
         document.documentElement.classList.toggle('site-ac-0009', String(c.projectId || '') === 'AC-0009');
+        document.documentElement.classList.toggle('site-ac-0010', String(c.projectId || '') === 'AC-0010');
         if (typeof MOE_POINT_CFG !== 'undefined') MOE_POINT_CFG.pointName = getSiteLocationLabel_();
         if (typeof rainWarnMeta !== 'undefined') {
             rainWarnMeta.cityName = (JMA_WARN_CITY_LABELS && JMA_WARN_CITY_LABELS[JMA_WARN_CITY]) || getSiteLocationLabel_();
@@ -3318,6 +3344,28 @@
 
     function fcBarLabelForPanel_(index) {
         return FC_BAR_LABELS[index % 2];
+    }
+    /** 一般向け案件だけ、中止・作業停止にあたる他言語を休憩・補給の表現へ替える */
+    const MULTI_PUBLIC_I18N = {
+        3: {
+            en: "Severe Warning: Rest often and check in",
+            id: "Waspada keras: Istirahat dan cek kondisi",
+            fil: "Malubha: Magpahinga at suriin",
+            vn: "Cảnh báo nghiêm trọng: Nghỉ và theo dõi"
+        },
+        4: {
+            en: "Danger: Rest, water and salt",
+            id: "Bahaya: Istirahat, air dan garam",
+            fil: "Panganib: Pahinga, tubig at asin",
+            vn: "Nguy hiểm: Nghỉ, bổ sung nước muối"
+        }
+    };
+    function wbgtPhrase_(lv) {
+        const row = multi[lv];
+        if (!row) return null;
+        const wording = siteCfg_() && siteCfg_().presentation && siteCfg_().presentation.wording;
+        const alt = wording === 'public' ? MULTI_PUBLIC_I18N[lv] : null;
+        return alt ? Object.assign({}, row, alt) : row;
     }
     const unknownMsg = {
         jp: "WBGTデータ取得不可",
@@ -7030,7 +7078,9 @@
     let sceneScheduleHoldTimerId = null;
     const SCENE_SCHEDULE_HOLD_MS = 8000;
     let sceneGreetingHoldTimerId = null;
+    let sceneGreetingAnimId = null;
     const SCENE_GREETING_HOLD_MS = 8000;
+    const AC0010_RENTAL_FONT_PX = 72;
     const T3_UNIT_W = 256;
     const T3_USABLE_W = T3_UNIT_W - 8;
     const T3_SLOT_GAP = 2;
@@ -7379,7 +7429,7 @@
                 if (!hadController) { hadController = true; return; }
                 reloadNow_();
             });
-            navigator.serviceWorker.register('./sw.js?v=20260929-ac0010', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20260929-ac0010-logo', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, 20000);
             }).catch(function () {});
         }
@@ -9362,7 +9412,7 @@
         if (wbgtUnavailable) return unknownMsg.jp;
         const lv = getS1WbgtLevelForDisplay_();
         if (lv < 0) return '';
-        return multi[lv].jp;
+        return wbgtPhrase_(lv).jp;
     }
     /* 下帯: 1分以上取得不可のときだけ「取得不可」。それ以外は直前値のWBGT文言＋雨タグ */
     function getS1WbgtMessageJp() {
@@ -9371,7 +9421,7 @@
         const lv = getS1WbgtLevelForDisplay_();
         const rain = getRainAlertMessageJp();
         if (lv < 0) return rain || '';
-        const wbgt = multi[lv].jp;
+        const wbgt = wbgtPhrase_(lv).jp;
         if (rain && wbgt) return rain + '　' + wbgt;
         return rain || wbgt;
     }
@@ -10050,13 +10100,20 @@
         }
         const lv = getS1WbgtLevelForDisplay_();
         if (lv < 0) return [];
-        const m = multi[lv];
+        const m = wbgtPhrase_(lv);
         const all = T3_LANG_KEYS.map(function (key) { return splitT3Message_(m[key]); });
         if (DEMO_T3_LANG_IDX >= 0 && DEMO_T3_LANG_IDX < all.length) return [all[DEMO_T3_LANG_IDX]];
         return all;
     }
     function t3GuideTierText_(tier) {
-        return '（' + tier.title + '）：' + tier.guide;
+        let guide = tier.guide;
+        const wording = siteCfg_() && siteCfg_().presentation && siteCfg_().presentation.wording;
+        if (wording === 'public' && tier.title === '厳重警戒') {
+            guide = '炎天下を避け、10～20分おきに水分や塩分を補給してください。激しい運動は控えめにしましょう。';
+        } else if (wording === 'public' && tier.title === '警戒') {
+            guide = '積極的に休憩を取り、水分や塩分を補給してください。激しい運動では30分おきに休憩を入れましょう。';
+        }
+        return '（' + tier.title + '）：' + guide;
     }
     function buildT3GuideSetHtml_(text) {
         const group = '<span class="s2-meta-group">' + escapeS1Html(text) + '</span>';
@@ -11252,6 +11309,9 @@
         applyGreetingTextColors_();
         fitGreetingText_();
     }
+    function isAc0010Greeting_() {
+        return String((siteCfg_() && siteCfg_().projectId) || '') === 'AC-0010';
+    }
     function applyGreetingTextColors_() {
         const mode = getSignageDisplayMode_();
         const bgLv = mode === 'normal' ? getSignageBgLevel_() : -1;
@@ -11265,6 +11325,13 @@
         });
     }
     function fitGreetingText_() {
+        if (isAc0010Greeting_()) {
+            document.querySelectorAll('#sceneGreeting .ng-line-0').forEach(function (el) {
+                el.style.fontSize = AC0010_RENTAL_FONT_PX + 'px';
+                el.style.maxWidth = 'none';
+            });
+            return;
+        }
         document.querySelectorAll('#sceneGreeting .ng-line').forEach(function (el) {
             let size = 26;
             el.style.fontSize = size + 'px';
@@ -11287,6 +11354,45 @@
             clearTimeout(sceneGreetingHoldTimerId);
             sceneGreetingHoldTimerId = null;
         }
+        if (sceneGreetingAnimId) {
+            cancelAnimationFrame(sceneGreetingAnimId);
+            sceneGreetingAnimId = null;
+        }
+    }
+    function finishGreetingScene_() {
+        clearGreetingHoldTimer_();
+        stopLogoSpinInterval();
+        if (demoOnlyLoop_('greeting', playSceneGreeting)) return;
+        runAfterSceneEndHold_(function () {
+            if (playlistHandoff_()) return;
+            transitionToScene(s1, playScene1);
+        });
+    }
+    /** AC-0010: 大きい文言を左から流し、末尾まで見えたら次へ */
+    function playAc0010RentalScroll_() {
+        const line = document.querySelector('#sceneGreeting .ng-line-0');
+        if (!line) { finishGreetingScene_(); return; }
+        applyScrollX_(line, 0);
+        const overflow = Math.max(0, line.scrollWidth - 512);
+        if (overflow <= 8) {
+            sceneGreetingHoldTimerId = setTimeout(finishGreetingScene_, SCENE_GREETING_HOLD_MS);
+            return;
+        }
+        let x = 0;
+        function step() {
+            x -= getScrollSpeedPx_();
+            if (x <= -overflow) {
+                sceneGreetingAnimId = null;
+                applyScrollX_(line, -overflow);
+                sceneGreetingHoldTimerId = setTimeout(finishGreetingScene_, SCENE_GREETING_HOLD_MS);
+                return;
+            }
+            applyScrollX_(line, x);
+            sceneGreetingAnimId = requestAnimationFrame(step);
+        }
+        runSceneScrollAfterHold_(function () {
+            sceneGreetingAnimId = requestAnimationFrame(step);
+        });
     }
     function playSceneGreeting() {
         clearGreetingHoldTimer_();
@@ -11305,6 +11411,10 @@
         stepLogo90(420, true);
         if (isFullDemoStep_()) {
             scheduleDemoStep_(function () { transitionToScene(s1, playScene1); });
+            return;
+        }
+        if (isAc0010Greeting_()) {
+            playAc0010RentalScroll_();
             return;
         }
         sceneGreetingHoldTimerId = setTimeout(function () {

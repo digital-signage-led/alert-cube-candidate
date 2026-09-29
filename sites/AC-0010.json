@@ -22,7 +22,7 @@
     "corpSrc": "",
     "footSrc": "",
     "panelBg": "#ffffff",
-    "bannerSrc": ""
+    "bannerSrc": "./assets/sites/AC-0010/logo_banner.png?v=1"
   },
   "moe": {
     "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
@@ -60,7 +60,8 @@
     "sequence": "contentOrder",
     "observationMode": "scroll",
     "observationLaps": 2,
-    "observationTrailingLogo": false
+    "observationTrailingLogo": false,
+    "wording": "public"
   },
   "contentOrder": ["clock", "observation", "forecast", "greeting", "wbgt-i18n", "wbgt", "heat"],
   "contents": {
