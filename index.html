@@ -9285,7 +9285,10 @@
     function compactScene2Panels() {
         if (!conveyor) return;
         if (scene2ScrollMode_()) {
-            if (!conveyor.querySelector('.s2-logo-panel')) buildScene2ScrollConveyor_();
+            /* 末尾ロゴが無い案件でも、更新のたびに欄を作り直して数値を消さない */
+            if (!conveyor.querySelector('.s2-panel-data, .s2-panel[data-s2="weather"]')) {
+                buildScene2ScrollConveyor_();
+            }
             conveyor.style.width = (scene2SetWidth * 2) + 'px';
             return;
         }
