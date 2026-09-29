@@ -699,7 +699,7 @@
             flex-direction: row;
             align-items: center;
             height: 128px;
-            font-size: 72px;
+            font-size: 96px;
             font-weight: 900;
             line-height: 1;
             max-width: none;
@@ -7119,7 +7119,7 @@
     let sceneGreetingHoldTimerId = null;
     let sceneGreetingAnimId = null;
     const SCENE_GREETING_HOLD_MS = 8000;
-    const AC0010_RENTAL_FONT_PX = 72;
+    const AC0010_RENTAL_FONT_PX = 96;
     const AC0010_RENTAL_LAPS = 2;
     const AC0010_RENTAL_GAP_PX = 128;
     const T3_UNIT_W = 256;
@@ -7470,7 +7470,7 @@
                 if (!hadController) { hadController = true; return; }
                 reloadNow_();
             });
-            navigator.serviceWorker.register('./sw.js?v=20260929-ac0010-fill', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20260929-ac0010-font', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, 20000);
             }).catch(function () {});
         }
