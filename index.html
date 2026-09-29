@@ -8216,16 +8216,16 @@
         const snapshot = String((siteCfg_().densho && siteCfg_().densho.snapshotUrl) || '').trim();
         const api = window.AlertCubeDensho;
         const reader = api && api.readerUrl ? api.readerUrl(apiUrl) : '';
-        if (!denshoOnThisPc_()) {
-            if (snapshot) urls.push(snapshot);
-            if (reader) urls.push(reader);
-            return urls;
-        }
         const proxy = denshoProxyUrl_(apiUrl);
         if (proxy) urls.push(proxy);
-        if (snapshot) urls.push(snapshot);
         if (reader) urls.push(reader);
+        if (snapshot) urls.push(snapshot);
         return urls;
+    }
+    function denshoObservedFresh_(bundle) {
+        const at = bundle && bundle.observedAt;
+        if (!(at instanceof Date) || Number.isNaN(at.getTime())) return false;
+        return getNowMs() - at.getTime() <= AMEDAS_MAX_AGE_MS;
     }
     async function fetchDenshoLatest_() {
         const apiUrl = String((siteCfg_().densho && siteCfg_().densho.apiUrl) || '');
@@ -8234,6 +8234,7 @@
             throw new Error('見守り伝書鳩の取得口がありません');
         }
         let lastErr = null;
+        let lastBundle = null;
         for (let i = 0; i < urls.length; i++) {
             try {
                 const res = await fetch(urls[i], {
@@ -8242,11 +8243,14 @@
                 });
                 if (!res.ok) throw new Error('Densho HTTP ' + res.status);
                 const json = window.AlertCubeDensho.unwrapPayload(await res.json());
-                return window.AlertCubeDensho.parseLatest(json);
+                const bundle = window.AlertCubeDensho.parseLatest(json);
+                lastBundle = bundle;
+                if (denshoObservedFresh_(bundle) || i === urls.length - 1) return bundle;
             } catch (err) {
                 lastErr = err;
             }
         }
+        if (lastBundle) return lastBundle;
         throw lastErr || new Error('見守り伝書鳩の取得に失敗');
     }
     let lastDenshoExtra_ = null;
