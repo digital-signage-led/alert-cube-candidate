@@ -20,6 +20,7 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/?site=AC-0009 （大島組 米岡橋梁下部工）
 - http://127.0.0.1:3200/?site=AC-0010 （有限会社フジケン長崎 諫早市永昌町）
 - http://127.0.0.1:3200/?site=AC-0011 （起産建設 博多区）
+- http://127.0.0.1:3200/?site=AC-0012 （株式会社ヒカリ 丸亀市）
 - http://127.0.0.1:3200/?site=AC-0000 （内部テスト。本番端末へ登録しない）
 - http://127.0.0.1:3200/contents/ （V2.0コンテンツ確認一覧）
 - http://127.0.0.1:3200/?offseason=1
@@ -59,6 +60,7 @@ docs/               運用
 | AC-0009 | active | 株式会社大島組 / 〒943-0104 新潟県上越市鶴町52 |
 | AC-0010 | active | 有限会社フジケン長崎 / 〒854-0072 長崎県諫早市永昌町５−２３ |
 | AC-0011 | active | 起産建設株式会社 / 〒812-0041 福岡県福岡市博多区吉塚4丁目9-31 |
+| AC-0012 | active | 株式会社ヒカリ / 〒763-0085 香川県丸亀市飯野町東分592-1 |
 
 発行済み ID は再利用しない。追加するときは `sites/_template.json` を新しい番号へ複製する。デモは別番号で `status: demo` とし、`demoSites` にだけ入れる。`?demo=1` は演出で、外してもその番号は本番にならない。
 
@@ -88,5 +90,6 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0009: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0009
 - AC-0010: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0010
 - AC-0011: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0011
+- AC-0012: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0012
 - AC-0000: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0000
 - コンテンツ一覧: https://digital-signage-led.github.io/alert-cube-candidate/contents/

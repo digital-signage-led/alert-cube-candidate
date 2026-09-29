@@ -239,6 +239,7 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.ok(index.productionSites.indexOf('AC-0009') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0010') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0011') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0012') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
   assert.ok(Array.isArray(index.demoSites));
   index.demoSites.forEach(function (id) {
@@ -745,6 +746,80 @@ test('AC-0011 は起産建設・博多区の4面本番設定', function () {
   assert.strictEqual(merged.site.locationLabel, '博多区');
   assert.strictEqual(merged.site.label, '起産建設');
   assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('logo_mark.png') >= 0);
+  assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('logo_banner.png') >= 0);
+  assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
+test('AC-0012 は株式会社ヒカリ・丸亀市の4面本番設定', function () {
+  var site = require('../sites/AC-0012.json');
+  var index = require('../sites/index.json');
+  assert.strictEqual(site.projectId, 'AC-0012');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '株式会社ヒカリ');
+  assert.strictEqual(site.rental, '株式会社ヒカリ');
+  assert.strictEqual(site.label, 'ヒカリ');
+  assert.strictEqual(site.siteName, '丸亀市');
+  assert.strictEqual(site.location, '〒763-0085 香川県丸亀市飯野町東分592-1');
+  assert.strictEqual(site.memo, 'レンタルのニッケン。香川県立香川丸亀支援学校の表示をv2.0化');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.timeZone, 'Asia/Tokyo');
+  assert.strictEqual(site.moe.point, '72111');
+  assert.strictEqual(site.moe.pointName, '多度津');
+  assert.strictEqual(site.moe.alertArea, '香川県');
+  assert.strictEqual(site.moe.region, '09');
+  assert.strictEqual(site.moe.prefecture, '72');
+  assert.strictEqual(site.jma.amedasPoint, '72111');
+  assert.strictEqual(site.jma.forecastArea, '370000');
+  assert.strictEqual(site.jma.forecastLabel, '丸亀市');
+  assert.strictEqual(site.jma.warnArea, '370000');
+  assert.strictEqual(site.jma.warnCity, '3720200');
+  assert.strictEqual(site.jma.warnCityLabel, '丸亀市');
+  assert.strictEqual(site.latitude, 34.2915);
+  assert.strictEqual(site.longitude, 133.825);
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents['warning-hero'].on, false);
+  assert.strictEqual(site.contents.typhoon.on, true);
+  assert.strictEqual(site.contents.disaster.on, true);
+  assert.strictEqual(site.contents.heat.on, false);
+  assert.strictEqual(site.contents.news.on, true);
+  assert.strictEqual(site.news.pageUrl, 'https://www.hikari-c.co.jp/');
+  assert.strictEqual(site.news.maxItems, 2);
+  assert.ok(site.news.urls[0].indexOf('AC-0012/news.json') >= 0);
+  assert.strictEqual(site.contents.clock.on, true);
+  assert.strictEqual(site.contents.observation.on, true);
+  assert.strictEqual(site.contents.forecast.on, true);
+  assert.strictEqual(site.contents['wbgt-i18n'].on, true);
+  assert.strictEqual(site.contents.wbgt.on, true);
+  assert.strictEqual(site.presentation.observationLaps, 2);
+  assert.strictEqual(site.presentation.observationTrailingLogo, true);
+  assert.strictEqual(site.presentation.sequence, 'contentOrder');
+  assert.strictEqual(site.presentation.wording, 'public');
+  assert.ok(site.logo.src.indexOf('AC-0012/logo_stack.png') >= 0);
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0012/logo_banner.png') >= 0);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'forecast', 'wbgt-i18n', 'wbgt', 'news']);
+  var news = require('../contents/news/index.js');
+  var hikari = news.parsePage(
+    '<div class="news-area"><dl><dt>2026.9.26</dt><dd class="category">お知らせ</dd><dd class="title">ケアーズ日誌を更新しました</dd></dl>' +
+    '<dl><dt>2026.9.11</dt><dd class="title">【フードドライブ】第22回 ～参画企業様より～</dd></dl>' +
+    '<dl><dt>2026.9.11</dt><dd class="title">【フードドライブ】 第22回 寄贈してまいりました</dd></dl></div>' +
+    '<div class="blog-area"><dl><dt>お陰様で10周年</dt><dd class="date">2026.9.11</dd></dl></div>',
+    2
+  );
+  assert.strictEqual(hikari.length, 2);
+  assert.strictEqual(hikari[0].date, '2026年09月26日');
+  assert.strictEqual(hikari[0].title, 'ケアーズ日誌を更新しました');
+  assert.strictEqual(hikari[1].title, '【フードドライブ】第22回 ～参画企業様より～');
+  var hikariMd = news.parsePage('[2026.9.26 お知らせ ケアーズ日誌を更新しました](https://www.hikari-c.co.jp/news/info/entry-627.html)\n[2026.9.11 【フードドライブ】第22回 ～参画企業様より～](https://www.hikari-c.co.jp/news/entry-626.html)', 2);
+  assert.strictEqual(hikariMd[0].title, 'ケアーズ日誌を更新しました');
+  assert.strictEqual(hikariMd[0].date, '2026年09月26日');
+  assert.ok(index.productionSites.indexOf('AC-0012') >= 0);
+  assert.ok(index.demoSites.indexOf('AC-0012') < 0);
+  var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
+  assert.strictEqual(merged.site.locationLabel, '丸亀市');
+  assert.strictEqual(merged.site.label, 'ヒカリ');
+  assert.strictEqual(merged.site.rental, '株式会社ヒカリ');
+  assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('logo_stack.png') >= 0);
   assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('logo_banner.png') >= 0);
   assert.ok(foundation.validateSiteConfig(site).ok);
 });

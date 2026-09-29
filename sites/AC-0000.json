@@ -9,6 +9,39 @@
   "location": "内部テスト（顧客案件ではない）",
   "latitude": 34.605184,
   "longitude": 135.470949,
+  "elevation": 3.2,
+  "inundation": { "expectedDepthM": null },
+  "evacuation": {
+    "assembly": "",
+    "shelter": "",
+    "shelterName": "",
+    "distanceM": null
+  },
+  "hazard": {
+    "minIntensity": "5弱",
+    "earthquakeVisibleMinutes": 30,
+    "faceMs": 4000,
+    "kinds": {
+      "earthquake": true,
+      "tsunami": true,
+      "surge": true,
+      "flood": true,
+      "inundation": true
+    },
+    "priorities": {
+      "earthquake": 10,
+      "inundation-warning": 15,
+      "flood-advisory": 20,
+      "surge-advisory": 25,
+      "flood-warning": 30,
+      "inundation-special": 35,
+      "tsunami-advisory": 40,
+      "surge-warning": 50,
+      "tsunami-warning": 60,
+      "surge-special": 75,
+      "tsunami-major": 80
+    }
+  },
   "resolution": "512x128",
   "layout": "AC-512",
   "faces": 4,
@@ -125,6 +158,7 @@
     "boards": { "on": true },
     "logo-scroll": { "on": true },
     "greeting": { "on": true },
+    "hazard": { "on": true },
     "pollen": { "on": false },
     "pm25": { "on": false }
   }

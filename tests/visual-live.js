@@ -201,7 +201,7 @@ async function run() {
     } catch (e) { ng('Visual layout share', e); }
 
     try {
-      var existing = ['clock', 'weather', 'temperature', 'rain', 'wind', 'humidity', 'pressure', 'temp-range', 'wbgt', 'wbgt-i18n', 'forecast', 'warning', 'warning-hero', 'rain-nowcast', 'typhoon', 'disaster', 'heat', 'schedule'];
+      var existing = ['clock', 'weather', 'temperature', 'rain', 'wind', 'humidity', 'pressure', 'temp-range', 'wbgt', 'wbgt-i18n', 'forecast', 'warning', 'warning-hero', 'rain-nowcast', 'typhoon', 'disaster', 'heat', 'schedule', 'hazard'];
       existing.forEach(function (id) {
         assert.ok(m0.contentsOn.indexOf(id) >= 0, 'AC-0000 missing ON ' + id);
       });

@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260929-ac0011-news';
+var CACHE_NAME = 'alert-cube-sites-20260929-ac0012-news';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -8,9 +8,12 @@ var PRECACHE = [
   './safety/rollback.js?v=20260921-suminoe',
   './contents/registry.js?v=20260929-heat-off',
   './contents/modules.js?v=20260923-ac0004',
-  './contents/news/index.js?v=20260929-ac0011-news',
+  './contents/news/index.js?v=20260929-ac0012-news',
   './contents/boards/index.js?v=20260925-ac0004-boards',
   './contents/logo-scroll/index.js?v=20260923-ac0004',
+  './contents/hazard/evaluate.js?v=20260929-hazard6',
+  './contents/hazard/player.js?v=20260929-hazard8',
+  './services/hazard/index.js',
   './contents/index.html',
   './data/jma-weather-icons.js?v=20260921-suminoe',
   './data/jma-regions.js?v=20260921-suminoe',
@@ -42,6 +45,10 @@ var PRECACHE = [
   './assets/sites/AC-0011/logo_banner.png?v=3',
   './assets/sites/AC-0011/logo_mark.png?v=3',
   './assets/sites/AC-0011/news.json',
+  './sites/AC-0012.json',
+  './assets/sites/AC-0012/logo_banner.png?v=1',
+  './assets/sites/AC-0012/logo_stack.png?v=1',
+  './assets/sites/AC-0012/news.json',
   './assets/sites/AC-0008/logo_mark.png?v=1',
   './assets/sites/AC-0008/logo_banner.png?v=1',
   './assets/sites/AC-0009/logo_mark.png?v=1',

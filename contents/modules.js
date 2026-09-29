@@ -22,6 +22,7 @@
     'rain-nowcast': { id: 'rain-nowcast', fetch: ['jma-nowc'], scene: 'sceneRainWarn' },
     typhoon: { id: 'typhoon', fetch: ['jma-typhoon'], scene: 'sceneWarn' },
     disaster: { id: 'disaster', fetch: ['jma-warning', 'moe-heat'], scene: 'sceneAlert' },
+    hazard: { id: 'hazard', fetch: ['jma-quake', 'jma-warning'], scene: 'sceneHazard', interrupt: true },
     heat: { id: 'heat', fetch: ['moe-heat'], scene: 'sceneAlert' },
     schedule: { id: 'schedule', fetch: [], scene: 'sceneSchedule' },
     news: { id: 'news', fetch: [], scene: 'sceneNews' },

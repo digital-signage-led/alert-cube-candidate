@@ -130,12 +130,29 @@
       if (compact) {
         var month = ('0' + compact[2]).slice(-2);
         var day = ('0' + compact[3]).slice(-2);
-        push(compact[1] + '年' + month + '月' + day + '日', compact[4]);
+        var title = compact[4].replace(/^(?:お知らせ|トピックス)\s+/, '');
+        push(compact[1] + '年' + month + '月' + day + '日', title);
       }
     }
     var outsideRe = /(20\d{2})[./](\d{2})[./](\d{2})(?:\[[^\]]{0,24}\]\([^)]+\))?\[([^\]]+)\]\(/g;
     while ((m = outsideRe.exec(md))) {
       push(m[1] + '年' + m[2] + '月' + m[3] + '日', m[4]);
+    }
+    return items;
+  }
+
+  function parseDlNews(html) {
+    var items = [];
+    var seen = {};
+    var re = /<dt>\s*(20\d{2})[./](\d{1,2})[./](\d{1,2})\s*<\/dt>[\s\S]{0,800}?class=["']title["'][^>]*>([\s\S]*?)<\/dd>/gi;
+    var m;
+    while ((m = re.exec(html))) {
+      var title = cleanTitle(decodeText(m[4]));
+      if (!title || seen[title]) continue;
+      seen[title] = true;
+      var month = ('0' + m[2]).slice(-2);
+      var day = ('0' + m[3]).slice(-2);
+      items.push({ date: m[1] + '年' + month + '月' + day + '日', title: title });
     }
     return items;
   }
@@ -161,6 +178,7 @@
     if (raw.charAt(0) === '[' || raw.charAt(0) === '{') items = parseJsonNews(raw);
     if (!items.length && /data-field=["']title["']/i.test(raw)) items = parseHtmlNews(raw);
     if (!items.length && /news__item_content/i.test(raw)) items = parseHtmlList(raw);
+    if (!items.length && /<dt>\s*20\d{2}[./]\d{1,2}[./]\d{1,2}/i.test(raw) && /class=["']title["']/i.test(raw)) items = parseDlNews(raw);
     if (!items.length) items = parseMarkdownNews(raw);
     if (!items.length) items = parseDatedLinks(raw);
     return normalizeItems({ items: items }, maxItems);

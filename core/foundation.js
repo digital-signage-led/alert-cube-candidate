@@ -139,10 +139,9 @@
     var out = {};
     if (!reg) return out;
     reg.CONTENTS.forEach(function (c) {
-      out[c.id] = {
-        on: c.existing ? !!allOn : false,
-        durationMs: null
-      };
+      var on = false;
+      if (c.existing && c.defaultOn !== false) on = !!allOn;
+      out[c.id] = { on: on, durationMs: null };
     });
     return out;
   }
@@ -190,6 +189,7 @@
       return false;
     }
     if (item && typeof item.on === 'boolean') return item.on;
+    if (reg.defaultOn === false) return false;
     return !!reg.existing;
   }
 
@@ -284,6 +284,10 @@
       news: site.news || null,
       boards: site.boards || null,
       logoScroll: site.logoScroll || null,
+      elevation: site.elevation != null ? site.elevation : null,
+      inundation: site.inundation || null,
+      evacuation: site.evacuation || null,
+      hazard: site.hazard || null,
       season: site.season,
       status: site.status || null
     };
@@ -336,6 +340,10 @@
     }
     if (json.label && base.site) base.site.label = json.label;
     if (json.location && base.site) base.site.address = json.location;
+    if (json.elevation !== undefined) base.elevation = json.elevation;
+    if (json.inundation) base.inundation = json.inundation;
+    if (json.evacuation) base.evacuation = json.evacuation;
+    if (json.hazard) base.hazard = json.hazard;
     if (json.latitude != null) {
       base.geo = base.geo || {};
       base.geo.lat = json.latitude;

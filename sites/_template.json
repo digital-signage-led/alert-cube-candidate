@@ -9,6 +9,19 @@
   "location": "",
   "latitude": 0,
   "longitude": 0,
+  "elevation": null,
+  "inundation": { "expectedDepthM": null },
+  "evacuation": {
+    "assembly": "",
+    "shelter": "",
+    "shelterName": "",
+    "distanceM": null
+  },
+  "hazard": {
+    "minIntensity": "5弱",
+    "earthquakeVisibleMinutes": 30,
+    "faceMs": 4000
+  },
   "resolution": "512x128",
   "layout": "AC-512",
   "faces": 4,
@@ -82,6 +95,7 @@
     "news": { "on": false },
     "boards": { "on": false },
     "logo-scroll": { "on": false },
+    "hazard": { "on": false },
     "pollen": { "on": false },
     "pm25": { "on": false }
   }

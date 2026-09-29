@@ -22,6 +22,10 @@
     { id: 'rain-nowcast', label: '雨雲・大雨', scene: 'sceneRainWarn', fetch: ['jma-nowc'], existing: true, lifecycle: 'active', safety: true },
     { id: 'typhoon', label: '台風', scene: 'sceneWarn', fetch: ['jma-typhoon'], existing: true, lifecycle: 'active', safety: true },
     { id: 'disaster', label: '防災割込', scene: 'sceneAlert', fetch: ['jma-warning', 'moe-heat'], existing: true, lifecycle: 'active', safety: true },
+    {
+      id: 'hazard', label: '地震・水害防災', scene: 'sceneHazard', fetch: ['jma-quake', 'jma-warning'],
+      existing: true, defaultOn: false, lifecycle: 'active', safety: true, interrupt: true
+    },
     { id: 'heat', label: '熱中症アラート', scene: 'sceneAlert', fetch: ['moe-heat'], existing: true, defaultOn: false, lifecycle: 'active', seasonal: 'summer', safety: true },
     { id: 'schedule', label: '工程表', scene: 'sceneSchedule', fetch: [], existing: true, lifecycle: 'active' },
     {
