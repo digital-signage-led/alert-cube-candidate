@@ -63,7 +63,21 @@
     "observationTrailingLogo": false,
     "wording": "public"
   },
-  "contentOrder": ["clock", "observation", "forecast", "greeting", "wbgt-i18n", "wbgt", "heat"],
+  "logoScroll": {
+    "laps": 2,
+    "panelWidth": 873,
+    "direction": "rtl",
+    "end": "complete",
+    "background": "#D80200",
+    "images": [
+      {
+        "src": "./assets/sites/AC-0010/logo_banner.png?v=1",
+        "alt": "有限会社フジケン長崎",
+        "panelWidth": 873
+      }
+    ]
+  },
+  "contentOrder": ["clock", "observation", "forecast", "greeting", "logo-scroll", "wbgt-i18n", "wbgt", "heat"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -87,7 +101,7 @@
     "greeting": { "on": true },
     "news": { "on": false },
     "boards": { "on": false },
-    "logo-scroll": { "on": false },
+    "logo-scroll": { "on": true },
     "pollen": { "on": false },
     "pm25": { "on": false }
   }
