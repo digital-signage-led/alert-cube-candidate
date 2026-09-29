@@ -14,7 +14,7 @@
     <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
-    <script src="./core/foundation.js?v=20260928-site-hold"></script>
+    <script src="./core/foundation.js?v=20260929-ac0010"></script>
     <script src="./services/remote.js?v=20260921-suminoe"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
     <script src="./safety/fallback.js?v=20260921-suminoe"></script>
@@ -2996,7 +2996,7 @@
         if (v === 'rainwarn') return 'rainwarn';
         if (v === 'typhoon' || v === 'bosai') return 'typhoon';
         if (v === 'schedule' || v === 'sch' || v === '6') return 'schedule';
-        if (v === 'greeting' || v === 'greet' || v === '7') return 'greeting';
+        if (v === 'greeting' || v === 'greet' || v === '7' || v === 's6') return 'greeting';
         if (v === 'news') return 'news';
         if (v === 'boards' || v === 'kotei') return 'boards';
         if (v === 'logo') return 'logo';
@@ -7379,7 +7379,7 @@
                 if (!hadController) { hadController = true; return; }
                 reloadNow_();
             });
-            navigator.serviceWorker.register('./sw.js?v=20260929-i18n-off', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20260929-ac0010', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, 20000);
             }).catch(function () {});
         }
@@ -7577,9 +7577,17 @@
             face.alt = alt;
         });
     }
+    function hasContentLogo_() {
+        const cfg = window.SIGNAGE_CONFIG || {};
+        return !!String(cfg.logoSrc || '').trim();
+    }
     function compactScene4Panels() {
         if (!fcConveyor) return;
-        scene4SetWidth = SCENE4_PANEL_COUNT * 128;
+        const withLogo = hasContentLogo_();
+        document.querySelectorAll('#scene4 .fc-logo-panel').forEach(function (el) {
+            el.style.display = withLogo ? '' : 'none';
+        });
+        scene4SetWidth = (withLogo ? SCENE4_PANEL_COUNT : SCENE4_DATA_COUNT) * 128;
         fcConveyor.style.width = (scene4SetWidth * 2) + 'px';
         fcConveyor.style.transition = 'none';
         applyContentEndLogoSrc_();
@@ -8594,7 +8602,11 @@
     }
     function compactScene5Panels() {
         if (!d5Conveyor) return;
-        scene5SetWidth = SCENE5_PANEL_COUNT * 128;
+        const withLogo = hasContentLogo_();
+        document.querySelectorAll('#scene5 .d5-logo-panel').forEach(function (el) {
+            el.style.display = withLogo ? '' : 'none';
+        });
+        scene5SetWidth = (withLogo ? SCENE5_PANEL_COUNT : SCENE5_DAY_COUNT) * 128;
         d5Conveyor.style.width = `${scene5SetWidth * 2}px`;
         applyContentEndLogoSrc_();
     }
@@ -9512,7 +9524,7 @@
     function buildFcLvSetHtml(text) {
         const msg = '<span class="fc-lv-msg-compact">' + escapeS1Html(text) + '</span>';
         const src = '<div class="fc-lv-slot fc-lv-slot-src">' + msg + '</div>';
-        const logo = '<div class="fc-lv-slot fc-lv-slot-logo" aria-hidden="true"></div>';
+        const logo = hasContentLogo_() ? '<div class="fc-lv-slot fc-lv-slot-logo" aria-hidden="true"></div>' : '';
         return '<div class="fc-lv-set fc-lv-set-sync">' + src + src + logo + '</div>';
     }
     function buildFcLvTrack(clearTimers) {
@@ -10803,8 +10815,8 @@
         } else {
             syncWbgtSlotsToDomIfReady_();
         }
-        buildFcLvTrack(false);
         compactScene4Panels();
+        buildFcLvTrack(false);
         applyPendingSignageBgAtScene_();
         fitFcBarLabelFontSize_();
         fitFcWbgtFontSize();
@@ -11619,6 +11631,14 @@
                 break;
             case 'schedule': transitionToScene(sceneSchedule, playSceneSchedule); break;
             case 'greeting': transitionToScene(sceneGreeting, playSceneGreeting); break;
+            case 'heat':
+                if (NO_HEAT_ALERT || !contentOn_('heat') || !heatAlertActive.length || !sceneAlert) {
+                    advanceContentOrder_();
+                    break;
+                }
+                prepHeatAlert_(0);
+                transitionToScene(sceneAlert, function () { playSceneAlert(0); });
+                break;
             case 'news': transitionToScene(sceneNews, playSceneNews); break;
             case 'boards': transitionToScene(sceneBoards, playSceneBoards); break;
             case 'logo-scroll': transitionToScene(sceneLogo, playSceneLogoScroll); break;

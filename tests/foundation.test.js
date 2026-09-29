@@ -237,6 +237,7 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.ok(index.productionSites.indexOf('AC-0006') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0007') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0009') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0010') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
   assert.ok(Array.isArray(index.demoSites));
   index.demoSites.forEach(function (id) {
@@ -630,6 +631,49 @@ test('AC-0009 は大島組・米岡橋梁下部工の4面本番設定', function
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
   assert.strictEqual(merged.site.locationLabel, '米岡橋梁下部工');
   assert.strictEqual(merged.site.label, '大島組');
+  assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
+test('AC-0010 はフジケン長崎・諫早市永昌町の4面本番設定', function () {
+  var site = require('../sites/AC-0010.json');
+  var index = require('../sites/index.json');
+  assert.strictEqual(site.projectId, 'AC-0010');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '有限会社フジケン長崎');
+  assert.strictEqual(site.rental, 'レンタルはフジケン長崎へ');
+  assert.strictEqual(site.label, 'フジケン長崎');
+  assert.strictEqual(site.siteName, '諫早市永昌町');
+  assert.strictEqual(site.location, '〒854-0072 長崎県諫早市永昌町５−２３');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.timeZone, 'Asia/Tokyo');
+  assert.strictEqual(site.moe.point, '84496');
+  assert.strictEqual(site.moe.pointName, '長崎');
+  assert.strictEqual(site.moe.alertArea, '長崎県');
+  assert.strictEqual(site.moe.region, '10');
+  assert.strictEqual(site.moe.prefecture, '84');
+  assert.strictEqual(site.jma.amedasPoint, '84496');
+  assert.strictEqual(site.jma.forecastArea, '420000');
+  assert.strictEqual(site.jma.forecastLabel, '諫早市');
+  assert.strictEqual(site.jma.warnCity, '4220400');
+  assert.strictEqual(site.latitude, 32.8842);
+  assert.strictEqual(site.longitude, 130.0431);
+  assert.strictEqual(site.contents.warning.on, false);
+  assert.strictEqual(site.contents.heat.on, true);
+  assert.strictEqual(site.contents.greeting.on, true);
+  assert.strictEqual(site.greeting.enabled, true);
+  assert.strictEqual(site.greeting.lines[0], 'レンタルはフジケン長崎へ');
+  assert.strictEqual(site.logo.src, '');
+  assert.strictEqual(site.presentation.observationTrailingLogo, false);
+  assert.deepStrictEqual(site.contentOrder, ['clock', 'observation', 'forecast', 'greeting', 'wbgt-i18n', 'wbgt', 'heat']);
+  assert.ok(index.productionSites.indexOf('AC-0010') >= 0);
+  assert.ok(index.demoSites.indexOf('AC-0010') < 0);
+  var merged = foundation.mergeJsonOntoLegacy(site, { site: { rental: 'デジタルサイネージ' } });
+  assert.strictEqual(merged.site.rental, 'レンタルはフジケン長崎へ');
+  assert.strictEqual(merged.site.label, 'フジケン長崎');
+  assert.strictEqual(merged.site.locationLabel, '諫早市永昌町');
+  assert.strictEqual(foundation.toLegacyBrand(site).logoSrc, '');
+  assert.ok(foundation.toLegacyBrand({ customer: 'x' }).logoSrc.indexOf('logo.svg') >= 0);
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 

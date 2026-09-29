@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "projectId": "AC-0010",
+  "status": "active",
+  "customer": "有限会社フジケン長崎",
+  "rental": "レンタルはフジケン長崎へ",
+  "label": "フジケン長崎",
+  "projectName": "有限会社フジケン長崎 WBGTサイネージ",
+  "siteName": "諫早市永昌町",
+  "location": "〒854-0072 長崎県諫早市永昌町５−２３",
+  "latitude": 32.8842,
+  "longitude": 130.0431,
+  "resolution": "512x128",
+  "layout": "AC-512",
+  "faces": 4,
+  "timeZone": "Asia/Tokyo",
+  "footSource": "出典：気象庁・環境省データ",
+  "releasePin": null,
+  "logo": {
+    "src": "",
+    "wideSrc": "",
+    "corpSrc": "",
+    "footSrc": "",
+    "panelBg": "#ffffff",
+    "bannerSrc": ""
+  },
+  "moe": {
+    "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
+    "point": "84496",
+    "fallbackPoint": "",
+    "pointName": "長崎",
+    "alertArea": "長崎県",
+    "region": "10",
+    "prefecture": "84"
+  },
+  "jma": {
+    "amedasPoint": "84496",
+    "amedasSupplementPoint": "",
+    "forecastArea": "420000",
+    "forecastDetail": "",
+    "forecastLabel": "諫早市",
+    "warnArea": "420000",
+    "warnCity": "4220400",
+    "warnCityLabel": "諫早市"
+  },
+  "wbgt": {
+    "seasonStart": { "month": 4, "day": 22 },
+    "seasonEnd": { "month": 10, "day": 22 }
+  },
+  "season": { "override": null },
+  "updateSettings": { "refreshMs": 60000 },
+  "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "greeting": {
+    "enabled": true,
+    "title": "",
+    "lines": ["レンタルはフジケン長崎へ"],
+    "foot": ""
+  },
+  "presentation": {
+    "sequence": "contentOrder",
+    "observationMode": "scroll",
+    "observationLaps": 2,
+    "observationTrailingLogo": false
+  },
+  "contentOrder": ["clock", "observation", "forecast", "greeting", "wbgt-i18n", "wbgt", "heat"],
+  "contents": {
+    "clock": { "on": true },
+    "observation": { "on": true },
+    "weather": { "on": true },
+    "temperature": { "on": true },
+    "rain": { "on": true },
+    "wind": { "on": true },
+    "humidity": { "on": true },
+    "pressure": { "on": true },
+    "temp-range": { "on": true },
+    "wbgt": { "on": true },
+    "wbgt-i18n": { "on": true },
+    "forecast": { "on": true },
+    "warning": { "on": false },
+    "warning-hero": { "on": false },
+    "rain-nowcast": { "on": true },
+    "typhoon": { "on": false },
+    "disaster": { "on": false },
+    "heat": { "on": true },
+    "schedule": { "on": false },
+    "greeting": { "on": true },
+    "news": { "on": false },
+    "boards": { "on": false },
+    "logo-scroll": { "on": false },
+    "pollen": { "on": false },
+    "pm25": { "on": false }
+  }
+}

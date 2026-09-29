@@ -291,7 +291,7 @@
 
   function toLegacyBrand(site) {
     var logo = (site && site.logo) || {};
-    var src = logo.src || './images/logo.svg?v=20260921-suminoe';
+    var src = logo.src != null ? String(logo.src) : './images/logo.svg?v=20260921-suminoe';
     return {
       logoSrc: src,
       logoAlt: (site && site.customer) || (site && site.siteName) || '',
@@ -329,6 +329,7 @@
     if (json.status) base.status = json.status;
     if (json.season) base.season = json.season;
     if (json.customer != null && base.site) base.site.customer = json.customer;
+    if (json.rental && base.site) base.site.rental = json.rental;
     if (json.siteName && base.site) {
       base.site.label = json.siteName;
       base.site.locationLabel = json.siteName;
