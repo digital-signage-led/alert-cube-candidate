@@ -58,7 +58,17 @@
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "forecast", "wbgt-i18n", "wbgt", "heat"],
+  "news": {
+    "badge": "新着情報",
+    "laps": 1,
+    "speed": 1,
+    "maxItems": 2,
+    "pageUrl": "https://kisan-k.co.jp/topics/",
+    "refreshMs": 1800000,
+    "urls": ["./assets/sites/AC-0011/news.json"],
+    "cacheKey": "AC-0011-news"
+  },
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "forecast", "wbgt-i18n", "wbgt", "news"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -77,9 +87,9 @@
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
     "disaster": { "on": true },
-    "heat": { "on": true },
+    "heat": { "on": false },
     "schedule": { "on": false },
-    "news": { "on": false },
+    "news": { "on": true },
     "boards": { "on": false },
     "logo-scroll": { "on": false },
     "pollen": { "on": false },

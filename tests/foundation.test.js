@@ -294,6 +294,11 @@ test('AC-0000 は内部テスト・全共通Contents ON、未実装はOFF', func
   registry.CONTENTS.forEach(function (c) {
     var item = site.contents[c.id];
     assert.ok(item, 'missing contents.' + c.id);
+    if (c.id === 'heat') {
+      assert.strictEqual(item.on, false, 'heat stays off');
+      assert.strictEqual(foundation.isContentOn(site, c.id), false, 'heat isContentOn');
+      return;
+    }
     if (c.existing) {
       assert.strictEqual(item.on, true, c.id + ' should be on for AC-0000');
       assert.strictEqual(foundation.isContentOn(site, c.id), true, c.id + ' isContentOn');
@@ -679,7 +684,7 @@ test('AC-0010 はフジケン長崎・諫早市永昌町の4面本番設定', fu
   assert.strictEqual(site.logoScroll.laps, 2);
   assert.strictEqual(site.logoScroll.images[0].panelWidth, 873);
   assert.ok(site.logoScroll.images[0].src.indexOf('AC-0010/logo_banner.png') >= 0);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'forecast', 'greeting', 'wbgt-i18n', 'logo-scroll', 'wbgt', 'heat']);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'forecast', 'greeting', 'wbgt-i18n', 'logo-scroll', 'wbgt']);
   assert.ok(index.productionSites.indexOf('AC-0010') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0010') < 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: { rental: 'デジタルサイネージ' } });
@@ -720,7 +725,10 @@ test('AC-0011 は起産建設・博多区の4面本番設定', function () {
   assert.strictEqual(site.contents['warning-hero'].on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.disaster.on, true);
-  assert.strictEqual(site.contents.heat.on, true);
+  assert.strictEqual(site.contents.heat.on, false);
+  assert.strictEqual(site.contents.news.on, true);
+  assert.strictEqual(site.news.pageUrl, 'https://kisan-k.co.jp/topics/');
+  assert.strictEqual(site.news.maxItems, 2);
   assert.strictEqual(site.contents['wbgt-i18n'].on, true);
   assert.strictEqual(site.contents.wbgt.on, true);
   assert.strictEqual(site.contents.forecast.on, true);
@@ -730,7 +738,7 @@ test('AC-0011 は起産建設・博多区の4面本番設定', function () {
   assert.strictEqual(site.presentation.wording, 'public');
   assert.ok(site.logo.src.indexOf('AC-0011/logo_mark.png') >= 0);
   assert.ok(site.logo.bannerSrc.indexOf('AC-0011/logo_banner.png') >= 0);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'forecast', 'wbgt-i18n', 'wbgt', 'heat']);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'forecast', 'wbgt-i18n', 'wbgt', 'news']);
   assert.ok(index.productionSites.indexOf('AC-0011') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0011') < 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
@@ -760,6 +768,21 @@ test('注意報・警報・特別警報と台風は全案件と新規テンプ�
   assert.strictEqual(tpl.contentOrder[1], 'typhoon');
 });
 
+test('熱中症警戒アラートは全案件と新規テンプレートでオフ', function () {
+  var index = require('../sites/index.json');
+  var tpl = require('../sites/_template.json');
+  index.sites.forEach(function (row) {
+    var site = require('../sites/' + row.projectId + '.json');
+    assert.strictEqual(site.contents.heat.on, false, row.projectId + ' heat');
+    assert.strictEqual(foundation.isContentOn(site, 'heat'), false, row.projectId + ' isContentOn heat');
+    if (Array.isArray(site.contentOrder)) {
+      assert.ok(site.contentOrder.indexOf('heat') < 0, row.projectId + ' order heat');
+    }
+  });
+  assert.strictEqual(tpl.contents.heat.on, false);
+  assert.ok(tpl.contentOrder.indexOf('heat') < 0);
+});
+
 test('ニュースは各社の最新見出しを2件に揃える', function () {
   var news = require('../contents/news/index.js');
   var sato = news.parsePage('[＜協力会社のみなさまへ＞通報・相談窓口を設置しました お知らせ 2026年09月01日](https://www.satokogyo.co.jp/news/)\n[令和8年熊本地震へのお見舞いと対応について お知らせ 2026年08月07日](https://www.satokogyo.co.jp/news/)\n[古い記事 お知らせ 2026年07月01日](https://www.satokogyo.co.jp/news/)', 2);
@@ -780,6 +803,10 @@ test('ニュースは各社の最新見出しを2件に揃える', function () {
   ]), 2);
   assert.strictEqual(oshima[0].title, 'オオシまガジン更新！');
   assert.strictEqual(oshima[1].title, 'ホームページリニューアルのお知らせ');
+  var kisan = news.parsePage('[2026.9.28（仮称）SmAvCm新宮FM店新築工事の進捗状況【9/21-9/27】](https://kisan-k.co.jp/topics/a/)\n[2026.9.28（仮称）ジオガーデン中洲2丁目新築工事の進捗状況【9/21-9/26】](https://kisan-k.co.jp/topics/b/)\n[2026.9.24（仮称）古い進捗](https://kisan-k.co.jp/topics/c/)', 2);
+  assert.strictEqual(kisan.length, 2);
+  assert.strictEqual(kisan[0].date, '2026年09月28日');
+  assert.strictEqual(kisan[0].title, '（仮称）SmAvCm新宮FM店新築工事の進捗状況【9/21-9/27】');
 });
 
 console.log('');

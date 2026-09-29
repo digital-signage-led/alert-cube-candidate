@@ -79,7 +79,7 @@
       }
     ]
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "forecast", "greeting", "wbgt-i18n", "logo-scroll", "wbgt", "heat"],
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "forecast", "greeting", "wbgt-i18n", "logo-scroll", "wbgt"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },

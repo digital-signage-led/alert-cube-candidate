@@ -119,7 +119,7 @@
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
     "disaster": { "on": true },
-    "heat": { "on": true },
+    "heat": { "on": false },
     "schedule": { "on": true },
     "news": { "on": true },
     "boards": { "on": true },

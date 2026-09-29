@@ -125,7 +125,13 @@
       var end = text.match(/^(.*?)\s+(?:お知らせ|トピックス)\s+((?:20\d{2})年\d{2}月\d{2}日)$/);
       if (end) { push(end[2], end[1]); continue; }
       var start = text.match(/^(20\d{2})[./](\d{2})[./](\d{2})\s+\S+\s+(.+)$/);
-      if (start) push(start[1] + '年' + start[2] + '月' + start[3] + '日', start[4]);
+      if (start) { push(start[1] + '年' + start[2] + '月' + start[3] + '日', start[4]); continue; }
+      var compact = text.match(/^(20\d{2})[./](\d{1,2})[./](\d{1,2})\s*(.+)$/);
+      if (compact) {
+        var month = ('0' + compact[2]).slice(-2);
+        var day = ('0' + compact[3]).slice(-2);
+        push(compact[1] + '年' + month + '月' + day + '日', compact[4]);
+      }
     }
     var outsideRe = /(20\d{2})[./](\d{2})[./](\d{2})(?:\[[^\]]{0,24}\]\([^)]+\))?\[([^\]]+)\]\(/g;
     while ((m = outsideRe.exec(md))) {

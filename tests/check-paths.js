@@ -58,6 +58,7 @@ var paths = [
   '/sites/AC-0011.json',
   '/assets/sites/AC-0011/logo_banner.png',
   '/assets/sites/AC-0011/logo_mark.png',
+  '/assets/sites/AC-0011/news.json',
   '/assets/sites/AC-0008/logo_mark.png',
   '/assets/sites/AC-0008/logo_banner.png',
   '/assets/sites/AC-0009/logo_mark.png',

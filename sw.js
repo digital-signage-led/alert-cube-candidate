@@ -1,14 +1,14 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260929-ac0011-mark';
+var CACHE_NAME = 'alert-cube-sites-20260929-ac0011-news';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
   './safety/fallback.js?v=20260921-suminoe',
   './safety/retry.js?v=20260921-suminoe',
   './safety/rollback.js?v=20260921-suminoe',
-  './contents/registry.js?v=20260928-news-live',
+  './contents/registry.js?v=20260929-heat-off',
   './contents/modules.js?v=20260923-ac0004',
-  './contents/news/index.js?v=20260928-news-latest',
+  './contents/news/index.js?v=20260929-ac0011-news',
   './contents/boards/index.js?v=20260925-ac0004-boards',
   './contents/logo-scroll/index.js?v=20260923-ac0004',
   './contents/index.html',
@@ -41,6 +41,7 @@ var PRECACHE = [
   './sites/AC-0011.json',
   './assets/sites/AC-0011/logo_banner.png?v=3',
   './assets/sites/AC-0011/logo_mark.png?v=3',
+  './assets/sites/AC-0011/news.json',
   './assets/sites/AC-0008/logo_mark.png?v=1',
   './assets/sites/AC-0008/logo_banner.png?v=1',
   './assets/sites/AC-0009/logo_mark.png?v=1',
