@@ -14,6 +14,11 @@
     { id: 'humidity', label: '湿度', scene: 'scene2', panel: 'humi', fetch: ['jma-amedas'], existing: true, lifecycle: 'active' },
     { id: 'pressure', label: '気圧', scene: 'scene2', panel: 'pres', fetch: ['jma-amedas'], existing: true, lifecycle: 'active' },
     { id: 'temp-range', label: '最高/最低', scene: 'scene2', panel: 'tmaxmin', fetch: ['jma-amedas'], existing: true, lifecycle: 'active' },
+    { id: 'uv', label: '紫外線', scene: 'scene2', panel: 'uvi', fetch: ['densho-sensor'], existing: true, defaultOn: false, lifecycle: 'active' },
+    { id: 'illuminance', label: '照度', scene: 'scene2', panel: 'illumi', fetch: ['densho-sensor'], existing: true, defaultOn: false, lifecycle: 'active' },
+    { id: 'cumtemp', label: '積算温度', scene: 'scene2', panel: 'cumtemp', fetch: ['densho-sensor'], existing: true, defaultOn: false, lifecycle: 'active' },
+    { id: 'rain-1h', label: '1時間雨量', scene: 'scene2', panel: 'rain1h', fetch: ['densho-sensor'], existing: true, defaultOn: false, lifecycle: 'active' },
+    { id: 'rain-24h', label: '24時間雨量', scene: 'scene2', panel: 'rain24h', fetch: ['densho-sensor'], existing: true, defaultOn: false, lifecycle: 'active' },
     { id: 'wbgt', label: 'WBGT/暑さ指数', scene: 'scene4', fetch: ['moe-wbgt'], existing: true, lifecycle: 'active', seasonal: 'summer' },
     { id: 'wbgt-i18n', label: '多言語WBGT', scene: 'scene3', fetch: ['moe-wbgt'], existing: true, lifecycle: 'active', seasonal: 'summer' },
     { id: 'forecast', label: '4日予報', scene: 'scene5', fetch: ['jma-forecast'], existing: true, lifecycle: 'active' },
@@ -67,6 +72,11 @@
     tmaxmin: 'temp-range',
     wbgt: 'wbgt',
     gust: 'wind',
+    uvi: 'uv',
+    illumi: 'illuminance',
+    cumtemp: 'cumtemp',
+    rain1h: 'rain-1h',
+    rain24h: 'rain-24h',
     logo: 'clock'
   };
 

@@ -853,6 +853,11 @@ test('AC-0013 は宮川興業・見守り伝書鳩の4面本番設定', function
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.disaster.on, true);
   assert.strictEqual(site.contents.news.on, true);
+  assert.strictEqual(site.contents.uv.on, true);
+  assert.strictEqual(site.contents.illuminance.on, true);
+  assert.strictEqual(site.contents.cumtemp.on, true);
+  assert.strictEqual(site.contents['rain-1h'].on, true);
+  assert.strictEqual(site.contents['rain-24h'].on, true);
   assert.strictEqual(site.contents.heat.on, false);
   assert.strictEqual(site.jma.warnCity, '3410500');
   assert.strictEqual(site.news.pageUrl, 'https://www.miyagawa-a2.co.jp/news/');
@@ -890,7 +895,8 @@ test('AC-0013 は宮川興業・見守り伝書鳩の4面本番設定', function
         date: '20260929142620',
         sea_level_pressure: 1011,
         sensu15xx: {
-          temp: 22.3, humi: 78, rain: 0, rain_1h: 0,
+          temp: 22.3, humi: 78, rain: 0, rain_1h: 0.5, rain_24h: 21.5,
+          uvi: 1, illumi: 16761, cumtemp: 4507.6,
           wind_dir: 90, wind_dir_str: '東', wind_speed: 0.2,
           max_wind_speed: 1.5, wbgt: 22, wbgt_str: '注意'
         }
@@ -909,6 +915,11 @@ test('AC-0013 は宮川興業・見守り伝書鳩の4面本番設定', function
   });
   assert.strictEqual(densho.parseLatest(wrapped).temp, 22.4);
   assert.ok(densho.readerUrl(site.densho.apiUrl).indexOf('https://r.jina.ai/https://densho-bato.com/') === 0);
+  assert.strictEqual(parsed.extra.uvIndex, 1);
+  assert.strictEqual(parsed.extra.illuminance, 16761);
+  assert.strictEqual(parsed.extra.cumTemp, 4507.6);
+  assert.strictEqual(parsed.extra.rain1h, 0.5);
+  assert.strictEqual(parsed.extra.rain24h, 21.5);
   assert.strictEqual(parsed.wbgtSlots[0].levelIdx, 1);
   assert.strictEqual(parsed.wbgtSlots[3].hour, '現在');
   assert.strictEqual(parsed.observedAt.toISOString(), '2026-09-29T05:26:20.000Z');

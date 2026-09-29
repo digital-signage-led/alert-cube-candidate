@@ -159,6 +159,11 @@
     "logo-scroll": { "on": true },
     "greeting": { "on": true },
     "hazard": { "on": true },
+    "uv": { "on": true },
+    "illuminance": { "on": true },
+    "cumtemp": { "on": true },
+    "rain-1h": { "on": true },
+    "rain-24h": { "on": true },
     "pollen": { "on": false },
     "pm25": { "on": false }
   }

@@ -96,6 +96,13 @@
         gust: pair_(sensu.max_wind_speed),
         normalPressure: pair_(pressure)
       },
+      extra: {
+        uvIndex: finite_(sensu.uvi),
+        illuminance: finite_(sensu.illumi),
+        cumTemp: finite_(sensu.cumtemp),
+        rain1h: finite_(sensu.rain_1h),
+        rain24h: finite_(sensu.rain_24h)
+      },
       wbgtSlots: slots
     };
   }

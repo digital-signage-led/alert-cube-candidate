@@ -96,6 +96,11 @@
     "boards": { "on": false },
     "logo-scroll": { "on": false },
     "hazard": { "on": false },
+    "uv": { "on": false },
+    "illuminance": { "on": false },
+    "cumtemp": { "on": false },
+    "rain-1h": { "on": false },
+    "rain-24h": { "on": false },
     "pollen": { "on": false },
     "pm25": { "on": false }
   }

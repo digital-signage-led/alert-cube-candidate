@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <script src="./config/site-config.js?v=20260921-suminoe"></script>
     <script src="./safety/version.js?v=20260921-suminoe"></script>
-    <script src="./contents/registry.js?v=20260929-heat-off"></script>
+    <script src="./contents/registry.js?v=20260929-densho-extra"></script>
     <script src="./contents/modules.js?v=20260923-ac0004"></script>
     <script src="./contents/news/index.js?v=20260929-ac0015-news"></script>
     <script src="./contents/boards/index.js?v=20260925-ac0004-boards"></script>
@@ -3955,11 +3955,14 @@
         const when = snap.time ? new Date(snap.time) : null;
         if (snap.weatherCode) lastForecastWeatherCode_ = snap.weatherCode;
         applyJmaAmedasToDom(obs, when && !isNaN(when.getTime()) ? when : null);
+        if (lastDenshoExtra_) applyDenshoExtrasToDom_(lastDenshoExtra_);
     }
     function clearStaleAmedasDisplay_() {
         lastAmedasSnapshot_ = null;
         lastAmedasObsTime = null;
         setTextAll('.temp-val, .humi-val, .rain-val, .pres-val, .wind-val, .gust-val', '--');
+        setTextAll('.uvi-val, .illumi-val, .cumtemp-val, .rain1h-val, .rain24h-val', '--');
+        lastDenshoExtra_ = null;
         setTextAll('.dir-val', '--');
         setTextAll('.tmaxmax-val, .tmin-val', '--');
         document.querySelectorAll('#scene5 .d5-foot-humi').forEach(function (el) { el.textContent = '--%'; });
@@ -7248,8 +7251,8 @@
     let scene1AdvanceToken = 0;
     let s1Flow_ = null;
     const SCENE2_FACE_COUNT = 4;
-    const SCENE2_TYPE_ORDER = ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin'];
-    const SCENE2_SCROLL_ORDER = ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin'];
+    const SCENE2_TYPE_ORDER = ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin', 'uvi', 'illumi', 'cumtemp', 'rain1h', 'rain24h'];
+    const SCENE2_SCROLL_ORDER = ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin', 'uvi', 'illumi', 'cumtemp', 'rain1h', 'rain24h'];
     const SCENE2_PANEL_COUNT = SCENE2_FACE_COUNT;
     const SCENE2_LAPS = 1;
     const SCENE2_SCROLL_PX = 0.8;
@@ -8240,6 +8243,20 @@
         }
         throw lastErr || new Error('見守り伝書鳩の取得に失敗');
     }
+    let lastDenshoExtra_ = null;
+    function denshoExtraText_(value, digits) {
+        if (value == null || !Number.isFinite(Number(value))) return '--';
+        return digits > 0 ? Number(value).toFixed(digits) : String(Math.round(Number(value)));
+    }
+    function applyDenshoExtrasToDom_(extra) {
+        if (extra) lastDenshoExtra_ = extra;
+        const x = lastDenshoExtra_ || {};
+        setTextAll('.uvi-val', denshoExtraText_(x.uvIndex, 0));
+        setTextAll('.illumi-val', denshoExtraText_(x.illuminance, 0));
+        setTextAll('.cumtemp-val', denshoExtraText_(x.cumTemp, 1));
+        setTextAll('.rain1h-val', denshoExtraText_(x.rain1h, 1));
+        setTextAll('.rain24h-val', denshoExtraText_(x.rain24h, 1));
+    }
     function applyDenshoBundle_(bundle) {
         if (!bundle || !bundle.obs) return null;
         const daily = rememberDenshoDaily_(bundle.temp, bundle.observedAt);
@@ -8253,6 +8270,7 @@
         }
         const live = applyJmaAmedasToDom(bundle.obs, bundle.observedAt);
         if (bundle.windDirStr) setTextAll('.dir-val', bundle.windDirStr);
+        applyDenshoExtrasToDom_(bundle.extra);
         applyWbgtInSeason_();
         moeService_ = true;
         wbgtFetchOk_ = true;
@@ -9197,7 +9215,8 @@
     }
     const SCENE2_META_LABELS = {
         weather: '天気', temp: '気温', wbgt: '暑さ指数', humi: '湿度', rain: '降水量',
-        wdir: '風向き', wind: '風速', pres: '気圧', tmaxmin: '最高/最低', gust: '最大瞬間風速'
+        wdir: '風向き', wind: '風速', pres: '気圧', tmaxmin: '最高/最低', gust: '最大瞬間風速',
+        uvi: '紫外線', illumi: '照度', cumtemp: '積算温度', rain1h: '1時間雨量', rain24h: '24時間雨量'
     };
     const SCENE2_META_ORDER = SCENE2_TYPE_ORDER;
     function scene2PanelHtml_(type) {
@@ -9222,6 +9241,16 @@
                 return '<div class="s2-panel-data s2-strip s2-panel-compact" data-s2="tmaxmin"><div class="s2-top-bar"><span class="s2-bar-label">最高/最低</span></div><div class="s2-body"><div class="s2-tmaxmin-card"><span class="s2-tmax-high tmaxmax-val">--</span><span class="s2-tmax-sep">/</span><span class="s2-tmax-low tmin-val">--</span><span class="s2-tmax-unit">℃</span></div></div></div>';
             case 'gust':
                 return '<div class="s2-panel-data s2-strip s2-panel-compact" data-s2="gust"><div class="s2-top-bar"><span class="s2-bar-label">最大瞬間風速</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num gust-val"></span><span class="s2-unit">m/s</span></div></div></div>';
+            case 'uvi':
+                return '<div class="s2-panel-data s2-strip" data-s2="uvi"><div class="s2-top-bar"><span class="s2-bar-label">紫外線</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num uvi-val"></span></div></div></div>';
+            case 'illumi':
+                return '<div class="s2-panel-data s2-strip s2-panel-compact" data-s2="illumi"><div class="s2-top-bar"><span class="s2-bar-label">照度</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num illumi-val"></span><span class="s2-unit">lx</span></div></div></div>';
+            case 'cumtemp':
+                return '<div class="s2-panel-data s2-strip s2-panel-compact" data-s2="cumtemp"><div class="s2-top-bar"><span class="s2-bar-label">積算温度</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num cumtemp-val"></span><span class="s2-unit">℃</span></div></div></div>';
+            case 'rain1h':
+                return '<div class="s2-panel-data s2-strip s2-panel-compact" data-s2="rain1h"><div class="s2-top-bar"><span class="s2-bar-label">1時間雨量</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num rain1h-val"></span><span class="s2-unit">mm</span></div></div></div>';
+            case 'rain24h':
+                return '<div class="s2-panel-data s2-strip s2-panel-compact" data-s2="rain24h"><div class="s2-top-bar"><span class="s2-bar-label">24時間雨量</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num rain24h-val"></span><span class="s2-unit">mm</span></div></div></div>';
             default:
                 return '';
         }

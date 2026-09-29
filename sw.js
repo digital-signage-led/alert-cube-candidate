@@ -1,12 +1,12 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20260929-ac0013-densho';
+var CACHE_NAME = 'alert-cube-sites-20260929-densho-extra';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
   './safety/fallback.js?v=20260921-suminoe',
   './safety/retry.js?v=20260921-suminoe',
   './safety/rollback.js?v=20260921-suminoe',
-  './contents/registry.js?v=20260929-heat-off',
+  './contents/registry.js?v=20260929-densho-extra',
   './contents/modules.js?v=20260923-ac0004',
   './contents/news/index.js?v=20260929-ac0015-news',
   './contents/boards/index.js?v=20260925-ac0004-boards',
