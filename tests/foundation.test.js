@@ -678,7 +678,7 @@ test('AC-0010 はフジケン長崎・諫早市永昌町の4面本番設定', fu
   assert.strictEqual(site.logoScroll.laps, 2);
   assert.strictEqual(site.logoScroll.images[0].panelWidth, 873);
   assert.ok(site.logoScroll.images[0].src.indexOf('AC-0010/logo_banner.png') >= 0);
-  assert.deepStrictEqual(site.contentOrder, ['clock', 'observation', 'forecast', 'greeting', 'logo-scroll', 'wbgt-i18n', 'wbgt', 'heat']);
+  assert.deepStrictEqual(site.contentOrder, ['clock', 'observation', 'forecast', 'greeting', 'wbgt-i18n', 'logo-scroll', 'wbgt', 'heat']);
   assert.ok(index.productionSites.indexOf('AC-0010') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0010') < 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: { rental: 'デジタルサイネージ' } });

@@ -79,7 +79,7 @@
       }
     ]
   },
-  "contentOrder": ["clock", "observation", "forecast", "greeting", "logo-scroll", "wbgt-i18n", "wbgt", "heat"],
+  "contentOrder": ["clock", "observation", "forecast", "greeting", "wbgt-i18n", "logo-scroll", "wbgt", "heat"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
