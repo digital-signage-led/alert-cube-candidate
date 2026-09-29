@@ -79,7 +79,7 @@
       }
     ]
   },
-  "contentOrder": ["clock", "observation", "forecast", "greeting", "wbgt-i18n", "logo-scroll", "wbgt", "heat"],
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "forecast", "greeting", "wbgt-i18n", "logo-scroll", "wbgt", "heat"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -93,10 +93,10 @@
     "wbgt": { "on": true },
     "wbgt-i18n": { "on": true },
     "forecast": { "on": true },
-    "warning": { "on": false },
+    "warning": { "on": true },
     "warning-hero": { "on": false },
     "rain-nowcast": { "on": true },
-    "typhoon": { "on": false },
+    "typhoon": { "on": true },
     "disaster": { "on": false },
     "heat": { "on": false },
     "schedule": { "on": false },

@@ -663,7 +663,8 @@ test('AC-0010 はフジケン長崎・諫早市永昌町の4面本番設定', fu
   assert.strictEqual(site.jma.warnCity, '4220400');
   assert.strictEqual(site.latitude, 32.8842);
   assert.strictEqual(site.longitude, 130.0431);
-  assert.strictEqual(site.contents.warning.on, false);
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.heat.on, false);
   assert.strictEqual(site.contents.greeting.on, true);
   assert.strictEqual(site.greeting.enabled, true);
@@ -678,7 +679,7 @@ test('AC-0010 はフジケン長崎・諫早市永昌町の4面本番設定', fu
   assert.strictEqual(site.logoScroll.laps, 2);
   assert.strictEqual(site.logoScroll.images[0].panelWidth, 873);
   assert.ok(site.logoScroll.images[0].src.indexOf('AC-0010/logo_banner.png') >= 0);
-  assert.deepStrictEqual(site.contentOrder, ['clock', 'observation', 'forecast', 'greeting', 'wbgt-i18n', 'logo-scroll', 'wbgt', 'heat']);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'forecast', 'greeting', 'wbgt-i18n', 'logo-scroll', 'wbgt', 'heat']);
   assert.ok(index.productionSites.indexOf('AC-0010') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0010') < 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: { rental: 'デジタルサイネージ' } });
@@ -738,6 +739,25 @@ test('AC-0011 は起産建設・博多区の4面本番設定', function () {
   assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('logo_mark.png') >= 0);
   assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('logo_banner.png') >= 0);
   assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
+test('注意報・警報・特別警報と台風は全案件と新規テンプレートでオン', function () {
+  var index = require('../sites/index.json');
+  var tpl = require('../sites/_template.json');
+  index.sites.forEach(function (row) {
+    var site = require('../sites/' + row.projectId + '.json');
+    assert.strictEqual(site.contents.warning.on, true, row.projectId + ' warning');
+    assert.strictEqual(site.contents.typhoon.on, true, row.projectId + ' typhoon');
+    if (site.presentation && site.presentation.sequence === 'contentOrder') {
+      assert.ok(site.contentOrder.indexOf('warning') >= 0, row.projectId + ' order warning');
+      assert.ok(site.contentOrder.indexOf('typhoon') >= 0, row.projectId + ' order typhoon');
+      assert.ok(site.contentOrder.indexOf('warning') < site.contentOrder.indexOf('clock'), row.projectId + ' warning before clock');
+    }
+  });
+  assert.strictEqual(tpl.contents.warning.on, true);
+  assert.strictEqual(tpl.contents.typhoon.on, true);
+  assert.strictEqual(tpl.contentOrder[0], 'warning');
+  assert.strictEqual(tpl.contentOrder[1], 'typhoon');
 });
 
 test('ニュースは各社の最新見出しを2件に揃える', function () {

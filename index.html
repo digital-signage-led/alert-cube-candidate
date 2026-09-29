@@ -11681,10 +11681,15 @@
     }
     function playlistIds_() {
         const order = (siteCfg_() && siteCfg_().contentOrder) || [];
-        return order.filter(function (id) {
+        const ids = order.filter(function (id) {
             if (id === 'observation') return observationInPlaylist_();
             return contentOn_(id);
         });
+        const lead = [];
+        ['warning', 'typhoon'].forEach(function (id) {
+            if (contentOn_(id) && ids.indexOf(id) < 0) lead.push(id);
+        });
+        return lead.concat(ids);
     }
     function playlistWarningActive_() {
         if (!contentOn_('warning')) return false;
