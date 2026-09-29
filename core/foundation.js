@@ -193,6 +193,10 @@
     return !!reg.existing;
   }
 
+  function denshoLive_(cfg) {
+    return !!(cfg && cfg.densho && cfg.densho.apiUrl);
+  }
+
   function neededFetches(cfg, seasonState) {
     var reg = global.AlertCubeRegistry;
     var set = {};
@@ -201,7 +205,14 @@
       if (!isContentOn(cfg, c.id, seasonState)) return;
       (c.fetch || []).forEach(function (f) { set[f] = true; });
     });
-    return Object.keys(set);
+    var names = Object.keys(set);
+    if (!denshoLive_(cfg)) return names;
+    var wantsSensor = names.indexOf('jma-amedas') >= 0 || names.indexOf('moe-wbgt') >= 0;
+    names = names.filter(function (name) {
+      return name !== 'jma-amedas' && name !== 'moe-wbgt';
+    });
+    if (wantsSensor) names.push('densho-sensor');
+    return names;
   }
 
   function isScene2PanelOn(cfg, panel, seasonState) {
@@ -263,6 +274,7 @@
       },
       moe: site.moe || {},
       jma: site.jma || {},
+      densho: site.densho || null,
       wbgt: site.wbgt || {
         seasonStart: { month: 4, day: 22 },
         seasonEnd: { month: 10, day: 22 }
@@ -313,6 +325,7 @@
     if (json.site) base.site = Object.assign({}, base.site || {}, json.site);
     if (json.moe) base.moe = Object.assign({}, base.moe || {}, json.moe);
     if (json.jma) base.jma = Object.assign({}, base.jma || {}, json.jma);
+    if (json.densho) base.densho = Object.assign({}, base.densho || {}, json.densho);
     if (json.wbgt) base.wbgt = Object.assign({}, base.wbgt || {}, json.wbgt);
     if (json.geo) base.geo = Object.assign({}, base.geo || {}, json.geo);
     if (json.schedule) base.schedule = json.schedule;
@@ -324,6 +337,7 @@
     if (json.faces != null) base.faces = json.faces;
     if (json.profile || json.layout) base.profile = json.layout || json.profile;
     if (json.timeZone) base.timeZone = json.timeZone;
+    if (json.footSource) base.footSource = json.footSource;
     if (json.updateSettings && json.updateSettings.refreshMs) base.refreshMs = json.updateSettings.refreshMs;
     if (json.projectId) base.projectId = json.projectId;
     if (json.schemaVersion) base.schemaVersion = json.schemaVersion;

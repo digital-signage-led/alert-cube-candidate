@@ -48,19 +48,39 @@
         el.textContent = loc;
       });
     }
+    var wide = siteCfg().profile === 'AC-640' || siteCfg().layout === 'AC-640' || Number(siteCfg().faces) >= 5;
     if (name) {
       document.querySelectorAll('.s1-wbgt-banner[alt], .s2-logo-face-img, .fc-logo-face-img, .d5-logo-face-img, .logo-img, .logo-corp-img').forEach(function (el) {
         if (el.tagName === 'IMG') el.alt = name;
       });
     }
+    var logoFaces = document.querySelectorAll(wide
+      ? '.logo-img'
+      : '.s2-logo-face-img, .fc-logo-face-img, .d5-logo-face-img, .logo-img, .logo-corp-img');
     if (brand.logoSrc) {
-      document.querySelectorAll('.s2-logo-face-img, .fc-logo-face-img, .d5-logo-face-img, .logo-img, .logo-corp-img').forEach(function (el) {
+      logoFaces.forEach(function (el) {
         if (el.getAttribute('src') !== brand.logoSrc) el.src = brand.logoSrc;
+      });
+    } else {
+      logoFaces.forEach(function (el) {
+        el.removeAttribute('src');
+      });
+    }
+    document.querySelectorAll('.fc-logo-panel, .d5-logo-panel, .s2-logo-panel').forEach(function (el) {
+      el.style.display = (!wide && brand.logoSrc) ? '' : 'none';
+    });
+    if (wide) {
+      document.querySelectorAll('.logo-panel').forEach(function (el) {
+        el.style.display = brand.logoSrc ? 'flex' : 'none';
       });
     }
     if (brand.footBannerSrc) {
       document.querySelectorAll('.s1-wbgt-banner').forEach(function (el) {
         if (el.tagName === 'IMG' && el.getAttribute('src') !== brand.footBannerSrc) el.src = brand.footBannerSrc;
+      });
+    } else {
+      document.querySelectorAll('.s1-wbgt-banner').forEach(function (el) {
+        if (el.tagName === 'IMG') el.removeAttribute('src');
       });
     }
   }

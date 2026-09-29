@@ -21,6 +21,9 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/?site=AC-0010 （有限会社フジケン長崎 諫早市永昌町）
 - http://127.0.0.1:3200/?site=AC-0011 （起産建設 博多区）
 - http://127.0.0.1:3200/?site=AC-0012 （株式会社ヒカリ 丸亀市）
+- http://127.0.0.1:3200/?site=AC-0013 （宮川興業 山本8号。現地は見守り伝書鳩。`node scripts/densho-proxy.js` を同時に起動）
+- http://127.0.0.1:3200/?site=AC-0014 （デモ レンタルのニッケン 近江八幡。無償。表示は本番仕様。5面 640×128。本番端末へ登録しない）
+- http://127.0.0.1:3200/?site=AC-0015 （井原工業 四国中央市川之江）
 - http://127.0.0.1:3200/?site=AC-0000 （内部テスト。本番端末へ登録しない）
 - http://127.0.0.1:3200/contents/ （V2.0コンテンツ確認一覧）
 - http://127.0.0.1:3200/?offseason=1
@@ -61,6 +64,9 @@ docs/               運用
 | AC-0010 | active | 有限会社フジケン長崎 / 〒854-0072 長崎県諫早市永昌町５−２３ |
 | AC-0011 | active | 起産建設株式会社 / 〒812-0041 福岡県福岡市博多区吉塚4丁目9-31 |
 | AC-0012 | active | 株式会社ヒカリ / 〒763-0085 香川県丸亀市飯野町東分592-1 |
+| AC-0013 | active | 宮川興業株式会社 / 広島県広島市安佐南区山本6丁目地内 |
+| AC-0014 | demo | レンタルのニッケン / 滋賀県近江八幡市。5面。本番端末へ登録しない |
+| AC-0015 | active | 井原工業株式会社 / 愛媛県四国中央市川之江 |
 
 発行済み ID は再利用しない。追加するときは `sites/_template.json` を新しい番号へ複製する。デモは別番号で `status: demo` とし、`demoSites` にだけ入れる。`?demo=1` は演出で、外してもその番号は本番にならない。
 
@@ -91,5 +97,8 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0010: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0010
 - AC-0011: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0011
 - AC-0012: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0012
+- AC-0013: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0013
+- AC-0014: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0014
+- AC-0015: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0015
 - AC-0000: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0000
 - コンテンツ一覧: https://digital-signage-led.github.io/alert-cube-candidate/contents/

@@ -9,21 +9,22 @@
     <script src="./safety/version.js?v=20260921-suminoe"></script>
     <script src="./contents/registry.js?v=20260929-heat-off"></script>
     <script src="./contents/modules.js?v=20260923-ac0004"></script>
-    <script src="./contents/news/index.js?v=20260929-ac0012-news"></script>
+    <script src="./contents/news/index.js?v=20260929-ac0015-news"></script>
     <script src="./contents/boards/index.js?v=20260925-ac0004-boards"></script>
     <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
     <script src="./contents/hazard/evaluate.js?v=20260929-hazard6"></script>
     <script src="./contents/hazard/player.js?v=20260929-hazard8"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
-    <script src="./core/foundation.js?v=20260929-ac0010"></script>
+    <script src="./core/foundation.js?v=20260929-densho"></script>
+    <script src="./services/densho/index.js?v=20260929-densho"></script>
     <script src="./services/remote.js?v=20260921-suminoe"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
     <script src="./safety/fallback.js?v=20260921-suminoe"></script>
     <script src="./safety/retry.js?v=20260921-suminoe"></script>
     <script src="./safety/rollback.js?v=20260921-suminoe"></script>
     <script src="./scripts/alert-cube-core.js?v=20260929-i18n-off"></script>
-    <script src="./scripts/alert-cube-runtime.js?v=20260921-suminoe"></script>
+    <script src="./scripts/alert-cube-runtime.js?v=20260929-ac0014"></script>
     <script>
     (function () {
         try {
@@ -44,11 +45,13 @@
     <title>Alert Cube</title>
     <link rel="preload" as="image" href="./images/logo.svg?v=20260921-suminoe">
     <script>
-/** 4面 512×128 本番用（layout512 + native640）。localhost は PC 確認用に拡大表示 */
+/** 4面は 512×128。5面（AC-0014 など）は右端ロゴ列付き 640×128 */
 (function () {
     var q = new URLSearchParams(location.search);
     var localDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-    if (!q.has('layout512')) q.set('layout512', '1');
+    var wide = String(q.get('site') || '').toUpperCase() === 'AC-0014' || q.get('layout') === '640';
+    if (wide) q.delete('layout512');
+    else if (!q.has('layout512')) q.set('layout512', '1');
     var forceNative = localDev
         ? q.get('native640') === '1'
         : q.get('native640') !== '0';
@@ -58,7 +61,7 @@
         if (qs && location.search !== '?' + qs) {
             history.replaceState(null, '', location.pathname + '?' + qs);
         }
-        document.documentElement.classList.add('native-640', 'layout-512');
+        document.documentElement.classList.add('native-640');
         document.documentElement.classList.remove('browser-preview');
     } else {
         if (q.get('native640') === '1') {
@@ -66,12 +69,15 @@
             var qsOff = q.toString();
             history.replaceState(null, '', location.pathname + (qsOff ? '?' + qsOff : ''));
         }
-        document.documentElement.classList.add('browser-preview', 'layout-512');
+        document.documentElement.classList.add('browser-preview');
         document.documentElement.classList.remove('native-640');
     }
+    document.documentElement.classList.toggle('layout-512', !wide);
+    document.documentElement.classList.toggle('layout-640', wide);
     function addBody_() {
         if (!document.body) return;
-        document.body.classList.add('layout-512');
+        document.body.classList.toggle('layout-512', !wide);
+        document.body.classList.toggle('layout-640', wide);
         if (forceNative) {
             document.body.classList.add('native-640');
             document.body.classList.remove('browser-preview');
@@ -147,6 +153,29 @@
             body.layout-512 .canvas { transform: scale(calc(100vw / 512)); }
         }
         body.layout-512.native-640 .canvas { transform: none !important; }
+        /* 5面（640×128）: 内容512 + 右端ロゴ列128（x≥512） */
+        body.layout-640 .logo-panel { display: flex !important; }
+        body.layout-640 .canvas { width: 640px !important; }
+        @media screen and (min-width: 641px) {
+            body.layout-640 .canvas { transform: scale(calc(100vw / 640)); }
+        }
+        body.layout-640.native-640 .canvas { transform: none !important; }
+        body.browser-preview.layout-640 .canvas {
+            transform: scale(min(calc(100vw / 640), calc(100vh / 128))) !important;
+        }
+        html.site-ac-0014 .logo-stack {
+            width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
+        }
+        html.site-ac-0014 .logo-img {
+            width: 120px; max-width: 120px; height: 120px; max-height: 120px;
+        }
+        html.site-ac-0014 .logo-corp-img { display: none !important; }
+        html.site-ac-0014 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
+            height: 22px;
+            max-width: 240px;
+            mix-blend-mode: normal;
+            transform: none;
+        }
         /* 右端 128×128: メールロゴ同様（上に大きくマーク、下に社名） */
         .logo-panel {
             width: 128px; height: 128px; display: flex; align-items: center; justify-content: center;
@@ -2989,6 +3018,10 @@
         document.documentElement.classList.toggle('site-ac-0007', String(c.projectId || '') === 'AC-0007');
         document.documentElement.classList.toggle('site-ac-0009', String(c.projectId || '') === 'AC-0009');
         document.documentElement.classList.toggle('site-ac-0010', String(c.projectId || '') === 'AC-0010');
+        document.documentElement.classList.toggle('site-ac-0014', String(c.projectId || '') === 'AC-0014');
+        applyFaceLayout_();
+        if (typeof compactScene4Panels === 'function') compactScene4Panels();
+        if (typeof compactScene5Panels === 'function') compactScene5Panels();
         if (typeof MOE_POINT_CFG !== 'undefined') MOE_POINT_CFG.pointName = getSiteLocationLabel_();
         if (typeof rainWarnMeta !== 'undefined') {
             rainWarnMeta.cityName = (JMA_WARN_CITY_LABELS && JMA_WARN_CITY_LABELS[JMA_WARN_CITY]) || getSiteLocationLabel_();
@@ -3014,6 +3047,22 @@
     }
     function contentShouldFetch_(name) {
         return !window.AlertCubeContent || window.AlertCubeContent.shouldFetch(name);
+    }
+    /** 見守り伝書鳩が現地センサーのとき、アメダスと環境省WBGTは取らない */
+    function denshoLive_() {
+        const d = siteCfg_().densho;
+        return !!(d && d.apiUrl);
+    }
+    function denshoIntervalMs_() {
+        const sec = Number(siteCfg_().densho && siteCfg_().densho.dataIntervalSec);
+        return (Number.isFinite(sec) && sec >= 60 ? sec : 600) * 1000;
+    }
+    function denshoProxyUrl_(apiUrl) {
+        const d = siteCfg_().densho || {};
+        if (d.proxyUrl) return d.proxyUrl;
+        const host = String(location.hostname || '');
+        if (host !== '127.0.0.1' && host !== 'localhost') return '';
+        return 'http://127.0.0.1:3213/densho?src=' + encodeURIComponent(apiUrl);
     }
     function scene2TypesOn_() {
         return SCENE2_TYPE_ORDER.filter(function (type) {
@@ -3082,12 +3131,31 @@
     /* 640×128 ネイティブ: embed / native640=1 / フルデモ順送り */
     const NATIVE_640 = query.get('native640') === '1' || DEMO_EMBED
         || (DEMO_SIGNAGE && !DEMO_ONLY && query.get('native640') !== '0');
+    function faceLayoutWide_() {
+        const c = siteCfg_() || {};
+        const qSite = String(query.get('site') || '').toUpperCase();
+        const loadedId = String(c.projectId || '').toUpperCase();
+        if (loadedId && (!qSite || loadedId === qSite)) {
+            return c.profile === 'AC-640' || c.layout === 'AC-640' || Number(c.faces) >= 5;
+        }
+        return qSite === 'AC-0014' || query.get('layout') === '640';
+    }
+    function applyFaceLayout_() {
+        const wide = faceLayoutWide_();
+        document.documentElement.classList.toggle('layout-512', !wide);
+        document.documentElement.classList.toggle('layout-640', wide);
+        if (document.body) {
+            document.body.classList.toggle('layout-512', !wide);
+            document.body.classList.toggle('layout-640', wide);
+        }
+    }
     if (NATIVE_640) {
-        document.documentElement.classList.add('native-640', 'layout-512');
+        document.documentElement.classList.add('native-640');
         document.documentElement.classList.remove('browser-preview');
-        document.body.classList.add('native-640', 'layout-512');
+        document.body.classList.add('native-640');
         document.body.classList.remove('browser-preview');
     }
+    applyFaceLayout_();
     function shouldShowDemoBadge_() {
         return !DEMO_EMBED && !NATIVE_640;
     }
@@ -3643,7 +3711,66 @@
     function jmaFetchOffsetSec(minute) {
         return minute === 50 ? 120 : JMA_10MIN_AFTER_SEC;
     }
+    function buildDenshoScheduledFetchEvents_(fromMs, horizonHours) {
+        const events = [];
+        const horizonEnd = fromMs + horizonHours * 3600000;
+        const intervalMs = denshoIntervalMs_();
+        const wantsJma = contentOn_('warning') || contentOn_('warning-hero') || contentOn_('disaster') || contentOn_('typhoon');
+        const wantsNowc = contentShouldFetch_('jma-nowc');
+        let t = Math.ceil(fromMs / intervalMs) * intervalMs + 15000;
+        while (t <= horizonEnd) {
+            if (t > fromMs) {
+                events.push({
+                    at: t, jma: wantsJma, moe: false, nowc: false, forecast: false, densho: true,
+                    labels: wantsJma ? ['densho-sensor', 'jma-warning'] : ['densho-sensor']
+                });
+            }
+            t += intervalMs;
+        }
+        const sp = jstPartsFromMs(fromMs);
+        const maxDays = Math.ceil(horizonHours / 24) + 1;
+        for (let dayOff = 0; dayOff <= maxDays; dayOff++) {
+            const dp = jstAddDays(sp.year, sp.month, sp.day, dayOff);
+            for (let h = 0; h < 24; h++) {
+                if (JMA_FORECAST_HOURS.includes(h)) {
+                    const atFc = jstMsFromParts(dp.year, dp.month, dp.day, h, JMA_FORECAST_MINUTE, 0);
+                    if (atFc > fromMs && atFc <= horizonEnd) {
+                        events.push({
+                            at: atFc, jma: wantsJma, moe: false, nowc: false, forecast: true, densho: true,
+                            labels: ['densho-sensor', 'jma-forecast']
+                        });
+                    }
+                }
+                if (!wantsNowc) continue;
+                for (const m of JMA_NOWC_MINUTES) {
+                    const atNowc = jstMsFromParts(dp.year, dp.month, dp.day, h, m, 0) + JMA_NOWC_AFTER_SEC * 1000;
+                    if (atNowc > fromMs && atNowc <= horizonEnd) {
+                        events.push({
+                            at: atNowc, jma: false, moe: false, nowc: true, forecast: false, densho: false,
+                            labels: ['jma-nowc-5min']
+                        });
+                    }
+                }
+            }
+        }
+        const merged = new Map();
+        events.forEach(function (e) {
+            const prev = merged.get(e.at) || {
+                at: e.at, jma: false, moe: false, nowc: false, forecast: false, densho: false, labels: []
+            };
+            prev.jma = prev.jma || e.jma;
+            prev.nowc = prev.nowc || e.nowc;
+            prev.forecast = prev.forecast || e.forecast;
+            prev.densho = prev.densho || e.densho;
+            (e.labels || []).forEach(function (lb) {
+                if (prev.labels.indexOf(lb) < 0) prev.labels.push(lb);
+            });
+            merged.set(e.at, prev);
+        });
+        return Array.from(merged.values()).sort(function (a, b) { return a.at - b.at; });
+    }
     function buildScheduledFetchEvents(fromMs, horizonHours) {
+        if (denshoLive_()) return buildDenshoScheduledFetchEvents_(fromMs, horizonHours);
         const events = [];
         const horizonEnd = fromMs + horizonHours * 3600000;
         const sp = jstPartsFromMs(fromMs);
@@ -6794,6 +6921,19 @@
         if (cls === 'warning') return { bg: '#fa2900', frame: '#c82400', ink: '#fff' };
         return { bg: '#f2e700', frame: '#cdb800', ink: '#1a1a1a' };
     }
+    function warnWhiteLiveItems_() {
+        const items = [];
+        (rainWarnActive || []).forEach(function (levelKey) {
+            const lv = RAIN_WARN_LEVEL_NUM[levelKey] || 2;
+            const cls = levelKey === 'early' ? 'advisory' : levelKey;
+            kindsForLevel_(levelKey).forEach(function (kind) {
+                const name = jmaKindWhiteLabel_(levelKey, kind) || jmaKindName_(levelKey, kind);
+                if (!name) return;
+                items.push({ cls: cls, hasLevel: levelKey !== 'early', lv: lv, hazard: name, mid: name, unitW: 256 });
+            });
+        });
+        return items;
+    }
     function warnWhiteDemoItems_() {
         return [
             { cls: 'advisory', hasLevel: true, lv: 2, hazard: '大雨', unitW: 256 },
@@ -6911,8 +7051,17 @@
         const mid = document.getElementById('midTrack');
         const bot = document.getElementById('whiteBotTrack');
         if (!hero || !top || !mid || !bot) return;
+        const liveItems = warnWhiteLiveItems_();
+        const items = (DEMO_WARNWHITE_ONLY || !liveItems.length) && (DEMO_WARNWHITE_ONLY || demoPlayback_())
+            ? warnWhiteDemoItems_()
+            : liveItems;
+        if (!items.length) {
+            if (useContentOrder_() && !DEMO_ONLY) playlistHandoff_();
+            return;
+        }
         const now = getNowMs();
-        const issuedMs = now - (2 * 3600 + 29 * 60) * 1000;
+        const issuedMs = rainWarnMeta && rainWarnMeta.updatedAt ? Date.parse(rainWarnMeta.updatedAt) : now;
+        const issued = Number.isFinite(issuedMs) ? issuedMs : now;
         const gen = ++warnWhiteGen_;
         if (warnWhiteRaf_) { cancelAnimationFrame(warnWhiteRaf_); warnWhiteRaf_ = 0; }
         if (warnWhiteHold_) { clearTimeout(warnWhiteHold_); warnWhiteHold_ = 0; }
@@ -6920,11 +7069,11 @@
         warnWhiteClear_(top);
         warnWhiteClear_(mid);
         warnWhiteClear_(bot);
-        top.appendChild(makeWarnWhiteTop_(issuedMs, now));
+        top.appendChild(makeWarnWhiteTop_(issued, now));
         bot.appendChild(makeWarnWhiteBot_());
         const set = document.createElement('div');
         set.className = 'mid-set';
-        warnWhiteDemoItems_().forEach(function (item) { set.appendChild(makeWarnWhiteMid_(item)); });
+        items.forEach(function (item) { set.appendChild(makeWarnWhiteMid_(item)); });
         mid.appendChild(set);
         requestAnimationFrame(function () {
             requestAnimationFrame(function () {
@@ -6960,6 +7109,10 @@
                         warnWhiteHold_ = setTimeout(function () {
                             warnWhiteHold_ = 0;
                             if (gen !== warnWhiteGen_) return;
+                            if (useContentOrder_() && !DEMO_ONLY && !DEMO_WARNWHITE_ONLY) {
+                                playlistHandoff_();
+                                return;
+                            }
                             playWarnWhite_();
                         }, SCENE_SCROLL_HOLD_MS);
                         return;
@@ -7671,6 +7824,7 @@
         });
     }
     function hasContentLogo_() {
+        if (faceLayoutWide_()) return false;
         const cfg = window.SIGNAGE_CONFIG || {};
         return !!String(cfg.logoSrc || '').trim();
     }
@@ -8006,6 +8160,56 @@
             sceneEntryRefreshAllowed_ = false;
         }
     }
+    function rememberDenshoDaily_(temp, when) {
+        if (temp == null || !Number.isFinite(Number(temp))) return null;
+        const t = Number(temp);
+        const d = when instanceof Date && !isNaN(when.getTime()) ? when : new Date();
+        const p = jstPartsFromMs(d.getTime());
+        const day = p.year + '-' + String(p.month).padStart(2, '0') + '-' + String(p.day).padStart(2, '0');
+        const key = 'alertcube.densho.daily.' + String(siteCfg_().projectId || 'site');
+        let data = null;
+        try { data = JSON.parse(localStorage.getItem(key) || 'null'); } catch (_) { data = null; }
+        if (!data || data.day !== day || !Number.isFinite(data.max) || !Number.isFinite(data.min)) {
+            data = { day: day, max: t, min: t };
+        } else {
+            if (t > data.max) data.max = t;
+            if (t < data.min) data.min = t;
+        }
+        try { localStorage.setItem(key, JSON.stringify(data)); } catch (_) {}
+        return data;
+    }
+    async function fetchDenshoLatest_() {
+        const apiUrl = String((siteCfg_().densho && siteCfg_().densho.apiUrl) || '');
+        const proxy = denshoProxyUrl_(apiUrl);
+        if (!proxy || !window.AlertCubeDensho) {
+            throw new Error('見守り伝書鳩の取得口がありません');
+        }
+        const res = await fetch(proxy, { cache: 'no-store' });
+        if (!res.ok) throw new Error('Densho HTTP ' + res.status);
+        return window.AlertCubeDensho.parseLatest(await res.json());
+    }
+    function applyDenshoBundle_(bundle) {
+        if (!bundle || !bundle.obs) return null;
+        const daily = rememberDenshoDaily_(bundle.temp, bundle.observedAt);
+        if (daily) {
+            bundle.obs.maxTemp = [daily.max];
+            bundle.obs.minTemp = [daily.min];
+        }
+        if (bundle.termName && siteCfg_().site) {
+            siteCfg_().site.locationLabel = bundle.termName;
+            applySiteLocationLabels_();
+        }
+        const live = applyJmaAmedasToDom(bundle.obs, bundle.observedAt);
+        if (bundle.windDirStr) setTextAll('.dir-val', bundle.windDirStr);
+        applyWbgtInSeason_();
+        moeService_ = true;
+        wbgtFetchOk_ = true;
+        if (bundle.wbgtSlots) applyWbgtSlotsToDom(bundle.wbgtSlots);
+        syncAnnualMode_();
+        compactScene2Panels();
+        queueDisplayRefresh_();
+        return { todayMaxTemp: daily ? daily.max : (live && live.todayMaxTemp) };
+    }
     async function runScheduledFetch(event) {
         if (scheduledFetchInFlight_) {
             console.log('[取得] 前回の取得が完了していないためスキップ');
@@ -8025,11 +8229,48 @@
                 plan.jma = false;
             }
         }
+        if (denshoLive_()) {
+            plan.moe = false;
+            plan.nowc = plan.nowc !== false && contentShouldFetch_('jma-nowc');
+            plan.densho = plan.densho !== false && contentShouldFetch_('densho-sensor');
+            plan.jma = plan.jma !== false && (
+                contentOn_('warning') || contentOn_('warning-hero') || contentOn_('disaster') || contentOn_('typhoon')
+            );
+        }
         const tAll = performance.now();
         const timings = {};
         let jmaOk = !plan.jma;
         let moeOk = !plan.moe;
+        let denshoOk = !plan.densho;
         const jobs = [];
+        if (plan.densho) {
+            jobs.push((async function () {
+                const s = performance.now();
+                let live = { todayMaxTemp: null };
+                try {
+                    const bundle = await fetchDenshoLatest_();
+                    live = applyDenshoBundle_(bundle) || live;
+                    denshoOk = true;
+                    console.log('[取得] 見守り伝書鳩', bundle.termName || '',
+                        bundle.temp != null ? bundle.temp + '℃' : '',
+                        bundle.wbgtSlots && bundle.wbgtSlots[0] ? bundle.wbgtSlots[0].wbgt : '');
+                } catch (e) {
+                    console.warn('[取得] 見守り伝書鳩失敗:', e.message || e);
+                    denshoOk = false;
+                } finally {
+                    timings['見守り伝書鳩'] = Math.round(performance.now() - s);
+                }
+                if (plan.forecast && contentShouldFetch_('jma-forecast')) {
+                    try {
+                        const forecast = await fetchJmaForecast_();
+                        applyJmaDailyForecastToDom(forecast, live.todayMaxTemp);
+                    } catch (error) {
+                        console.error('JMA forecast fetch error:', error);
+                        denshoOk = false;
+                    }
+                }
+            })());
+        }
         if (plan.nowc) {
             jobs.push((async function () {
                 const s = performance.now();
@@ -8071,6 +8312,7 @@
                 const s = performance.now();
                 let localOk = true;
                 let live = { todayMaxTemp: null };
+                if (!denshoLive_()) {
                 try {
                     const amedas = await fetchJmaAmedasObservation_();
                     const { latest, obs } = amedas;
@@ -8083,7 +8325,8 @@
                     localOk = false;
                     expireStaleDisplayedData_();
                 }
-                if (plan.forecast) {
+                }
+                if (plan.forecast && !denshoLive_()) {
                     try {
                         const forecast = await fetchJmaForecast_();
                         applyJmaDailyForecastToDom(forecast, live.todayMaxTemp);
@@ -8093,7 +8336,7 @@
                         expireStaleDisplayedData_();
                     }
                 }
-                if (contentOn_('warning') || contentOn_('disaster')) {
+                if (contentOn_('warning') || contentOn_('warning-hero') || contentOn_('disaster')) {
                     const sWarn = performance.now();
                     try {
                         await updateRainWarnFromGas_();
@@ -8126,7 +8369,7 @@
         expireStaleDisplayedData_();
         queueDisplayRefresh_();
         if (!shouldDeferDisplayRefresh_()) flushDisplayRefresh_(false);
-        lastFetchFail = (plan.jma && !jmaOk) || (plan.moe && !moeOk);
+        lastFetchFail = (plan.jma && !jmaOk) || (plan.moe && !moeOk) || (plan.densho && !denshoOk);
         return !lastFetchFail;
         } finally {
             scheduledFetchInFlight_ = false;
@@ -8798,8 +9041,27 @@
         function dayByYmd_(ymd) {
             return days.find(function (day) { return day.ymd === ymd; }) || null;
         }
+        function forecastPreferCodes_() {
+            const jma = (siteCfg_().jma) || {};
+            return [jma.forecastDetail, jma.forecastPoint].map(function (v) {
+                return String(v || '').trim();
+            }).filter(Boolean);
+        }
+        function pickForecastArea_(block) {
+            const areas = (block && block.areas) || [];
+            const prefer = forecastPreferCodes_();
+            for (let i = 0; i < prefer.length; i++) {
+                const hit = areas.find(function (a) {
+                    return a && a.area && String(a.area.code) === prefer[i];
+                });
+                if (hit) return { area: hit, specific: true };
+            }
+            return { area: areas[0] || null, specific: false };
+        }
         function applyBlock_(block, overwriteCode) {
-            const area = block && block.areas && block.areas[0];
+            const picked = pickForecastArea_(block);
+            const area = picked.area;
+            const specific = picked.specific;
             const defines = (block && block.timeDefines) || [];
             if (!area || !defines.length) return;
             defines.forEach(function (td, idx) {
@@ -8826,8 +9088,11 @@
                     }).format(new Date(td)));
                     const v = jmaNumOrNull_(area.temps[idx]);
                     if (v == null) return;
-                    if (hour === 0 || hour === 24) { if (day.min == null) day.min = v; }
-                    else { if (day.max == null) day.max = v; }
+                    if (hour === 0 || hour === 24) {
+                        if (specific || day.min == null) day.min = v;
+                    } else if (specific || day.max == null) {
+                        day.max = v;
+                    }
                 }
             });
         }
@@ -11823,6 +12088,13 @@
                 if (!playlistWarningActive_()) { advanceContentOrder_(); break; }
                 transitionToScene(sceneRainWarn, function () { playSceneRainWarn(0); });
                 break;
+            case 'warning-hero':
+                if (!contentOn_('warning-hero') || !playlistWarningActive_() || !sceneWarn) {
+                    advanceContentOrder_();
+                    break;
+                }
+                transitionToScene(sceneWarn, playWarnWhite_);
+                break;
             case 'typhoon':
                 if (NO_TYPHOON || !sceneTyphoon || (!typhoonSlidesActive.length && !typhoonMapModel_ && !(typhoonMapModels_ && typhoonMapModels_.length))) {
                     advanceContentOrder_();
@@ -11876,9 +12148,20 @@
             next();
         });
     }
+    function localNewsProxyUrl_(pageUrl) {
+        const host = String(location.hostname || '');
+        if (host !== '127.0.0.1' && host !== 'localhost') return '';
+        let u;
+        try { u = new URL(pageUrl); } catch (e) { return ''; }
+        if (u.protocol !== 'https:' || u.hostname !== 'www.miyagawa-a2.co.jp') return '';
+        if (u.pathname !== '/news' && u.pathname.indexOf('/news/') !== 0) return '';
+        return 'http://127.0.0.1:3213/page?src=' + encodeURIComponent(pageUrl);
+    }
     function loadNewsPage_(cfg) {
         const api = window.AlertCubeNews;
         const urls = api.pageFetchUrls(cfg.pageUrl);
+        const proxied = localNewsProxyUrl_(cfg.pageUrl);
+        if (proxied) urls.unshift(proxied);
         return new Promise(function (resolve) {
             let i = 0;
             function next() {

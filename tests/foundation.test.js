@@ -240,6 +240,8 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.ok(index.productionSites.indexOf('AC-0010') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0011') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0012') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0013') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0015') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
   assert.ok(Array.isArray(index.demoSites));
   index.demoSites.forEach(function (id) {
@@ -824,11 +826,241 @@ test('AC-0012 は株式会社ヒカリ・丸亀市の4面本番設定', function
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
+test('AC-0013 は宮川興業・見守り伝書鳩の4面本番設定', function () {
+  var densho = require('../services/densho/index.js');
+  var news = require('../contents/news/index.js');
+  var site = require('../sites/AC-0013.json');
+  var index = require('../sites/index.json');
+  assert.strictEqual(site.projectId, 'AC-0013');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '宮川興業株式会社');
+  assert.strictEqual(site.siteName, '山本8号');
+  assert.strictEqual(site.location, '広島県広島市安佐南区山本6丁目地内');
+  assert.strictEqual(site.footSource, '出典：みまわり伝書鳩');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.latitude, 34.4366);
+  assert.strictEqual(site.longitude, 132.4382);
+  assert.ok(site.densho.apiUrl.indexOf('densho-bato.com') >= 0);
+  assert.ok(site.densho.apiUrl.indexOf('pgn=miyagawa01') >= 0);
+  assert.strictEqual(site.densho.dataIntervalSec, 600);
+  assert.strictEqual(site.moe.gasUrl, '');
+  assert.strictEqual(site.jma.amedasPoint, '');
+  assert.strictEqual(site.jma.forecastArea, '340000');
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents['warning-hero'].on, true);
+  assert.strictEqual(site.contents['rain-nowcast'].on, true);
+  assert.strictEqual(site.contents.typhoon.on, true);
+  assert.strictEqual(site.contents.disaster.on, true);
+  assert.strictEqual(site.contents.news.on, true);
+  assert.strictEqual(site.contents.heat.on, false);
+  assert.strictEqual(site.jma.warnCity, '3410500');
+  assert.strictEqual(site.news.pageUrl, 'https://www.miyagawa-a2.co.jp/news/');
+  assert.strictEqual(site.contents.forecast.on, true);
+  assert.strictEqual(site.contents.wbgt.on, true);
+  assert.strictEqual(site.presentation.observationTrailingLogo, false);
+  assert.strictEqual(site.logo.src, '');
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'warning-hero', 'typhoon', 'clock', 'observation', 'forecast', 'wbgt-i18n', 'wbgt', 'news']);
+  assert.ok(index.productionSites.indexOf('AC-0013') >= 0);
+  var merged = foundation.mergeJsonOntoLegacy(site, { site: {}, moe: {}, jma: {} });
+  assert.strictEqual(merged.densho.pointName, '山本8号');
+  assert.strictEqual(merged.footSource, '出典：みまわり伝書鳩');
+  assert.strictEqual(merged.site.locationLabel, '山本8号');
+  assert.strictEqual(merged.site.label, '宮川興業株式会社');
+  var fetches = foundation.neededFetches(site);
+  assert.ok(fetches.indexOf('densho-sensor') >= 0);
+  assert.strictEqual(fetches.indexOf('jma-amedas'), -1);
+  assert.strictEqual(fetches.indexOf('moe-wbgt'), -1);
+  assert.ok(fetches.indexOf('jma-forecast') >= 0);
+  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.ok(fetches.indexOf('jma-typhoon') >= 0);
+  assert.ok(fetches.indexOf('jma-nowc') >= 0);
+  var miyagawaNews = news.parsePage('<li class="c-newslist__item"><dl><dt><span class="c-newslist__date"> 2026/9/01</span></dt><dd> 優良工事として表彰されました。 </dd></dl></li>', 2);
+  assert.strictEqual(miyagawaNews[0].date, '2026年09月01日');
+  assert.ok(miyagawaNews[0].title.indexOf('表彰') >= 0);
+  var parsed = densho.parseLatest({
+    term: [{
+      name: '山本8号',
+      data: [{
+        date: '20260929142620',
+        sea_level_pressure: 1011,
+        sensu15xx: {
+          temp: 22.3, humi: 78, rain: 0, rain_1h: 0,
+          wind_dir: 90, wind_dir_str: '東', wind_speed: 0.2,
+          max_wind_speed: 1.5, wbgt: 22, wbgt_str: '注意'
+        }
+      }]
+    }]
+  });
+  assert.strictEqual(parsed.termName, '山本8号');
+  assert.strictEqual(parsed.temp, 22.3);
+  assert.strictEqual(parsed.windDirStr, '東');
+  assert.strictEqual(parsed.obs.windDirection[0], 4);
+  assert.strictEqual(parsed.obs.normalPressure[0], 1011);
+  assert.strictEqual(parsed.wbgtSlots.length, 4);
+  assert.strictEqual(parsed.wbgtSlots[0].wbgt, 22);
+  assert.strictEqual(parsed.wbgtSlots[0].levelIdx, 1);
+  assert.strictEqual(parsed.wbgtSlots[3].hour, '現在');
+  assert.strictEqual(parsed.observedAt.toISOString(), '2026-09-29T05:26:20.000Z');
+  assert.strictEqual(densho.allowedApiUrl('https://densho-bato.com/member/get_json_data_latest?pgn=miyagawa01'), true);
+  assert.strictEqual(densho.allowedApiUrl('https://example.com/latest'), false);
+  assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
+test('AC-0014 はレンタルのニッケン近江八幡の5面デモ', function () {
+  var site = require('../sites/AC-0014.json');
+  var index = require('../sites/index.json');
+  assert.strictEqual(site.projectId, 'AC-0014');
+  assert.strictEqual(site.status, 'demo');
+  assert.strictEqual(site.customer, '株式会社レンタルのニッケン');
+  assert.strictEqual(site.label, 'レンタルのニッケン');
+  assert.strictEqual(site.siteName, '近江八幡市');
+  assert.strictEqual(site.location, '滋賀県近江八幡市');
+  assert.strictEqual(site.faces, 5);
+  assert.strictEqual(site.resolution, '640x128');
+  assert.strictEqual(site.layout, 'AC-640');
+  assert.strictEqual(site.latitude, 35.1286);
+  assert.strictEqual(site.longitude, 136.0978);
+  assert.strictEqual(site.moe.point, '60131');
+  assert.strictEqual(site.moe.pointName, '彦根');
+  assert.strictEqual(site.moe.alertArea, '滋賀県');
+  assert.strictEqual(site.moe.region, '07');
+  assert.strictEqual(site.moe.prefecture, '60');
+  assert.strictEqual(site.jma.amedasPoint, '60131');
+  assert.strictEqual(site.jma.forecastArea, '250000');
+  assert.strictEqual(site.jma.forecastDetail, '250010');
+  assert.strictEqual(site.jma.forecastLabel, '近江八幡市');
+  assert.strictEqual(site.jma.warnArea, '250000');
+  assert.strictEqual(site.jma.warnCity, '2520400');
+  assert.strictEqual(site.jma.warnCityLabel, '近江八幡市');
+  assert.strictEqual(site.presentation.observationTrailingLogo, false);
+  assert.ok(!site.presentation.previewAlerts);
+  assert.strictEqual(site.contents.clock.on, true);
+  assert.strictEqual(site.contents.observation.on, true);
+  assert.strictEqual(site.contents.forecast.on, true);
+  assert.strictEqual(site.contents['wbgt-i18n'].on, true);
+  assert.strictEqual(site.contents.wbgt.on, true);
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.heat.on, true);
+  assert.strictEqual(site.contents.typhoon.on, true);
+  assert.strictEqual(site.rental, '無償');
+  assert.ok(site.logo.src.indexOf('AC-0014/logo_mark.png') >= 0);
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0014/logo_banner.png') >= 0);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'forecast', 'wbgt-i18n', 'wbgt', 'heat']);
+  assert.ok(index.demoSites.indexOf('AC-0014') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0014') < 0);
+  var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
+  assert.strictEqual(merged.faces, 5);
+  assert.strictEqual(merged.profile, 'AC-640');
+  assert.strictEqual(merged.site.locationLabel, '近江八幡市');
+  assert.strictEqual(merged.site.label, 'レンタルのニッケン');
+  assert.strictEqual(merged.site.rental, '無償');
+  assert.strictEqual(merged.status, 'demo');
+  assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('logo_mark.png') >= 0);
+  assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('logo_banner.png') >= 0);
+  assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
+test('AC-0015 は井原工業・四国中央市川之江の4面本番設定', function () {
+  var site = require('../sites/AC-0015.json');
+  var index = require('../sites/index.json');
+  assert.strictEqual(site.projectId, 'AC-0015');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '井原工業株式会社');
+  assert.strictEqual(site.rental, '井原工業株式会社');
+  assert.strictEqual(site.label, '井原工業');
+  assert.strictEqual(site.siteName, '川之江');
+  assert.strictEqual(site.location, '愛媛県四国中央市川之江');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.timeZone, 'Asia/Tokyo');
+  assert.strictEqual(site.latitude, 33.9817);
+  assert.strictEqual(site.longitude, 133.5817);
+  assert.strictEqual(site.elevation, 75);
+  assert.strictEqual(site.moe.point, '73151');
+  assert.strictEqual(site.moe.pointName, '四国中央');
+  assert.strictEqual(site.moe.alertArea, '愛媛県');
+  assert.strictEqual(site.moe.region, '09');
+  assert.strictEqual(site.moe.prefecture, '73');
+  assert.strictEqual(site.jma.amedasPoint, '73151');
+  assert.strictEqual(site.jma.forecastArea, '380000');
+  assert.strictEqual(site.jma.forecastDetail, '380020');
+  assert.strictEqual(site.jma.forecastPoint, '73141');
+  assert.strictEqual(site.jma.forecastLabel, '四国中央市');
+  assert.strictEqual(site.jma.warnArea, '380000');
+  assert.strictEqual(site.jma.warnCity, '3821300');
+  assert.strictEqual(site.jma.warnCityLabel, '四国中央市');
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.typhoon.on, true);
+  assert.strictEqual(site.contents.disaster.on, true);
+  assert.strictEqual(site.contents['rain-nowcast'].on, true);
+  assert.strictEqual(site.contents.heat.on, false);
+  assert.strictEqual(site.contents.clock.on, true);
+  assert.strictEqual(site.contents.observation.on, true);
+  assert.strictEqual(site.contents.wbgt.on, true);
+  assert.strictEqual(site.contents.forecast.on, true);
+  assert.strictEqual(site.contents['wbgt-i18n'].on, true);
+  assert.strictEqual(site.contents.news.on, true);
+  assert.strictEqual(site.news.pageUrl.indexOf('api.cms.studiodesignapp.com/v2/search') >= 0, true);
+  assert.strictEqual(site.news.maxItems, 2);
+  assert.ok(site.news.urls[0].indexOf('AC-0015/news.json') >= 0);
+  assert.strictEqual(site.presentation.observationTrailingLogo, false);
+  assert.strictEqual(site.presentation.sequence, 'contentOrder');
+  assert.strictEqual(site.logo.src, '');
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0015/logo_banner.png') >= 0);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'wbgt', 'forecast', 'news', 'wbgt-i18n']);
+  var news = require('../contents/news/index.js');
+  var ihara = news.parsePage(JSON.stringify([{
+    document: {
+      fields: {
+        _meta: { mapValue: { fields: { publishedAt: { timestampValue: '2026-09-11T01:04:42+00:00' } } } },
+        default: { mapValue: { fields: { title: { stringValue: '施工実績を更新しました。' } } } }
+      }
+    }
+  }, {
+    document: {
+      fields: {
+        _meta: { mapValue: { fields: { publishedAt: { timestampValue: '2026-07-13T23:25:02+00:00' } } } },
+        default: { mapValue: { fields: { title: { stringValue: '独立行政法人水資源機構より「優良工事表彰」を受賞しました' } } } }
+      }
+    }
+  }, {
+    document: {
+      fields: {
+        _meta: { mapValue: { fields: { publishedAt: { timestampValue: '2025-12-08T06:45:25+00:00' } } } },
+        default: { mapValue: { fields: { title: { stringValue: '愛媛労働局よりユースエール認定取得のお知らせ' } } } }
+      }
+    }
+  }]), 2);
+  assert.strictEqual(ihara.length, 2);
+  assert.strictEqual(ihara[0].date, '2026年09月11日');
+  assert.strictEqual(ihara[0].title, '施工実績を更新しました。');
+  assert.strictEqual(ihara[1].date, '2026年07月14日');
+  assert.strictEqual(ihara[1].title, '独立行政法人水資源機構より「優良工事表彰」を受賞しました');
+  assert.ok(index.productionSites.indexOf('AC-0015') >= 0);
+  assert.ok(index.demoSites.indexOf('AC-0015') < 0);
+  var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
+  assert.strictEqual(merged.site.locationLabel, '川之江');
+  assert.strictEqual(merged.site.label, '井原工業');
+  assert.strictEqual(merged.jma.forecastPoint, '73141');
+  assert.strictEqual(merged.jma.warnCity, '3821300');
+  assert.strictEqual(foundation.toLegacyBrand(site).logoSrc, '');
+  assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('logo_banner.png') >= 0);
+  var fetches = foundation.neededFetches(site);
+  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.ok(fetches.indexOf('jma-typhoon') >= 0);
+  assert.ok(fetches.indexOf('jma-amedas') >= 0);
+  assert.ok(fetches.indexOf('jma-forecast') >= 0);
+  assert.ok(fetches.indexOf('moe-wbgt') >= 0);
+  assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
 test('注意報・警報・特別警報と台風は全案件と新規テンプレートでオン', function () {
   var index = require('../sites/index.json');
   var tpl = require('../sites/_template.json');
   index.sites.forEach(function (row) {
     var site = require('../sites/' + row.projectId + '.json');
+    if (site.densho && site.densho.apiUrl) return;
     assert.strictEqual(site.contents.warning.on, true, row.projectId + ' warning');
     assert.strictEqual(site.contents.typhoon.on, true, row.projectId + ' typhoon');
     if (site.presentation && site.presentation.sequence === 'contentOrder') {
@@ -843,11 +1075,18 @@ test('注意報・警報・特別警報と台風は全案件と新規テンプ�
   assert.strictEqual(tpl.contentOrder[1], 'typhoon');
 });
 
-test('熱中症警戒アラートは全案件と新規テンプレートでオフ', function () {
+test('熱中症警戒アラートは明示した案件以外と新規テンプレートでオフ', function () {
   var index = require('../sites/index.json');
   var tpl = require('../sites/_template.json');
+  var heatOn = { 'AC-0014': true };
   index.sites.forEach(function (row) {
     var site = require('../sites/' + row.projectId + '.json');
+    if (heatOn[row.projectId]) {
+      assert.strictEqual(site.contents.heat.on, true, row.projectId + ' heat');
+      assert.strictEqual(foundation.isContentOn(site, 'heat'), true, row.projectId + ' isContentOn heat');
+      assert.ok(site.contentOrder.indexOf('heat') >= 0, row.projectId + ' order heat');
+      return;
+    }
     assert.strictEqual(site.contents.heat.on, false, row.projectId + ' heat');
     assert.strictEqual(foundation.isContentOn(site, 'heat'), false, row.projectId + ' isContentOn heat');
     if (Array.isArray(site.contentOrder)) {

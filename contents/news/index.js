@@ -93,6 +93,39 @@
     return items;
   }
 
+  function studioString_(node) {
+    if (!node || typeof node !== 'object' || node.stringValue == null) return '';
+    return String(node.stringValue);
+  }
+
+  function studioDate_(iso) {
+    var s = String(iso || '');
+    var ms = Date.parse(s);
+    if (!Number.isFinite(ms)) return formatNewsDate(s.slice(0, 10));
+    var parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).format(new Date(ms));
+    return formatNewsDate(parts);
+  }
+
+  function parseStudioCms(text) {
+    var data;
+    try { data = JSON.parse(text); } catch (e) { return []; }
+    if (!Array.isArray(data)) return [];
+    var items = [];
+    for (var i = 0; i < data.length; i++) {
+      var fields = data[i] && data[i].document && data[i].document.fields;
+      var body = fields && fields.default && fields.default.mapValue && fields.default.mapValue.fields;
+      if (!body) continue;
+      var title = cleanTitle(studioString_(body.title));
+      if (!title) continue;
+      var meta = fields._meta && fields._meta.mapValue && fields._meta.mapValue.fields;
+      var published = meta && meta.publishedAt && meta.publishedAt.timestampValue;
+      items.push({ date: studioDate_(published), title: title });
+    }
+    return items;
+  }
+
   function parseJsonNews(text) {
     var data;
     try { data = JSON.parse(text); } catch (e) { return []; }
@@ -172,13 +205,31 @@
     return items;
   }
 
+  function parseNewslist(html) {
+    var items = [];
+    var seen = {};
+    var re = /c-newslist__date[^>]*>\s*(20\d{2})[./](\d{1,2})[./](\d{1,2})\s*<[\s\S]{0,800}?<dd>([\s\S]*?)<\/dd>/gi;
+    var m;
+    while ((m = re.exec(html))) {
+      var title = cleanTitle(decodeText(m[4]));
+      if (!title || seen[title]) continue;
+      seen[title] = true;
+      var month = ('0' + m[2]).slice(-2);
+      var day = ('0' + m[3]).slice(-2);
+      items.push({ date: m[1] + '年' + month + '月' + day + '日', title: title });
+    }
+    return items;
+  }
+
   function parsePage(text, maxItems) {
     var raw = String(text || '').trim();
     var items = [];
     if (raw.charAt(0) === '[' || raw.charAt(0) === '{') items = parseJsonNews(raw);
+    if (!items.length && raw.charAt(0) === '[') items = parseStudioCms(raw);
     if (!items.length && /data-field=["']title["']/i.test(raw)) items = parseHtmlNews(raw);
     if (!items.length && /news__item_content/i.test(raw)) items = parseHtmlList(raw);
     if (!items.length && /<dt>\s*20\d{2}[./]\d{1,2}[./]\d{1,2}/i.test(raw) && /class=["']title["']/i.test(raw)) items = parseDlNews(raw);
+    if (!items.length && /c-newslist__date/i.test(raw)) items = parseNewslist(raw);
     if (!items.length) items = parseMarkdownNews(raw);
     if (!items.length) items = parseDatedLinks(raw);
     return normalizeItems({ items: items }, maxItems);
