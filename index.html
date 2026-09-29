@@ -1484,6 +1484,21 @@
             width: 128px; height: 128px; display: block;
             background: #8ec8ea;
         }
+        .ty-demo-badge {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            z-index: 2;
+            background: #ffffff;
+            color: #111111;
+            font-family: "Noto Sans JP", sans-serif;
+            font-weight: 900;
+            font-size: 14px;
+            line-height: 1;
+            padding: 2px 5px;
+            border-radius: 2px;
+        }
+        .ty-demo-badge[hidden] { display: none !important; }
         /* --- 大雨警報（256×128×2・熱中症アラートと同型） --- */
         #sceneRainWarn.active { display: block; }
         #sceneWarn.active { display: block; }
@@ -2314,10 +2329,10 @@
     </div>
             <div class="scene" id="sceneTyphoon">
         <div class="ty-faces" id="ty-faces">
-            <div class="ty-face"><svg class="ty-svg" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg></div>
-            <div class="ty-face"><svg class="ty-svg" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg></div>
-            <div class="ty-face"><svg class="ty-svg" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg></div>
-            <div class="ty-face"><svg class="ty-svg" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg></div>
+            <div class="ty-face"><span class="ty-demo-badge" hidden>デモ</span><svg class="ty-svg" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg></div>
+            <div class="ty-face"><span class="ty-demo-badge" hidden>デモ</span><svg class="ty-svg" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg></div>
+            <div class="ty-face"><span class="ty-demo-badge" hidden>デモ</span><svg class="ty-svg" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg></div>
+            <div class="ty-face"><span class="ty-demo-badge" hidden>デモ</span><svg class="ty-svg" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg></div>
         </div>
     </div>
     <div class="scene" id="sceneRainWarn">
@@ -3933,7 +3948,9 @@
             { lat: 30.0, lon: 137.6 },
             { lat: 31.8, lon: 138.0 },
             { lat: 32.6, lon: 138.8 }
-        ]
+        ],
+        demo: true,
+        live: false
     };
     let typhoonMapModel_ = null;
     let typhoonMapModels_ = [];
@@ -4905,8 +4922,21 @@
         typhoonMapModel_ = typhoonMapModels_[typhoonMapIndex_];
         return typhoonMapModel_;
     }
+    function typhoonUsesDemoLabel_() {
+        if (demoPlayback_()) return true;
+        const model = tyCurrentMap_();
+        return !!(model && model.demo && !model.live);
+    }
+    function syncTyphoonDemoBadge_() {
+        const on = typhoonUsesDemoLabel_();
+        document.querySelectorAll('#sceneTyphoon .ty-demo-badge').forEach(function (el) {
+            el.hidden = !on;
+            el.textContent = 'デモ';
+        });
+    }
     function paintTyphoonFaces_(focusIdx) {
         const model = tyCurrentMap_();
+        syncTyphoonDemoBadge_();
         if (!model) return false;
         const pts = model.points || [];
         const fi = focusIdx == null ? Math.max(0, pts.length - 1) : focusIdx;
@@ -5007,8 +5037,6 @@
 
     async function updateTyphoonFromJma_() {
         if (NO_TYPHOON || WBGT_ONLY) return;
-        /* デモ画面でも実況があれば地図に反映（取得失敗時のみサンプル） */
-        if (typhoonForced && !DEMO_TYPHOON_ONLY && DEMO_SIGNAGE) return;
         try {
             const listRes = await fetch(JMA_TYPHOON_LIST_URL, { cache: 'no-store', mode: 'cors' });
             if (!listRes.ok) throw new Error('typhoon list HTTP ' + listRes.status);
@@ -5037,7 +5065,7 @@
                 const spec = JSON.parse(await specRes.text());
                 const threat = typhoonThreatensSite_(spec);
                 const noLabel = typhoonNoLabel_((spec.find(function (x) { return x.part === 'title'; }) || {}).typhoonNumber || meta.typhoonNumber);
-                if (!threat.ok && !DEMO_TYPHOON_ONLY) {
+                if (!threat.ok && !DEMO_TYPHOON_ONLY && !demoPlayback_()) {
                     console.log('[台風] 会場から遠いため非表示', noLabel || id,
                         threat.km != null ? ('最短約' + threat.km + 'km') : '',
                         'site=' + site.lat.toFixed(3) + ',' + site.lon.toFixed(3));
@@ -5127,6 +5155,8 @@
                 setTyphoonSlides_(allSlides);
             }
             console.log('[台風] 地図', typhoonMapModels_.length, '件 / スライド', typhoonSlidesActive.length, '件');
+            if (sceneTyphoon && sceneTyphoon.classList.contains('active')) paintTyphoonFaces_(tyMapStepIdx_);
+            else syncTyphoonDemoBadge_();
         } catch (e) {
             console.warn('[台風] 取得失敗:', e && e.message ? e.message : e);
             typhoonMapModels_ = [];
@@ -5137,6 +5167,8 @@
                 typhoonMapModel_ = DEMO_TYPHOON_MAP_;
                 setTyphoonSlides_(DEMO_TYPHOON_SLIDES_);
             }
+            if (sceneTyphoon && sceneTyphoon.classList.contains('active')) paintTyphoonFaces_(tyMapStepIdx_);
+            else syncTyphoonDemoBadge_();
         }
     }
     /* ===== 大雨警報（気象庁・5段階）＋ L3 警報4種 ===== */
