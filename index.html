@@ -17,7 +17,7 @@
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
     <script src="./core/foundation.js?v=20260929-densho"></script>
-    <script src="./services/densho/index.js?v=20260929-densho"></script>
+    <script src="./services/densho/index.js?v=20260929-densho-live"></script>
     <script src="./services/remote.js?v=20260921-suminoe"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
     <script src="./safety/fallback.js?v=20260921-suminoe"></script>
@@ -8205,17 +8205,40 @@
         try { localStorage.setItem(key, JSON.stringify(data)); } catch (_) {}
         return data;
     }
+    function denshoFetchUrls_(apiUrl) {
+        const urls = [];
+        const proxy = denshoProxyUrl_(apiUrl);
+        const api = window.AlertCubeDensho;
+        if (proxy) urls.push(proxy);
+        if (api && api.readerUrl) {
+            const reader = api.readerUrl(apiUrl);
+            if (reader) urls.push(reader);
+        }
+        const snapshot = String((siteCfg_().densho && siteCfg_().densho.snapshotUrl) || '').trim();
+        if (snapshot) urls.push(snapshot);
+        return urls;
+    }
     async function fetchDenshoLatest_() {
         const apiUrl = String((siteCfg_().densho && siteCfg_().densho.apiUrl) || '');
-        const proxy = denshoProxyUrl_(apiUrl);
-        const snapshot = String((siteCfg_().densho && siteCfg_().densho.snapshotUrl) || '').trim();
-        const url = proxy || snapshot;
-        if (!url || !window.AlertCubeDensho) {
+        const urls = denshoFetchUrls_(apiUrl);
+        if (!urls.length || !window.AlertCubeDensho) {
             throw new Error('見守り伝書鳩の取得口がありません');
         }
-        const res = await fetch(url, { cache: 'no-store' });
-        if (!res.ok) throw new Error('Densho HTTP ' + res.status);
-        return window.AlertCubeDensho.parseLatest(await res.json());
+        let lastErr = null;
+        for (let i = 0; i < urls.length; i++) {
+            try {
+                const res = await fetch(urls[i], {
+                    cache: 'no-store',
+                    headers: { Accept: 'application/json' }
+                });
+                if (!res.ok) throw new Error('Densho HTTP ' + res.status);
+                const json = window.AlertCubeDensho.unwrapPayload(await res.json());
+                return window.AlertCubeDensho.parseLatest(json);
+            } catch (err) {
+                lastErr = err;
+            }
+        }
+        throw lastErr || new Error('見守り伝書鳩の取得に失敗');
     }
     function applyDenshoBundle_(bundle) {
         if (!bundle || !bundle.obs) return null;

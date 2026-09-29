@@ -904,6 +904,11 @@ test('AC-0013 は宮川興業・見守り伝書鳩の4面本番設定', function
   assert.strictEqual(parsed.obs.normalPressure[0], 1011);
   assert.strictEqual(parsed.wbgtSlots.length, 4);
   assert.strictEqual(parsed.wbgtSlots[0].wbgt, 22);
+  var wrapped = densho.unwrapPayload({
+    data: { content: JSON.stringify({ term: [{ name: '山本8号', data: [{ date: '20260929153620', sensu15xx: { temp: 22.4, humi: 80, rain: 0, wind_dir: 90, wind_dir_str: '東', wind_speed: 0.2, max_wind_speed: 1.2, wbgt: 22, wbgt_str: '注意' } }] }] }) }
+  });
+  assert.strictEqual(densho.parseLatest(wrapped).temp, 22.4);
+  assert.ok(densho.readerUrl(site.densho.apiUrl).indexOf('https://r.jina.ai/https://densho-bato.com/') === 0);
   assert.strictEqual(parsed.wbgtSlots[0].levelIdx, 1);
   assert.strictEqual(parsed.wbgtSlots[3].hour, '現在');
   assert.strictEqual(parsed.observedAt.toISOString(), '2026-09-29T05:26:20.000Z');

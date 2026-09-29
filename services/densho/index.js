@@ -109,12 +109,29 @@
     }
   }
 
+  /** 公開ページは densho-bato.com を直接読めない。中継の本文を元のJSONに戻す。 */
+  function readerUrl(apiUrl) {
+    if (!allowedApiUrl(apiUrl)) return '';
+    return 'https://r.jina.ai/' + apiUrl;
+  }
+
+  function unwrapPayload(data) {
+    var packed = data && data.data;
+    var raw = packed && (packed.content || packed.text);
+    if (typeof raw !== 'string') return data;
+    var trimmed = raw.trim();
+    if (trimmed.charAt(0) !== '{' && trimmed.charAt(0) !== '[') return data;
+    return JSON.parse(trimmed);
+  }
+
   var api = {
     parseLatest: parseLatest,
     parseObservedAt: parseObservedAt,
     levelFromLabel: levelFromLabel,
     windCodeFromDegrees: windCodeFromDegrees,
-    allowedApiUrl: allowedApiUrl
+    allowedApiUrl: allowedApiUrl,
+    readerUrl: readerUrl,
+    unwrapPayload: unwrapPayload
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
