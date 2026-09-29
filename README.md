@@ -21,7 +21,7 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/?site=AC-0010 （有限会社フジケン長崎 諫早市永昌町）
 - http://127.0.0.1:3200/?site=AC-0011 （起産建設 博多区）
 - http://127.0.0.1:3200/?site=AC-0012 （株式会社ヒカリ 丸亀市）
-- http://127.0.0.1:3200/?site=AC-0013 （宮川興業 山本8号。現地は見守り伝書鳩。`node scripts/densho-proxy.js` を同時に起動）
+- http://127.0.0.1:3200/?site=AC-0013 （宮川興業 山本8号。本番サイネージは公開URLだけで動く。このPCの中継は不要）
 - http://127.0.0.1:3200/?site=AC-0014 （デモ レンタルのニッケン 近江八幡。無償。表示は本番仕様。5面 640×128。本番端末へ登録しない）
 - http://127.0.0.1:3200/?site=AC-0015 （井原工業 四国中央市川之江）
 - http://127.0.0.1:3200/?site=AC-0000 （内部テスト。本番端末へ登録しない）
@@ -97,7 +97,7 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0010: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0010
 - AC-0011: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0011
 - AC-0012: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0012
-- AC-0013: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0013
+- AC-0013: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0013 （端末はこのURLだけを開く。現地センサーは GitHub が10分ごとに更新し、端末が自分で読む）
 - AC-0014: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0014
 - AC-0015: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0015
 - AC-0000: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0000

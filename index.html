@@ -3084,11 +3084,14 @@
         const sec = Number(siteCfg_().densho && siteCfg_().densho.dataIntervalSec);
         return (Number.isFinite(sec) && sec >= 60 ? sec : 600) * 1000;
     }
+    function denshoOnThisPc_() {
+        const host = String(location.hostname || '');
+        return host === '127.0.0.1' || host === 'localhost';
+    }
     function denshoProxyUrl_(apiUrl) {
+        if (!denshoOnThisPc_()) return '';
         const d = siteCfg_().densho || {};
         if (d.proxyUrl) return d.proxyUrl;
-        const host = String(location.hostname || '');
-        if (host !== '127.0.0.1' && host !== 'localhost') return '';
         return 'http://127.0.0.1:3213/densho?src=' + encodeURIComponent(apiUrl);
     }
     function scene2TypesOn_() {
@@ -8210,15 +8213,18 @@
     }
     function denshoFetchUrls_(apiUrl) {
         const urls = [];
-        const proxy = denshoProxyUrl_(apiUrl);
-        const api = window.AlertCubeDensho;
-        if (proxy) urls.push(proxy);
-        if (api && api.readerUrl) {
-            const reader = api.readerUrl(apiUrl);
-            if (reader) urls.push(reader);
-        }
         const snapshot = String((siteCfg_().densho && siteCfg_().densho.snapshotUrl) || '').trim();
+        const api = window.AlertCubeDensho;
+        const reader = api && api.readerUrl ? api.readerUrl(apiUrl) : '';
+        if (!denshoOnThisPc_()) {
+            if (snapshot) urls.push(snapshot);
+            if (reader) urls.push(reader);
+            return urls;
+        }
+        const proxy = denshoProxyUrl_(apiUrl);
+        if (proxy) urls.push(proxy);
         if (snapshot) urls.push(snapshot);
+        if (reader) urls.push(reader);
         return urls;
     }
     async function fetchDenshoLatest_() {
