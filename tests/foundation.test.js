@@ -268,6 +268,7 @@ test('AC-0003 は但南建設の本番案件設定', function () {
   assert.strictEqual(site.projectId, 'AC-0003');
   assert.strictEqual(site.status, 'active');
   assert.strictEqual(site.customer, '但南建設株式会社');
+  assert.strictEqual(site.rental, 'グリーンクロス');
   assert.strictEqual(site.label, '但南建設');
   assert.strictEqual(site.siteName, '下郷川砂防堰堤工事(その1)');
   assert.strictEqual(site.moe.point, '63201');
