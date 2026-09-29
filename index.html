@@ -838,6 +838,10 @@
             font-family: "Noto Sans JP", sans-serif; text-align: center;
             letter-spacing: 0; flex: 1 1 auto; box-sizing: border-box;
         }
+        #scene2 .s2-meta-slot-panel .s2-meta-panel-txt.s2-meta-loc-name {
+            white-space: normal; text-overflow: clip;
+            line-height: 1.15; font-size: 12px;
+        }
         /* 横スクロール: 白帯は観測時刻など、以前の2行のうち下段 */
         #scene2 .s2-tmax-high, #scene2 .s2-tmax-low { font-size: 40px; }
         #scene2 .s2-tmax-sep { font-size: 40px; font-weight: 800; }
@@ -9420,7 +9424,7 @@
     }
     function fitScene2ScrollMetaText_() {
         if (!s2MetaTrack) return;
-        s2MetaTrack.querySelectorAll('.s2-meta-panel-txt:not(.s2-meta-panel-stack)').forEach(function (el) {
+        s2MetaTrack.querySelectorAll('.s2-meta-panel-txt:not(.s2-meta-panel-stack):not(.s2-meta-loc-name)').forEach(function (el) {
             fitScene2ScrollMetaLine_(el, 13, 10);
         });
         s2MetaTrack.querySelectorAll('.s2-meta-k').forEach(function (el) {
@@ -9458,16 +9462,25 @@
         }).join('');
         return `<span class="s2-meta-group s2-meta-loc">${escapeS1Html(loc)}</span>` + groups;
     }
+    function scene2LocationFootHtml_(label) {
+        const text = String(label || '').trim();
+        const paren = text.indexOf('(');
+        if (paren > 4 && text.length > 8) {
+            return '<span class="s2-meta-panel-txt s2-meta-loc-name">' +
+                escapeS1Html(text.slice(0, paren)) + '<br>' +
+                escapeS1Html(text.slice(paren)) + '</span>';
+        }
+        return '<span class="s2-meta-panel-txt">' + escapeS1Html(text || '天気') + '</span>';
+    }
     function buildScene2MetaSetHtml(obs) {
         if (scene2ScrollMode_()) {
             const types = SCENE2_SCROLL_ORDER.filter(function (type) {
                 return scene2TypesOn_().indexOf(type) >= 0;
             });
             let slots = types.map(function (type) {
-                const line = type === 'weather'
-                    ? (getSiteLocationLabel_() || '天気')
-                    : scene2FootTextForType_(type, obs);
-                const text = '<span class="s2-meta-panel-txt">' + escapeS1Html(line) + '</span>';
+                const text = type === 'weather'
+                    ? scene2LocationFootHtml_(getSiteLocationLabel_())
+                    : ('<span class="s2-meta-panel-txt">' + escapeS1Html(scene2FootTextForType_(type, obs)) + '</span>');
                 return '<div class="s2-meta-slot s2-meta-slot-panel">' + text + '</div>';
             }).join('');
             const presentation = (siteCfg_() && siteCfg_().presentation) || {};

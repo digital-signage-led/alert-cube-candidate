@@ -269,7 +269,7 @@ test('AC-0003 は但南建設の本番案件設定', function () {
   assert.strictEqual(site.status, 'active');
   assert.strictEqual(site.customer, '但南建設株式会社');
   assert.strictEqual(site.label, '但南建設');
-  assert.strictEqual(site.siteName, '朝来市');
+  assert.strictEqual(site.siteName, '下郷川砂防堰堤工事(その1)');
   assert.strictEqual(site.moe.point, '63201');
   assert.strictEqual(site.moe.fallbackPoint, '');
   assert.strictEqual(site.jma.amedasPoint, '63201');
@@ -285,7 +285,7 @@ test('AC-0003 は但南建設の本番案件設定', function () {
   assert.ok(site.logo.src.indexOf('AC-0003/tannan_logo_128.png') >= 0);
   assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('tannan_logo_128.png') >= 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
-  assert.strictEqual(merged.site.locationLabel, '朝来市');
+  assert.strictEqual(merged.site.locationLabel, '下郷川砂防堰堤工事(その1)');
   assert.strictEqual(merged.site.label, '但南建設');
   assert.strictEqual(foundation.isContentOn(site, 'heat'), false);
   assert.strictEqual(foundation.isContentOn(site, 'wbgt'), true);
