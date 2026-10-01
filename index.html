@@ -11291,8 +11291,12 @@
         if (!s4) { gotoSceneAfterScene4_(); return; }
         transitionToScene(s4, playScene4);
     }
-    /* WBGTの次は多言語WBGT */
+    /* 再生順があるときは、その並びだけを進める */
     function gotoSceneAfterScene4_() {
+        if (useContentOrder_() && !DEMO_ONLY) {
+            if (!playlistHandoff_()) startContentOrder_();
+            return;
+        }
         gotoScene3OrAfter_();
     }
     /* 4日予報の後は防災割込を確認し、工程表またはループ先頭へ */
@@ -12452,7 +12456,8 @@
         playlistBurst_ += 1;
         if (playlistBurst_ > ids.length + 1) {
             playlistBurst_ = 0;
-            transitionToScene(s1, playScene1);
+            playlistIdx_ = 0;
+            playContentById_(ids[0]);
             return;
         }
         playlistIdx_ = (playlistIdx_ + 1) % ids.length;
