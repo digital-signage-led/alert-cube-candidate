@@ -12098,10 +12098,6 @@
         const titleHtml = cfg.titleLogo
             ? '<img class="promo-title-logo" src="' + escapeS1Html(cfg.titleLogo) + '" alt="' + escapeS1Html(cfg.title || '') + '">'
             : titles.map(function (t) { return escapeS1Html(t); }).join('　　');
-        if (cfg.titleLogo) {
-            const titleBar = sceneGreeting.querySelector('.promo-top');
-            if (titleBar) titleBar.style.backgroundColor = '#ffffff';
-        }
         const bodyHtml = promoHtml_(lines[idx] || '', marks);
         const footMarks = cfg.footEmphasis || [];
         const footHtml = cfg.footLogo
