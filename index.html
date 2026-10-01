@@ -3209,6 +3209,12 @@
         const laps = Number(cfg.observationLaps);
         return Number.isFinite(laps) && laps > 0 ? Math.min(2, Math.max(1, Math.floor(laps))) : 1;
     }
+    function presentationLaps_(key, fallback) {
+        const cfg = (siteCfg_() && siteCfg_().presentation) || {};
+        const n = Number(cfg[key]);
+        if (!Number.isFinite(n) || n < 1) return fallback;
+        return Math.min(8, Math.floor(n));
+    }
     /** 表示時刻は常に日本標準時（JST） */
     /** 表示・取得スケジュールは常に日本標準時 */
     const CLOCK_TZ = 'Asia/Tokyo';
@@ -6909,7 +6915,7 @@
                 }
                 if (raFlow_.whiteBundle) applyRaWhiteMidX_(raFlow_.midBandX);
                 else applyRaHeroMidX_(raFlow_.midBandX);
-                if (raFlow_.midLaps >= RA_LAPS_BEFORE_SWITCH) {
+                if (raFlow_.midLaps >= presentationLaps_('warningLaps', RA_LAPS_BEFORE_SWITCH)) {
                     if (DEMO_RAINWARN_ONLY) {
                         raFlow_.midLaps = 0;
                         raAnimId = null;
@@ -6953,7 +6959,7 @@
             raFlow_.x = wrapScrollX_(globalScrollX_, RA_UNIT_W);
             if (detectScrollLapCrossed_(prevX, raFlow_.x)) {
                 raFlow_.laps += 1;
-                if (raFlow_.laps >= RA_LAPS_BEFORE_SWITCH) {
+                if (raFlow_.laps >= presentationLaps_('warningLaps', RA_LAPS_BEFORE_SWITCH)) {
                     raFlow_.laps = 0;
                     const curKey = rainWarnActive[raFlow_.warnIdx] || rainWarnActive[0];
                     const curKinds = kindsForLevel_(curKey);
@@ -10548,7 +10554,7 @@
             tyFlow_.x = wrapScrollX_(globalScrollX_, TY_UNIT_W);
             if (detectScrollLapCrossed_(prevX, tyFlow_.x)) {
                 tyFlow_.laps += 1;
-                if (tyFlow_.laps >= TY_LAPS_BEFORE_SWITCH) {
+                if (tyFlow_.laps >= presentationLaps_('typhoonLaps', TY_LAPS_BEFORE_SWITCH)) {
                     tyFlow_.laps = 0;
                     tyFlow_.slideIdx += 1;
                     if (tyFlow_.slideIdx >= typhoonSlidesActive.length) {
@@ -11433,7 +11439,7 @@
             scheduleDemoStep_(finishScene4);
             return;
         }
-        const totalPx = Math.max(128, scene4SetWidth * SCENE4_LAPS - 512);
+        const totalPx = Math.max(128, scene4SetWidth * presentationLaps_('wbgtLaps', SCENE4_LAPS) - 512);
         let totalScrolled = 0;
         applyScrollX_(fcConveyor, 0);
         applyScrollX_(fcLvTrack, 0);
@@ -11474,7 +11480,7 @@
             scheduleDemoStep_(gotoSceneAfterScene5_);
             return;
         }
-        const totalPx = Math.max(128, scene5SetWidth * SCENE5_LAPS - 512);
+        const totalPx = Math.max(128, scene5SetWidth * presentationLaps_('forecastLaps', SCENE5_LAPS) - 512);
         let totalScrolled = 0;
         applyScrollX_(d5Conveyor, 0);
         d5Conveyor.style.transition = 'none';
