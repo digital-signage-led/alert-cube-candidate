@@ -10,7 +10,7 @@
   "location": "〒943-0104 新潟県上越市鶴町52",
   "latitude": 37.1292,
   "longitude": 138.3062,
-  "memo": "レンタルのニッケン上越営業",
+  "memo": "レンタルのニッケン上越営業。社名PRは株式会社 大島組、想いのスローガン、創業88年。墜落・転落は標識4枚を4面同じ画面で切り替える。",
   "resolution": "512x128",
   "layout": "AC-512",
   "faces": 4,
@@ -51,7 +51,18 @@
   "season": { "override": null },
   "updateSettings": { "refreshMs": 60000 },
   "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
-  "greeting": { "enabled": false, "title": "", "lines": [], "foot": "" },
+  "greeting": {
+    "enabled": true,
+    "mode": "promo",
+    "title": "株式会社 大島組",
+    "titleLogo": "./assets/sites/AC-0009/logo_banner.png?v=1",
+    "lines": ["『想い』が未来をつくる　Create the bright FUTURE！"],
+    "emphasis": [["『想い』", "FUTURE"]],
+    "foot": "おかげさまで創業88年を迎えました！",
+    "footEmphasis": ["88年"],
+    "fill": "",
+    "scrollLaps": 1
+  },
   "presentation": {
     "sequence": "contentOrder",
     "observationMode": "scroll",
@@ -68,7 +79,27 @@
     "urls": ["./assets/sites/AC-0009/news.json"],
     "cacheKey": "AC-0009-news"
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "wbgt", "forecast", "news", "wbgt-i18n"],
+  "boards": {
+    "laps": 1,
+    "speed": 1,
+    "background": "#000000",
+    "phases": [
+      {
+        "id": "fall-signs",
+        "layout": "posters",
+        "play": "cut",
+        "width": 512,
+        "holdMs": 4000,
+        "images": [
+          { "src": "./assets/sites/AC-0009/safety_opening.png?v=1", "alt": "開口部 足元確認" },
+          { "src": "./assets/sites/AC-0009/safety_lifeline.png?v=1", "alt": "手すり・親綱 確認ヨシ" },
+          { "src": "./assets/sites/AC-0009/safety_fall.png?v=1", "alt": "墜落・転落災害防止" },
+          { "src": "./assets/sites/AC-0009/safety_harness.jpg?v=1", "alt": "フルハーネス 使用ヨシ" }
+        ]
+      }
+    ]
+  },
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "wbgt", "forecast", "news", "greeting", "boards", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -89,8 +120,9 @@
     "disaster": { "on": true },
     "heat": { "on": false },
     "schedule": { "on": false },
+    "greeting": { "on": true },
     "news": { "on": true },
-    "boards": { "on": false },
+    "boards": { "on": true },
     "logo-scroll": { "on": false },
     "pollen": { "on": false },
     "pm25": { "on": false }

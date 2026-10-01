@@ -7,16 +7,17 @@
     <meta charset="UTF-8">
     <script src="./config/site-config.js?v=20260921-suminoe"></script>
     <script src="./safety/version.js?v=20260921-suminoe"></script>
-    <script src="./contents/registry.js?v=20260929-densho-extra"></script>
-    <script src="./contents/modules.js?v=20260923-ac0004"></script>
-    <script src="./contents/news/index.js?v=20260929-ac0015-news"></script>
-    <script src="./contents/boards/index.js?v=20260925-ac0004-boards"></script>
+    <script src="./contents/registry.js?v=20260929-eew1"></script>
+    <script src="./contents/modules.js?v=20260929-eew1"></script>
+    <script src="./contents/news/index.js?v=20260929-ac0019-news"></script>
+    <script src="./contents/boards/index.js?v=20261001-ac0009-push"></script>
     <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
-    <script src="./contents/hazard/evaluate.js?v=20260929-hazard6"></script>
-    <script src="./contents/hazard/player.js?v=20260929-hazard8"></script>
+    <script src="./contents/eew/evaluate.js?v=20260929-eew1"></script>
+    <script src="./contents/hazard/evaluate.js?v=20260929-eew1"></script>
+    <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
-    <script src="./core/foundation.js?v=20260929-densho"></script>
+    <script src="./core/foundation.js?v=20260929-ac0019"></script>
     <script src="./services/densho/index.js?v=20260929-densho-live"></script>
     <script src="./services/remote.js?v=20260921-suminoe"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
@@ -36,7 +37,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@700&display=swap">
     <link rel="stylesheet" href="./styles/fonts.css?v=20260921-webfont">
-    <link rel="stylesheet" href="./styles/white-hero.css?v=20260922-white3">
+    <link rel="stylesheet" href="./styles/white-hero.css?v=20260929-midband">
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -170,6 +171,13 @@
             width: 120px; max-width: 120px; height: 120px; max-height: 120px;
         }
         html.site-ac-0014 .logo-corp-img { display: none !important; }
+        html.site-ac-0021 .logo-stack {
+            width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
+        }
+        html.site-ac-0021 .logo-img {
+            width: 112px; max-width: 112px; height: 112px; max-height: 112px;
+        }
+        html.site-ac-0021 .logo-corp-img { display: none !important; }
         html.site-ac-0014 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
             height: 22px;
             max-width: 240px;
@@ -501,12 +509,12 @@
             display: block; height: 26px; width: auto; max-width: 252px;
             overflow: visible; flex-shrink: 0;
         }
-        /* シーン1下帯・社名（1行） */
+        /* シーン1下帯・社名（1行・幅に合わせて縮小し、省略記号は出さない） */
         .s1-foot-co-txt {
             display: inline-block; flex-shrink: 0; white-space: nowrap; line-height: var(--led-foot-bar-h);
-            max-width: 244px; overflow: hidden; text-overflow: ellipsis;
+            max-width: 248px; overflow: hidden; text-overflow: clip;
             font-family: "Noto Sans JP", sans-serif;
-            font-weight: 700; font-size: var(--led-foot-site-font); letter-spacing: 0.02em;
+            font-weight: 700; font-size: var(--led-foot-site-font); letter-spacing: 0;
             color: #1a1a1a; box-sizing: border-box; text-align: center;
         }
         .s1-wbgt-slot-wbgt .s1-wbgt-msg-compact {
@@ -514,7 +522,7 @@
         }
         .s1-wbgt-site-inner {
             display: inline-flex; flex-direction: row; align-items: center; justify-content: center;
-            gap: 4px; max-width: 244px; box-sizing: border-box;
+            gap: 4px; max-width: 248px; width: 100%; box-sizing: border-box;
         }
         .s1-wbgt-logo-wrap {
             display: inline-flex; align-items: center; justify-content: center;
@@ -526,9 +534,9 @@
         }
         .s1-wbgt-site-label {
             font-size: var(--led-foot-site-font); font-weight: 700; color: #1a1a1a; line-height: var(--led-foot-bar-h);
-            font-family: "Noto Sans JP", sans-serif;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            max-width: 196px; flex-shrink: 1;
+            font-family: "Noto Sans JP", sans-serif; letter-spacing: 0;
+            white-space: nowrap; overflow: visible; text-overflow: clip;
+            max-width: none; flex-shrink: 0;
         }
         .s1-wbgt-msg-slot .s1-wbgt-msg-compact {
             padding: 0 4px; text-align: center;
@@ -696,6 +704,7 @@
             max-height: 108px;
         }
         /* AC-0009: 円形マークが枠いっぱいに当たるので、白余白を残す */
+        html.site-ac-0009 #sceneGreeting .promo-body .promo-unit { font-size: 36px; }
         html.site-ac-0009 #scene2 .s2-logo-face-img,
         html.site-ac-0009 #scene4 .fc-logo-panel .fc-logo-face-img,
         html.site-ac-0009 #scene5 .d5-logo-panel .d5-logo-face-img,
@@ -1034,6 +1043,25 @@
         }
         .kotei-term-sub { font-size: 18px; font-weight: 900; letter-spacing: 0; line-height: 1; margin-top: 4px; white-space: nowrap; }
         .kotei-set { display: flex; flex-direction: row; height: 128px; flex-shrink: 0; width: auto; }
+        .kotei-poster {
+            width: 128px; height: 128px; flex: 0 0 128px; max-width: 128px;
+            overflow: hidden; background: #000;
+        }
+        .kotei-poster img { display: block; width: 128px; height: 128px; object-fit: cover; }
+        .kotei-stage {
+            position: relative; width: 512px; height: 128px; overflow: hidden;
+            flex: 0 0 512px; background: #000;
+        }
+        .kotei-reel { display: flex; flex-direction: column; animation: koteiPush 0.86s cubic-bezier(0.7, 0, 0.2, 1) both; }
+        .kotei-stage .kotei-set { width: 512px; height: 128px; }
+        .kotei-seam {
+            height: 8px; flex: 0 0 8px;
+            background: repeating-linear-gradient(90deg, #111 0 8px, #FFE14A 8px 16px);
+        }
+        @keyframes koteiPush {
+            from { transform: translateY(0); }
+            to { transform: translateY(-136px); }
+        }
         .kotei-col {
             width: 128px; height: 128px; flex: 0 0 128px; max-width: 128px; box-sizing: border-box;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1071,6 +1099,7 @@
         .kotei-safety-line.kotei-safety-line-sm { font-size: 20px; letter-spacing: 0; }
         .kotei-safety-line.kotei-safety-line-one { font-size: 22px; letter-spacing: 0; max-width: 168px; }
         .kotei-safety-line.kotei-safety-line-term { font-size: 16px; letter-spacing: 0; max-width: 168px; }
+        .kotei-safety-line.kotei-safety-line-head { font-size: 18px; letter-spacing: 0; max-width: 176px; }
         .kotei-col-logo { background: #ffffff; padding: 2px 4px 4px; }
         .kotei-warn-label, .kotei-warn-label-2 {
             font-size: 16px; font-weight: 900; letter-spacing: 0; line-height: 1.05;
@@ -1090,6 +1119,7 @@
             paint-order: stroke fill; line-height: 1.1; white-space: nowrap; text-align: center; max-width: 122px; overflow: hidden;
         }
         .kotei-triangle { width: 48px; height: 42px; display: block; }
+        .kotei-pict { width: 64px; height: 64px; display: block; }
         .kotei-logo-img { display: block; width: 72px; height: 72px; object-fit: contain; }
         .kotei-logo-name { font-size: 12px; font-weight: 900; color: #111; letter-spacing: 0.08em; line-height: 1; margin-top: 1px; white-space: nowrap; }
         .kotei-logo-en { font-size: 6px; font-weight: 800; color: #333; letter-spacing: 0.02em; line-height: 1; margin-top: 1px; white-space: nowrap; max-width: 120px; overflow: hidden; }
@@ -1388,6 +1418,49 @@
         }
         #sceneGreeting.col-bg-dark-text .ng-title,
         #sceneGreeting.col-bg-dark-text .ng-line { color: #000000; }
+        #sceneGreeting.greeting-promo { background: transparent; }
+        #sceneGreeting.greeting-promo .promo-shell { width: 512px; height: 128px; }
+        #sceneGreeting.greeting-promo .promo-top,
+        #sceneGreeting.greeting-promo .promo-body,
+        #sceneGreeting.greeting-promo .promo-foot { overflow: hidden; }
+        #sceneGreeting.greeting-promo .promo-top { height: 32px; display: flex; align-items: center; }
+        #sceneGreeting.greeting-promo .promo-body {
+            height: var(--led-col-body-h); display: flex; align-items: center; padding: 0;
+        }
+        #sceneGreeting.greeting-promo .promo-foot {
+            height: var(--led-foot-bar-h); background: var(--led-foot-bar-bg); padding: 0;
+        }
+        #sceneGreeting .promo-track {
+            display: flex; align-items: center; height: 100%; white-space: nowrap; will-change: transform;
+        }
+        #sceneGreeting .promo-unit {
+            display: inline-flex; align-items: center; white-space: nowrap; flex: 0 0 auto;
+            font-weight: 800; line-height: 1; font-family: "Noto Sans JP", "Noto Sans", sans-serif;
+        }
+        #sceneGreeting .promo-gap { display: inline-block; width: 64px; flex: 0 0 64px; height: 1px; }
+        #sceneGreeting .promo-top .promo-unit { font-size: 20px; font-weight: 700; padding-left: 8px; }
+        #sceneGreeting .promo-body .promo-unit { font-size: 28px; padding-left: 8px; }
+        #sceneGreeting .promo-foot .promo-unit { height: 32px; }
+        #sceneGreeting .promo-foot-text { color: #1a1a1a; font-size: 20px; font-weight: 800; }
+        #sceneGreeting .promo-foot .promo-em,
+        #sceneGreeting.promo-em-on-danger .promo-foot .promo-em { color: #D61914; }
+        #sceneGreeting .promo-wordmark { height: 24px; width: auto; display: block; }
+        #sceneGreeting .promo-title-logo { height: 26px; width: auto; display: block; }
+        #sceneGreeting .promo-em { color: #D61914; }
+        #sceneGreeting.promo-em-on-danger .promo-em { color: #fff9f0; }
+        #sceneGreeting .promo-i18n {
+            width: 512px; height: 128px; display: flex; flex-direction: column;
+        }
+        #sceneGreeting .promo-i18n-row {
+            height: 42px; flex: 1 1 42px; display: flex; align-items: center; overflow: hidden;
+        }
+        #sceneGreeting .promo-i18n-row + .promo-i18n-row { box-shadow: inset 0 1px 0 rgba(0,0,0,0.18); }
+        #sceneGreeting .promo-i18n-tag {
+            width: 36px; flex: 0 0 36px; text-align: center; font-size: 13px; font-weight: 800;
+            font-family: Inter, "Noto Sans", sans-serif; letter-spacing: 0;
+        }
+        #sceneGreeting .promo-i18n-viewport { flex: 1 1 auto; overflow: hidden; height: 100%; }
+        #sceneGreeting .promo-i18n .promo-unit { font-size: 22px; font-family: "Noto Sans", "Noto Sans JP", sans-serif; }
 
         #scene3 { overflow: hidden; position: relative; }
         /* 512×128: 上バー32 + 本体72 + 白下帯24（現在WBGT指針・シーン4） */
@@ -1733,17 +1806,20 @@
             border: none;
             box-shadow: none;
             position: relative;
-            background: transparent !important;
             opacity: 1 !important;
             animation: none !important;
         }
-        /* 帯だけ点滅（文字は opacity の影響を受けない） */
+        /* 中段の色は帯そのものに塗る（inset 非対応 / ::before 欠落でも見える） */
         .ra-pair.ra-hero-mode .ra-mid-band-unit::before {
             content: '';
             position: absolute;
-            inset: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
             z-index: 0;
-            animation: raMidBandPulse 1.5s ease-in-out infinite;
+            animation: none;
+            opacity: 1;
         }
         @keyframes raMidBandPulse {
             0%, 100% { opacity: 1; }
@@ -1916,6 +1992,7 @@
         .ra-pair.ra-early.ra-hero-mode::after { background: #156082; }
         .ra-pair.ra-early.ra-hero-mode .ra-zone-top,
         .ra-pair.ra-early.ra-hero-mode .ra-zone-bot { background: transparent; }
+        .ra-pair.ra-early.ra-hero-mode .ra-mid-band-unit,
         .ra-pair.ra-early.ra-hero-mode .ra-mid-band-unit::before { background: #0E4A66; }
         .ra-pair.ra-early.ra-hero-mode .ra-hero-txt,
         .ra-pair.ra-early.ra-hero-mode .ra-top-level,
@@ -1925,6 +2002,7 @@
         .ra-pair.ra-advisory.ra-hero-mode::after { background: #F2E700; }
         .ra-pair.ra-advisory.ra-hero-mode .ra-zone-top,
         .ra-pair.ra-advisory.ra-hero-mode .ra-zone-bot { background: transparent; }
+        .ra-pair.ra-advisory.ra-hero-mode .ra-mid-band-unit,
         .ra-pair.ra-advisory.ra-hero-mode .ra-mid-band-unit::before { background: #CDB800; }
         .ra-pair.ra-advisory.ra-hero-mode .ra-hero-txt,
         .ra-pair.ra-advisory.ra-hero-mode .ra-top-level,
@@ -1934,6 +2012,7 @@
         .ra-pair.ra-warning.ra-hero-mode::after { background: #FA2900; }
         .ra-pair.ra-warning.ra-hero-mode .ra-zone-top,
         .ra-pair.ra-warning.ra-hero-mode .ra-zone-bot { background: transparent; }
+        .ra-pair.ra-warning.ra-hero-mode .ra-mid-band-unit,
         .ra-pair.ra-warning.ra-hero-mode .ra-mid-band-unit::before { background: #C82400; }
         .ra-pair.ra-warning.ra-hero-mode .ra-hero-txt,
         .ra-pair.ra-warning.ra-hero-mode .ra-top-level,
@@ -1943,6 +2022,7 @@
         .ra-pair.ra-danger.ra-hero-mode::after { background: #AB00AA; }
         .ra-pair.ra-danger.ra-hero-mode .ra-zone-top,
         .ra-pair.ra-danger.ra-hero-mode .ra-zone-bot { background: transparent; }
+        .ra-pair.ra-danger.ra-hero-mode .ra-mid-band-unit,
         .ra-pair.ra-danger.ra-hero-mode .ra-mid-band-unit::before { background: #7A0078; }
         .ra-pair.ra-danger.ra-hero-mode .ra-hero-txt,
         .ra-pair.ra-danger.ra-hero-mode .ra-top-level,
@@ -1952,6 +2032,7 @@
         .ra-pair.ra-special.ra-hero-mode::after { background: #000000; }
         .ra-pair.ra-special.ra-hero-mode .ra-zone-top,
         .ra-pair.ra-special.ra-hero-mode .ra-zone-bot { background: transparent; }
+        .ra-pair.ra-special.ra-hero-mode .ra-mid-band-unit,
         .ra-pair.ra-special.ra-hero-mode .ra-mid-band-unit::before { background: #333333; }
         .ra-pair.ra-special.ra-hero-mode .ra-hero-txt,
         .ra-pair.ra-special.ra-hero-mode .ra-top-level,
@@ -2026,7 +2107,6 @@
             z-index: 4;
             pointer-events: none;
             box-sizing: border-box;
-            background: transparent;
             isolation: isolate;
         }
         .ra-pair.ra-hero-mode.ra-hero-bundle .ra-hero-mid-wrap::before {
@@ -2035,12 +2115,18 @@
             left: 0; top: 0;
             width: 512px; height: 48px;
             z-index: 0;
-            animation: raMidBandPulse 1.5s ease-in-out infinite;
+            animation: none;
+            opacity: 1;
         }
+        .ra-pair.ra-early.ra-hero-mode.ra-hero-bundle .ra-hero-mid-wrap,
         .ra-pair.ra-early.ra-hero-mode.ra-hero-bundle .ra-hero-mid-wrap::before { background: #0E4A66; }
+        .ra-pair.ra-advisory.ra-hero-mode.ra-hero-bundle .ra-hero-mid-wrap,
         .ra-pair.ra-advisory.ra-hero-mode.ra-hero-bundle .ra-hero-mid-wrap::before { background: #CDB800; }
+        .ra-pair.ra-warning.ra-hero-mode.ra-hero-bundle .ra-hero-mid-wrap,
         .ra-pair.ra-warning.ra-hero-mode.ra-hero-bundle .ra-hero-mid-wrap::before { background: #C82400; }
+        .ra-pair.ra-danger.ra-hero-mode.ra-hero-bundle .ra-hero-mid-wrap,
         .ra-pair.ra-danger.ra-hero-mode.ra-hero-bundle .ra-hero-mid-wrap::before { background: #7A0078; }
+        .ra-pair.ra-special.ra-hero-mode.ra-hero-bundle .ra-hero-mid-wrap,
         .ra-pair.ra-special.ra-hero-mode.ra-hero-bundle .ra-hero-mid-wrap::before { background: #333333; }
         .ra-pair.ra-hero-mode.ra-hero-bundle .ra-mid-band-wrap { display: none !important; }
         .ra-pair.ra-hero-mode.ra-hero-bundle .ra-zone-mid .ra-hero-txt { display: none; }
@@ -2951,8 +3037,10 @@
         panel.classList.remove('col-bg-host', 'col-bg-dark-text', 'wbgt-off-season', 'wbgt-unavailable');
         const cfg = global.SIGNAGE_CONFIG || {};
         let bg = cfg.logoPanelBg || '#ffffff';
-        if (logoPanelFollowsContent_()) {
-            const colors = colorsForDisplay(levelIdx, displayMode);
+        const colors = colorsForDisplay(levelIdx, displayMode);
+        if (cfg.logoPanelFollow === 'bar' && colors && colors.barColor) {
+            bg = colors.barColor;
+        } else if (logoPanelFollowsContent_()) {
             bg = contentMiddleBg_() || (colors && colors.bgColor) || bg;
         }
         panel.style.backgroundColor = bg;
@@ -3050,6 +3138,7 @@
         document.documentElement.classList.toggle('site-ac-0009', String(c.projectId || '') === 'AC-0009');
         document.documentElement.classList.toggle('site-ac-0010', String(c.projectId || '') === 'AC-0010');
         document.documentElement.classList.toggle('site-ac-0014', String(c.projectId || '') === 'AC-0014');
+        document.documentElement.classList.toggle('site-ac-0021', String(c.projectId || '') === 'AC-0021');
         applyFaceLayout_();
         if (typeof compactScene4Panels === 'function') compactScene4Panels();
         if (typeof compactScene5Panels === 'function') compactScene5Panels();
@@ -3172,7 +3261,7 @@
         if (loadedId && (!qSite || loadedId === qSite)) {
             return c.profile === 'AC-640' || c.layout === 'AC-640' || Number(c.faces) >= 5;
         }
-        return qSite === 'AC-0014' || query.get('layout') === '640';
+        return qSite === 'AC-0014' || qSite === 'AC-0021' || query.get('layout') === '640';
     }
     function applyFaceLayout_() {
         const wide = faceLayoutWide_();
@@ -3503,12 +3592,43 @@
             vn: "Nguy hiểm: Nghỉ, bổ sung nước muối"
         }
     };
+    /** 大鉄: 短文（特にベトナム語を長くしない）。tl は既存キー fil */
+    const MULTI_DAITETSU_I18N = {
+        0: { en: "Safe: Stay hydrated", vn: "An toàn: Uống nước", fil: "Ligtas: Uminom ng tubig" },
+        1: { en: "Caution: Hydrate often", vn: "Chú ý: Uống nước", fil: "Babala: Uminom ng tubig" },
+        2: { en: "Warning: Take breaks", vn: "Cảnh báo: Nghỉ định kỳ", fil: "Alerto: Magpahinga" },
+        3: { en: "Severe: Stop heavy work", vn: "Nghiêm trọng: Ngừng việc nặng", fil: "Malubha: Itigil trabaho" },
+        4: { en: "Danger: Stop work now", vn: "Nguy hiểm: Dừng ngay", fil: "Panganib: Itigil trabaho" }
+    };
+    function presentationWording_() {
+        return (siteCfg_() && siteCfg_().presentation && siteCfg_().presentation.wording) || '';
+    }
     function wbgtPhrase_(lv) {
         const row = multi[lv];
         if (!row) return null;
-        const wording = siteCfg_() && siteCfg_().presentation && siteCfg_().presentation.wording;
+        const wording = presentationWording_();
+        if (wording === 'daitetsu' && MULTI_DAITETSU_I18N[lv]) {
+            return Object.assign({}, row, MULTI_DAITETSU_I18N[lv]);
+        }
         const alt = wording === 'public' ? MULTI_PUBLIC_I18N[lv] : null;
         return alt ? Object.assign({}, row, alt) : row;
+    }
+    function t3LangKeys_() {
+        const list = siteCfg_() && siteCfg_().presentation && siteCfg_().presentation.i18nLangs;
+        if (!Array.isArray(list) || !list.length) return T3_LANG_KEYS;
+        return list.map(function (key) { return key === 'tl' ? 'fil' : key; });
+    }
+    function unknownTextFor_(key) {
+        if (presentationWording_() === 'daitetsu') {
+            const alt = {
+                jp: unknownMsg.jp,
+                en: "WBGT unavailable",
+                vn: "Không có WBGT",
+                fil: "Walang datos ng WBGT"
+            };
+            if (alt[key]) return alt[key];
+        }
+        return unknownMsg[key];
     }
     const unknownMsg = {
         jp: "WBGTデータ取得不可",
@@ -7299,6 +7419,7 @@
     let newsCanvasTimerId_ = null;
     let sceneBoardsAnimId = null;
     let boardsCanvasTimerId_ = null;
+    let boardsHoldTimerId_ = null;
     let boardsPhaseIdx_ = 0;
     let scene5HoldTimerId = null;
     const SCENE_SCHEDULE_PANEL_COUNT = 4;
@@ -7650,6 +7771,7 @@
         fitClockHmFontSize_();
     }
     function watchLiveUpdates_() {
+        var LIVE_UPDATE_MS = 5000;
         var reloading = false;
         function reloadNow_() {
             if (reloading) return;
@@ -7662,8 +7784,8 @@
                 if (!hadController) { hadController = true; return; }
                 reloadNow_();
             });
-            navigator.serviceWorker.register('./sw.js?v=20260929-ac0010-font', { updateViaCache: 'none' }).then(function (reg) {
-                setInterval(function () { reg.update().catch(function () {}); }, 20000);
+            navigator.serviceWorker.register('./sw.js?v=20261001-live5s', { updateViaCache: 'none' }).then(function (reg) {
+                setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
         var siteId = String((window.AlertCubeSite && window.AlertCubeSite.siteId) || '');
@@ -7684,7 +7806,7 @@
                 if (seenHtml == null) { seenHtml = html; seenSite = site; return; }
                 if (html !== seenHtml || (siteUrl && site && site !== seenSite)) reloadNow_();
             }).catch(function () {});
-        }, 20000);
+        }, LIVE_UPDATE_MS);
     }
     function startClockTicker() {
         if (clockIntervalId != null) { clearTimeout(clockIntervalId); clockIntervalId = null; }
@@ -9865,12 +9987,22 @@
         return '<span class="s1-foot-co-txt">' + escapeS1Html(name) + '</span>';
     }
     function sizeS1FootCompanyText_() {
-        const maxW = FOOT_BAR_SLOT_W - 12;
-        document.querySelectorAll('#scene1 .s1-foot-co-txt').forEach(function (el) {
+        document.querySelectorAll('#scene1 .s1-foot-co-txt, #scene1 .s1-wbgt-site-label').forEach(function (el) {
+            const slot = el.closest('.s1-wbgt-slot');
+            const inner = el.closest('.s1-wbgt-site-inner');
+            let reserved = 8;
+            if (inner) {
+                const logo = inner.querySelector('.s1-wbgt-logo-wrap');
+                if (logo && logo.offsetWidth) reserved += logo.offsetWidth + 4;
+            }
+            const slotW = slot && slot.clientWidth ? slot.clientWidth : FOOT_BAR_SLOT_W;
+            const maxW = Math.max(40, slotW - reserved);
+            el.style.maxWidth = maxW + 'px';
+            el.style.letterSpacing = '0';
             let fz = COMPANY_LINE_FONT_START_PX_;
             el.style.fontSize = fz + 'px';
-            let guard = 24;
-            while (guard-- > 0 && fz > COMPANY_LINE_FONT_MIN_PX_ && el.scrollWidth > maxW) {
+            let guard = 48;
+            while (guard-- > 0 && el.scrollWidth > maxW && fz > 6) {
                 fz -= 1;
                 el.style.fontSize = fz + 'px';
             }
@@ -10037,7 +10169,8 @@
             setS1FootBarVisible_(showBar);
             return;
         }
-        if (text === lastS1FootMsg_ && s1WbgtTrack.querySelector('.s1-wbgt-set')) {
+        if (text === lastS1FootMsg_ && s1WbgtTrack.querySelector('.s1-wbgt-site-label, .s1-foot-co-txt')) {
+            sizeS1FootCompanyText_();
             applyGlobalScroll_(s1WbgtTrack, getS1FootLapPx_());
             setS1FootBarVisible_(showBar);
             return;
@@ -10508,18 +10641,18 @@
             const shown = formatTempLabel_(lastAmedasTempC_);
             if (!shown) return [];
             const words = { jp: '気温', en: 'Temperature', id: 'Suhu', fil: 'Temperatura', vn: 'Nhiệt độ' };
-            return T3_LANG_KEYS.map(function (key) { return { l1: words[key] || '気温', l2: shown }; });
+            return t3LangKeys_().map(function (key) { return { l1: words[key] || '気温', l2: shown }; });
         }
         if (wbgtOffSeason) return [];
         if (wbgtUnavailable) {
-            const all = T3_LANG_KEYS.map(function (key) { return splitT3Message_(unknownMsg[key]); });
+            const all = t3LangKeys_().map(function (key) { return splitT3Message_(unknownTextFor_(key)); });
             if (DEMO_T3_LANG_IDX >= 0 && DEMO_T3_LANG_IDX < all.length) return [all[DEMO_T3_LANG_IDX]];
             return all;
         }
         const lv = getS1WbgtLevelForDisplay_();
         if (lv < 0) return [];
         const m = wbgtPhrase_(lv);
-        const all = T3_LANG_KEYS.map(function (key) { return splitT3Message_(m[key]); });
+        const all = t3LangKeys_().map(function (key) { return splitT3Message_(m[key]); });
         if (DEMO_T3_LANG_IDX >= 0 && DEMO_T3_LANG_IDX < all.length) return [all[DEMO_T3_LANG_IDX]];
         return all;
     }
@@ -10885,7 +11018,7 @@
         const probe2 = slot.querySelector('.t3-l2');
         if (!probe1 || !probe2) return;
         const li = langIdx != null ? langIdx : t3LangIdx_;
-        const langKey = T3_LANG_KEYS[li];
+        const langKey = t3LangKeys_()[li];
         const levelIdx = getS1WbgtLevelForDisplay_();
         const hasL1 = String(probe1.textContent || '').trim().length > 0;
         const setAll = function (f1, f2) {
@@ -11828,7 +11961,203 @@
             sceneGreetingAnimId = requestAnimationFrame(step);
         });
     }
+    function skipWbgtOffSeason_() {
+        const p = (siteCfg_() && siteCfg_().presentation) || {};
+        return p.skipWbgtOffSeason === true && (temperatureDisplay_() || wbgtOffSeason);
+    }
+    function skipHeatAlert_() {
+        const p = (siteCfg_() && siteCfg_().presentation) || {};
+        if (p.skipWbgtOffSeason === true && (temperatureDisplay_() || wbgtOffSeason)) return true;
+        return p.skipHeatWhenWbgtDown === true && !!wbgtUnavailable;
+    }
+    function greetingPassIndex_() {
+        const ids = playlistIds_();
+        let seen = 0;
+        for (let i = 0; i <= playlistIdx_ && i < ids.length; i++) {
+            if (ids[i] === 'greeting') seen += 1;
+        }
+        return seen - 1;
+    }
+    function greetingPassCount_() {
+        return playlistIds_().filter(function (id) { return id === 'greeting'; }).length;
+    }
+    function promoStoreKey_() {
+        const id = (siteCfg_() && siteCfg_().projectId) || 'site';
+        return 'alertcube.promo.idx.' + id;
+    }
+    function promoLineIndex_(count) {
+        const n = Math.max(1, count || 1);
+        let idx = 0;
+        try {
+            const raw = parseInt(localStorage.getItem(promoStoreKey_()), 10);
+            if (Number.isFinite(raw) && raw >= 0) idx = raw;
+        } catch (e) { idx = 0; }
+        return idx % n;
+    }
+    function promoAdvanceLine_(count) {
+        const n = Math.max(1, count || 1);
+        const next = (promoLineIndex_(n) + 1) % n;
+        try { localStorage.setItem(promoStoreKey_(), String(next)); } catch (e) {}
+    }
+    function promoHtml_(text, marks) {
+        let raw = String(text || '');
+        const list = (marks || []).slice().filter(Boolean).sort(function (a, b) {
+            return String(b).length - String(a).length;
+        });
+        const slots = [];
+        list.forEach(function (mark) {
+            if (raw.indexOf(mark) < 0) return;
+            const token = '\u0000' + slots.length + '\u0000';
+            slots.push(mark);
+            raw = raw.split(mark).join(token);
+        });
+        let html = escapeS1Html(raw);
+        slots.forEach(function (mark, i) {
+            html = html.split('\u0000' + i + '\u0000').join('<span class="promo-em">' + escapeS1Html(mark) + '</span>');
+        });
+        return html;
+    }
+    function promoLapWidth_(track) {
+        const unit = track.querySelector('.promo-unit');
+        const gap = track.querySelector('.promo-gap');
+        return Math.max(1, (unit ? unit.offsetWidth : 0) + (gap ? gap.offsetWidth : 0));
+    }
+    function fillPromoTrack_(track, unitHtml) {
+        const unit = '<span class="promo-unit">' + unitHtml + '</span>';
+        const gap = '<span class="promo-gap"></span>';
+        track.innerHTML = unit + gap + unit + gap;
+        applyScrollX_(track, 0);
+        return promoLapWidth_(track);
+    }
+    function paintPromoChrome_() {
+        if (!sceneGreeting || typeof SignageBg === 'undefined') return;
+        const mode = getSignageDisplayMode_();
+        const lv = mode === 'normal' ? getSignageBgLevel_() : -1;
+        const colors = SignageBg.colorsForDisplay(lv, mode) || {};
+        const dark = SignageBg.isDarkTextForDisplay ? SignageBg.isDarkTextForDisplay(lv, mode) : false;
+        const ink = dark ? '#000000' : '#ebebeb';
+        sceneGreeting.classList.toggle('promo-em-on-danger', mode === 'normal' && lv === 4);
+        sceneGreeting.style.color = ink;
+        sceneGreeting.style.backgroundColor = colors.bgColor || '';
+        const top = sceneGreeting.querySelector('.promo-top');
+        const body = sceneGreeting.querySelector('.promo-body');
+        if (top) top.style.backgroundColor = colors.barColor || '';
+        if (body) body.style.backgroundColor = colors.bgColor || '';
+        sceneGreeting.querySelectorAll('.promo-i18n-row').forEach(function (row) {
+            row.style.backgroundColor = colors.bgColor || '';
+            row.style.color = ink;
+        });
+    }
+    function playPromoTracks_(tracks, onDone) {
+        const jobs = tracks.filter(function (job) { return job && job.track && job.lap > 0; });
+        if (!jobs.length) { onDone(); return; }
+        const pos = jobs.map(function () { return 0; });
+        function step() {
+            let done = 0;
+            jobs.forEach(function (job, i) {
+                const speed = job.speed > 0 ? job.speed : getScrollSpeedPx_();
+                pos[i] = Math.min(job.lap, pos[i] + speed);
+                applyScrollX_(job.track, -pos[i]);
+                if (pos[i] >= job.lap) done += 1;
+            });
+            if (done >= jobs.length) {
+                sceneGreetingAnimId = null;
+                onDone();
+                return;
+            }
+            sceneGreetingAnimId = requestAnimationFrame(step);
+        }
+        runSceneScrollAfterHold_(function () {
+            sceneGreetingAnimId = requestAnimationFrame(step);
+        });
+    }
+    function finishPromoPass_() {
+        const lines = (greetingCfg_().lines || []);
+        const count = Math.max(1, lines.length);
+        const passes = Math.max(1, greetingPassCount_());
+        const pass = greetingPassIndex_();
+        if (passes <= 1 || pass >= passes - 1) promoAdvanceLine_(count);
+        finishGreetingScene_();
+    }
+    function playPromoJapanese_() {
+        const cfg = greetingCfg_();
+        const lines = Array.isArray(cfg.lines) ? cfg.lines : [];
+        const idx = promoLineIndex_(Math.max(1, lines.length));
+        const marks = (cfg.emphasis && cfg.emphasis[idx]) || [];
+        const titles = (Array.isArray(cfg.titles) && cfg.titles.length) ? cfg.titles : [cfg.title || ''];
+        sceneGreeting.innerHTML =
+            '<div class="ng-shell promo-shell">' +
+            '<div class="promo-top"><div class="promo-track" id="promo-top-track"></div></div>' +
+            '<div class="promo-body"><div class="promo-track" id="promo-body-track"></div></div>' +
+            '<div class="promo-foot"><div class="promo-track" id="promo-foot-track"></div></div>' +
+            '</div>';
+        paintPromoChrome_();
+        const top = document.getElementById('promo-top-track');
+        const body = document.getElementById('promo-body-track');
+        const foot = document.getElementById('promo-foot-track');
+        const titleHtml = cfg.titleLogo
+            ? '<img class="promo-title-logo" src="' + escapeS1Html(cfg.titleLogo) + '" alt="' + escapeS1Html(cfg.title || '') + '">'
+            : titles.map(function (t) { return escapeS1Html(t); }).join('　　');
+        if (cfg.titleLogo) {
+            const titleBar = sceneGreeting.querySelector('.promo-top');
+            if (titleBar) titleBar.style.backgroundColor = '#ffffff';
+        }
+        const bodyHtml = promoHtml_(lines[idx] || '', marks);
+        const footMarks = cfg.footEmphasis || [];
+        const footHtml = cfg.footLogo
+            ? '<img class="promo-wordmark" style="width:94px;height:24px" src="' + escapeS1Html(cfg.footLogo) + '" alt="">'
+            : (cfg.foot ? '<span class="promo-foot-text">' + promoHtml_(String(cfg.foot), footMarks) + '</span>' : '');
+        const jobs = [];
+        if (top) jobs.push({ track: top, lap: fillPromoTrack_(top, titleHtml), speed: getScrollSpeedPx_() });
+        if (body) jobs.push({ track: body, lap: fillPromoTrack_(body, bodyHtml), speed: getScrollSpeedPx_() });
+        if (foot && footHtml) jobs.push({ track: foot, lap: fillPromoTrack_(foot, footHtml), speed: cfg.footLogo ? 0.6 : getScrollSpeedPx_() });
+        playPromoTracks_(jobs, finishPromoPass_);
+    }
+    function playPromoI18n_() {
+        const cfg = greetingCfg_();
+        const lines = Array.isArray(cfg.lines) ? cfg.lines : [];
+        const idx = promoLineIndex_(Math.max(1, lines.length));
+        const pack = (cfg.i18n && cfg.i18n[idx]) || {};
+        const marks = pack.em || [];
+        const rows = [
+            { tag: 'EN', text: pack.en || '' },
+            { tag: 'VN', text: pack.vn || '' },
+            { tag: 'TL', text: pack.tl || '' }
+        ];
+        sceneGreeting.innerHTML = '<div class="promo-i18n">' + rows.map(function (row, i) {
+            return '<div class="promo-i18n-row"><span class="promo-i18n-tag">' + row.tag + '</span>' +
+                '<div class="promo-i18n-viewport"><div class="promo-track" id="promo-i18n-' + i + '"></div></div></div>';
+        }).join('') + '</div>';
+        paintPromoChrome_();
+        const jobs = rows.map(function (row, i) {
+            const track = document.getElementById('promo-i18n-' + i);
+            if (!track) return null;
+            return { track: track, lap: fillPromoTrack_(track, promoHtml_(row.text, marks)), speed: getScrollSpeedPx_() };
+        }).filter(Boolean);
+        playPromoTracks_(jobs, finishPromoPass_);
+    }
+    function playPromoGreeting_() {
+        clearGreetingHoldTimer_();
+        if (!sceneGreeting || !isGreetingEnabled_()) {
+            if (playlistHandoff_()) return;
+            transitionToScene(s1, playScene1);
+            return;
+        }
+        markPlaylistHeld_();
+        applyDisplayRefreshAtSceneEntry_();
+        sceneGreeting.classList.add('greeting-promo');
+        sceneGreeting.classList.remove('greeting-fill');
+        applyPendingSignageBgAtScene_();
+        stepLogo90(420, true);
+        const pass = Math.max(0, greetingPassIndex_());
+        if (pass % 2 === 1) playPromoI18n_();
+        else playPromoJapanese_();
+    }
     function playSceneGreeting() {
+        if (greetingCfg_().mode === 'promo') {
+            playPromoGreeting_();
+            return;
+        }
         clearGreetingHoldTimer_();
         if (!sceneGreeting || !isGreetingEnabled_()) {
             if (playlistHandoff_()) return;
@@ -12167,12 +12496,16 @@
         }
         if (id !== 'boards') {
             boardsPlayGen_ += 1;
+            clearBoardsHold_();
             setBoardsCanvasMode_(false, SCENE_SLIDE_MS);
         }
         switch (id) {
             case 'clock': transitionToScene(s1, playScene1); break;
             case 'observation': transitionToScene(s2, playScene2); break;
-            case 'wbgt': transitionToScene(s4, playScene4); break;
+            case 'wbgt':
+                if (skipWbgtOffSeason_()) { advanceContentOrder_(); break; }
+                transitionToScene(s4, playScene4);
+                break;
             case 'forecast': transitionToScene(s5, playScene5); break;
             case 'wbgt-i18n':
                 if (!wbgtMultilingualOn_()) { advanceContentOrder_(); break; }
@@ -12181,7 +12514,7 @@
             case 'schedule': transitionToScene(sceneSchedule, playSceneSchedule); break;
             case 'greeting': transitionToScene(sceneGreeting, playSceneGreeting); break;
             case 'heat':
-                if (NO_HEAT_ALERT || !contentOn_('heat') || !heatAlertActive.length || !sceneAlert) {
+                if (NO_HEAT_ALERT || !contentOn_('heat') || !heatAlertActive.length || !sceneAlert || skipHeatAlert_()) {
                     advanceContentOrder_();
                     break;
                 }
@@ -12190,7 +12523,12 @@
                 break;
             case 'news': transitionToScene(sceneNews, playSceneNews); break;
             case 'boards': transitionToScene(sceneBoards, playSceneBoards); break;
-            case 'logo-scroll': transitionToScene(sceneLogo, playSceneLogoScroll); break;
+            case 'logo-scroll': transitionToScene(sceneLogo, function () { playSceneLogoScroll(); }); break;
+            case 'brand':
+                transitionToScene(sceneLogo, function () {
+                    playSceneLogoScroll({ id: 'brand', cfg: (siteCfg_() && siteCfg_().brandScroll) || {} });
+                });
+                break;
             case 'warning':
                 if (!playlistWarningActive_()) { advanceContentOrder_(); break; }
                 transitionToScene(sceneRainWarn, function () { playSceneRainWarn(0); });
@@ -12349,7 +12687,8 @@
                 setNewsCanvasMode_(true, SCENE_SLIDE_MS);
                 const built = window.AlertCubeNews.buildTrackHtml(rows, {
                     logoSrc: (window.SIGNAGE_CONFIG && window.SIGNAGE_CONFIG.logoSrc) || '',
-                    badge: cfg.badge != null ? cfg.badge : ''
+                    badge: cfg.badge != null ? cfg.badge : '',
+                    itemLogo: !!cfg.itemLogo
                 });
                 newsTrack.innerHTML = built.html;
                 applyScrollX_(newsTrack, 0);
@@ -12374,8 +12713,13 @@
             if (DEMO_ONLY !== 'news') playlistHandoff_();
         }
     }
+    function clearBoardsHold_() {
+        if (boardsHoldTimerId_) { clearTimeout(boardsHoldTimerId_); boardsHoldTimerId_ = null; }
+    }
     function playSceneBoards() {
         const gen = ++boardsPlayGen_;
+        clearBoardsHold_();
+        if (sceneBoardsAnimId) { cancelAnimationFrame(sceneBoardsAnimId); sceneBoardsAnimId = null; }
         try {
             const cfg = (siteCfg_() && siteCfg_().boards) || {};
             const api = window.AlertCubeBoards;
@@ -12399,6 +12743,45 @@
                     return;
                 }
                 const phase = phases[boardsPhaseIdx_];
+                function advancePhase_() {
+                    runAfterSceneEndHold_(function () {
+                        if (gen !== boardsPlayGen_) return;
+                        boardsPhaseIdx_ += 1;
+                        playPhase_();
+                    });
+                }
+                if (phase.layout === 'posters') {
+                    const faces = Math.max(1, Number((siteCfg_() && siteCfg_().faces) || 4));
+                    const images = (phase.images || []).filter(function (img) { return img && img.src; });
+                    if (!images.length || typeof api.posterFrameHtml !== 'function') {
+                        boardsPhaseIdx_ += 1;
+                        playPhase_();
+                        return;
+                    }
+                    let posterIdx = 0;
+                    const hold = Number(phase.holdMs);
+                    const ms = Number.isFinite(hold) && hold >= 1000 ? hold : 4000;
+                    function showPoster_() {
+                        if (gen !== boardsPlayGen_) return;
+                        if (posterIdx >= images.length) {
+                            advancePhase_();
+                            return;
+                        }
+                        const prevIdx = posterIdx > 0 ? posterIdx - 1 : -1;
+                        boardsTrack.innerHTML = api.posterSwapHtml
+                            ? api.posterSwapHtml(phase, posterIdx, prevIdx, faces)
+                            : api.posterFrameHtml(phase, posterIdx, faces);
+                        applyScrollX_(boardsTrack, 0);
+                        posterIdx += 1;
+                        clearBoardsHold_();
+                        boardsHoldTimerId_ = setTimeout(function () {
+                            boardsHoldTimerId_ = null;
+                            showPoster_();
+                        }, ms);
+                    }
+                    showPoster_();
+                    return;
+                }
                 const built = api.buildPhaseHtml(phase, logoSrc);
                 if (!built.html) {
                     boardsPhaseIdx_ += 1;
@@ -12412,11 +12795,7 @@
                 runSceneScrollAfterHold_(function () {
                     if (gen !== boardsPlayGen_) return;
                     runLapScroll_(boardsTrack, built.setWidth || 512, laps, speed, 'boards', function () {
-                        runAfterSceneEndHold_(function () {
-                            if (gen !== boardsPlayGen_) return;
-                            boardsPhaseIdx_ += 1;
-                            playPhase_();
-                        });
+                        advancePhase_();
                     });
                 });
             }
@@ -12426,13 +12805,14 @@
             if (DEMO_ONLY !== 'boards') playlistHandoff_();
         }
     }
-    function playSceneLogoScroll() {
+    function playSceneLogoScroll(opts) {
+        const scrollId = (opts && opts.id) || 'logo-scroll';
         try {
-            if (!contentOn_('logo-scroll') && DEMO_ONLY !== 'logo') {
+            if (!contentOn_(scrollId) && DEMO_ONLY !== 'logo' && DEMO_ONLY !== scrollId) {
                 if (useContentOrder_() && !DEMO_ONLY) advanceContentOrder_();
                 return;
             }
-            const cfg = (siteCfg_() && siteCfg_().logoScroll) || {};
+            const cfg = (opts && opts.cfg) || (siteCfg_() && siteCfg_().logoScroll) || {};
             const api = window.AlertCubeLogoScroll;
             if (!sceneLogo || !logoFaceTrack || !api) {
                 if (DEMO_ONLY === 'logo') return;
@@ -12440,7 +12820,7 @@
                 return;
             }
             let built = api.buildTrackHtml(cfg);
-            if (!built.html) {
+            if (!built.html && scrollId !== 'brand') {
                 const src = (window.SIGNAGE_CONFIG && (window.SIGNAGE_CONFIG.logoWideSrc || window.SIGNAGE_CONFIG.logoSrc)) || '';
                 if (src) {
                     built = api.buildTrackHtml({
@@ -12451,7 +12831,7 @@
                 }
             }
             if (!built.html) {
-                if (DEMO_ONLY === 'logo') return;
+                if (DEMO_ONLY === 'logo' || DEMO_ONLY === scrollId) return;
                 playlistHandoff_();
                 return;
             }
@@ -12464,7 +12844,7 @@
             runSceneScrollAfterHold_(function () {
                 runLapScroll_(logoFaceTrack, built.setWidth, laps, 1, 'logo', function () {
                     runAfterSceneEndHold_(function () {
-                        if (demoOnlyLoop_('logo', playSceneLogoScroll)) return;
+                        if (demoOnlyLoop_(scrollId, function () { playSceneLogoScroll(opts); })) return;
                         playlistHandoff_();
                     });
                 });
