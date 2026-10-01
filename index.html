@@ -1446,6 +1446,10 @@
         #sceneGreeting.promo-em-on-danger .promo-foot .promo-em { color: #D61914; }
         #sceneGreeting .promo-wordmark { height: 24px; width: auto; display: block; }
         #sceneGreeting .promo-title-logo { height: 26px; width: auto; display: block; }
+        #sceneGreeting .promo-name-slot {
+            width: 256px; flex: 0 0 256px; height: 100%; box-sizing: border-box;
+            display: inline-flex; align-items: center; justify-content: center; overflow: hidden;
+        }
         #sceneGreeting .promo-em { color: #D61914; }
         #sceneGreeting.promo-em-on-danger .promo-em { color: #fff9f0; }
         #sceneGreeting .promo-i18n {
@@ -12054,6 +12058,13 @@
             row.style.color = ink;
         });
     }
+    function fillPromoNameSlots_(track, unitHtml, slotPx) {
+        const width = Math.max(128, Math.floor(slotPx));
+        const slot = '<span class="promo-name-slot" style="width:' + width + 'px;flex-basis:' + width + 'px">' + unitHtml + '</span>';
+        track.innerHTML = slot + slot + slot + slot;
+        applyScrollX_(track, 0);
+        return width;
+    }
     function playPromoTracks_(tracks, onDone) {
         const jobs = tracks.filter(function (job) { return job && job.track && job.lap > 0; });
         if (!jobs.length) { onDone(); return; }
@@ -12062,9 +12073,11 @@
             let done = 0;
             jobs.forEach(function (job, i) {
                 const speed = job.speed > 0 ? job.speed : getScrollSpeedPx_();
-                pos[i] = Math.min(job.lap, pos[i] + speed);
-                applyScrollX_(job.track, -pos[i]);
-                if (pos[i] >= job.lap) done += 1;
+                const travel = job.travel > 0 ? job.travel : job.lap;
+                pos[i] += speed;
+                const shown = job.wrap ? (pos[i] % job.lap) : Math.min(job.lap, pos[i]);
+                applyScrollX_(job.track, -shown);
+                if (pos[i] >= travel) done += 1;
             });
             if (done >= jobs.length) {
                 sceneGreetingAnimId = null;
@@ -12110,9 +12123,22 @@
             ? '<img class="promo-wordmark" style="width:94px;height:24px" src="' + escapeS1Html(cfg.footLogo) + '" alt="">'
             : (cfg.foot ? '<span class="promo-foot-text">' + promoHtml_(String(cfg.foot), footMarks) + '</span>' : '');
         const jobs = [];
-        if (top) jobs.push({ track: top, lap: fillPromoTrack_(top, titleHtml), speed: getScrollSpeedPx_() });
-        if (body) jobs.push({ track: body, lap: fillPromoTrack_(body, bodyHtml), speed: getScrollSpeedPx_() });
-        if (foot && footHtml) jobs.push({ track: foot, lap: fillPromoTrack_(foot, footHtml), speed: cfg.footLogo ? 0.6 : getScrollSpeedPx_() });
+        const nameSlot = Number(cfg.nameSlot);
+        const bodyLap = body ? fillPromoTrack_(body, bodyHtml) : 0;
+        if (body) jobs.push({ track: body, lap: bodyLap, speed: getScrollSpeedPx_() });
+        const travel = Math.max(bodyLap, nameSlot >= 128 ? nameSlot : 0);
+        if (top) {
+            if (nameSlot >= 128) {
+                jobs.push({ track: top, lap: fillPromoNameSlots_(top, titleHtml, nameSlot), wrap: true, travel: travel, speed: getScrollSpeedPx_() });
+            } else {
+                jobs.push({ track: top, lap: fillPromoTrack_(top, titleHtml), speed: getScrollSpeedPx_() });
+            }
+        }
+        if (foot && footHtml) {
+            const footJob = { track: foot, lap: fillPromoTrack_(foot, footHtml), speed: cfg.footLogo ? 0.6 : getScrollSpeedPx_() };
+            if (nameSlot >= 128) { footJob.wrap = true; footJob.travel = travel; }
+            jobs.push(footJob);
+        }
         playPromoTracks_(jobs, finishPromoPass_);
     }
     function playPromoI18n_() {

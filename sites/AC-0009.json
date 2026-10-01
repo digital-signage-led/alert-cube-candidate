@@ -56,6 +56,7 @@
     "mode": "promo",
     "title": "株式会社 大島組",
     "titleLogo": "./assets/sites/AC-0009/logo_banner.png?v=1",
+    "nameSlot": 256,
     "lines": ["『想い』が未来をつくる　Create the bright FUTURE！"],
     "emphasis": [["『想い』", "FUTURE"]],
     "foot": "おかげさまで創業88年を迎えました！",
