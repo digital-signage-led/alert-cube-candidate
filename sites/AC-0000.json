@@ -23,6 +23,7 @@
     "faceMs": 4000,
     "kinds": {
       "earthquake": true,
+      "eew": true,
       "tsunami": true,
       "surge": true,
       "flood": true,
@@ -30,6 +31,7 @@
     },
     "priorities": {
       "earthquake": 10,
+      "eew": 38,
       "inundation-warning": 15,
       "flood-advisory": 20,
       "surge-advisory": 25,
@@ -118,13 +120,19 @@
   "boards": {
     "laps": 1,
     "speed": 1,
-    "background": "#071428",
+    "background": "#000000",
     "phases": [
       {
-        "layout": "cards",
-        "cards": [
-          { "theme": "dark", "era": "確認", "highlight": "ボード", "title": "共通表示", "sub": "" },
-          { "theme": "light", "era": "確認", "highlight": "ボード", "title": "共通表示", "sub": "" }
+        "id": "fall-signs",
+        "layout": "posters",
+        "play": "cut",
+        "width": 512,
+        "holdMs": 4000,
+        "images": [
+          { "src": "./assets/sites/AC-0009/safety_fall.png?v=1", "alt": "墜落・転落災害防止" },
+          { "src": "./assets/sites/AC-0009/safety_harness.jpg?v=1", "alt": "フルハーネス 使用ヨシ" },
+          { "src": "./assets/sites/AC-0009/safety_opening.png?v=1", "alt": "開口部 足元確認" },
+          { "src": "./assets/sites/AC-0009/safety_lifeline.png?v=1", "alt": "手すり・親綱 確認ヨシ" }
         ]
       }
     ]
@@ -134,7 +142,7 @@
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "schedule", "greeting"],
+  "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "schedule", "greeting", "boards"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },
@@ -159,6 +167,7 @@
     "logo-scroll": { "on": true },
     "greeting": { "on": true },
     "hazard": { "on": true },
+    "eew": { "on": true },
     "uv": { "on": true },
     "illuminance": { "on": true },
     "cumtemp": { "on": true },

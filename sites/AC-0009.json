@@ -91,10 +91,10 @@
         "width": 512,
         "holdMs": 4000,
         "images": [
-          { "src": "./assets/sites/AC-0009/safety_opening.png?v=1", "alt": "開口部 足元確認" },
-          { "src": "./assets/sites/AC-0009/safety_lifeline.png?v=1", "alt": "手すり・親綱 確認ヨシ" },
           { "src": "./assets/sites/AC-0009/safety_fall.png?v=1", "alt": "墜落・転落災害防止" },
-          { "src": "./assets/sites/AC-0009/safety_harness.jpg?v=1", "alt": "フルハーネス 使用ヨシ" }
+          { "src": "./assets/sites/AC-0009/safety_harness.jpg?v=1", "alt": "フルハーネス 使用ヨシ" },
+          { "src": "./assets/sites/AC-0009/safety_opening.png?v=1", "alt": "開口部 足元確認" },
+          { "src": "./assets/sites/AC-0009/safety_lifeline.png?v=1", "alt": "手すり・親綱 確認ヨシ" }
         ]
       }
     ]
