@@ -31,6 +31,11 @@
       id: 'hazard', label: '地震・水害防災', scene: 'sceneHazard', fetch: ['jma-quake', 'jma-warning'],
       existing: true, defaultOn: false, lifecycle: 'active', safety: true, interrupt: true
     },
+    {
+      id: 'eew', label: '緊急地震速報', scene: 'sceneHazard', fetch: ['jma-eew'],
+      existing: true, defaultOn: false, lifecycle: 'active', safety: true, interrupt: true,
+      resolution: '256x128'
+    },
     { id: 'heat', label: '熱中症アラート', scene: 'sceneAlert', fetch: ['moe-heat'], existing: true, defaultOn: false, lifecycle: 'active', seasonal: 'summer', safety: true },
     { id: 'schedule', label: '工程表', scene: 'sceneSchedule', fetch: [], existing: true, lifecycle: 'active' },
     {
@@ -53,6 +58,14 @@
       purpose: '画像を横に流し、指定周回の完了で次へ進む',
       required: ['logoScroll.images'], optional: ['laps', 'panelWidth', 'direction', 'background'],
       assets: 'site images', source: 'site config'
+    },
+    {
+      id: 'progress', label: '工事進捗', scene: 'sceneProgress', fetch: [], existing: true, defaultOn: false, lifecycle: 'active',
+      end: 'animation', reusable: true, resolution: '512x128',
+      purpose: '工事名と場所は固定し、工期の文章を1周ごとに切り替える',
+      required: ['progress.projectName', 'progress.location', 'progress.progressMessages'],
+      optional: [],
+      assets: 'none', source: 'site config'
     },
     { id: 'pollen', label: '花粉', scene: null, fetch: ['pollen'], existing: false, lifecycle: 'retired', seasonal: 'spring' },
     { id: 'pm25', label: 'PM2.5', scene: null, fetch: ['pm25'], existing: false, lifecycle: 'retired', seasonal: 'spring-autumn-winter' }

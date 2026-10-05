@@ -8,6 +8,7 @@
 
   var Eval = function () { return global.AlertCubeHazardEvaluate; };
   var QUAKE_URL = 'https://www.jma.go.jp/bosai/quake/data/list.json';
+  var EEW_URL = 'https://api.p2pquake.net/v2/history?codes=556&limit=20';
   var started_ = false;
   var timer_ = 0;
   var busy_ = false;
@@ -41,8 +42,16 @@
     return resolution.indexOf('256') === 0 ? '256' : '128';
   }
 
-  function contentOn() {
+  function hazardOn() {
     return !global.AlertCubeContent || global.AlertCubeContent.isOn('hazard');
+  }
+
+  function eewOn() {
+    return !!(global.AlertCubeContent && global.AlertCubeContent.isOn('eew'));
+  }
+
+  function contentOn() {
+    return hazardOn() || eewOn();
   }
 
   function injectStyle() {
@@ -56,7 +65,11 @@
       '#sceneHazard .hz-face{position:relative;z-index:2;width:128px;height:128px;flex:0 0 128px;box-sizing:border-box;overflow:hidden;font-family:"Noto Sans JP",sans-serif;font-weight:900;text-align:center;background:transparent;}',
       '#sceneHazard .hz-face.hz-wide{width:256px;flex-basis:256px;}',
       '#sceneHazard .hz-copy{position:absolute;left:0;top:50%;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;height:104px;margin-top:-52px;overflow:hidden;}',
-      '#sceneHazard .hz-line{max-width:100%;color:#fff;white-space:nowrap;letter-spacing:0;line-height:1;}'
+      '#sceneHazard .hz-line{max-width:100%;color:#fff;white-space:nowrap;letter-spacing:0;line-height:1;}',
+      '#sceneHazard.hz-eew .hz-band{display:none;}',
+      '#sceneHazard.hz-eew .hz-face{width:256px;flex:0 0 256px;height:128px;}',
+      '#sceneHazard.hz-eew .hz-copy{top:0;left:0;width:100%;height:128px;margin-top:0;gap:8px;}',
+      '#sceneHazard.hz-eew .hz-line{display:block;width:100%;max-width:100%;box-sizing:border-box;padding:0 4px;font-weight:900;letter-spacing:0;line-height:1.05;}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -146,7 +159,41 @@
     });
   }
 
+  function fitLineEew(el) {
+    if (!el.clientWidth) return;
+    var size = Number(el.getAttribute('data-size')) || 32;
+    var guard = 24;
+    while (el.scrollWidth > el.clientWidth + 1 && size > 24 && guard > 0) {
+      size -= 1;
+      guard -= 1;
+      el.style.fontSize = size + 'px';
+    }
+  }
+
+  function paintEew(root, presentation) {
+    var eew = global.AlertCubeEewEvaluate;
+    var frame = presentation.frames[faceIndex_ % presentation.frames.length];
+    var count = (frame.lines || []).length || 1;
+    root.querySelectorAll('.hz-copy').forEach(function (copy) {
+      copy.innerHTML = '';
+      (frame.lines || []).forEach(function (line) {
+        var size = eew && eew.linePx ? eew.linePx(line, count) : 36;
+        var node = document.createElement('div');
+        node.className = 'hz-line';
+        node.setAttribute('data-size', String(size));
+        node.style.fontSize = size + 'px';
+        node.textContent = line;
+        copy.appendChild(node);
+        fitLineEew(node);
+      });
+    });
+  }
+
   function paint(root, presentation) {
+    if (presentation && presentation.kind === 'eew') {
+      paintEew(root, presentation);
+      return;
+    }
     var frame = presentation.frames[faceIndex_ % presentation.frames.length];
     var wide = presentation.layout === '256';
     var size = fontPx(frame, wide);
@@ -175,7 +222,8 @@
     var key = presentation.layout + '|' + presentation.kind + '|' + presentation.frames.map(function (frame) {
       return (frame.lines || []).join('/');
     }).join('|');
-    var wide = presentation.layout === '256';
+    var eewFace = presentation.kind === 'eew';
+    var wide = eewFace || presentation.layout === '256';
     var count = wide ? 2 : 4;
     if (root.getAttribute('data-key') !== key) {
       if (faceTimer_) clearInterval(faceTimer_);
@@ -203,7 +251,7 @@
       }, presentation.faceMs || 4000);
     }
     root._presentation = presentation;
-    root.className = 'hz-on' + (presentation.ink === '#ffffff' ? '' : ' hz-ink-dark');
+    root.className = 'hz-on' + (presentation.kind === 'eew' ? ' hz-eew' : '') + (presentation.ink === '#ffffff' ? '' : ' hz-ink-dark');
     root.style.background = presentation.bg;
     root.style.color = presentation.ink;
     paint(root, presentation);
@@ -240,6 +288,11 @@
       return;
     }
     if (previewName) {
+      if (previewName === 'eew' && !eewOn()) {
+        watch_ = null;
+        hide();
+        return;
+      }
       var sample = evaluate.previewAlert(previewName);
       watch_ = {
         fetchOk: true,
@@ -249,26 +302,33 @@
       return;
     }
     var area = site.warnArea;
+    var wantEew = eewOn();
+    var eewEval = global.AlertCubeEewEvaluate;
     busy_ = true;
     Promise.all([
       fetchJson(QUAKE_URL).then(function (json) { return { ok: true, json: json }; }).catch(function () { return { ok: false }; }),
       area
         ? fetchJson('https://www.jma.go.jp/bosai/warning/data/warning/' + area + '.json').then(function (json) { return { ok: true, json: json }; }).catch(function () { return { ok: false }; })
-        : Promise.resolve({ ok: false })
+        : Promise.resolve({ ok: false }),
+      wantEew && eewEval
+        ? fetchJson(eewEval.SOURCE_URL || EEW_URL).then(function (json) { return { ok: true, json: json }; }).catch(function () { return { ok: false }; })
+        : Promise.resolve({ ok: true, json: [] })
     ]).then(function (pair) {
       var now = Date.now();
       watch_ = evaluate.resolveWatch(watch_, {
         quakeOk: pair[0].ok,
         warningOk: pair[1].ok,
+        eewOk: wantEew ? pair[2].ok : true,
         quakeAlerts: pair[0].ok ? evaluate.parseQuakes(pair[0].json, site, settings, now) : [],
         waterAlerts: pair[1].ok ? evaluate.parseWarnings(pair[1].json, site, settings) : [],
+        eewAlerts: wantEew && pair[2].ok && eewEval ? eewEval.parseReports(pair[2].json, cfg(), settings, now) : [],
         site: site,
         settings: settings,
         layout: layout
       });
       show(watch_.presentation);
     }).catch(function () {
-      watch_ = evaluate.resolveWatch(watch_, { quakeOk: false, warningOk: false });
+      watch_ = evaluate.resolveWatch(watch_, { quakeOk: false, warningOk: false, eewOk: false });
       show(watch_ && watch_.presentation);
     }).then(function () { busy_ = false; });
   }
@@ -280,6 +340,7 @@
       tick();
       var ms = Number(cfg().refreshMs);
       if (!Number.isFinite(ms) || ms < 30000) ms = 60000;
+      if (eewOn()) ms = 10000;
       timer_ = setInterval(tick, ms);
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

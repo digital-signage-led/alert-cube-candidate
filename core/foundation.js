@@ -295,7 +295,9 @@
       contentOrder: site.contentOrder,
       news: site.news || null,
       boards: site.boards || null,
+      progress: site.progress || null,
       logoScroll: site.logoScroll || null,
+      brandScroll: site.brandScroll || null,
       elevation: site.elevation != null ? site.elevation : null,
       inundation: site.inundation || null,
       evacuation: site.evacuation || null,
@@ -312,6 +314,7 @@
       logoSrc: src,
       logoAlt: (site && site.customer) || (site && site.siteName) || '',
       logoPanelBg: logo.panelBg || '#ffffff',
+      logoPanelFollow: logo.panelFollow || '',
       logoCorpSrc: logo.corpSrc || src,
       footLogoSrc: (logo.footSrc === '' && !String(logo.bannerSrc || '').trim()) ? '' : (logo.footSrc || src),
       hideFootMark: logo.footSrc === '' && !String(logo.bannerSrc || '').trim() && !!String(src || '').trim(),
@@ -334,7 +337,9 @@
     if (json.presentation) base.presentation = Object.assign({}, base.presentation || {}, json.presentation);
     if (json.news) base.news = json.news;
     if (json.boards) base.boards = json.boards;
+    if (json.progress) base.progress = json.progress;
     if (json.logoScroll) base.logoScroll = json.logoScroll;
+    if (json.brandScroll) base.brandScroll = json.brandScroll;
     if (json.faces != null) base.faces = json.faces;
     if (json.profile || json.layout) base.profile = json.layout || json.profile;
     if (json.timeZone) base.timeZone = json.timeZone;

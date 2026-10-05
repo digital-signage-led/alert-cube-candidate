@@ -201,6 +201,15 @@
     return '<div class="' + setClass + '">' + html + '</div>';
   }
 
+  function posterSlideHtml(phase) {
+    var images = posterSources(phase);
+    if (!images.length) return { html: '', setWidth: 0 };
+    var row = '<div class="kotei-set">' + images.map(function (img) {
+      return '<div class="kotei-poster"><img src="' + escapeHtml(img.src) + '" alt="' + escapeHtml(img.alt || '') + '" decoding="sync"></div>';
+    }).join('') + '</div>';
+    return { html: row + row, setWidth: images.length * 128 };
+  }
+
   function posterFrameHtml(phase, index, faces) {
     var images = posterSources(phase);
     var i = Number(index) || 0;
@@ -268,6 +277,7 @@
     speedOf: speedOf,
     buildPhaseHtml: buildPhaseHtml,
     posterFrameHtml: posterFrameHtml,
+    posterSlideHtml: posterSlideHtml,
     posterSwapHtml: posterSwapHtml,
     shouldLoad: function () {
       return !global.AlertCubeContent || global.AlertCubeContent.isOn('boards');

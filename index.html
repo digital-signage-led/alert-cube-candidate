@@ -10,14 +10,15 @@
     <script src="./contents/registry.js?v=20260929-eew1"></script>
     <script src="./contents/modules.js?v=20260929-eew1"></script>
     <script src="./contents/news/index.js?v=20260929-ac0019-news"></script>
-    <script src="./contents/boards/index.js?v=20261001-ac0009-push"></script>
+    <script src="./contents/boards/index.js?v=20261005-ac0009-faces"></script>
     <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
+    <script src="./contents/progress/index.js?v=20261005-progress-logo"></script>
     <script src="./contents/eew/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
-    <script src="./core/foundation.js?v=20260929-ac0019"></script>
+    <script src="./core/foundation.js?v=20261005-progress"></script>
     <script src="./services/densho/index.js?v=20260929-densho-live"></script>
     <script src="./services/remote.js?v=20260921-suminoe"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
@@ -98,7 +99,7 @@
             --led-foot-bar-h: 32px;
             --led-col-body-h: 64px;
             --led-col-main-h: 96px;
-            --led-foot-font: 15px;
+            --led-foot-font: 18px;
             --led-foot-site-font: 15px;
         }
         body { margin: 0; padding: 0; background-color: #1a1a1a; overflow: hidden; font-family: "Inter", "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", sans-serif; }
@@ -178,6 +179,7 @@
             width: 112px; max-width: 112px; height: 112px; max-height: 112px;
         }
         html.site-ac-0021 .logo-corp-img { display: none !important; }
+        html.site-ac-0021 #sceneGreeting .promo-body .promo-unit { font-size: 52px; }
         html.site-ac-0014 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
             height: 22px;
             max-width: 240px;
@@ -458,8 +460,8 @@
         }
         .s1-wbgt-ch, .fc-lv-ch {
             display: inline-flex; align-items: center; justify-content: center;
-            width: 15px; flex-shrink: 0;
-            font-size: 15px; font-weight: 700; color: #1a1a1a;
+            width: 1em; flex-shrink: 0;
+            font-size: var(--led-foot-font); font-weight: 700; color: #1a1a1a;
         }
         .s1-wbgt-site-slot {
             display: flex; align-items: center; justify-content: center;
@@ -541,6 +543,16 @@
         .s1-wbgt-msg-slot .s1-wbgt-msg-compact {
             padding: 0 4px; text-align: center;
         }
+        .s1-wbgt-msg-slot {
+            overflow: hidden;
+            min-width: 0;
+        }
+        .s1-wbgt-msg-line {
+            display: inline-block; white-space: nowrap; flex-shrink: 0;
+            font-family: "Noto Sans JP", sans-serif;
+            font-size: var(--led-foot-font); font-weight: 700; color: #1a1a1a;
+            line-height: var(--led-foot-bar-h); letter-spacing: 0;
+        }
 
         .s2-panel, .s2-panel-data { width: 128px; height: 128px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; flex-shrink: 0; overflow: hidden; border: none; outline: none; background: transparent; box-shadow: none; }
         #scene2 .s2-top-bar, #scene2 .s2-body { background: transparent; border: none; }
@@ -564,7 +576,7 @@
             white-space: nowrap; text-align: center;
         }
         .s2-foot { width: 100%; height: var(--led-foot-bar-h); flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 0 2px; background: var(--led-foot-bar-bg); }
-        .s2-foot .s2-loc { font-size: 15px; font-weight: 700; color: #1a1a1a; font-family: "Noto Sans JP", sans-serif; margin: 0; }
+        .s2-foot .s2-loc { font-size: var(--led-foot-font); font-weight: 700; color: #1a1a1a; font-family: "Noto Sans JP", sans-serif; margin: 0; }
         .s2-foot .d5-foot-txt {
             font-size: 18px; font-weight: 800; color: #1a1a1a; line-height: 1;
             font-family: "Inter", "Noto Sans JP", sans-serif; font-variant-numeric: tabular-nums;
@@ -703,8 +715,37 @@
             max-width: 108px;
             max-height: 108px;
         }
+        /* 単色は presentation.solid の色。未指定のコンテンツ（暑さ指数・多言語）は段階色のまま */
+        html.solid-clock .content-area > .scene-strip-bg .col-bg-top,
+        html.solid-clock #scene1 .col-bg-top { background-color: var(--solid-clock-top) !important; }
+        html.solid-clock .content-area > .scene-strip-bg .col-bg-body,
+        html.solid-clock #scene1 .col-bg-body { background-color: var(--solid-clock-body) !important; }
+        html.solid-observation #scene2 .col-bg-top { background-color: var(--solid-observation-top) !important; }
+        html.solid-observation #scene2 .col-bg-body { background-color: var(--solid-observation-body) !important; }
+        html.solid-forecast #scene5 .col-bg-top { background-color: var(--solid-forecast-top) !important; }
+        html.solid-forecast #scene5 .col-bg-body { background-color: var(--solid-forecast-body) !important; }
+        html.solid-clock #scene3 .t3-pair { background-color: var(--signage-bg, #3181BD); }
+        html.solid-clock #scene4 .fc-panel:not(.fc-logo-panel) .fc-top-bar {
+            background-color: var(--signage-bar, #4A96CC) !important;
+        }
+        html.solid-clock #scene4 .fc-panel:not(.fc-logo-panel) .fc-body {
+            background-color: var(--signage-bg, #3181BD) !important;
+        }
+        html.solid-greeting #sceneGreeting.greeting-promo .promo-top { background: var(--solid-greeting-top) !important; }
+        html.solid-greeting #sceneGreeting.greeting-promo .promo-body {
+            background: var(--solid-greeting-body) !important; color: var(--solid-greeting-ink, #ffffff) !important;
+        }
+        html.solid-greeting #sceneGreeting.greeting-promo .promo-body .promo-unit { color: var(--solid-greeting-ink, #ffffff) !important; }
+        html.solid-greeting #sceneGreeting.greeting-promo .promo-foot { background: var(--solid-greeting-foot) !important; }
+        html.solid-progress #sceneProgress,
+        html.solid-progress #sceneProgress .pr-mid { background: var(--solid-progress-body); }
+        html.solid-progress #sceneProgress .pr-top { background: var(--solid-progress-top); }
+        html.solid-progress #sceneProgress .pr-msg { color: var(--solid-progress-ink, #ffffff); }
+        html.solid-progress #sceneProgress .pr-foot,
+        html.solid-progress #sceneProgress .pr-logo-slot { background: var(--solid-progress-foot); }
+        html.solid-progress #sceneProgress .pr-loc-slot { color: var(--solid-progress-foot-ink, #1a1a1a); }
         /* AC-0009: 円形マークが枠いっぱいに当たるので、白余白を残す */
-        html.site-ac-0009 #sceneGreeting .promo-body .promo-unit { font-size: 36px; }
+        html.site-ac-0009 #sceneGreeting .promo-top .promo-unit { padding-left: 0; }
         html.site-ac-0009 #scene2 .s2-logo-face-img,
         html.site-ac-0009 #scene4 .fc-logo-panel .fc-logo-face-img,
         html.site-ac-0009 #scene5 .d5-logo-panel .d5-logo-face-img,
@@ -843,13 +884,13 @@
             display: block; width: 100%; max-width: 100%; min-width: 0;
             overflow: hidden; text-overflow: ellipsis;
             white-space: nowrap; line-height: var(--led-foot-bar-h);
-            font-size: 13px; font-weight: 700; color: #1a1a1a;
+            font-size: var(--led-foot-font); font-weight: 700; color: #1a1a1a;
             font-family: "Noto Sans JP", sans-serif; text-align: center;
             letter-spacing: 0; flex: 1 1 auto; box-sizing: border-box;
         }
         #scene2 .s2-meta-slot-panel .s2-meta-panel-txt.s2-meta-loc-name {
             white-space: normal; text-overflow: clip;
-            line-height: 1.15; font-size: 12px;
+            line-height: 1.15; font-size: 16px;
         }
         /* 横スクロール: 白帯は観測時刻など、以前の2行のうち下段 */
         #scene2 .s2-tmax-high, #scene2 .s2-tmax-low { font-size: 40px; }
@@ -1009,6 +1050,40 @@
         .news-date { font-size: 40px; font-weight: 800; color: #8AD0F0; font-variant-numeric: tabular-nums; white-space: nowrap; }
         .news-title { font-size: 48px; font-weight: 800; color: #F0F8FF; white-space: nowrap; }
         #sceneBoards { width: 512px; height: 128px; overflow: hidden; background: #071428; }
+        #sceneProgress { width: 512px; height: 128px; overflow: hidden; background: #ffffff; }
+        .pr-shell { width: 512px; height: 128px; display: flex; flex-direction: column; }
+        .pr-top, .pr-foot {
+            height: 32px; flex: 0 0 32px; background: #06284A; color: #ffffff;
+            overflow: hidden; padding: 0; box-sizing: border-box;
+        }
+        .pr-edge {
+            display: flex; align-items: center; height: 32px; white-space: nowrap; will-change: transform;
+        }
+        .pr-title, .pr-loc-slot {
+            font-family: "Noto Sans JP", sans-serif; font-weight: 900; font-size: 18px; line-height: 32px;
+            color: #ffffff; letter-spacing: 0; white-space: nowrap;
+        }
+        .pr-title { flex: 0 0 auto; padding-right: 48px; }
+        .pr-foot-unit { display: flex; align-items: center; flex: 0 0 auto; height: 32px; }
+        .pr-logo-slot {
+            width: 256px; flex: 0 0 256px; height: 32px; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff;
+        }
+        .pr-logo-slot img {
+            display: block; height: 26px; width: auto; max-width: 240px; object-fit: contain;
+        }
+        .pr-loc-slot {
+            width: 256px; flex: 0 0 256px; height: 32px; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .pr-mid { height: 64px; flex: 1 1 64px; overflow: hidden; background: #ffffff; }
+        .pr-track {
+            display: flex; align-items: center; height: 64px; white-space: nowrap; will-change: transform;
+        }
+        .pr-msg {
+            flex: 0 0 auto; font-family: "Noto Sans JP", sans-serif; font-weight: 900; font-size: 48px;
+            line-height: 64px; color: #111111; letter-spacing: 0; padding-right: 64px;
+        }
         .kotei-scroll-wrap { width: 512px; height: 128px; overflow: hidden; position: relative; background: #071428; }
         .kotei-track { display: flex; flex-direction: row; height: 128px; align-items: stretch; will-change: transform; }
         .kotei-card {
@@ -1412,7 +1487,7 @@
             background: var(--led-foot-bar-bg); box-sizing: border-box; padding: 0 8px;
         }
         .ng-foot-txt {
-            font-size: 15px; font-weight: 700; line-height: 1; letter-spacing: 0.02em;
+            font-size: var(--led-foot-font); font-weight: 700; line-height: 1; letter-spacing: 0.02em;
             font-family: "Noto Sans JP", sans-serif; color: #1a1a1a;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 496px;
         }
@@ -1439,7 +1514,7 @@
         }
         #sceneGreeting .promo-gap { display: inline-block; width: 64px; flex: 0 0 64px; height: 1px; }
         #sceneGreeting .promo-top .promo-unit { font-size: 20px; font-weight: 700; padding-left: 8px; }
-        #sceneGreeting .promo-body .promo-unit { font-size: 28px; padding-left: 8px; }
+        #sceneGreeting .promo-body .promo-unit { font-size: var(--promo-body-size, 28px); padding-left: 8px; }
         #sceneGreeting .promo-foot .promo-unit { height: 32px; }
         #sceneGreeting .promo-foot-text { color: #1a1a1a; font-size: 20px; font-weight: 800; }
         #sceneGreeting .promo-foot .promo-em,
@@ -1462,6 +1537,9 @@
         #sceneGreeting .promo-i18n-tag {
             width: 36px; flex: 0 0 36px; text-align: center; font-size: 13px; font-weight: 800;
             font-family: Inter, "Noto Sans", sans-serif; letter-spacing: 0;
+        }
+        #sceneGreeting .promo-i18n-mark {
+            width: 28px; height: 28px; flex: 0 0 28px; object-fit: contain; margin: 0 8px;
         }
         #sceneGreeting .promo-i18n-viewport { flex: 1 1 auto; overflow: hidden; height: 100%; }
         #sceneGreeting .promo-i18n .promo-unit { font-size: 22px; font-family: "Noto Sans", "Noto Sans JP", sans-serif; }
@@ -1564,14 +1642,14 @@
             display: inline-flex; align-items: center;
             height: var(--led-foot-bar-h); max-height: var(--led-foot-bar-h);
             line-height: 1.12; overflow: hidden; box-sizing: border-box;
-            font-size: 15px; padding: 0 4px;
+            font-size: var(--led-foot-font); padding: 0;
         }
         #scene3 .t3-guid-bar .s2-meta-set-flow {
             min-width: 0; width: auto;
         }
         #scene3 .t3-guid-bar .s2-meta-slot-flow {
             min-width: 0; width: auto;
-            padding: 0 10px;
+            padding: 0;
             justify-content: flex-start;
         }
         .t3-scroll-body {
@@ -2654,6 +2732,7 @@
             <div class="kotei-track" id="boards-track"></div>
         </div>
     </div>
+    <div class="scene" id="sceneProgress"></div>
     <div class="scene" id="sceneLogo">
         <div class="logo-face-scroll-wrap">
             <div class="logo-face-track" id="logo-face-track">
@@ -2884,6 +2963,8 @@
         container.classList.toggle('wbgt-off-season', displayMode === 'offseason');
         container.classList.toggle('wbgt-unavailable', displayMode === 'unavailable');
         container.style.backgroundColor = colors.bgColor;
+        if (colors && colors.bgColor) container.style.setProperty('--signage-bg', colors.bgColor);
+        if (colors && colors.barColor) container.style.setProperty('--signage-bar', colors.barColor);
         if (!wrap) return;
         const top = wrap.querySelector('.col-bg-top');
         const body = wrap.querySelector('.col-bg-body');
@@ -3138,6 +3219,7 @@
         if (!query.get('rainLon')) RAIN_ALERT_LON = parseFloat(DEFAULT_GEO_LON);
         if (!query.get('warnArea') && jma.warnArea) JMA_WARN_AREA = jma.warnArea;
         if (!query.get('warnCity') && jma.warnCity) JMA_WARN_CITY = jma.warnCity;
+        applySolidTheme_();
         document.documentElement.classList.toggle('site-ac-0007', String(c.projectId || '') === 'AC-0007');
         document.documentElement.classList.toggle('site-ac-0009', String(c.projectId || '') === 'AC-0009');
         document.documentElement.classList.toggle('site-ac-0010', String(c.projectId || '') === 'AC-0010');
@@ -3150,6 +3232,40 @@
         if (typeof rainWarnMeta !== 'undefined') {
             rainWarnMeta.cityName = (JMA_WARN_CITY_LABELS && JMA_WARN_CITY_LABELS[JMA_WARN_CITY]) || getSiteLocationLabel_();
         }
+    }
+    function solidCssColor_(value) {
+        const s = String(value == null ? '' : value).trim();
+        return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(s) ? s : '';
+    }
+    function applySolidTheme_() {
+        const root = document.documentElement;
+        const pres = (siteCfg_().presentation) || {};
+        const solid = pres.solid || {};
+        ['clock', 'observation', 'forecast', 'greeting', 'progress'].forEach(function (id) {
+            const band = solid[id] || {};
+            const top = solidCssColor_(band.top);
+            const body = solidCssColor_(band.body);
+            const foot = solidCssColor_(band.foot);
+            const ink = solidCssColor_(band.ink);
+            const footInk = solidCssColor_(band.footInk);
+            root.classList.toggle('solid-' + id, !!(top || body || foot));
+            const prefix = '--solid-' + id + '-';
+            function put(name, value) {
+                if (value) root.style.setProperty(prefix + name, value);
+                else root.style.removeProperty(prefix + name);
+            }
+            put('top', top);
+            put('body', body);
+            put('foot', foot);
+            put('ink', ink);
+            put('foot-ink', footInk);
+        });
+        const foot = solidCssColor_(pres.footColor);
+        if (foot) root.style.setProperty('--led-foot-bar-bg', foot);
+        else root.style.removeProperty('--led-foot-bar-bg');
+        const bodyPx = Number(siteCfg_().greeting && siteCfg_().greeting.bodyPx);
+        if (bodyPx >= 16 && bodyPx <= 64) root.style.setProperty('--promo-body-size', bodyPx + 'px');
+        else root.style.removeProperty('--promo-body-size');
     }
     function contentOn_(id) {
         return !window.AlertCubeContent || window.AlertCubeContent.isOn(id);
@@ -3248,6 +3364,7 @@
         if (v === 'greeting' || v === 'greet' || v === '7' || v === 's6') return 'greeting';
         if (v === 'news') return 'news';
         if (v === 'boards' || v === 'kotei') return 'boards';
+        if (v === 'progress') return 'progress';
         if (v === 'logo') return 'logo';
         const map = { '1': 's1', '2': 's2', '3': 's4', '4': 's5', '5': 's3', s1: 's1', s2: 's2', s3: 's3', s4: 's4', s5: 's5' };
         return map[v] || null;
@@ -3255,7 +3372,7 @@
     const SCENE_LABEL_BY_KEY = {
         s1: 'シーン1', s2: 'シーン2', s4: 'シーン3', s5: 'シーン4', s3: 'シーン5',
         schedule: '工程表', greeting: '近隣挨拶',
-        news: 'ニュース', boards: '告知ボード', logo: 'スクローリングロゴ',
+        news: 'ニュース', boards: '告知ボード', logo: 'スクローリングロゴ', progress: '工事進捗',
         alert: '熱中症アラート', rainwarn: '大雨警報', typhoon: '防災情報・台風'
     };
     const DEMO_ONLY = normalizeOnlyParam_(query.get('only'));
@@ -3388,9 +3505,8 @@
         }, DEMO_STEP_MS);
     }
     /* スクロール速度・待ち時間: デモも本番と同じ（確認ボード only= も同様） */
-    /* 確認ボード用: ?rain=raining|approaching|watch|soon|1|0  ?wbgtOff=1  ?wbgtUnknown=1 */
+    /* 確認ボード用: ?rain=raining|approaching|watch|soon|1|0  ?wbgtOff=1 */
     const DEMO_WBGT_OFF = query.get('wbgtOff') === '1' || query.get('offseason') === '1';
-    const DEMO_WBGT_UNKNOWN = query.get('wbgtUnknown') === '1';
     const RAIN_PREVIEW_MESSAGES = {
         raining: { level: 'raining', messageJp: '【降雨】付近で雨が降っています。傘をご用意ください。', leadMin: 0 },
         approaching: { level: 'approaching', messageJp: '【雨接近】30〜60分以内に雨の可能性。傘のご準備を。', leadMin: 35 },
@@ -3566,7 +3682,7 @@
     let annualMode_ = 'UNKNOWN';
     let lastAmedasTempC_ = null;
     let annualLogKey_ = '';
-    /** 連続取得失敗がこの時間を超えたときだけ「取得不可」表示（ms） */
+    /** 連続取得失敗がこの時間を超えたら、気温があれば気温表示へ切り替える（ms） */
     const WBGT_UNAVAILABLE_GRACE_MS = 60000;
     let wbgtFailSinceMs_ = null;
     let lastGoodWbgtSlots_ = null;
@@ -3585,6 +3701,8 @@
     const FC_BAR_LABELS = ['暑さ指数', 'WBGT'];
 
     function fcBarLabelForPanel_(index) {
+        const cfg = (siteCfg_() && siteCfg_().presentation) || {};
+        if (cfg.heatLabel === 'ja') return '暑さ指数';
         return FC_BAR_LABELS[index % 2];
     }
     /** 一般向け案件だけ、中止・作業停止にあたる他言語を休憩・補給の表現へ替える */
@@ -4205,6 +4323,7 @@
     const sceneNews = document.getElementById('sceneNews');
     const newsTrack = document.getElementById('news-track');
     const sceneBoards = document.getElementById('sceneBoards');
+    const sceneProgress = document.getElementById('sceneProgress');
     const boardsTrack = document.getElementById('boards-track');
     const sceneSchedule = document.getElementById('sceneSchedule');
     const schTrack = document.getElementById('sch-track');
@@ -4214,7 +4333,7 @@
     const sceneWarn = document.getElementById('sceneWarn');
     const sceneTyphoon = document.getElementById('sceneTyphoon');
     const logoRotator = document.getElementById('logo-rotator');
-    const ALL_SCENES_ = [s1, s2, s3, s4, s5, sceneLogo, sceneNews, sceneBoards, sceneSchedule, sceneGreeting, sceneAlert, sceneRainWarn, sceneWarn, sceneTyphoon];
+    const ALL_SCENES_ = [s1, s2, s3, s4, s5, sceneLogo, sceneNews, sceneBoards, sceneProgress, sceneSchedule, sceneGreeting, sceneAlert, sceneRainWarn, sceneWarn, sceneTyphoon];
 
     /** ロゴパネル: 現在の WBGT 段階色に同期 */
     function applySignageLogoPanel_() {
@@ -7281,7 +7400,7 @@
                                 return;
                             }
                             playWarnWhite_();
-                        }, SCENE_SCROLL_HOLD_MS);
+                        }, sceneHoldMs_('scrollHoldMs', SCENE_SCROLL_HOLD_MS));
                         return;
                     }
                     warnWhiteRaf_ = requestAnimationFrame(step);
@@ -7292,7 +7411,7 @@
                     if (gen !== warnWhiteGen_) return;
                     lastTs = 0;
                     warnWhiteRaf_ = requestAnimationFrame(step);
-                }, SCENE_SCROLL_HOLD_MS);
+                }, sceneHoldMs_('scrollHoldMs', SCENE_SCROLL_HOLD_MS));
             });
         });
     }
@@ -7428,6 +7547,8 @@
     let sceneNewsAnimId = null;
     let newsCanvasTimerId_ = null;
     let sceneBoardsAnimId = null;
+    let progressAnimId = null;
+    let progressPlayGen_ = 0;
     let boardsCanvasTimerId_ = null;
     let boardsHoldTimerId_ = null;
     let boardsPhaseIdx_ = 0;
@@ -7468,6 +7589,12 @@
     const SCENE_SCROLL_HOLD_MS = 1000;
     /** スクロール終了後〜次コンテンツ／次シーンまでの静止 */
     const SCENE_END_HOLD_MS = 1000;
+    function sceneHoldMs_(key, fallback) {
+        const cfg = (siteCfg_() && siteCfg_().presentation) || {};
+        const n = Number(cfg[key]);
+        if (Number.isFinite(n) && n >= 0) return n;
+        return fallback;
+    }
     const GLOBAL_SCROLL_SPEED_PX = 0.75;
     const DEMO_SCROLL_SPEED_PX = 0.5;
     function getScrollSpeedPx_() {
@@ -7495,6 +7622,16 @@
         let v = x;
         while (v <= -lapW) v += lapW;
         while (v > 0) v -= lapW;
+        return v;
+    }
+    /** 1周の境目で 0 に戻すと、直前の位置から巻き戻って見える。2周分の範囲でつなぐ。 */
+    function seamlessScrollX_(moved, lapW) {
+        const lap = Number(lapW) || 0;
+        const dist = Number(moved) || 0;
+        if (lap <= 0) return -dist;
+        let v = -dist;
+        const span = lap * 2;
+        while (v <= -span) v += lap;
         return v;
     }
     function advanceGlobalScroll_(speedPx) {
@@ -7535,7 +7672,7 @@
             sceneEndHoldTimerId_ = setTimeout(function () {
                 sceneEndHoldTimerId_ = null;
                 fn();
-            }, SCENE_SCROLL_HOLD_MS);
+            }, sceneHoldMs_('scrollHoldMs', SCENE_SCROLL_HOLD_MS));
         });
     }
     /** スクロール終了後に1秒静止してから次へ */
@@ -7544,7 +7681,7 @@
         scenePostHoldTimerId_ = setTimeout(function () {
             scenePostHoldTimerId_ = null;
             fn();
-        }, SCENE_END_HOLD_MS);
+        }, sceneHoldMs_('endHoldMs', SCENE_END_HOLD_MS));
     }
     /** 1コンテンツ終了 → 1秒静止 → 次準備 → 1秒静止 → スクロール再開 */
     function holdThenNextContent_(prepareFn, resumeAnimFn) {
@@ -7574,6 +7711,7 @@
         if (sceneLogoAnimId) { cancelAnimationFrame(sceneLogoAnimId); sceneLogoAnimId = null; }
         if (sceneNewsAnimId) { cancelAnimationFrame(sceneNewsAnimId); sceneNewsAnimId = null; }
         if (sceneBoardsAnimId) { cancelAnimationFrame(sceneBoardsAnimId); sceneBoardsAnimId = null; }
+        if (progressAnimId) { cancelAnimationFrame(progressAnimId); progressAnimId = null; }
         if (scene5HoldTimerId) { clearTimeout(scene5HoldTimerId); scene5HoldTimerId = null; }
         if (sceneScheduleAnimId) { cancelAnimationFrame(sceneScheduleAnimId); sceneScheduleAnimId = null; }
         if (sceneScheduleHoldTimerId) { clearTimeout(sceneScheduleHoldTimerId); sceneScheduleHoldTimerId = null; }
@@ -7993,7 +8131,6 @@
         });
     }
     function hasContentLogo_() {
-        if (faceLayoutWide_()) return false;
         const cfg = window.SIGNAGE_CONFIG || {};
         return !!String(cfg.logoSrc || '').trim();
     }
@@ -8177,27 +8314,15 @@
     }
     function applyWbgtUnavailableToDom_() {
         if (wbgtOffSeason || !wbgtUnavailableGraceElapsed_()) return;
-        /* 一度でも成功値があれば長期灰色（取得不可）にしない */
+        /* 一度でも成功値があれば表示を維持する */
         if (keepLastGoodWbgtDisplay_('取得継続失敗')) return;
+        /* 気温が無いときは灰色・「--」・「WBGTデータ取得不可」にしない */
+        if (!(window.AlertCubeCore && window.AlertCubeCore.parseTemperature(lastAmedasTempC_) != null)) return;
         wbgtFetchOk_ = false;
-        if (window.AlertCubeCore && window.AlertCubeCore.parseTemperature(lastAmedasTempC_) != null) {
-            wbgtUnavailable = false;
-            syncAnnualMode_();
-            queueDisplayRefresh_();
-            if (!shouldDeferDisplayRefresh_()) flushDisplayRefresh_(false);
-            return;
-        }
-        wbgtUnavailable = true;
-        syncWbgtDependentAlerts_();
-        const nullSlot = { wbgt: null, hour: '取得不可' };
-        const nullSlots = [nullSlot, nullSlot, nullSlot, nullSlot];
-        syncWbgtLevelFromSlots(nullSlots);
-        updateForecastSlots(nullSlots);
+        wbgtUnavailable = false;
+        syncAnnualMode_();
         queueDisplayRefresh_();
-        queueOrRefreshS1FootBar_();
-        refreshSignageBgIfChanged_(true);
         if (!shouldDeferDisplayRefresh_()) flushDisplayRefresh_(false);
-        console.warn('[WBGT] 成功値なしで1分以上取得できないため「取得不可」表示');
     }
     function syncWbgtSlotsToDomIfReady_() {
         const slots = (lastGoodWbgtSlots_ && hasFull4Slots(lastGoodWbgtSlots_))
@@ -9961,12 +10086,22 @@
         if (lv < 0) return '';
         return wbgtPhrase_(lv).jp;
     }
-    /* 下帯: 1分以上取得不可のときだけ「取得不可」。それ以外は直前値のWBGT文言＋雨タグ */
+    /* 下帯: 直前値のWBGT文言＋雨タグ。気温表示のときは気温。取得失敗だけでは「取得不可」にしない */
+    function temperatureFootMessageJp_() {
+        const label = formatTempLabel_(lastAmedasTempC_);
+        if (label) return '【気温】' + label;
+        return getS1FootFallbackText_() || '';
+    }
     function getS1WbgtMessageJp() {
-        if (temperatureDisplay_() || wbgtOffSeason) return '';
+        if (wbgtOffSeason) return '';
+        const rain = getRainAlertMessageJp();
+        if (temperatureDisplay_()) {
+            const tempMsg = temperatureFootMessageJp_();
+            if (rain && tempMsg) return rain + '　' + tempMsg;
+            return rain || tempMsg;
+        }
         if (wbgtUnavailable) return unknownMsg.jp;
         const lv = getS1WbgtLevelForDisplay_();
-        const rain = getRainAlertMessageJp();
         if (lv < 0) return rain || '';
         const wbgt = wbgtPhrase_(lv).jp;
         if (rain && wbgt) return rain + '　' + wbgt;
@@ -9978,7 +10113,7 @@
         if (getS1FootMarkSrc_()) return true;
         return !!String(getS1WbgtMessageJp() || '').trim();
     }
-    /* 下帯: WBGT取得不可時は「取得不可」。提供期間外は地点名で白帯を維持 */
+    /* 下帯: 文言が無いときの地点名 */
     function getS1FootFallbackText_() {
         return getSiteLocationLabel_();
     }
@@ -10107,6 +10242,34 @@
         }
         return `<span class="s1-wbgt-msg">${buildEvenCharSpans(text, 's1-wbgt-ch')}</span>`;
     }
+    /** 時刻下帯: 固定15pxマスに詰めず、文言幅のまま1本で出す */
+    function buildS1FootBannerMsgHtml(text) {
+        return '<span class="s1-wbgt-msg-line">' + escapeS1Html(text) + '</span>';
+    }
+    /** 長い雨文言が隣のロゴに被らないよう、文言スロットを文字幅まで広げる */
+    function fitS1FootMsgSlots_() {
+        if (!s1WbgtTrack) return;
+        s1WbgtTrack.querySelectorAll('.s1-wbgt-set').forEach(function (setEl) {
+            if (setEl.classList.contains('s1-wbgt-set-scroll')) return;
+            const slot = setEl.querySelector('.s1-wbgt-msg-slot');
+            const line = slot && slot.querySelector('.s1-wbgt-msg-line');
+            if (!slot || !line || !String(line.textContent || '').trim()) {
+                if (slot) slot.style.width = '';
+                setEl.style.width = '';
+                return;
+            }
+            slot.style.width = 'auto';
+            setEl.style.width = 'auto';
+            const need = line.scrollWidth + 32;
+            if (need > FOOT_BAR_SLOT_W) {
+                slot.style.width = need + 'px';
+                setEl.style.width = (FOOT_BAR_SLOT_W + need) + 'px';
+            } else {
+                slot.style.width = '';
+                setEl.style.width = '';
+            }
+        });
+    }
     function buildBarTextHtml(text) {
         return `<span class="bar-text">${buildEvenCharSpans(text, 'bar-ch')}</span>`;
     }
@@ -10117,7 +10280,7 @@
         const siteName = getS1SiteFootName_();
         const msgText = String(text || getS1WbgtMessageJp() || '').trim();
         const siteSlot = buildS1SiteSlotHtml_(siteName);
-        const msgSlot = `<div class="s1-wbgt-slot s1-wbgt-msg-slot">${msgText ? buildS1WbgtMsgHtml(msgText) : ''}</div>`;
+        const msgSlot = `<div class="s1-wbgt-slot s1-wbgt-msg-slot">${msgText ? buildS1FootBannerMsgHtml(msgText) : ''}</div>`;
         return `<div class="s1-wbgt-set">${siteSlot}${msgSlot}</div>`;
     }
     function getFcLvText() {
@@ -10152,10 +10315,11 @@
     function updateS1FootMsgSlots_(text) {
         if (text === lastS1FootMsg_) return;
         lastS1FootMsg_ = text;
-        const msgHtml = text ? buildS1WbgtMsgHtml(text) : '';
+        const msgHtml = text ? buildS1FootBannerMsgHtml(text) : '';
         document.querySelectorAll('#scene1 .s1-wbgt-msg-slot').forEach(function (el) {
             el.innerHTML = msgHtml;
         });
+        fitS1FootMsgSlots_();
         sizeS1FootWbgtText_();
     }
     function s1FootBannerReady_() {
@@ -10175,6 +10339,7 @@
         const showBar = hasS1WbgtFootMessage_();
         if (s1FootBannerReady_()) {
             if (text !== lastS1FootMsg_) updateS1FootMsgSlots_(text);
+            else fitS1FootMsgSlots_();
             applyGlobalScroll_(s1WbgtTrack, getS1FootLapPx_());
             setS1FootBarVisible_(showBar);
             return;
@@ -10189,6 +10354,7 @@
         let html = '';
         for (let i = 0; i < SCENE1_WBGT_SETS; i++) html += buildS1WbgtSetHtml(text);
         s1WbgtTrack.innerHTML = html;
+        fitS1FootMsgSlots_();
         applyGlobalScroll_(s1WbgtTrack, getS1FootLapPx_());
         sizeS1FootCompanyText_();
         sizeS1FootWbgtText_();
@@ -10204,6 +10370,13 @@
         if (scene1EndHoldTimerId) { clearTimeout(scene1EndHoldTimerId); scene1EndHoldTimerId = null; }
         if (scene1SafetyTimerId) { clearTimeout(scene1SafetyTimerId); scene1SafetyTimerId = null; }
     }
+    function scene1SafetyMs_() {
+        const laps = presentationLaps_('clockLaps', SCENE1_ADVANCE_LAPS);
+        const lap = Math.max(SCENE1_WBGT_LAP_PX, getS1FootLapPx_() || SCENE1_WBGT_LAP_PX);
+        const speed = Math.max(0.2, getScrollSpeedPx_());
+        const frames = (lap * Math.max(1, laps)) / speed;
+        return Math.max(SCENE1_SAFETY_MS, Math.ceil(frames * 50) + 12000);
+    }
     function scheduleScene1SafetyAdvance_() {
         if (scene1SafetyTimerId) clearTimeout(scene1SafetyTimerId);
         scene1SafetyTimerId = setTimeout(function () {
@@ -10212,11 +10385,11 @@
                 console.warn('[Scene1] 安全タイマーで次シーンへ進めます');
                 finishScene1();
             }
-        }, SCENE1_SAFETY_MS);
+        }, scene1SafetyMs_());
     }
     function sceneDisplayMode(el) {
         if (!el) return 'block';
-        if (el.id === 'scene2' || el.id === 'scene4' || el.id === 'scene5' || el.id === 'sceneLogo' || el.id === 'sceneNews' || el.id === 'sceneBoards' || el.id === 'sceneSchedule' || el.id === 'sceneGreeting' || el.id === 'sceneAlert' || el.id === 'sceneRainWarn' || el.id === 'sceneWarn' || el.id === 'sceneTyphoon') return 'block';
+        if (el.id === 'scene2' || el.id === 'scene4' || el.id === 'scene5' || el.id === 'sceneLogo' || el.id === 'sceneNews' || el.id === 'sceneBoards' || el.id === 'sceneProgress' || el.id === 'sceneSchedule' || el.id === 'sceneGreeting' || el.id === 'sceneAlert' || el.id === 'sceneRainWarn' || el.id === 'sceneWarn' || el.id === 'sceneTyphoon') return 'block';
         if (el.id === 'scene1' || el.id === 'scene3') return 'block';
         return 'flex';
     }
@@ -11084,39 +11257,13 @@
     }
     function sizeT3GuideText_() {
         const bar = document.querySelector('#scene3 .t3-guid-bar');
-        const probe = document.querySelector('#scene3 .t3-guid-bar .s2-meta-msg-scroll');
-        if (!bar || !probe) return;
-        const barH = bar.clientHeight > 0 ? bar.clientHeight : 28;
-        const maxH = barH - 1;
         const targets = document.querySelectorAll('#scene3 .t3-guid-bar .s2-meta-msg-scroll');
-        let fz = 15;
-        const minFz = 11;
-        const maxFz = 17;
-        const applyGuide_ = function () {
-            targets.forEach(function (n) {
-                n.style.fontSize = fz + 'px';
-                n.style.lineHeight = maxH + 'px';
-            });
-        };
-        const clipsGuide_ = function () {
-            const barR = bar.getBoundingClientRect();
-            const r = probe.getBoundingClientRect();
-            return r.top < barR.top + 1 || r.bottom > barR.bottom - 1 || probe.scrollHeight > maxH;
-        };
-        applyGuide_();
-        while (fz < maxFz) {
-            fz += 1;
-            applyGuide_();
-            if (clipsGuide_()) {
-                fz -= 1;
-                applyGuide_();
-                break;
-            }
-        }
-        while (fz > minFz && clipsGuide_()) {
-            fz -= 1;
-            applyGuide_();
-        }
+        if (!bar || !targets.length) return;
+        const barH = bar.clientHeight > 0 ? bar.clientHeight : 32;
+        targets.forEach(function (n) {
+            n.style.fontSize = '20px';
+            n.style.lineHeight = barH + 'px';
+        });
     }
     function setT3Lang_(idx) {
         const msg = t3Messages_[idx];
@@ -11191,20 +11338,24 @@
             scheduleDemoStep_(gotoAfterScene3_);
             return;
         }
-        t3Flow_ = {
-            x: wrapScrollX_(globalScrollX_, T3_UNIT_W),
-            langIdx: 0,
-            laps: 0
-        };
-        applyT3TrackX_(tracks, t3Flow_.x);
+        t3Flow_ = { x: 0, langIdx: 0, laps: 0 };
+        applyT3TrackX_(tracks, 0);
+        if (guidTrack) applyScrollX_(guidTrack, 0);
+        let moved = 0;
         function step() {
-            const prevX = t3Flow_.x;
-            advanceGlobalScroll_(getScrollSpeedPx_());
-            t3Flow_.x = wrapScrollX_(globalScrollX_, T3_UNIT_W);
-            if (detectScrollLapCrossed_(prevX, t3Flow_.x)) {
-                t3Flow_.laps += 1;
-                if (t3Flow_.laps >= T3_LAPS_BEFORE_SWITCH) {
+            const speed = getScrollSpeedPx_();
+            moved += speed;
+            const lapsNow = Math.floor(moved / T3_UNIT_W);
+            t3Flow_.x = seamlessScrollX_(moved, T3_UNIT_W);
+            applyT3TrackX_(tracks, t3Flow_.x);
+            if (guidTrack && getT3GuideTierForDisplay_() && t3GuidLapPx > 0) {
+                applyScrollX_(guidTrack, seamlessScrollX_(moved, t3GuidLapPx));
+            }
+            if (lapsNow > t3Flow_.laps) {
+                t3Flow_.laps = lapsNow;
+                if (t3Flow_.laps >= presentationLaps_('i18nLaps', T3_LAPS_BEFORE_SWITCH)) {
                     t3Flow_.laps = 0;
+                    moved = 0;
                     t3Flow_.langIdx += 1;
                     if (t3Flow_.langIdx >= t3Messages_.length) {
                         if (demoOnlyLoop_('s3', playScene3)) return;
@@ -11216,18 +11367,15 @@
                     }
                     tickerAnimId = null;
                     holdThenNextContent_(function () {
-                        t3Flow_.x = snapT3ScrollToLap_(T3_UNIT_W);
+                        t3Flow_.x = 0;
                         setT3Lang_(t3Flow_.langIdx);
-                        applyT3TrackX_(tracks, t3Flow_.x);
+                        applyT3TrackX_(tracks, 0);
+                        if (guidTrack) applyScrollX_(guidTrack, 0);
                     }, function () {
                         tickerAnimId = requestAnimationFrame(step);
                     });
                     return;
                 }
-            }
-            applyT3TrackX_(tracks, t3Flow_.x);
-            if (guidTrack && getT3GuideTierForDisplay_()) {
-                applyGlobalScroll_(guidTrack, t3GuidLapPx);
             }
             tickerAnimId = requestAnimationFrame(step);
         }
@@ -11255,7 +11403,7 @@
         if (s1WbgtTrack && showWbgtFoot) {
             if (!s1WbgtTrack.children.length) refreshS1WbgtFootBar_(true);
             const s1FootLap = Math.max(1, getS1FootLapPx_() || SCENE1_WBGT_LAP_PX);
-            const s1ScrollTotal = s1FootLap * SCENE1_ADVANCE_LAPS;
+            const s1ScrollTotal = s1FootLap * presentationLaps_('clockLaps', SCENE1_ADVANCE_LAPS);
             s1Flow_ = { x: 0, moved: 0 };
             applyScrollX_(s1WbgtTrack, 0);
             function animateS1WbgtRtl() {
@@ -11263,7 +11411,7 @@
                 const speed = getScrollSpeedPx_();
                 advanceGlobalScroll_(speed);
                 s1Flow_.moved += speed;
-                applyScrollX_(s1WbgtTrack, wrapScrollX_(-s1Flow_.moved, s1FootLap));
+                applyScrollX_(s1WbgtTrack, seamlessScrollX_(s1Flow_.moved, s1FootLap));
                 if (s1Flow_.moved >= s1ScrollTotal) {
                     scene1AnimId = null;
                     s1Flow_ = null;
@@ -11359,7 +11507,7 @@
             const speed = getScrollSpeedPx_();
             totalScrolled = Math.min(totalPx, totalScrolled + speed);
             applyScrollX_(conveyor, -totalScrolled);
-            applyScrollX_(s2MetaTrack, wrapScrollX_(-totalScrolled, scene2MetaLapPx));
+            applyScrollX_(s2MetaTrack, seamlessScrollX_(totalScrolled, scene2MetaLapPx));
             if (totalScrolled >= totalPx) {
                 finishScroll_();
                 return;
@@ -12032,16 +12180,98 @@
         return html;
     }
     function promoLapWidth_(track) {
-        const unit = track.querySelector('.promo-unit');
+        const units = track.querySelectorAll('.promo-unit');
+        if (units.length >= 2) {
+            const span = units[1].offsetLeft - units[0].offsetLeft;
+            if (span > 0) return span;
+        }
+        const unit = units[0];
         const gap = track.querySelector('.promo-gap');
         return Math.max(1, (unit ? unit.offsetWidth : 0) + (gap ? gap.offsetWidth : 0));
     }
-    function fillPromoTrack_(track, unitHtml) {
-        const unit = '<span class="promo-unit">' + unitHtml + '</span>';
-        const gap = '<span class="promo-gap"></span>';
-        track.innerHTML = unit + gap + unit + gap;
-        applyScrollX_(track, 0);
-        return promoLapWidth_(track);
+    function fillPromoTrack_(track, unitHtml, opts) {
+        const gapPx = opts && Number.isFinite(Number(opts.gapPx)) ? Math.max(0, Number(opts.gapPx)) : null;
+        const gapAttr = gapPx != null ? ' style="width:' + gapPx + 'px;flex-basis:' + gapPx + 'px"' : '';
+        const unit = '<span class="promo-unit"' + (gapPx === 0 ? ' style="padding-left:0;padding-right:0"' : '') + '>' + unitHtml + '</span>';
+        const gap = gapPx === 0 ? '' : '<span class="promo-gap"' + gapAttr + '></span>';
+        if (gapPx === 0) track.classList.add('promo-seam');
+        function paint(copies) {
+            let html = '';
+            for (let i = 0; i < copies; i++) html += unit + gap;
+            track.innerHTML = html;
+            applyScrollX_(track, 0);
+        }
+        paint(2);
+        let lap = promoLapWidth_(track);
+        if (opts && opts.fillView) {
+            const copies = Math.max(2, Math.ceil((512 + lap) / Math.max(1, lap)));
+            if (copies > 2) paint(copies);
+        }
+        tightenPromoFootSeam_(track);
+        return promoLapWidth_(track) || lap;
+    }
+    /** 下段の繰り返し: 「！」の後ろの空きを、ほかの文字間隔まで詰める */
+    function tightenPromoFootSeam_(track) {
+        const sample = track.querySelector('.promo-foot-text');
+        if (!sample) return;
+        const text = sample.textContent || '';
+        const chars = Array.from(text);
+        if (chars.length < 2) return;
+        const cs = getComputedStyle(sample);
+        const font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+        function inkOf(sampleText) {
+            const meas = document.createElement('canvas').getContext('2d');
+            meas.font = font;
+            const adv = meas.measureText(sampleText).width;
+            const w = Math.max(1, Math.ceil(adv) + 2);
+            const h = 48;
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.font = font;
+            ctx.fillStyle = '#000';
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillText(sampleText, 0, 36);
+            const data = ctx.getImageData(0, 0, w, h).data;
+            let left = -1;
+            let right = -1;
+            for (let col = 0; col < w; col++) {
+                for (let y = 0; y < h; y++) {
+                    if (data[(y * w + col) * 4 + 3] > 40) {
+                        if (left < 0) left = col;
+                        right = col;
+                        break;
+                    }
+                }
+            }
+            return { adv: adv, left: left, right: right };
+        }
+        function pairGap(a, b) {
+            const A = inkOf(a);
+            const B = inkOf(b);
+            if (A.right < 0 || B.left < 0) return null;
+            return (A.adv - A.right - 1) + B.left;
+        }
+        const punct = /[！!？?。、\s]/;
+        const gaps = [];
+        for (let i = 0; i < chars.length - 1; i++) {
+            if (punct.test(chars[i]) || punct.test(chars[i + 1])) continue;
+            const g = pairGap(chars[i], chars[i + 1]);
+            if (g != null) gaps.push(g);
+        }
+        if (!gaps.length) return;
+        gaps.sort(function (a, b) { return a - b; });
+        const target = gaps[Math.floor(gaps.length / 2)];
+        const phrase = inkOf(text);
+        const head = inkOf(chars[0]);
+        if (phrase.right < 0 || head.left < 0) return;
+        const seam = (phrase.adv - phrase.right - 1) + head.left;
+        const pull = Math.round(seam - target);
+        const margin = pull > 0 ? -pull : 0;
+        track.querySelectorAll('.promo-foot-text').forEach(function (el) {
+            el.style.marginRight = margin + 'px';
+        });
     }
     function paintPromoChrome_() {
         if (!sceneGreeting || typeof SignageBg === 'undefined') return;
@@ -12064,8 +12294,11 @@
     }
     function fillPromoNameSlots_(track, unitHtml, slotPx) {
         const width = Math.max(128, Math.floor(slotPx));
+        const count = Math.ceil(512 / width) + 1;
         const slot = '<span class="promo-name-slot" style="width:' + width + 'px;flex-basis:' + width + 'px">' + unitHtml + '</span>';
-        track.innerHTML = slot + slot + slot + slot;
+        let html = '';
+        for (let i = 0; i < count; i++) html += slot;
+        track.innerHTML = html;
         applyScrollX_(track, 0);
         return width;
     }
@@ -12075,12 +12308,23 @@
         const pos = jobs.map(function () { return 0; });
         function step() {
             let done = 0;
+            const speeds = jobs.map(function (job) {
+                return job.speed > 0 ? job.speed : getScrollSpeedPx_();
+            });
             jobs.forEach(function (job, i) {
-                const speed = job.speed > 0 ? job.speed : getScrollSpeedPx_();
+                const speed = speeds[i];
                 const travel = job.travel > 0 ? job.travel : job.lap;
+                const lap = job.lap;
+                if (pos[i] >= travel) {
+                    const shown = job.wrap ? seamlessScrollX_(travel, lap) : -Math.min(lap, travel);
+                    job.track.style.transform = 'translate3d(' + shown + 'px,0,0)';
+                    done += 1;
+                    return;
+                }
                 pos[i] += speed;
-                const shown = job.wrap ? (pos[i] % job.lap) : Math.min(job.lap, pos[i]);
-                applyScrollX_(job.track, -shown);
+                if (pos[i] > travel) pos[i] = travel;
+                const shown = job.wrap ? seamlessScrollX_(pos[i], lap) : -Math.min(lap, pos[i]);
+                job.track.style.transform = 'translate3d(' + shown + 'px,0,0)';
                 if (pos[i] >= travel) done += 1;
             });
             if (done >= jobs.length) {
@@ -12102,8 +12346,40 @@
         if (passes <= 1 || pass >= passes - 1) promoAdvanceLine_(count);
         finishGreetingScene_();
     }
+    function promoLogoWidth_(src, heightPx, done) {
+        const img = new Image();
+        let settled = false;
+        function finish(w) {
+            if (settled) return;
+            settled = true;
+            done(w > 0 ? w : 0);
+        }
+        img.onload = function () {
+            const w = img.naturalWidth > 0 && img.naturalHeight > 0
+                ? Math.round(img.naturalWidth * heightPx / img.naturalHeight) : 0;
+            finish(w);
+        };
+        img.onerror = function () { finish(0); };
+        img.src = src;
+        setTimeout(function () { finish(0); }, 1200);
+    }
     function playPromoJapanese_() {
         const cfg = greetingCfg_();
+        function start(logoW) {
+            const go = function () { playPromoJapaneseBuilt_(cfg, logoW); };
+            if (cfg.seamless && document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(go).catch(go);
+                return;
+            }
+            go();
+        }
+        if (cfg.seamless && cfg.titleLogo) {
+            promoLogoWidth_(String(cfg.titleLogo), 26, start);
+            return;
+        }
+        start(0);
+    }
+    function playPromoJapaneseBuilt_(cfg, logoW) {
         const lines = Array.isArray(cfg.lines) ? cfg.lines : [];
         const idx = promoLineIndex_(Math.max(1, lines.length));
         const marks = (cfg.emphasis && cfg.emphasis[idx]) || [];
@@ -12119,7 +12395,7 @@
         const body = document.getElementById('promo-body-track');
         const foot = document.getElementById('promo-foot-track');
         const titleHtml = cfg.titleLogo
-            ? '<img class="promo-title-logo" src="' + escapeS1Html(cfg.titleLogo) + '" alt="' + escapeS1Html(cfg.title || '') + '">'
+            ? '<img class="promo-title-logo" style="height:26px' + (logoW > 0 ? ';width:' + logoW + 'px' : '') + '" src="' + escapeS1Html(cfg.titleLogo) + '" alt="' + escapeS1Html(cfg.title || '') + '">'
             : titles.map(function (t) { return escapeS1Html(t); }).join('　　');
         const bodyHtml = promoHtml_(lines[idx] || '', marks);
         const footMarks = cfg.footEmphasis || [];
@@ -12127,23 +12403,66 @@
             ? '<img class="promo-wordmark" style="width:94px;height:24px" src="' + escapeS1Html(cfg.footLogo) + '" alt="">'
             : (cfg.foot ? '<span class="promo-foot-text">' + promoHtml_(String(cfg.foot), footMarks) + '</span>' : '');
         const jobs = [];
+        const seamless = cfg.seamless === true;
+        const bandGap = Number.isFinite(Number(cfg.bandGapPx)) ? Number(cfg.bandGapPx) : 0;
+        const edgeOpts = seamless ? { gapPx: bandGap, fillView: true } : null;
+        const fillOpts = seamless
+            ? { gapPx: Number.isFinite(Number(cfg.gapPx)) ? Number(cfg.gapPx) : 24, fillView: true }
+            : null;
         const nameSlot = Number(cfg.nameSlot);
-        const bodyLap = body ? fillPromoTrack_(body, bodyHtml) : 0;
-        if (body) jobs.push({ track: body, lap: bodyLap, speed: getScrollSpeedPx_() });
-        const travel = Math.max(bodyLap, nameSlot >= 128 ? nameSlot : 0);
+        const bodyLap = body ? fillPromoTrack_(body, bodyHtml, fillOpts) : 0;
+        let topLap = 0;
+        let footLap = 0;
         if (top) {
-            if (nameSlot >= 128) {
-                jobs.push({ track: top, lap: fillPromoNameSlots_(top, titleHtml, nameSlot), wrap: true, travel: travel, speed: getScrollSpeedPx_() });
+            topLap = (nameSlot >= 128)
+                ? fillPromoNameSlots_(top, titleHtml, nameSlot)
+                : fillPromoTrack_(top, titleHtml, edgeOpts);
+        }
+        const footSlot = Number(cfg.footSlot);
+        if (foot && footHtml) {
+            footLap = (footSlot >= 128)
+                ? fillPromoNameSlots_(foot, footHtml, footSlot)
+                : fillPromoTrack_(foot, footHtml, edgeOpts);
+        }
+        const passLaps = Math.max(1, Number(cfg.scrollLaps) || 1);
+        const travel = seamless
+            ? Math.max(bodyLap, topLap, footLap, 1) * passLaps
+            : Math.max(bodyLap, nameSlot >= 128 ? nameSlot : 0);
+        if (body) {
+            const job = { track: body, lap: bodyLap, speed: getScrollSpeedPx_() };
+            if (seamless) { job.wrap = true; job.travel = travel; job.role = 'body'; }
+            jobs.push(job);
+        }
+        if (top && topLap) {
+            if (seamless) {
+                jobs.push({ track: top, lap: topLap, wrap: true, travel: travel, speed: getScrollSpeedPx_(), role: 'edge' });
+            } else if (nameSlot >= 128) {
+                jobs.push({ track: top, lap: topLap, wrap: true, travel: travel, speed: getScrollSpeedPx_() });
             } else {
-                jobs.push({ track: top, lap: fillPromoTrack_(top, titleHtml), speed: getScrollSpeedPx_() });
+                jobs.push({ track: top, lap: topLap, speed: getScrollSpeedPx_() });
             }
         }
-        if (foot && footHtml) {
-            const footJob = { track: foot, lap: fillPromoTrack_(foot, footHtml), speed: cfg.footLogo ? 0.6 : getScrollSpeedPx_() };
-            if (nameSlot >= 128) { footJob.wrap = true; footJob.travel = travel; }
+        if (foot && footHtml && footLap) {
+            const footJob = { track: foot, lap: footLap, speed: getScrollSpeedPx_() };
+            if (seamless) { footJob.wrap = true; footJob.travel = travel; footJob.role = 'edge'; }
+            else if (footSlot >= 128 || nameSlot >= 128) {
+                footJob.wrap = true;
+                footJob.travel = Math.max(bodyLap, topLap, footLap, 1);
+            }
             jobs.push(footJob);
         }
-        playPromoTracks_(jobs, finishPromoPass_);
+        playPromoTracks_(jobs, finishJapanesePromo_);
+    }
+    function promoChainsI18n_() {
+        const cfg = greetingCfg_();
+        return Array.isArray(cfg.i18n) && cfg.i18n.length > 0 && greetingPassCount_() <= 1;
+    }
+    function finishJapanesePromo_() {
+        if (promoChainsI18n_()) {
+            playPromoI18n_();
+            return;
+        }
+        finishPromoPass_();
     }
     function playPromoI18n_() {
         const cfg = greetingCfg_();
@@ -12151,13 +12470,17 @@
         const idx = promoLineIndex_(Math.max(1, lines.length));
         const pack = (cfg.i18n && cfg.i18n[idx]) || {};
         const marks = pack.em || [];
+        const markSrc = (window.SIGNAGE_CONFIG && window.SIGNAGE_CONFIG.logoSrc) || '';
         const rows = [
             { tag: 'EN', text: pack.en || '' },
             { tag: 'VN', text: pack.vn || '' },
             { tag: 'TL', text: pack.tl || '' }
         ];
+        const lead = markSrc
+            ? '<img class="promo-i18n-mark" src="' + escapeS1Html(markSrc) + '" alt="">'
+            : '';
         sceneGreeting.innerHTML = '<div class="promo-i18n">' + rows.map(function (row, i) {
-            return '<div class="promo-i18n-row"><span class="promo-i18n-tag">' + row.tag + '</span>' +
+            return '<div class="promo-i18n-row">' + (lead || ('<span class="promo-i18n-tag">' + row.tag + '</span>')) +
                 '<div class="promo-i18n-viewport"><div class="promo-track" id="promo-i18n-' + i + '"></div></div></div>';
         }).join('') + '</div>';
         paintPromoChrome_();
@@ -12269,21 +12592,6 @@
             refreshSignageBg();
             return;
         }
-        if (DEMO_WBGT_UNKNOWN) {
-            applyWbgtInSeason_();
-            wbgtUnavailable = true;
-            wbgtOffSeason = false;
-            currentWbgtLevel = -1;
-            syncWbgtDependentAlerts_();
-            const nullSlots = [{ wbgt: null, hour: '取得不可' }];
-            lastWbgtSlots = nullSlots;
-            updateForecastSlots(nullSlots);
-            refreshSignageBg();
-            buildTicker();
-            buildS1WbgtTrack(false);
-            buildFcLvTrack(false);
-            return;
-        }
         wbgtOffSeason = false;
         wbgtUnavailable = false;
         applyDemoLevel(DEMO_LEVEL_FIXED != null ? DEMO_LEVEL_FIXED : 1);
@@ -12364,6 +12672,7 @@
                 case 'greeting': showOnlyScene_(sceneGreeting, playSceneGreeting); break;
                 case 'news': showOnlyScene_(sceneNews, playSceneNews); break;
                 case 'boards': showOnlyScene_(sceneBoards, playSceneBoards); break;
+                case 'progress': showOnlyScene_(sceneProgress, playSceneProgress); break;
                 case 'logo': showOnlyScene_(sceneLogo, playSceneLogoScroll); break;
                 default: break;
             }
@@ -12511,7 +12820,7 @@
             if (currentId() == null) return;
             total += speed;
             const done = total >= scrollTotal;
-            applyScrollX_(track, wrapScrollX_(done ? -scrollTotal : -total, width));
+            applyScrollX_(track, seamlessScrollX_(done ? scrollTotal : total, width));
             if (done) {
                 storeId(null);
                 if (typeof onDone === 'function') onDone();
@@ -12532,6 +12841,7 @@
             clearBoardsHold_();
             setBoardsCanvasMode_(false, SCENE_SLIDE_MS);
         }
+        if (id !== 'progress') progressPlayGen_ += 1;
         switch (id) {
             case 'clock': transitionToScene(s1, playScene1); break;
             case 'observation': transitionToScene(s2, playScene2); break;
@@ -12556,6 +12866,7 @@
                 break;
             case 'news': transitionToScene(sceneNews, playSceneNews); break;
             case 'boards': transitionToScene(sceneBoards, playSceneBoards); break;
+            case 'progress': transitionToScene(sceneProgress, playSceneProgress); break;
             case 'logo-scroll': transitionToScene(sceneLogo, function () { playSceneLogoScroll(); }); break;
             case 'brand':
                 transitionToScene(sceneLogo, function () {
@@ -12749,6 +13060,119 @@
     function clearBoardsHold_() {
         if (boardsHoldTimerId_) { clearTimeout(boardsHoldTimerId_); boardsHoldTimerId_ = null; }
     }
+    function progressStoreKey_() {
+        const id = (siteCfg_() && siteCfg_().projectId) || 'site';
+        return 'alertcube.progress.idx.' + id;
+    }
+    function progressIndex_(count) {
+        const n = Math.max(1, count || 1);
+        let idx = 0;
+        try {
+            const raw = parseInt(sessionStorage.getItem(progressStoreKey_()), 10);
+            if (Number.isFinite(raw) && raw >= 0) idx = raw;
+        } catch (e) { idx = 0; }
+        return idx % n;
+    }
+    function progressSaveIndex_(idx) {
+        try { sessionStorage.setItem(progressStoreKey_(), String(idx)); } catch (e) { /* 保存できなくても再生は続ける */ }
+    }
+    function progressEdgeLap_(track, unitSel) {
+        if (!track) return 0;
+        const units = track.querySelectorAll(unitSel);
+        if (units.length < 2) return units[0] ? units[0].offsetWidth : 0;
+        const lap = units[1].offsetLeft - units[0].offsetLeft;
+        return lap > 0 ? lap : units[0].offsetWidth;
+    }
+    function playSceneProgress() {
+        const gen = ++progressPlayGen_;
+        if (progressAnimId) { cancelAnimationFrame(progressAnimId); progressAnimId = null; }
+        try {
+            if (!contentOn_('progress') && DEMO_ONLY !== 'progress') {
+                if (useContentOrder_() && !DEMO_ONLY) advanceContentOrder_();
+                return;
+            }
+            const api = window.AlertCubeProgress;
+            const data = api ? api.configOf(siteCfg_()) : null;
+            if (!sceneProgress || !api || !data || !data.messages.length) {
+                if (DEMO_ONLY === 'progress') return;
+                playlistHandoff_();
+                return;
+            }
+            markPlaylistHeld_();
+            if (!data.logo) {
+                const brand = window.SIGNAGE_CONFIG || {};
+                data.logo = brand.footBannerSrc || brand.logoWideSrc || brand.logoSrc || '';
+            }
+            sceneProgress.innerHTML = api.shellHtml(data);
+            const count = data.messages.length;
+            let idx = progressIndex_(count);
+            let shown = 0;
+            let edge = 0;
+            function paint_(i) {
+                const track = document.getElementById('progress-track');
+                if (!track) return 0;
+                track.innerHTML = api.trackHtml(data.messages[i]);
+                applyScrollX_(track, 0);
+                const units = track.querySelectorAll('.pr-msg');
+                if (units.length < 2) return Math.max(1, units[0] ? units[0].offsetWidth : 1);
+                const lap = units[1].offsetLeft - units[0].offsetLeft;
+                return lap > 0 ? lap : Math.max(1, units[0].offsetWidth);
+            }
+            function finishVisit_() {
+                if (gen !== progressPlayGen_) return;
+                if (demoOnlyLoop_('progress', playSceneProgress)) return;
+                playlistHandoff_();
+            }
+            function runLap_(hold) {
+                if (gen !== progressPlayGen_) return;
+                const lap = paint_(idx);
+                const topTrack = document.getElementById('progress-top-track');
+                const footTrack = document.getElementById('progress-foot-track');
+                const topLap = progressEdgeLap_(topTrack, '.pr-title');
+                const footLap = progressEdgeLap_(footTrack, '.pr-foot-unit');
+                let moved = 0;
+                function step() {
+                    if (gen !== progressPlayGen_) return;
+                    const speed = getScrollSpeedPx_();
+                    moved += speed;
+                    edge += speed;
+                    const track = document.getElementById('progress-track');
+                    if (topTrack && topLap > 0) applyScrollX_(topTrack, seamlessScrollX_(edge, topLap));
+                    if (footTrack && footLap > 0) applyScrollX_(footTrack, seamlessScrollX_(edge, footLap));
+                    if (moved >= lap) {
+                        progressAnimId = null;
+                        shown += 1;
+                        idx = (idx + 1) % count;
+                        progressSaveIndex_(idx);
+                        if (shown >= count) {
+                            if (track) applyScrollX_(track, -lap);
+                            finishVisit_();
+                            return;
+                        }
+                        runLap_(false);
+                        return;
+                    }
+                    if (track) applyScrollX_(track, -moved);
+                    progressAnimId = requestAnimationFrame(step);
+                }
+                function beginStep() {
+                    if (gen !== progressPlayGen_) return;
+                    progressAnimId = requestAnimationFrame(step);
+                }
+                if (hold) runSceneScrollAfterHold_(beginStep);
+                else beginStep();
+            }
+            const begin = function () {
+                if (gen !== progressPlayGen_) return;
+                runLap_(true);
+            };
+            if (document.fonts && document.fonts.ready) document.fonts.ready.then(begin).catch(begin);
+            else begin();
+        } catch (err) {
+            console.error('[progress]', err);
+            if (DEMO_ONLY !== 'progress') playlistHandoff_();
+        }
+    }
     function playSceneBoards() {
         const gen = ++boardsPlayGen_;
         clearBoardsHold_();
@@ -12783,7 +13207,7 @@
                         playPhase_();
                     });
                 }
-                if (phase.layout === 'posters') {
+                if (phase.layout === 'posters' && phase.play !== 'slide') {
                     const faces = Math.max(1, Number((siteCfg_() && siteCfg_().faces) || 4));
                     const images = (phase.images || []).filter(function (img) { return img && img.src; });
                     if (!images.length || typeof api.posterFrameHtml !== 'function') {
@@ -12815,7 +13239,10 @@
                     showPoster_();
                     return;
                 }
-                const built = api.buildPhaseHtml(phase, logoSrc);
+                const faces = Math.max(1, Number((siteCfg_() && siteCfg_().faces) || 4));
+                const built = (phase.layout === 'posters' && phase.play === 'slide' && typeof api.posterSlideHtml === 'function')
+                    ? api.posterSlideHtml(phase, faces)
+                    : api.buildPhaseHtml(phase, logoSrc);
                 if (!built.html) {
                     boardsPhaseIdx_ += 1;
                     playPhase_();
@@ -12823,8 +13250,8 @@
                 }
                 boardsTrack.innerHTML = built.html;
                 applyScrollX_(boardsTrack, 0);
-                const laps = api.lapsOf(cfg);
-                const speed = api.speedOf(cfg);
+                const laps = api.lapsOf(phase.laps != null ? { laps: phase.laps } : cfg);
+                const speed = phase.speed != null ? Number(phase.speed) : api.speedOf(cfg);
                 runSceneScrollAfterHold_(function () {
                     if (gen !== boardsPlayGen_) return;
                     runLapScroll_(boardsTrack, built.setWidth || 512, laps, speed, 'boards', function () {

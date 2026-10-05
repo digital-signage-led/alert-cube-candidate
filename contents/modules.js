@@ -28,11 +28,13 @@
     typhoon: { id: 'typhoon', fetch: ['jma-typhoon'], scene: 'sceneWarn' },
     disaster: { id: 'disaster', fetch: ['jma-warning', 'moe-heat'], scene: 'sceneAlert' },
     hazard: { id: 'hazard', fetch: ['jma-quake', 'jma-warning'], scene: 'sceneHazard', interrupt: true },
+    eew: { id: 'eew', fetch: ['jma-eew'], scene: 'sceneHazard', interrupt: true },
     heat: { id: 'heat', fetch: ['moe-heat'], scene: 'sceneAlert' },
     schedule: { id: 'schedule', fetch: [], scene: 'sceneSchedule' },
     news: { id: 'news', fetch: [], scene: 'sceneNews' },
     boards: { id: 'boards', fetch: [], scene: 'sceneBoards' },
     'logo-scroll': { id: 'logo-scroll', fetch: [], scene: 'sceneLogo' },
+    progress: { id: 'progress', fetch: [], scene: 'sceneProgress' },
     pollen: { id: 'pollen', fetch: ['pollen'], scene: null, future: true },
     pm25: { id: 'pm25', fetch: ['pm25'], scene: null, future: true }
   };

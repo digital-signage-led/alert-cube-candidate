@@ -13,6 +13,7 @@
 
   var DEFAULT_PRIORITY = {
     earthquake: 10,
+    eew: 38,
     'inundation-warning': 15,
     'flood-advisory': 20,
     'surge-advisory': 25,
@@ -27,6 +28,7 @@
 
   var DEFAULT_KINDS = {
     earthquake: true,
+    eew: true,
     tsunami: true,
     surge: true,
     flood: true,
@@ -59,10 +61,12 @@
   function settingsFrom(cfg) {
     var hazard = (cfg && cfg.hazard) || {};
     var minutes = Number(hazard.earthquakeVisibleMinutes);
+    var eewMinutes = Number(hazard.eewVisibleMinutes);
     var face = Number(hazard.faceMs);
     return {
       minIntensity: hazard.minIntensity || '5弱',
       earthquakeVisibleMinutes: Number.isFinite(minutes) && minutes > 0 ? minutes : 30,
+      eewVisibleMinutes: Number.isFinite(eewMinutes) && eewMinutes > 0 ? Math.min(30, eewMinutes) : 3,
       faceMs: Number.isFinite(face) ? Math.min(15000, Math.max(2000, face)) : 4000,
       priorities: Object.assign({}, DEFAULT_PRIORITY, hazard.priorities || {}),
       kinds: Object.assign({}, DEFAULT_KINDS, hazard.kinds || {})
@@ -280,7 +284,13 @@
     if (!alert) return null;
     var mode = layout === '256' ? '256' : '128';
     var frames = [];
-    if (alert.kind === 'earthquake') {
+    if (alert.kind === 'eew') {
+      mode = '256';
+      frames = [
+        frame(['緊急地震速報', '強い揺れに警戒']),
+        frame(['身を守る'])
+      ];
+    } else if (alert.kind === 'earthquake') {
       frames = [frame(['地震発生']), frame(['震度' + (alert.intensity || '')])];
     } else {
       frames = actionFrames(alert.kind, mode) || [];
@@ -301,6 +311,8 @@
       }
     }
     var priority = Number(settings.priorities[alert.kind]) || 0;
+    var faceMs = settings.faceMs;
+    if (alert.kind === 'eew') faceMs = Math.min(faceMs, 3000);
     return {
       id: alert.id,
       kind: alert.kind,
@@ -308,7 +320,7 @@
       priority: priority,
       layout: mode,
       sync: true,
-      faceMs: settings.faceMs,
+      faceMs: faceMs,
       bg: colorOf(alert.kind).bg,
       ink: colorOf(alert.kind).ink,
       frames: frames
@@ -319,7 +331,7 @@
     if (kind === 'tsunami-major' || kind === 'surge-special' || kind === 'inundation-special') {
       return { bg: '#000000', ink: '#ffffff' };
     }
-    if (kind === 'earthquake' || kind === 'tsunami-warning' || kind === 'surge-warning' || kind === 'flood-warning' || kind === 'inundation-warning') {
+    if (kind === 'earthquake' || kind === 'eew' || kind === 'tsunami-warning' || kind === 'surge-warning' || kind === 'flood-warning' || kind === 'inundation-warning') {
       return { bg: '#FA2900', ink: '#ffffff' };
     }
     return { bg: '#F2E700', ink: '#1a1a1a' };
@@ -337,37 +349,79 @@
     return best;
   }
 
+  function phaseAlerts(alerts) {
+    var eews = [];
+    var quakes = [];
+    var rest = [];
+    (alerts || []).forEach(function (alert) {
+      if (!alert) return;
+      if (alert.kind === 'eew') eews.push(alert);
+      else if (alert.kind === 'earthquake') quakes.push(alert);
+      else rest.push(alert);
+    });
+    var latest = null;
+    eews.forEach(function (alert) {
+      if (!latest || (alert.at || 0) >= (latest.at || 0)) latest = alert;
+    });
+    var followed = false;
+    if (latest && latest.at) {
+      var mark = latest.originAt || latest.at;
+      quakes.forEach(function (quake) {
+        if (quake.at >= mark - 3 * 60 * 1000) followed = true;
+      });
+    }
+    var out = rest.concat(quakes);
+    if (latest && !followed) out.push(latest);
+    return out;
+  }
+
   function present(alerts, site, settings, layout) {
-    return paint(pickAlert(alerts, settings), site, settings, layout);
+    return paint(pickAlert(phaseAlerts(alerts), settings), site, settings, layout);
+  }
+
+  function channelsFailed(input) {
+    if (!input) return true;
+    if (input.quakeOk !== false || input.warningOk !== false) return false;
+    if (Object.prototype.hasOwnProperty.call(input, 'eewOk')) return input.eewOk === false;
+    return true;
   }
 
   function resolveWatch(prev, input) {
-    var previous = prev || { quakeAlerts: [], waterAlerts: [], presentation: null };
-    if (!input || (input.quakeOk === false && input.warningOk === false)) {
+    var previous = prev || { quakeAlerts: [], waterAlerts: [], eewAlerts: [], presentation: null };
+    if (channelsFailed(input)) {
       if (previous.presentation) {
         return {
           fetchOk: false,
           held: true,
           quakeAlerts: previous.quakeAlerts || [],
           waterAlerts: previous.waterAlerts || [],
+          eewAlerts: previous.eewAlerts || [],
           presentation: previous.presentation
         };
       }
-      return { fetchOk: false, held: false, quakeAlerts: [], waterAlerts: [], presentation: null };
+      return { fetchOk: false, held: false, quakeAlerts: [], waterAlerts: [], eewAlerts: [], presentation: null };
     }
     var quakeAlerts = input.quakeOk ? (input.quakeAlerts || []) : (previous.quakeAlerts || []);
     var waterAlerts = input.warningOk ? (input.waterAlerts || []) : (previous.waterAlerts || []);
+    var eewAlerts = Object.prototype.hasOwnProperty.call(input, 'eewOk')
+      ? (input.eewOk ? (input.eewAlerts || []) : (previous.eewAlerts || []))
+      : (previous.eewAlerts || []);
+    var eewFailed = Object.prototype.hasOwnProperty.call(input, 'eewOk') && input.eewOk === false;
     return {
       fetchOk: true,
-      held: input.quakeOk === false || input.warningOk === false,
+      held: input.quakeOk === false || input.warningOk === false || eewFailed,
       quakeAlerts: quakeAlerts,
       waterAlerts: waterAlerts,
-      presentation: present(quakeAlerts.concat(waterAlerts), input.site, input.settings, input.layout)
+      eewAlerts: eewAlerts,
+      presentation: present(quakeAlerts.concat(waterAlerts).concat(eewAlerts), input.site, input.settings, input.layout)
     };
   }
 
   function previewAlert(name) {
     var kind = String(name || '');
+    if (kind === 'eew') {
+      return { id: 'preview:eew', kind: 'eew', group: 'eew', genre: 'eew', at: Date.now() };
+    }
     if (kind === 'earthquake') {
       return { id: 'preview:earthquake', kind: 'earthquake', group: 'earthquake', genre: 'quake', intensity: '5弱' };
     }
@@ -389,6 +443,7 @@
     parseWarnings: parseWarnings,
     formatMeters: formatMeters,
     present: present,
+    phaseAlerts: phaseAlerts,
     resolveWatch: resolveWatch,
     previewAlert: previewAlert,
     actionFrames: actionFrames

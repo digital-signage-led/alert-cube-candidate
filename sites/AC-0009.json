@@ -10,7 +10,7 @@
   "location": "〒943-0104 新潟県上越市鶴町52",
   "latitude": 37.1292,
   "longitude": 138.3062,
-  "memo": "レンタルのニッケン上越営業。社名PRは株式会社 大島組、想いのスローガン、創業88年。墜落・転落は標識4枚を4面同じ画面で切り替える。",
+  "memo": "レンタルのニッケン上越営業。順は社名PR、時刻と気象、日本語の暑さ指数、墜落・転落。ニュースは出さない。社名PRは上白・中緑・下白。時刻・気象は上中が緑、下が白。暑さ指数は気象庁のWBGT段階色。墜落・転落は4面別々の標識を横スライドで2周。工事進捗PDFは未収録。",
   "resolution": "512x128",
   "layout": "AC-512",
   "faces": 4,
@@ -57,44 +57,75 @@
     "title": "株式会社 大島組",
     "titleLogo": "./assets/sites/AC-0009/logo_banner.png?v=1",
     "nameSlot": 256,
+    "seamless": true,
+    "gapPx": 24,
+    "bandGapPx": 0,
     "lines": ["『想い』が未来をつくる　Create the bright FUTURE！"],
     "emphasis": [["『想い』", "FUTURE"]],
+    "footSlot": 512,
     "foot": "おかげさまで創業88年を迎えました！",
     "footEmphasis": ["88年"],
     "fill": "",
-    "scrollLaps": 1
+    "bodyPx": 36,
+    "scrollLaps": 2
+  },
+  "progress": {
+    "projectName": "R7上沼道 米岡第一高架橋下部その8工事",
+    "location": "上越市米岡地先",
+    "progressMessages": [
+      "工期　R8年4月1日～R9年2月26日（進捗率4.30%）　5月31日現在",
+      "工期　R8年4月1日～R9年2月26日（進捗率8.60%）　6月30日現在",
+      "工期　R8年4月1日～R9年2月26日（進捗率49.35%）　7月31日現在",
+      "工期　R8年4月1日～R9年2月26日（進捗率68.89%）　8月31日現在",
+      "工期　R8年4月1日～R9年2月26日（進捗率73.55%）　10月1日現在"
+    ]
   },
   "presentation": {
     "sequence": "contentOrder",
     "observationMode": "scroll",
-    "observationLaps": 1,
-    "wbgtLaps": 1,
-    "forecastLaps": 1,
-    "warningLaps": 1,
-    "typhoonLaps": 1,
-    "observationTrailingLogo": true
+    "clockLaps": 2,
+    "observationLaps": 2,
+    "wbgtLaps": 2,
+    "i18nLaps": 2,
+    "forecastLaps": 2,
+    "warningLaps": 2,
+    "typhoonLaps": 2,
+    "observationTrailingLogo": true,
+    "heatLabel": "ja",
+    "i18nLangs": ["jp"],
+    "scrollHoldMs": 1000,
+    "endHoldMs": 1000,
+    "footColor": "#ffffff",
+    "solid": {
+      "clock": { "top": "#4FBE6A", "body": "#36A852", "foot": "#ffffff" },
+      "observation": { "top": "#4FBE6A", "body": "#36A852", "foot": "#ffffff" },
+      "forecast": { "top": "#4FBE6A", "body": "#36A852", "foot": "#ffffff" },
+      "greeting": { "top": "#ffffff", "body": "#36A852", "foot": "#ffffff", "ink": "#ffffff" },
+      "progress": { "top": "#4FBE6A", "body": "#36A852", "foot": "#ffffff", "ink": "#ffffff", "footInk": "#1a1a1a" }
+    }
   },
   "news": {
     "badge": "新着情報",
     "laps": 1,
     "speed": 1,
-    "maxItems": 2,
-    "pageUrl": "https://www.ooshimagumi.com/wp-json/wp/v2/posts?per_page=5&_fields=date,title",
-    "refreshMs": 1800000,
-    "urls": ["./assets/sites/AC-0009/news.json"],
+    "maxItems": 0,
+    "pageUrl": "",
+    "refreshMs": 0,
+    "urls": [],
+    "items": [],
     "cacheKey": "AC-0009-news"
   },
   "boards": {
-    "laps": 1,
+    "laps": 2,
     "speed": 1,
     "background": "#000000",
     "phases": [
       {
         "id": "fall-signs",
         "layout": "posters",
-        "play": "cut",
+        "play": "slide",
+        "laps": 2,
         "width": 512,
-        "holdMs": 4000,
         "images": [
           { "src": "./assets/sites/AC-0009/safety_fall.png?v=1", "alt": "墜落・転落災害防止" },
           { "src": "./assets/sites/AC-0009/safety_harness.jpg?v=1", "alt": "フルハーネス 使用ヨシ" },
@@ -104,7 +135,7 @@
       }
     ]
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "wbgt", "forecast", "news", "greeting", "boards", "wbgt-i18n"],
+  "contentOrder": ["warning", "typhoon", "greeting", "clock", "observation", "forecast", "wbgt", "wbgt-i18n", "progress", "boards"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -126,7 +157,8 @@
     "heat": { "on": false },
     "schedule": { "on": false },
     "greeting": { "on": true },
-    "news": { "on": true },
+    "progress": { "on": true },
+    "news": { "on": false },
     "boards": { "on": true },
     "logo-scroll": { "on": false },
     "pollen": { "on": false },

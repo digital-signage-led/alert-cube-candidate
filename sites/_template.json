@@ -70,7 +70,15 @@
   "presentation": {
     "observationMode": "scroll",
     "observationLaps": 2,
-    "observationTrailingLogo": true
+    "observationTrailingLogo": true,
+    "footColor": "",
+    "solid": {
+      "clock": { "top": "", "body": "", "foot": "" },
+      "observation": { "top": "", "body": "", "foot": "" },
+      "forecast": { "top": "", "body": "", "foot": "" },
+      "greeting": { "top": "", "body": "", "foot": "", "ink": "" },
+      "progress": { "top": "", "body": "", "foot": "", "ink": "", "footInk": "" }
+    }
   },
   "contentOrder": ["warning", "typhoon", "clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {
@@ -96,6 +104,7 @@
     "boards": { "on": false },
     "logo-scroll": { "on": false },
     "hazard": { "on": false },
+    "eew": { "on": false },
     "uv": { "on": false },
     "illuminance": { "on": false },
     "cumtemp": { "on": false },

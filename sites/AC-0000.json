@@ -102,6 +102,14 @@
     "fill": "body",
     "scrollLaps": 2
   },
+  "progress": {
+    "projectName": "工事名（確認用）",
+    "location": "場所（確認用）",
+    "progressMessages": [
+      "工期　確認用（進捗率10%）　1件目",
+      "工期　確認用（進捗率20%）　2件目"
+    ]
+  },
   "logoScroll": {
     "laps": 1,
     "panelWidth": 128,
@@ -142,7 +150,7 @@
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "schedule", "greeting", "boards"],
+  "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "schedule", "greeting", "progress", "boards"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },
@@ -165,6 +173,7 @@
     "news": { "on": true },
     "boards": { "on": true },
     "logo-scroll": { "on": true },
+    "progress": { "on": true },
     "greeting": { "on": true },
     "hazard": { "on": true },
     "eew": { "on": true },
