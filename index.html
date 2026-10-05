@@ -1674,6 +1674,17 @@
             padding: 0;
             justify-content: flex-start;
         }
+        #scene3 .t3-guide-run {
+            display: flex; flex-direction: row; align-items: center;
+            height: var(--led-foot-bar-h); width: max-content;
+        }
+        #scene3 .t3-guide-copy {
+            flex: 0 0 auto; white-space: nowrap;
+            font-size: 18px; font-weight: 700; color: #1a1a1a;
+            line-height: var(--led-foot-bar-h);
+            font-family: "Noto Sans JP", sans-serif; letter-spacing: 0;
+        }
+        #scene3 .t3-guide-gap { flex: 0 0 48px; width: 48px; height: 1px; }
         .t3-scroll-body {
             width: 100%; height: var(--led-col-body-h); flex-shrink: 0;
             overflow: hidden; position: relative; box-sizing: border-box;
@@ -10913,22 +10924,18 @@
         }
         return '（' + tier.title + '）：' + guide;
     }
-    function buildT3GuideSetHtml_(text) {
-        const group = '<span class="s2-meta-group">' + escapeS1Html(text) + '</span>';
-        const msg = '<span class="s2-meta-msg-scroll s2-meta-msg-groups">' + group + '</span>';
-        const slot = '<div class="s2-meta-slot s2-meta-slot-flow">' + msg + '</div>';
-        return '<div class="s2-meta-set s2-meta-set-flow">' + slot + slot + '</div>';
+    function buildT3GuideRunHtml_(text) {
+        const copy = '<span class="t3-guide-copy">' + escapeS1Html(text) + '</span>';
+        const gap = '<span class="t3-guide-gap"></span>';
+        return '<div class="t3-guide-run">' + (copy + gap).repeat(4) + '</div>';
     }
     function measureT3GuideLapPx_(trackEl) {
         if (!trackEl) return SCENE2_META_LAP_PX;
-        const slot = trackEl.querySelector('.s2-meta-slot-flow');
-        if (slot && slot.offsetWidth > 0) {
-            return slot.offsetWidth;
-        }
-        const setEl = trackEl.querySelector('.s2-meta-set-flow');
-        if (setEl && setEl.offsetWidth > 0) {
-            return Math.max(1, Math.floor(setEl.offsetWidth / 2));
-        }
+        const copy = trackEl.querySelector('.t3-guide-copy');
+        const gap = trackEl.querySelector('.t3-guide-gap');
+        const copyW = copy ? copy.offsetWidth : 0;
+        const gapW = gap ? gap.offsetWidth : 0;
+        if (copyW > 0) return copyW + gapW;
         return SCENE2_META_LAP_PX;
     }
     function remeasureT3GuideLapPx_(trackEl) {
@@ -10971,9 +10978,7 @@
             return;
         }
         if (bar) bar.style.display = '';
-        let html = '';
-        for (let i = 0; i < SCENE2_META_SETS; i++) html += buildT3GuideSetHtml_(text);
-        el.innerHTML = html;
+        el.innerHTML = buildT3GuideRunHtml_(text);
         sizeT3GuideText_();
         remeasureT3GuideLapPx_(el);
         requestAnimationFrame(function () {
@@ -11321,7 +11326,7 @@
     }
     function sizeT3GuideText_() {
         const bar = document.querySelector('#scene3 .t3-guid-bar');
-        const targets = document.querySelectorAll('#scene3 .t3-guid-bar .s2-meta-msg-scroll');
+        const targets = document.querySelectorAll('#scene3 .t3-guid-bar .t3-guide-copy');
         if (!bar || !targets.length) return;
         const barH = bar.clientHeight > 0 ? bar.clientHeight : 32;
         targets.forEach(function (n) {
@@ -11351,7 +11356,11 @@
     }
     function applyT3TrackX_(tracks, x) {
         const tx = scrollPx_(x);
-        tracks.forEach(function (t) { applyScrollX_(t, tx); });
+        const list = Array.prototype.slice.call(tracks);
+        list.forEach(function (t, i) {
+            /* 隣の256pxは同じ位置のコピーではなく、続きの文字を出す */
+            applyScrollX_(t, tx - i * T3_UNIT_W);
+        });
         syncT3TopHaScroll_(tx);
     }
     function prepT3_(idx) {
@@ -11415,7 +11424,7 @@
             t3Flow_.x = wrapScrollX_(-moved, T3_UNIT_W);
             applyT3TrackX_(tracks, t3Flow_.x);
             if (guideOn) {
-                applyScrollX_(guidTrack, wrapScrollX_(-moved, t3GuidLapPx));
+                applyScrollX_(guidTrack, seamlessScrollX_(moved, t3GuidLapPx));
             }
             if (lapsNow > t3Flow_.laps) {
                 t3Flow_.laps = lapsNow;
