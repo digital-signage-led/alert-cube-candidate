@@ -319,7 +319,7 @@
     return canvas;
   }
 
-  function paint(canvas, plan, radarImgs, label, faceIndex, faceCount) {
+  function paint(canvas, plan, radarImgs, label) {
     if (!canvas || !plan) return;
     var ctx = canvas.getContext('2d');
     var scale = canvas.width / VIEW_W || 1;
@@ -348,23 +348,19 @@
     ctx.stroke();
     ctx.font = '700 8px "Noto Sans JP", sans-serif';
     ctx.textBaseline = 'middle';
-    var faces = faceCount > 0 ? faceCount : 1;
-    var face = faceIndex || 0;
-    if (label && face === 0) {
+    if (label) {
       var tw = ctx.measureText(label).width;
       ctx.fillStyle = 'rgba(14,42,74,0.72)';
       ctx.fillRect(0, h - 11, tw + 4, 11);
       ctx.fillStyle = '#ffffff';
       ctx.fillText(label, 2, h - 5.5);
     }
-    if (face === faces - 1) {
-      var credit = '気象庁・地理院';
-      var cw = ctx.measureText(credit).width;
-      ctx.fillStyle = 'rgba(14,42,74,0.72)';
-      ctx.fillRect(w - cw - 4, h - 11, cw + 4, 11);
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(credit, w - cw - 2, h - 5.5);
-    }
+    var credit = '気象庁・地理院';
+    var cw = ctx.measureText(credit).width;
+    ctx.fillStyle = 'rgba(14,42,74,0.72)';
+    ctx.fillRect(w - cw - 4, h - 11, cw + 4, 11);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(credit, w - cw - 2, h - 5.5);
   }
 
   function drawMessage(canvases, text) {
@@ -439,9 +435,8 @@
     if (!plan) return Promise.resolve();
     var frame = plan.frames && plan.frames[index];
     return loadFrame(plan, frame).then(function (imgs) {
-      var list = canvasList(canvases);
-      list.forEach(function (canvas, face) {
-        paint(canvas, plan, imgs, frame && frame.label, face, list.length);
+      canvasList(canvases).forEach(function (canvas) {
+        paint(canvas, plan, imgs, frame && frame.label);
       });
     });
   }
