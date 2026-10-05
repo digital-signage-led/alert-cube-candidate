@@ -348,19 +348,21 @@
     ctx.stroke();
     ctx.font = '700 8px "Noto Sans JP", sans-serif';
     ctx.textBaseline = 'middle';
+    var x = 0;
     if (label) {
       var tw = ctx.measureText(label).width;
       ctx.fillStyle = 'rgba(14,42,74,0.72)';
       ctx.fillRect(0, h - 11, tw + 4, 11);
       ctx.fillStyle = '#ffffff';
       ctx.fillText(label, 2, h - 5.5);
+      x = tw + 6;
     }
     var credit = '気象庁・地理院';
     var cw = ctx.measureText(credit).width;
     ctx.fillStyle = 'rgba(14,42,74,0.72)';
-    ctx.fillRect(w - cw - 4, h - 11, cw + 4, 11);
+    ctx.fillRect(x, h - 11, Math.min(cw + 4, w - x), 11);
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(credit, w - cw - 2, h - 5.5);
+    ctx.fillText(credit, x + 2, h - 5.5);
   }
 
   function drawMessage(canvases, text) {
