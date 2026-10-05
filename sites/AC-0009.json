@@ -67,7 +67,7 @@
     "footEmphasis": ["88年"],
     "fill": "",
     "bodyPx": 36,
-    "scrollLaps": 2
+    "scrollLaps": 1
   },
   "progress": {
     "projectName": "R7上沼道 米岡第一高架橋下部その8工事",
@@ -83,11 +83,11 @@
   "presentation": {
     "sequence": "contentOrder",
     "observationMode": "scroll",
-    "clockLaps": 2,
-    "observationLaps": 2,
-    "wbgtLaps": 2,
-    "i18nLaps": 2,
-    "forecastLaps": 2,
+    "clockLaps": 1,
+    "observationLaps": 1,
+    "wbgtLaps": 1,
+    "i18nLaps": 1,
+    "forecastLaps": 1,
     "warningLaps": 2,
     "typhoonLaps": 2,
     "observationTrailingLogo": true,

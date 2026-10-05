@@ -12294,7 +12294,7 @@
     }
     function fillPromoNameSlots_(track, unitHtml, slotPx) {
         const width = Math.max(128, Math.floor(slotPx));
-        const count = Math.ceil(512 / width) + 1;
+        const count = Math.ceil(640 / width) + 2;
         const slot = '<span class="promo-name-slot" style="width:' + width + 'px;flex-basis:' + width + 'px">' + unitHtml + '</span>';
         let html = '';
         for (let i = 0; i < count; i++) html += slot;
@@ -12316,14 +12316,14 @@
                 const travel = job.travel > 0 ? job.travel : job.lap;
                 const lap = job.lap;
                 if (pos[i] >= travel) {
-                    const shown = job.wrap ? seamlessScrollX_(travel, lap) : -Math.min(lap, travel);
+                    const shown = job.wrap ? wrapScrollX_(-travel, lap) : -Math.min(lap, travel);
                     job.track.style.transform = 'translate3d(' + shown + 'px,0,0)';
                     done += 1;
                     return;
                 }
                 pos[i] += speed;
                 if (pos[i] > travel) pos[i] = travel;
-                const shown = job.wrap ? seamlessScrollX_(pos[i], lap) : -Math.min(lap, pos[i]);
+                const shown = job.wrap ? wrapScrollX_(-pos[i], lap) : -Math.min(lap, pos[i]);
                 job.track.style.transform = 'translate3d(' + shown + 'px,0,0)';
                 if (pos[i] >= travel) done += 1;
             });
