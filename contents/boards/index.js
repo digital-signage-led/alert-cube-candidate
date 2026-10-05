@@ -201,13 +201,16 @@
     return '<div class="' + setClass + '">' + html + '</div>';
   }
 
-  function posterSlideHtml(phase) {
+  function posterSlideHtml(phase, faces, laps) {
     var images = posterSources(phase);
     if (!images.length) return { html: '', setWidth: 0 };
     var row = '<div class="kotei-set">' + images.map(function (img) {
       return '<div class="kotei-poster"><img src="' + escapeHtml(img.src) + '" alt="' + escapeHtml(img.alt || '') + '" decoding="sync"></div>';
     }).join('') + '</div>';
-    return { html: row + row, setWidth: images.length * 128 };
+    var times = lapsOf({ laps: laps }) + 1;
+    var html = '';
+    for (var i = 0; i < times; i++) html += row;
+    return { html: html, setWidth: images.length * 128 };
   }
 
   function posterFrameHtml(phase, index, faces) {

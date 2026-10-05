@@ -150,7 +150,7 @@
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "schedule", "greeting", "progress", "boards"],
+  "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "rain-radar", "schedule", "greeting", "progress", "boards"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },
@@ -166,6 +166,7 @@
     "warning": { "on": true },
     "warning-hero": { "on": true },
     "rain-nowcast": { "on": true },
+    "rain-radar": { "on": true },
     "typhoon": { "on": true },
     "disaster": { "on": true },
     "heat": { "on": false },

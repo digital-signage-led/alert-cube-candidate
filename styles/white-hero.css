@@ -39,6 +39,7 @@
   height: 48px;
   max-height: 48px;
   flex: 0 0 48px;
+  background: #d5d1c9;
 }
 #sceneWarn .hero.is-white .band-bot,
 .hero.is-white .band-bot {

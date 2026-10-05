@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "projectId": "AC-0019",
+  "status": "active",
+  "customer": "戸田建設",
+  "rental": "レンタルのニッケン",
+  "label": "戸田建設　E3棟建設工事作業所",
+  "projectName": "戸田建設 WBGTサイネージ",
+  "siteName": "東近江市",
+  "location": "滋賀県東近江市東沖野丁目４－１",
+  "latitude": 35.1126,
+  "longitude": 136.2078,
+  "memo": "4面512×128。右端ロゴなし。時刻下の白帯は現場名。末尾ロゴはスタック。ロゴ流しは社名ヨコとBuild the Culture。ブランドはマーク／ECO FIRST／BCT／ECO FIRST。WBGT・AMeDASは彦根60131。予報は滋賀県南部。警報は東近江市2521300。熱中症アラートは出さない。ニュースは公式サイトの最新3件（PDF除く）。",
+  "resolution": "512x128",
+  "layout": "AC-512",
+  "faces": 4,
+  "timeZone": "Asia/Tokyo",
+  "footSource": "データ提供：気象庁、環境省",
+  "releasePin": null,
+  "logo": {
+    "src": "./assets/sites/AC-0019/toda_logo_stack.png?v=1",
+    "wideSrc": "",
+    "corpSrc": "",
+    "footSrc": "",
+    "panelBg": "#ffffff",
+    "bannerSrc": ""
+  },
+  "moe": {
+    "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
+    "point": "60131",
+    "fallbackPoint": "",
+    "pointName": "彦根",
+    "alertArea": "滋賀県",
+    "region": "07",
+    "prefecture": "60"
+  },
+  "jma": {
+    "amedasPoint": "60131",
+    "amedasSupplementPoint": "",
+    "forecastArea": "250000",
+    "forecastDetail": "250010",
+    "forecastLabel": "東近江市",
+    "warnArea": "250000",
+    "warnCity": "2521300",
+    "warnCityLabel": "東近江市"
+  },
+  "wbgt": {
+    "seasonStart": { "month": 4, "day": 22 },
+    "seasonEnd": { "month": 10, "day": 22 }
+  },
+  "season": { "override": null },
+  "updateSettings": { "refreshMs": 60000 },
+  "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "greeting": { "enabled": false, "title": "", "lines": [], "foot": "" },
+  "news": {
+    "badge": "新着情報",
+    "laps": 2,
+    "speed": 1.35,
+    "maxItems": 3,
+    "itemLogo": true,
+    "pageUrl": "https://www.toda.co.jp/news/",
+    "urls": ["./assets/sites/AC-0019/news.json"],
+    "refreshMs": 3600000,
+    "cacheKey": "AC-0019-news"
+  },
+  "logoScroll": {
+    "laps": 2,
+    "panelWidth": 256,
+    "direction": "rtl",
+    "end": "complete",
+    "background": "#ffffff",
+    "images": [
+      { "src": "./assets/sites/AC-0019/toda_name_yoko.png?v=1", "alt": "戸田建設", "panelWidth": 256 },
+      { "src": "./assets/sites/AC-0019/toda_bct_flow.png?v=1", "alt": "Build the Culture.", "panelWidth": 256 }
+    ]
+  },
+  "brandScroll": {
+    "laps": 2,
+    "panelWidth": 128,
+    "direction": "rtl",
+    "end": "complete",
+    "background": "#ffffff",
+    "images": [
+      { "src": "./assets/sites/AC-0019/toda_mark_tate.png?v=1", "alt": "戸田建設", "panelWidth": 128 },
+      { "src": "./assets/sites/AC-0019/eco_first.png?v=1", "alt": "ECO FIRST", "panelWidth": 128 },
+      { "src": "./assets/sites/AC-0019/toda_bct_tate.png?v=1", "alt": "Build the Culture.", "panelWidth": 128 },
+      { "src": "./assets/sites/AC-0019/eco_first.png?v=1", "alt": "ECO FIRST", "panelWidth": 128 }
+    ]
+  },
+  "presentation": {
+    "sequence": "contentOrder",
+    "observationMode": "scroll",
+    "observationLaps": 2,
+    "observationTrailingLogo": true
+  },
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "logo-scroll", "brand", "wbgt", "logo-scroll", "forecast", "logo-scroll", "wbgt-i18n", "logo-scroll", "brand", "news"],
+  "contents": {
+    "clock": { "on": true },
+    "observation": { "on": true },
+    "weather": { "on": true },
+    "temperature": { "on": true },
+    "rain": { "on": true },
+    "wind": { "on": true },
+    "humidity": { "on": true },
+    "pressure": { "on": true },
+    "temp-range": { "on": true },
+    "wbgt": { "on": true },
+    "wbgt-i18n": { "on": true },
+    "forecast": { "on": true },
+    "warning": { "on": true },
+    "warning-hero": { "on": false },
+    "rain-nowcast": { "on": true },
+    "typhoon": { "on": true },
+    "disaster": { "on": false },
+    "heat": { "on": false },
+    "schedule": { "on": false },
+    "news": { "on": true },
+    "boards": { "on": false },
+    "logo-scroll": { "on": true },
+    "brand": { "on": true },
+    "pollen": { "on": false },
+    "pm25": { "on": false }
+  }
+}

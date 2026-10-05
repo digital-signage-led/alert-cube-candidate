@@ -1,7 +1,8 @@
 /**
- * 工事進捗。上段の工事名と下段（ロゴ256px＋場所）は途切れなく流す。
- * 中央の文章は1周し終わってから次へ替え、最後の次は最初へ戻す。
- * 文言は案件設定のまま出し、ここでは書き換えない。
+ * 工事進捗。
+ * 画像があるときは、比率を保ったまま高さ128pxで横一列にし、1周流す。
+ * 画像が無いときは、上段の工事名と下段（ロゴ256px＋場所）を途切れなく流し、
+ * 中央の文章は1周し終わってから次へ替える。文言は案件設定のまま出す。
  */
 (function (global) {
   'use strict';
@@ -25,12 +26,23 @@
         messages.push(text);
       });
     }
+    var images = [];
+    if (Array.isArray(progress.images)) {
+      progress.images.forEach(function (row) {
+        var src = row && typeof row === 'object' ? row.src : row;
+        var text = String(src == null ? '' : src).trim();
+        if (!text) return;
+        var alt = row && typeof row === 'object' ? row.alt : '';
+        images.push({ src: text, alt: String(alt == null ? '' : alt) });
+      });
+    }
     var logo = progress.logo || (site && site.logo && (site.logo.bannerSrc || site.logo.wideSrc)) || '';
     return {
       title: String(progress.projectName == null ? '' : progress.projectName),
       location: String(progress.location == null ? '' : progress.location),
       logo: String(logo || ''),
-      messages: messages
+      messages: messages,
+      images: images
     };
   }
 
@@ -60,7 +72,25 @@
     return unit + unit;
   }
 
-  var api = { configOf: configOf, shellHtml: shellHtml, trackHtml: trackHtml };
+  function setHtml(images) {
+    var html = '<div class="pr-sheet-set">';
+    (images || []).forEach(function (image) { html += frameHtml(image); });
+    html += '</div>';
+    return html;
+  }
+
+  function sheetHtml(images) {
+    var set = setHtml(images);
+    return '<div class="pr-sheet"><div class="pr-sheet-track" id="progress-track">' + set + set + '</div></div>';
+  }
+
+  function frameHtml(image) {
+    var src = image && typeof image === 'object' ? image.src : image;
+    var alt = image && typeof image === 'object' ? image.alt : '';
+    return '<div class="pr-sheet-frame"><img src="' + escapeHtml(src) + '" alt="' + escapeHtml(alt || '') + '" decoding="sync"></div>';
+  }
+
+  var api = { configOf: configOf, shellHtml: shellHtml, trackHtml: trackHtml, sheetHtml: sheetHtml, frameHtml: frameHtml };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   global.AlertCubeProgress = api;
 })(typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : this));

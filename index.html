@@ -10,9 +10,10 @@
     <script src="./contents/registry.js?v=20260929-eew1"></script>
     <script src="./contents/modules.js?v=20260929-eew1"></script>
     <script src="./contents/news/index.js?v=20260929-ac0019-news"></script>
-    <script src="./contents/boards/index.js?v=20261005-ac0009-faces"></script>
+    <script src="./contents/boards/index.js?v=20261005-ac0009-slide"></script>
     <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
-    <script src="./contents/progress/index.js?v=20261005-progress-logo"></script>
+    <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
+    <script src="./contents/rain-radar/index.js?v=20261005-rain-radar3"></script>
     <script src="./contents/eew/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
@@ -1051,6 +1052,11 @@
         .news-title { font-size: 48px; font-weight: 800; color: #F0F8FF; white-space: nowrap; }
         #sceneBoards { width: 512px; height: 128px; overflow: hidden; background: #071428; }
         #sceneProgress { width: 512px; height: 128px; overflow: hidden; background: #ffffff; }
+        #sceneRainRadar { width: 512px; height: 128px; overflow: hidden; background: #d5e3ea; }
+        #sceneRainRadar.active { display: block; }
+        #sceneRainRadar .rr-faces { width: 512px; height: 128px; display: flex; flex-direction: row; }
+        #sceneRainRadar .rr-face { width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
+        #sceneRainRadar .rr-canvas { display: block; width: 128px; height: 128px; }
         .pr-shell { width: 512px; height: 128px; display: flex; flex-direction: column; }
         .pr-top, .pr-foot {
             height: 32px; flex: 0 0 32px; background: #06284A; color: #ffffff;
@@ -1084,8 +1090,16 @@
             flex: 0 0 auto; font-family: "Noto Sans JP", sans-serif; font-weight: 900; font-size: 48px;
             line-height: 64px; color: #111111; letter-spacing: 0; padding-right: 64px;
         }
+        .pr-sheet { width: 512px; height: 128px; overflow: hidden; background: #ffffff; }
+        .pr-sheet-track { display: flex; align-items: stretch; height: 128px; will-change: transform; }
+        .pr-sheet-set { display: flex; align-items: stretch; flex: 0 0 auto; height: 128px; }
+        .pr-sheet-frame {
+            flex: 0 0 auto; height: 128px; box-sizing: border-box;
+            display: flex; align-items: center; background: #ffffff;
+        }
+        .pr-sheet-frame img { display: block; height: 128px; width: auto; max-height: 128px; }
         .kotei-scroll-wrap { width: 512px; height: 128px; overflow: hidden; position: relative; background: #071428; }
-        .kotei-track { display: flex; flex-direction: row; height: 128px; align-items: stretch; will-change: transform; }
+        .kotei-track { display: flex; flex-direction: row; flex-wrap: nowrap; height: 128px; align-items: stretch; will-change: transform; }
         .kotei-card {
             width: 256px; height: 128px; flex: 0 0 256px; box-sizing: border-box;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1117,7 +1131,7 @@
             white-space: nowrap; text-align: center; max-width: 100%; overflow: hidden;
         }
         .kotei-term-sub { font-size: 18px; font-weight: 900; letter-spacing: 0; line-height: 1; margin-top: 4px; white-space: nowrap; }
-        .kotei-set { display: flex; flex-direction: row; height: 128px; flex-shrink: 0; width: auto; }
+        .kotei-set { display: flex; flex-direction: row; flex-wrap: nowrap; height: 128px; flex-shrink: 0; width: auto; }
         .kotei-poster {
             width: 128px; height: 128px; flex: 0 0 128px; max-width: 128px;
             overflow: hidden; background: #000;
@@ -2733,6 +2747,7 @@
         </div>
     </div>
     <div class="scene" id="sceneProgress"></div>
+    <div class="scene" id="sceneRainRadar"></div>
     <div class="scene" id="sceneLogo">
         <div class="logo-face-scroll-wrap">
             <div class="logo-face-track" id="logo-face-track">
@@ -3365,6 +3380,7 @@
         if (v === 'news') return 'news';
         if (v === 'boards' || v === 'kotei') return 'boards';
         if (v === 'progress') return 'progress';
+        if (v === 'rain-radar' || v === 'radar') return 'rain-radar';
         if (v === 'logo') return 'logo';
         const map = { '1': 's1', '2': 's2', '3': 's4', '4': 's5', '5': 's3', s1: 's1', s2: 's2', s3: 's3', s4: 's4', s5: 's5' };
         return map[v] || null;
@@ -3373,6 +3389,7 @@
         s1: 'シーン1', s2: 'シーン2', s4: 'シーン3', s5: 'シーン4', s3: 'シーン5',
         schedule: '工程表', greeting: '近隣挨拶',
         news: 'ニュース', boards: '告知ボード', logo: 'スクローリングロゴ', progress: '工事進捗',
+        'rain-radar': '雨雲レーダー',
         alert: '熱中症アラート', rainwarn: '大雨警報', typhoon: '防災情報・台風'
     };
     const DEMO_ONLY = normalizeOnlyParam_(query.get('only'));
@@ -4324,6 +4341,7 @@
     const newsTrack = document.getElementById('news-track');
     const sceneBoards = document.getElementById('sceneBoards');
     const sceneProgress = document.getElementById('sceneProgress');
+    const sceneRainRadar = document.getElementById('sceneRainRadar');
     const boardsTrack = document.getElementById('boards-track');
     const sceneSchedule = document.getElementById('sceneSchedule');
     const schTrack = document.getElementById('sch-track');
@@ -4333,7 +4351,7 @@
     const sceneWarn = document.getElementById('sceneWarn');
     const sceneTyphoon = document.getElementById('sceneTyphoon');
     const logoRotator = document.getElementById('logo-rotator');
-    const ALL_SCENES_ = [s1, s2, s3, s4, s5, sceneLogo, sceneNews, sceneBoards, sceneProgress, sceneSchedule, sceneGreeting, sceneAlert, sceneRainWarn, sceneWarn, sceneTyphoon];
+    const ALL_SCENES_ = [s1, s2, s3, s4, s5, sceneLogo, sceneNews, sceneBoards, sceneProgress, sceneRainRadar, sceneSchedule, sceneGreeting, sceneAlert, sceneRainWarn, sceneWarn, sceneTyphoon];
 
     /** ロゴパネル: 現在の WBGT 段階色に同期 */
     function applySignageLogoPanel_() {
@@ -7553,6 +7571,8 @@
     let sceneBoardsAnimId = null;
     let progressAnimId = null;
     let progressPlayGen_ = 0;
+    let rainRadarTimer_ = 0;
+    let rainRadarGen_ = 0;
     let boardsCanvasTimerId_ = null;
     let boardsHoldTimerId_ = null;
     let boardsPhaseIdx_ = 0;
@@ -7723,6 +7743,7 @@
         if (sceneNewsAnimId) { cancelAnimationFrame(sceneNewsAnimId); sceneNewsAnimId = null; }
         if (sceneBoardsAnimId) { cancelAnimationFrame(sceneBoardsAnimId); sceneBoardsAnimId = null; }
         if (progressAnimId) { cancelAnimationFrame(progressAnimId); progressAnimId = null; }
+        if (rainRadarTimer_) { clearTimeout(rainRadarTimer_); rainRadarTimer_ = 0; rainRadarGen_ += 1; }
         if (scene5HoldTimerId) { clearTimeout(scene5HoldTimerId); scene5HoldTimerId = null; }
         if (sceneScheduleAnimId) { cancelAnimationFrame(sceneScheduleAnimId); sceneScheduleAnimId = null; }
         if (sceneScheduleHoldTimerId) { clearTimeout(sceneScheduleHoldTimerId); sceneScheduleHoldTimerId = null; }
@@ -10400,7 +10421,7 @@
     }
     function sceneDisplayMode(el) {
         if (!el) return 'block';
-        if (el.id === 'scene2' || el.id === 'scene4' || el.id === 'scene5' || el.id === 'sceneLogo' || el.id === 'sceneNews' || el.id === 'sceneBoards' || el.id === 'sceneProgress' || el.id === 'sceneSchedule' || el.id === 'sceneGreeting' || el.id === 'sceneAlert' || el.id === 'sceneRainWarn' || el.id === 'sceneWarn' || el.id === 'sceneTyphoon') return 'block';
+        if (el.id === 'scene2' || el.id === 'scene4' || el.id === 'scene5' || el.id === 'sceneLogo' || el.id === 'sceneNews' || el.id === 'sceneBoards' || el.id === 'sceneProgress' || el.id === 'sceneRainRadar' || el.id === 'sceneSchedule' || el.id === 'sceneGreeting' || el.id === 'sceneAlert' || el.id === 'sceneRainWarn' || el.id === 'sceneWarn' || el.id === 'sceneTyphoon') return 'block';
         if (el.id === 'scene1' || el.id === 'scene3') return 'block';
         return 'flex';
     }
@@ -11464,6 +11485,18 @@
     }
     /* 4日予報の後は防災割込を確認し、工程表またはループ先頭へ */
     function gotoSceneAfterScene5_() {
+        if (playlistHandoff_()) return;
+        gotoRainRadarOrNext_();
+    }
+    function gotoRainRadarOrNext_() {
+        if (contentOn_('rain-radar') && sceneRainRadar) {
+            transitionToScene(sceneRainRadar, playSceneRainRadar);
+            return;
+        }
+        gotoAfterScene3Tail_();
+    }
+    function finishRainRadar_() {
+        if (demoOnlyLoop_('rain-radar', playSceneRainRadar)) return;
         if (playlistHandoff_()) return;
         gotoAfterScene3Tail_();
     }
@@ -12692,6 +12725,7 @@
                 case 'news': showOnlyScene_(sceneNews, playSceneNews); break;
                 case 'boards': showOnlyScene_(sceneBoards, playSceneBoards); break;
                 case 'progress': showOnlyScene_(sceneProgress, playSceneProgress); break;
+                case 'rain-radar': showOnlyScene_(sceneRainRadar, playSceneRainRadar); break;
                 case 'logo': showOnlyScene_(sceneLogo, playSceneLogoScroll); break;
                 default: break;
             }
@@ -12886,6 +12920,10 @@
             case 'news': transitionToScene(sceneNews, playSceneNews); break;
             case 'boards': transitionToScene(sceneBoards, playSceneBoards); break;
             case 'progress': transitionToScene(sceneProgress, playSceneProgress); break;
+            case 'rain-radar':
+                if (!contentOn_('rain-radar') || !sceneRainRadar) { advanceContentOrder_(); break; }
+                transitionToScene(sceneRainRadar, playSceneRainRadar);
+                break;
             case 'logo-scroll': transitionToScene(sceneLogo, function () { playSceneLogoScroll(); }); break;
             case 'brand':
                 transitionToScene(sceneLogo, function () {
@@ -13102,6 +13140,117 @@
         const lap = units[1].offsetLeft - units[0].offsetLeft;
         return lap > 0 ? lap : units[0].offsetWidth;
     }
+    function playProgressImages_(gen, api, data) {
+        sceneProgress.innerHTML = api.sheetHtml(data.images);
+        function finishVisit_() {
+            if (gen !== progressPlayGen_) return;
+            if (demoOnlyLoop_('progress', playSceneProgress)) return;
+            playlistHandoff_();
+        }
+        function whenReady_(done) {
+            const track = document.getElementById('progress-track');
+            const imgs = track ? track.querySelectorAll('img') : [];
+            let left = imgs.length;
+            function finish() {
+                if (gen !== progressPlayGen_) return;
+                const sets = track ? track.querySelectorAll('.pr-sheet-set') : [];
+                let lap = 0;
+                if (sets.length >= 2) lap = sets[1].offsetLeft - sets[0].offsetLeft;
+                if (!(lap > 0) && sets[0]) lap = sets[0].offsetWidth;
+                done(lap > 0 ? lap : 1);
+            }
+            if (!left) { finish(); return; }
+            imgs.forEach(function (img) {
+                function one() {
+                    left -= 1;
+                    if (left <= 0) finish();
+                }
+                if (img.complete) one();
+                else {
+                    img.onload = one;
+                    img.onerror = one;
+                }
+            });
+        }
+        whenReady_(function (lap) {
+            if (gen !== progressPlayGen_) return;
+            applyScrollX_(document.getElementById('progress-track'), 0);
+            let moved = 0;
+            function step() {
+                if (gen !== progressPlayGen_) return;
+                moved += getScrollSpeedPx_();
+                const track = document.getElementById('progress-track');
+                if (moved >= lap) {
+                    progressAnimId = null;
+                    if (track) applyScrollX_(track, -lap);
+                    runAfterSceneEndHold_(function () {
+                        if (gen !== progressPlayGen_) return;
+                        finishVisit_();
+                    });
+                    return;
+                }
+                if (track) applyScrollX_(track, -moved);
+                progressAnimId = requestAnimationFrame(step);
+            }
+            runSceneScrollAfterHold_(function () {
+                if (gen !== progressPlayGen_) return;
+                progressAnimId = requestAnimationFrame(step);
+            });
+        });
+    }
+    function playSceneRainRadar() {
+        rainRadarGen_ += 1;
+        const gen = rainRadarGen_;
+        if (rainRadarTimer_) { clearTimeout(rainRadarTimer_); rainRadarTimer_ = 0; }
+        if (!contentOn_('rain-radar') && DEMO_ONLY !== 'rain-radar') {
+            if (useContentOrder_() && !DEMO_ONLY) advanceContentOrder_();
+            else gotoAfterScene3Tail_();
+            return;
+        }
+        const api = window.AlertCubeRainRadar;
+        if (!sceneRainRadar || !api) {
+            finishRainRadar_();
+            return;
+        }
+        markPlaylistHeld_();
+        sceneRainRadar.innerHTML = api.shellHtml();
+        const canvases = sceneRainRadar.querySelectorAll('.rr-canvas');
+        api.drawMessage(canvases, '読込中');
+        api.prepare(siteCfg_(), Date.now()).then(function (plan) {
+            if (gen !== rainRadarGen_) return;
+            if (!plan || !plan.frames || !plan.frames.length) {
+                if (DEMO_ONLY === 'rain-radar') {
+                    api.drawMessage(canvases, '雨雲を取得できません');
+                    return;
+                }
+                finishRainRadar_();
+                return;
+            }
+            let index = 0;
+            function show() {
+                if (gen !== rainRadarGen_) return;
+                api.drawFrame(canvases, plan, index).then(function () {
+                    if (gen !== rainRadarGen_) return;
+                    const first = index === 0;
+                    const dwell = api.FRAME_MS + (first ? sceneHoldMs_('scrollHoldMs', SCENE_SCROLL_HOLD_MS) : 0);
+                    rainRadarTimer_ = setTimeout(function () {
+                        rainRadarTimer_ = 0;
+                        if (gen !== rainRadarGen_) return;
+                        index += 1;
+                        if (index >= plan.frames.length) {
+                            runAfterSceneEndHold_(function () {
+                                if (gen !== rainRadarGen_) return;
+                                finishRainRadar_();
+                            });
+                            return;
+                        }
+                        show();
+                    }, dwell);
+                });
+            }
+            show();
+        });
+    }
     function playSceneProgress() {
         const gen = ++progressPlayGen_;
         if (progressAnimId) { cancelAnimationFrame(progressAnimId); progressAnimId = null; }
@@ -13112,12 +13261,17 @@
             }
             const api = window.AlertCubeProgress;
             const data = api ? api.configOf(siteCfg_()) : null;
-            if (!sceneProgress || !api || !data || !data.messages.length) {
+            const imageMode = !!(data && data.images && data.images.length);
+            if (!sceneProgress || !api || !data || (!imageMode && !data.messages.length)) {
                 if (DEMO_ONLY === 'progress') return;
                 playlistHandoff_();
                 return;
             }
             markPlaylistHeld_();
+            if (imageMode) {
+                playProgressImages_(gen, api, data);
+                return;
+            }
             if (!data.logo) {
                 const brand = window.SIGNAGE_CONFIG || {};
                 data.logo = brand.footBannerSrc || brand.logoWideSrc || brand.logoSrc || '';
@@ -13165,7 +13319,10 @@
                         progressSaveIndex_(idx);
                         if (shown >= count) {
                             if (track) applyScrollX_(track, -lap);
-                            finishVisit_();
+                            runAfterSceneEndHold_(function () {
+                                if (gen !== progressPlayGen_) return;
+                                finishVisit_();
+                            });
                             return;
                         }
                         runLap_(false);
@@ -13259,8 +13416,9 @@
                     return;
                 }
                 const faces = Math.max(1, Number((siteCfg_() && siteCfg_().faces) || 4));
+                const lapsForStrip = api.lapsOf(phase.laps != null ? { laps: phase.laps } : cfg);
                 const built = (phase.layout === 'posters' && phase.play === 'slide' && typeof api.posterSlideHtml === 'function')
-                    ? api.posterSlideHtml(phase, faces)
+                    ? api.posterSlideHtml(phase, faces, lapsForStrip)
                     : api.buildPhaseHtml(phase, logoSrc);
                 if (!built.html) {
                     boardsPhaseIdx_ += 1;
@@ -13269,7 +13427,7 @@
                 }
                 boardsTrack.innerHTML = built.html;
                 applyScrollX_(boardsTrack, 0);
-                const laps = api.lapsOf(phase.laps != null ? { laps: phase.laps } : cfg);
+                const laps = lapsForStrip;
                 const speed = phase.speed != null ? Number(phase.speed) : api.speedOf(cfg);
                 runSceneScrollAfterHold_(function () {
                     if (gen !== boardsPlayGen_) return;

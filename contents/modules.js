@@ -25,6 +25,7 @@
     warning: { id: 'warning', fetch: ['jma-warning'], scene: 'sceneWarn' },
     'warning-hero': { id: 'warning-hero', fetch: ['jma-warning'], scene: 'sceneWarnHero' },
     'rain-nowcast': { id: 'rain-nowcast', fetch: ['jma-nowc'], scene: 'sceneRainWarn' },
+    'rain-radar': { id: 'rain-radar', fetch: [], scene: 'sceneRainRadar' },
     typhoon: { id: 'typhoon', fetch: ['jma-typhoon'], scene: 'sceneWarn' },
     disaster: { id: 'disaster', fetch: ['jma-warning', 'moe-heat'], scene: 'sceneAlert' },
     hazard: { id: 'hazard', fetch: ['jma-quake', 'jma-warning'], scene: 'sceneHazard', interrupt: true },

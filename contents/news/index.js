@@ -221,6 +221,36 @@
     return items;
   }
 
+  /** 戸田建設公式ニュース。PDFリンクは除く */
+  function parseCmnNews(html) {
+    var items = [];
+    var seen = {};
+    var re = /cmn-news__date">([\s\S]*?)<\/span>[\s\S]{0,1200}?cmn-news__title">([\s\S]*?)<\/h3>/gi;
+    var m;
+    while ((m = re.exec(html))) {
+      var before = html.slice(Math.max(0, m.index - 800), m.index);
+      var hrefs = before.match(/href="([^"]+)"/gi);
+      var href = '';
+      if (hrefs && hrefs.length) {
+        var hm = hrefs[hrefs.length - 1].match(/href="([^"]+)"/i);
+        href = hm ? hm[1] : '';
+      }
+      if (/\.pdf(\?|$)/i.test(href)) continue;
+      var rawDate = decodeText(m[1]).replace(/\s+/g, '');
+      var dm = rawDate.match(/^(20\d{2})[./](\d{1,2})[./](\d{1,2})$/);
+      if (!dm) continue;
+      var titleHtml = String(m[2] || '').replace(/<su[bp][^>]*>[\s\S]*?<\/su[bp]>/gi, '');
+      var title = cleanTitle(decodeText(titleHtml)).replace(/&reg;|®/gi, '').replace(/\s+/g, ' ').trim();
+      if (!title || /[（(]PDF/i.test(title) || seen[title]) continue;
+      seen[title] = true;
+      items.push({
+        date: dm[1] + '年' + ('0' + dm[2]).slice(-2) + '月' + ('0' + dm[3]).slice(-2) + '日',
+        title: title
+      });
+    }
+    return items;
+  }
+
   function parsePage(text, maxItems) {
     var raw = String(text || '').trim();
     var items = [];
@@ -230,6 +260,7 @@
     if (!items.length && /news__item_content/i.test(raw)) items = parseHtmlList(raw);
     if (!items.length && /<dt>\s*20\d{2}[./]\d{1,2}[./]\d{1,2}/i.test(raw) && /class=["']title["']/i.test(raw)) items = parseDlNews(raw);
     if (!items.length && /c-newslist__date/i.test(raw)) items = parseNewslist(raw);
+    if (!items.length && /cmn-news__article/i.test(raw)) items = parseCmnNews(raw);
     if (!items.length) items = parseMarkdownNews(raw);
     if (!items.length) items = parseDatedLinks(raw);
     return normalizeItems({ items: items }, maxItems);
@@ -266,8 +297,13 @@
         (badge ? '<span class="news-badge-label">' + escapeHtml(badge) + '</span>' : '') +
         '</div>';
     }
+    function itemLogoHtml() {
+      if (!opts || !opts.itemLogo || !logo) return '';
+      return '<span class="news-badge-logo-plate"><img class="news-badge-logo" src="' + escapeHtml(logo) + '" alt="" decoding="sync"></span>';
+    }
     function itemHtml(it) {
       return '<div class="news-item">' +
+        itemLogoHtml() +
         (it.date ? '<span class="news-date">' + escapeHtml(it.date) + '</span>' : '') +
         '<span class="news-title">' + escapeHtml(it.title) + '</span>' +
         '</div>';

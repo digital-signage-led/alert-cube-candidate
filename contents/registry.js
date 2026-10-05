@@ -25,6 +25,14 @@
     { id: 'warning', label: '警報・注意報', scene: 'sceneWarn', fetch: ['jma-warning'], existing: true, lifecycle: 'active', safety: true },
     { id: 'warning-hero', label: '警報情報', scene: 'sceneWarnHero', fetch: ['jma-warning'], existing: true, lifecycle: 'active', safety: true },
     { id: 'rain-nowcast', label: '雨雲・大雨', scene: 'sceneRainWarn', fetch: ['jma-nowc'], existing: true, lifecycle: 'active', safety: true },
+    {
+      id: 'rain-radar', label: '雨雲レーダー', scene: 'sceneRainRadar', fetch: [],
+      existing: true, defaultOn: false, lifecycle: 'active',
+      end: 'animation', reusable: true, resolution: '512x128',
+      purpose: '128×128を4面に並べ、各面に現場中心の降水ナウキャストを出す',
+      required: ['latitude', 'longitude'], optional: [],
+      assets: 'none', source: 'jma nowcast'
+    },
     { id: 'typhoon', label: '台風', scene: 'sceneWarn', fetch: ['jma-typhoon'], existing: true, lifecycle: 'active', safety: true },
     { id: 'disaster', label: '防災割込', scene: 'sceneAlert', fetch: ['jma-warning', 'moe-heat'], existing: true, lifecycle: 'active', safety: true },
     {
@@ -62,8 +70,8 @@
     {
       id: 'progress', label: '工事進捗', scene: 'sceneProgress', fetch: [], existing: true, defaultOn: false, lifecycle: 'active',
       end: 'animation', reusable: true, resolution: '512x128',
-      purpose: '工事名と場所は固定し、工期の文章を1周ごとに切り替える',
-      required: ['progress.projectName', 'progress.location', 'progress.progressMessages'],
+      purpose: '工期の文章、または進捗PDFの画像を1枚ずつ横に流す',
+      required: ['progress.progressMessages or progress.images'],
       optional: [],
       assets: 'none', source: 'site config'
     },

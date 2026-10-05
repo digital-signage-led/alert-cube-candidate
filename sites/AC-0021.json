@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "projectId": "AC-0021",
+  "status": "active",
+  "customer": "大鉄工業株式会社",
+  "rental": "大鉄工業",
+  "label": "大鉄工業",
+  "projectName": "大鉄工業 奈良高架作業所 WBGTサイネージ",
+  "siteName": "奈良市",
+  "location": "奈良県奈良市 奈良高架作業所",
+  "latitude": 34.6697,
+  "longitude": 135.8069,
+  "memo": "5面640×128。右端ロゴは大鉄マーク、背景は現在WBGTの上バー色。気象観測・WBGT・予報の末尾も大鉄マーク。時刻下帯はDAITETSUロゴとWBGT文言。WBGT・AMeDASは奈良64036（フォールバックなし）。予報は290000、詳細は奈良県北部290010、気温は奈良64036。気象庁の警報・注意報・台風は出さない。雨雲ナウキャストは下帯のみ。熱中症アラートは発表時かつWBGT正常時のみ。多言語は日英越タガログ。PRは日本語のあと多言語。文言3本を周回。",
+  "resolution": "640x128",
+  "layout": "AC-640",
+  "faces": 5,
+  "timeZone": "Asia/Tokyo",
+  "footSource": "出典：気象庁・環境省データ",
+  "releasePin": null,
+  "logo": {
+    "src": "./assets/sites/AC-0021/logo_mark.png?v=1",
+    "wideSrc": "",
+    "corpSrc": "",
+    "footSrc": "",
+    "panelBg": "#55A5E6",
+    "panelFollow": "bar",
+    "bannerSrc": "./assets/sites/AC-0021/logo_wordmark.png?v=1"
+  },
+  "moe": {
+    "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
+    "point": "64036",
+    "fallbackPoint": "",
+    "pointName": "奈良市",
+    "alertArea": "奈良県",
+    "region": "07",
+    "prefecture": "64"
+  },
+  "jma": {
+    "amedasPoint": "64036",
+    "amedasSupplementPoint": "",
+    "forecastArea": "290000",
+    "forecastDetail": "290010",
+    "forecastPoint": "64036",
+    "forecastLabel": "奈良市",
+    "warnArea": "290000",
+    "warnCity": "2920101",
+    "warnCityLabel": "奈良市西部"
+  },
+  "wbgt": {
+    "seasonStart": { "month": 4, "day": 22 },
+    "seasonEnd": { "month": 10, "day": 22 }
+  },
+  "season": { "override": null },
+  "updateSettings": { "refreshMs": 300000 },
+  "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "greeting": {
+    "enabled": true,
+    "mode": "promo",
+    "title": "大鉄工業株式会社",
+    "titles": ["大鉄工業株式会社", "土木支店", "奈良高架作業所"],
+    "lines": [
+      "熱中症のリスク要因　温度28℃以上、湿度75%以上、WBGT値28℃以上は厳重警戒！",
+      "体重1kgあたり10ml/時の水分補給を心掛け、熱中症予防！",
+      "休憩するのも仕事のうち、水分・塩分補給・休息行い、みんなで防ごう熱中症！"
+    ],
+    "emphasis": [
+      ["28℃以上", "75%以上", "厳重警戒"],
+      ["10ml/時"],
+      ["水分・塩分補給・休息"]
+    ],
+    "i18n": [
+      {
+        "en": "Heat risk: 28°C+, humidity 75%+, WBGT 28°C+ — severe caution!",
+        "vn": "Nguy cơ: 28°C+, ẩm 75%+, WBGT 28°C+ — cảnh báo nghiêm!",
+        "tl": "Panganib: 28°C+, halumigmig 75%+, WBGT 28°C+!",
+        "em": ["28°C+", "75%+", "severe caution", "cảnh báo nghiêm"]
+      },
+      {
+        "en": "Drink 10 ml per kg each hour to prevent heatstroke!",
+        "vn": "Uống 10 ml/kg mỗi giờ để phòng say nắng!",
+        "tl": "Uminom ng 10 ml/kg bawat oras para iwas heatstroke!",
+        "em": ["10 ml/kg", "10 ml"]
+      },
+      {
+        "en": "Rest is part of the job. Water, salt, and breaks stop heatstroke!",
+        "vn": "Nghỉ cũng là việc. Nước, muối và nghỉ ngơi để phòng say nắng!",
+        "tl": "Ang pahinga ay trabaho. Tubig, asin, at pahinga laban sa heatstroke!",
+        "em": ["Water, salt", "Nước, muối", "Tubig, asin"]
+      }
+    ],
+    "footLogo": "./assets/sites/AC-0021/logo_wordmark.png?v=1",
+    "foot": "",
+    "footSlot": 128,
+    "fill": "",
+    "scrollLaps": 1
+  },
+  "presentation": {
+    "sequence": "contentOrder",
+    "wording": "daitetsu",
+    "i18nLangs": ["jp", "en", "vn", "tl"],
+    "skipWbgtOffSeason": true,
+    "skipHeatWhenWbgtDown": true,
+    "scrollSpeedPx": 0.8,
+    "observationMode": "scroll",
+    "observationLaps": 1,
+    "observationTrailingLogo": true
+  },
+  "contentOrder": ["clock", "wbgt", "observation", "forecast", "greeting", "wbgt-i18n", "heat"],
+  "contents": {
+    "clock": { "on": true },
+    "observation": { "on": true },
+    "weather": { "on": true },
+    "temperature": { "on": true },
+    "rain": { "on": true },
+    "wind": { "on": true },
+    "humidity": { "on": true },
+    "pressure": { "on": true },
+    "temp-range": { "on": true },
+    "wbgt": { "on": true },
+    "wbgt-i18n": { "on": true },
+    "forecast": { "on": true },
+    "warning": { "on": false },
+    "warning-hero": { "on": false },
+    "rain-nowcast": { "on": true },
+    "typhoon": { "on": false },
+    "disaster": { "on": false },
+    "heat": { "on": true },
+    "schedule": { "on": false },
+    "greeting": { "on": true },
+    "news": { "on": false },
+    "boards": { "on": false },
+    "logo-scroll": { "on": false },
+    "pollen": { "on": false },
+    "pm25": { "on": false }
+  }
+}

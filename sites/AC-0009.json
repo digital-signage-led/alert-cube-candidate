@@ -10,7 +10,7 @@
   "location": "〒943-0104 新潟県上越市鶴町52",
   "latitude": 37.1292,
   "longitude": 138.3062,
-  "memo": "レンタルのニッケン上越営業。順は社名PR、時刻と気象、日本語の暑さ指数、墜落・転落。ニュースは出さない。社名PRは上白・中緑・下白。時刻・気象は上中が緑、下が白。暑さ指数は気象庁のWBGT段階色。墜落・転落は4面別々の標識を横スライドで2周。工事進捗PDFは未収録。",
+  "memo": "レンタルのニッケン上越営業。順は社名PR、時刻と気象、雨雲レーダー、日本語の暑さ指数、工事進捗、墜落・転落。ニュースは出さない。社名PRは上白・中緑・下白。時刻・気象は上中が緑、下が白。暑さ指数は気象庁のWBGT段階色。雨雲レーダーは現場を中心に気象庁の降水ナウキャストを出す。墜落・転落は4面別々の標識を横スライドで2周。工事進捗はR8.5からR8.9のPDFを、比率のまま文字が読める大きさで上から128pxずつ横へ流す。",
   "resolution": "512x128",
   "layout": "AC-512",
   "faces": 4,
@@ -45,12 +45,26 @@
     "warnCityLabel": "上越市"
   },
   "wbgt": {
-    "seasonStart": { "month": 4, "day": 22 },
-    "seasonEnd": { "month": 10, "day": 22 }
+    "seasonStart": {
+      "month": 4,
+      "day": 22
+    },
+    "seasonEnd": {
+      "month": 10,
+      "day": 22
+    }
   },
-  "season": { "override": null },
-  "updateSettings": { "refreshMs": 60000 },
-  "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "season": {
+    "override": null
+  },
+  "updateSettings": {
+    "refreshMs": 60000
+  },
+  "schedule": {
+    "enabled": false,
+    "weekStartsOn": 1,
+    "items": []
+  },
   "greeting": {
     "enabled": true,
     "mode": "promo",
@@ -60,11 +74,20 @@
     "seamless": true,
     "gapPx": 24,
     "bandGapPx": 0,
-    "lines": ["『想い』が未来をつくる　Create the bright FUTURE！"],
-    "emphasis": [["『想い』", "FUTURE"]],
+    "lines": [
+      "『想い』が未来をつくる　Create the bright FUTURE！"
+    ],
+    "emphasis": [
+      [
+        "『想い』",
+        "FUTURE"
+      ]
+    ],
     "footSlot": 512,
     "foot": "おかげさまで創業88年を迎えました！",
-    "footEmphasis": ["88年"],
+    "footEmphasis": [
+      "88年"
+    ],
     "fill": "",
     "bodyPx": 36,
     "scrollLaps": 1
@@ -72,12 +95,195 @@
   "progress": {
     "projectName": "R7上沼道 米岡第一高架橋下部その8工事",
     "location": "上越市米岡地先",
-    "progressMessages": [
-      "工期　R8年4月1日～R9年2月26日（進捗率4.30%）　5月31日現在",
-      "工期　R8年4月1日～R9年2月26日（進捗率8.60%）　6月30日現在",
-      "工期　R8年4月1日～R9年2月26日（進捗率49.35%）　7月31日現在",
-      "工期　R8年4月1日～R9年2月26日（進捗率68.89%）　8月31日現在",
-      "工期　R8年4月1日～R9年2月26日（進捗率73.55%）　10月1日現在"
+    "images": [
+      {
+        "src": "./assets/sites/AC-0009/progress/r85-01.png?v=3",
+        "alt": "5月31日現在 01"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r85-02.png?v=3",
+        "alt": "5月31日現在 02"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r85-03.png?v=3",
+        "alt": "5月31日現在 03"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r85-04.png?v=3",
+        "alt": "5月31日現在 04"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r85-05.png?v=3",
+        "alt": "5月31日現在 05"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r85-06.png?v=3",
+        "alt": "5月31日現在 06"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r85-07.png?v=3",
+        "alt": "5月31日現在 07"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r85-08.png?v=3",
+        "alt": "5月31日現在 08"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r85-09.png?v=3",
+        "alt": "5月31日現在 09"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r86-01.png?v=3",
+        "alt": "6月30日現在 01"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r86-02.png?v=3",
+        "alt": "6月30日現在 02"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r86-03.png?v=3",
+        "alt": "6月30日現在 03"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r86-04.png?v=3",
+        "alt": "6月30日現在 04"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r86-05.png?v=3",
+        "alt": "6月30日現在 05"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r86-06.png?v=3",
+        "alt": "6月30日現在 06"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r86-07.png?v=3",
+        "alt": "6月30日現在 07"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r86-08.png?v=3",
+        "alt": "6月30日現在 08"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r86-09.png?v=3",
+        "alt": "6月30日現在 09"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r87-01.png?v=3",
+        "alt": "7月31日現在 01"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r87-02.png?v=3",
+        "alt": "7月31日現在 02"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r87-03.png?v=3",
+        "alt": "7月31日現在 03"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r87-04.png?v=3",
+        "alt": "7月31日現在 04"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r87-05.png?v=3",
+        "alt": "7月31日現在 05"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r87-06.png?v=3",
+        "alt": "7月31日現在 06"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r87-07.png?v=3",
+        "alt": "7月31日現在 07"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r87-08.png?v=3",
+        "alt": "7月31日現在 08"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r87-09.png?v=3",
+        "alt": "7月31日現在 09"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r87-10.png?v=3",
+        "alt": "7月31日現在 10"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r88-01.png?v=3",
+        "alt": "8月31日現在 01"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r88-02.png?v=3",
+        "alt": "8月31日現在 02"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r88-03.png?v=3",
+        "alt": "8月31日現在 03"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r88-04.png?v=3",
+        "alt": "8月31日現在 04"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r88-05.png?v=3",
+        "alt": "8月31日現在 05"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r88-06.png?v=3",
+        "alt": "8月31日現在 06"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r88-07.png?v=3",
+        "alt": "8月31日現在 07"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r88-08.png?v=3",
+        "alt": "8月31日現在 08"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r88-09.png?v=3",
+        "alt": "8月31日現在 09"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r89-01.png?v=3",
+        "alt": "10月1日現在 01"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r89-02.png?v=3",
+        "alt": "10月1日現在 02"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r89-03.png?v=3",
+        "alt": "10月1日現在 03"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r89-04.png?v=3",
+        "alt": "10月1日現在 04"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r89-05.png?v=3",
+        "alt": "10月1日現在 05"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r89-06.png?v=3",
+        "alt": "10月1日現在 06"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r89-07.png?v=3",
+        "alt": "10月1日現在 07"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r89-08.png?v=3",
+        "alt": "10月1日現在 08"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r89-09.png?v=3",
+        "alt": "10月1日現在 09"
+      },
+      {
+        "src": "./assets/sites/AC-0009/progress/r89-10.png?v=3",
+        "alt": "10月1日現在 10"
+      }
     ]
   },
   "presentation": {
@@ -92,17 +298,42 @@
     "typhoonLaps": 2,
     "observationTrailingLogo": true,
     "heatLabel": "ja",
-    "i18nLangs": ["jp"],
-    "scrollHoldMs": 0,
-    "endHoldMs": 0,
+    "i18nLangs": [
+      "jp"
+    ],
+    "scrollHoldMs": 1000,
+    "endHoldMs": 1000,
     "sceneSlideMs": 0,
     "footColor": "#ffffff",
     "solid": {
-      "clock": { "top": "#4FBE6A", "body": "#36A852", "foot": "#ffffff" },
-      "observation": { "top": "#4FBE6A", "body": "#36A852", "foot": "#ffffff" },
-      "forecast": { "top": "#4FBE6A", "body": "#36A852", "foot": "#ffffff" },
-      "greeting": { "top": "#ffffff", "body": "#36A852", "foot": "#ffffff", "ink": "#ffffff" },
-      "progress": { "top": "#4FBE6A", "body": "#36A852", "foot": "#ffffff", "ink": "#ffffff", "footInk": "#1a1a1a" }
+      "clock": {
+        "top": "#4FBE6A",
+        "body": "#36A852",
+        "foot": "#ffffff"
+      },
+      "observation": {
+        "top": "#4FBE6A",
+        "body": "#36A852",
+        "foot": "#ffffff"
+      },
+      "forecast": {
+        "top": "#4FBE6A",
+        "body": "#36A852",
+        "foot": "#ffffff"
+      },
+      "greeting": {
+        "top": "#ffffff",
+        "body": "#36A852",
+        "foot": "#ffffff",
+        "ink": "#ffffff"
+      },
+      "progress": {
+        "top": "#4FBE6A",
+        "body": "#36A852",
+        "foot": "#ffffff",
+        "ink": "#ffffff",
+        "footInk": "#1a1a1a"
+      }
     }
   },
   "news": {
@@ -128,41 +359,120 @@
         "laps": 2,
         "width": 512,
         "images": [
-          { "src": "./assets/sites/AC-0009/safety_fall.png?v=1", "alt": "墜落・転落災害防止" },
-          { "src": "./assets/sites/AC-0009/safety_harness.jpg?v=1", "alt": "フルハーネス 使用ヨシ" },
-          { "src": "./assets/sites/AC-0009/safety_opening.png?v=1", "alt": "開口部 足元確認" },
-          { "src": "./assets/sites/AC-0009/safety_lifeline.png?v=1", "alt": "手すり・親綱 確認ヨシ" }
+          {
+            "src": "./assets/sites/AC-0009/safety_fall.png?v=1",
+            "alt": "墜落・転落災害防止"
+          },
+          {
+            "src": "./assets/sites/AC-0009/safety_harness.jpg?v=1",
+            "alt": "フルハーネス 使用ヨシ"
+          },
+          {
+            "src": "./assets/sites/AC-0009/safety_opening.png?v=1",
+            "alt": "開口部 足元確認"
+          },
+          {
+            "src": "./assets/sites/AC-0009/safety_lifeline.png?v=1",
+            "alt": "手すり・親綱 確認ヨシ"
+          }
         ]
       }
     ]
   },
-  "contentOrder": ["warning", "typhoon", "greeting", "clock", "observation", "forecast", "wbgt", "wbgt-i18n", "progress", "boards"],
+  "contentOrder": [
+    "warning",
+    "typhoon",
+    "greeting",
+    "clock",
+    "observation",
+    "forecast",
+    "rain-radar",
+    "wbgt",
+    "wbgt-i18n",
+    "progress",
+    "boards"
+  ],
   "contents": {
-    "clock": { "on": true },
-    "observation": { "on": true },
-    "weather": { "on": true },
-    "temperature": { "on": true },
-    "rain": { "on": true },
-    "wind": { "on": true },
-    "humidity": { "on": true },
-    "pressure": { "on": true },
-    "temp-range": { "on": true },
-    "wbgt": { "on": true },
-    "wbgt-i18n": { "on": true },
-    "forecast": { "on": true },
-    "warning": { "on": true },
-    "warning-hero": { "on": false },
-    "rain-nowcast": { "on": true },
-    "typhoon": { "on": true },
-    "disaster": { "on": true },
-    "heat": { "on": false },
-    "schedule": { "on": false },
-    "greeting": { "on": true },
-    "progress": { "on": true },
-    "news": { "on": false },
-    "boards": { "on": true },
-    "logo-scroll": { "on": false },
-    "pollen": { "on": false },
-    "pm25": { "on": false }
+    "clock": {
+      "on": true
+    },
+    "observation": {
+      "on": true
+    },
+    "weather": {
+      "on": true
+    },
+    "temperature": {
+      "on": true
+    },
+    "rain": {
+      "on": true
+    },
+    "wind": {
+      "on": true
+    },
+    "humidity": {
+      "on": true
+    },
+    "pressure": {
+      "on": true
+    },
+    "temp-range": {
+      "on": true
+    },
+    "wbgt": {
+      "on": true
+    },
+    "wbgt-i18n": {
+      "on": true
+    },
+    "forecast": {
+      "on": true
+    },
+    "warning": {
+      "on": true
+    },
+    "warning-hero": {
+      "on": false
+    },
+    "rain-nowcast": {
+      "on": true
+    },
+    "rain-radar": {
+      "on": true
+    },
+    "typhoon": {
+      "on": true
+    },
+    "disaster": {
+      "on": true
+    },
+    "heat": {
+      "on": false
+    },
+    "schedule": {
+      "on": false
+    },
+    "greeting": {
+      "on": true
+    },
+    "progress": {
+      "on": true
+    },
+    "news": {
+      "on": false
+    },
+    "boards": {
+      "on": true
+    },
+    "logo-scroll": {
+      "on": false
+    },
+    "pollen": {
+      "on": false
+    },
+    "pm25": {
+      "on": false
+    }
   }
 }

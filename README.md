@@ -16,7 +16,7 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/?site=AC-0005 （レイズネクスト 摂津）
 - http://127.0.0.1:3200/?site=AC-0006 （錦建設 広島市中区）
 - http://127.0.0.1:3200/?site=AC-0007 （佐々木建設 北島町）
-- http://127.0.0.1:3200/?site=AC-0008&demo=1 （デモ 太陽建機レンタル 名古屋市。本番端末へ登録しない）
+- http://127.0.0.1:3200/?site=AC-0008&demo=1 （デモ 大鉄 大阪市。本番端末へ登録しない）
 - http://127.0.0.1:3200/?site=AC-0009 （大島組 米岡橋梁下部工）
 - http://127.0.0.1:3200/?site=AC-0010 （有限会社フジケン長崎 諫早市永昌町）
 - http://127.0.0.1:3200/?site=AC-0011 （起産建設 博多区）
@@ -24,6 +24,12 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/?site=AC-0013 （宮川興業 山本8号。本番サイネージは公開URLだけで動く。このPCの中継は不要）
 - http://127.0.0.1:3200/?site=AC-0014 （デモ レンタルのニッケン 近江八幡。無償。表示は本番仕様。5面 640×128。本番端末へ登録しない）
 - http://127.0.0.1:3200/?site=AC-0015 （井原工業 四国中央市川之江）
+- http://127.0.0.1:3200/?site=AC-0016 （IHI瀧上特定建設工事共同企業体 神戸市東灘区）
+- http://127.0.0.1:3200/?site=AC-0017 （株式会社ヒカリ 塩飽町）
+- http://127.0.0.1:3200/?site=AC-0018 （五洋建設 品川区平塚）
+- http://127.0.0.1:3200/?site=AC-0019 （戸田建設 東近江市 E3棟）
+- http://127.0.0.1:3200/?site=AC-0020 （森下組 奈良市）
+- http://127.0.0.1:3200/?site=AC-0021 （大鉄工業 奈良高架作業所）
 - http://127.0.0.1:3200/?site=AC-0000 （内部テスト。本番端末へ登録しない）
 - http://127.0.0.1:3200/contents/ （V2.0コンテンツ確認一覧）
 - http://127.0.0.1:3200/?offseason=1
@@ -59,7 +65,7 @@ docs/               運用
 | AC-0005 | active | レイズネクスト / 〒566-0044 大阪府摂津市西一津屋1-1 |
 | AC-0006 | active | 錦建設株式会社 / 広島県広島市中区舟入本町7 |
 | AC-0007 | active | 佐々木建設株式会社 / 徳島県板野郡北島町 |
-| AC-0008 | demo | 太陽建機レンタル株式会社 / 愛知県名古屋市。本番端末へ登録しない |
+| AC-0008 | demo | 大鉄 / 大阪府大阪市。本番端末へ登録しない |
 | AC-0009 | active | 株式会社大島組 / 〒943-0104 新潟県上越市鶴町52 |
 | AC-0010 | active | 有限会社フジケン長崎 / 〒854-0072 長崎県諫早市永昌町５−２３ |
 | AC-0011 | active | 起産建設株式会社 / 〒812-0041 福岡県福岡市博多区吉塚4丁目9-31 |
@@ -67,6 +73,12 @@ docs/               運用
 | AC-0013 | active | 宮川興業株式会社 / 広島県広島市安佐南区山本6丁目地内 |
 | AC-0014 | demo | レンタルのニッケン / 滋賀県近江八幡市。5面。本番端末へ登録しない |
 | AC-0015 | active | 井原工業株式会社 / 愛媛県四国中央市川之江 |
+| AC-0016 | active | IHI瀧上特定建設工事共同企業体 / 兵庫県神戸市東灘区 |
+| AC-0017 | active | 株式会社ヒカリ / 〒763-0024 香川県丸亀市塩飽町48-1 |
+| AC-0018 | active | 五洋建設 / 〒142-0051 東京都品川区平塚３-９-１ |
+| AC-0019 | active | 戸田建設 / 滋賀県東近江市東沖野丁目４－１ E3棟建設工事作業所 |
+| AC-0020 | active | 株式会社森下組 / 奈良県奈良市 |
+| AC-0021 | active | 大鉄工業株式会社 / 奈良県奈良市 奈良高架作業所 |
 
 発行済み ID は再利用しない。追加するときは `sites/_template.json` を新しい番号へ複製する。デモは別番号で `status: demo` とし、`demoSites` にだけ入れる。`?demo=1` は演出で、外してもその番号は本番にならない。
 
@@ -100,5 +112,11 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0013: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0013 （端末はこのURLだけを開く。現地センサーは GitHub が10分ごとに更新し、端末が自分で読む）
 - AC-0014: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0014
 - AC-0015: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0015
+- AC-0016: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0016
+- AC-0017: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0017
+- AC-0018: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0018
+- AC-0019: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0019
+- AC-0020: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0020
+- AC-0021: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0021
 - AC-0000: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0000
 - コンテンツ一覧: https://digital-signage-led.github.io/alert-cube-candidate/contents/

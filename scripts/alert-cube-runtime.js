@@ -54,9 +54,9 @@
         if (el.tagName === 'IMG') el.alt = name;
       });
     }
-    var logoFaces = document.querySelectorAll(wide
-      ? '.logo-img'
-      : '.s2-logo-face-img, .fc-logo-face-img, .d5-logo-face-img, .logo-img, .logo-corp-img');
+    var logoFaces = document.querySelectorAll(
+      '.s2-logo-face-img, .fc-logo-face-img, .d5-logo-face-img, .logo-img, .logo-corp-img'
+    );
     if (brand.logoSrc) {
       logoFaces.forEach(function (el) {
         if (el.getAttribute('src') !== brand.logoSrc) el.src = brand.logoSrc;
@@ -67,7 +67,7 @@
       });
     }
     document.querySelectorAll('.fc-logo-panel, .d5-logo-panel, .s2-logo-panel').forEach(function (el) {
-      el.style.display = (!wide && brand.logoSrc) ? '' : 'none';
+      el.style.display = brand.logoSrc ? '' : 'none';
     });
     if (wide) {
       document.querySelectorAll('.logo-panel').forEach(function (el) {

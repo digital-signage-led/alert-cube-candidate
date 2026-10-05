@@ -205,7 +205,8 @@ test('未設定の本番案件はOFF、AC-0000だけON', function () {
   assert.strictEqual(merged0.geo.lon, testSite.longitude);
   assert.ok(merged0.hazard.priorities['tsunami-major'] > merged0.hazard.priorities['tsunami-warning']);
   assert.ok(merged0.hazard.priorities['tsunami-warning'] > merged0.hazard.priorities['tsunami-advisory']);
-  assert.ok(merged0.hazard.priorities['tsunami-advisory'] > merged0.hazard.priorities.earthquake);
+  assert.ok(merged0.hazard.priorities['tsunami-advisory'] > merged0.hazard.priorities.eew);
+  assert.ok(merged0.hazard.priorities.eew > merged0.hazard.priorities.earthquake);
   assert.strictEqual(foundation.isContentOn(testSite, 'hazard'), true);
   assert.ok(testSite.contentOrder.indexOf('hazard') < 0);
 });
