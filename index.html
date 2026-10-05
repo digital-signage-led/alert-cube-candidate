@@ -11357,10 +11357,8 @@
     }
     function applyT3TrackX_(tracks, x) {
         const tx = scrollPx_(x);
-        const list = Array.prototype.slice.call(tracks);
-        list.forEach(function (t, i) {
-            /* 隣の256pxは同じ位置のコピーではなく、続きの文字を出す */
-            applyScrollX_(t, tx - i * T3_UNIT_W);
+        Array.prototype.forEach.call(tracks, function (t) {
+            applyScrollX_(t, tx);
         });
         syncT3TopHaScroll_(tx);
     }
