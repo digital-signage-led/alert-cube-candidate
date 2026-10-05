@@ -10,7 +10,7 @@
   "location": "〒943-0104 新潟県上越市鶴町52",
   "latitude": 37.1292,
   "longitude": 138.3062,
-  "memo": "レンタルのニッケン上越営業。順は社名PR、時刻と気象、雨雲レーダー、日本語の暑さ指数、工事進捗、墜落・転落。ニュースは出さない。社名PRは上白・中緑・下白。時刻・気象は上中が緑、下が白。暑さ指数は気象庁のWBGT段階色。雨雲レーダーは現場を中心に気象庁の降水ナウキャストを出す。墜落・転落は4面別々の標識を横スライドで2周。工事進捗はR8.5からR8.9のPDFを、比率のまま文字が読める大きさで上から128pxずつ横へ流す。",
+  "memo": "レンタルのニッケン上越営業。順は社名PR、時刻と気象、雨雲レーダー、日本語の暑さ指数、工事進捗、墜落・転落。ニュースは出さない。社名PRは上白・中緑・下白。時刻・気象は上中が緑、下が白。暑さ指数は気象庁のWBGT段階色。雨雲レーダーは現場を中心に気象庁の降水ナウキャストを出す。墜落・転落は4面別々の標識を横スライドで2周。工事進捗はR8.5からR8.9のPDFを、ページを分けずに1枚ずつ高さ128pxで横に続ける。",
   "resolution": "512x128",
   "layout": "AC-512",
   "faces": 4,
@@ -97,192 +97,24 @@
     "location": "上越市米岡地先",
     "images": [
       {
-        "src": "./assets/sites/AC-0009/progress/r85-01.png?v=3",
-        "alt": "5月31日現在 01"
+        "src": "./assets/sites/AC-0009/progress/r85.png?v=4",
+        "alt": "5月31日現在"
       },
       {
-        "src": "./assets/sites/AC-0009/progress/r85-02.png?v=3",
-        "alt": "5月31日現在 02"
+        "src": "./assets/sites/AC-0009/progress/r86.png?v=4",
+        "alt": "6月30日現在"
       },
       {
-        "src": "./assets/sites/AC-0009/progress/r85-03.png?v=3",
-        "alt": "5月31日現在 03"
+        "src": "./assets/sites/AC-0009/progress/r87.png?v=4",
+        "alt": "7月31日現在"
       },
       {
-        "src": "./assets/sites/AC-0009/progress/r85-04.png?v=3",
-        "alt": "5月31日現在 04"
+        "src": "./assets/sites/AC-0009/progress/r88.png?v=4",
+        "alt": "8月31日現在"
       },
       {
-        "src": "./assets/sites/AC-0009/progress/r85-05.png?v=3",
-        "alt": "5月31日現在 05"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r85-06.png?v=3",
-        "alt": "5月31日現在 06"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r85-07.png?v=3",
-        "alt": "5月31日現在 07"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r85-08.png?v=3",
-        "alt": "5月31日現在 08"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r85-09.png?v=3",
-        "alt": "5月31日現在 09"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r86-01.png?v=3",
-        "alt": "6月30日現在 01"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r86-02.png?v=3",
-        "alt": "6月30日現在 02"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r86-03.png?v=3",
-        "alt": "6月30日現在 03"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r86-04.png?v=3",
-        "alt": "6月30日現在 04"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r86-05.png?v=3",
-        "alt": "6月30日現在 05"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r86-06.png?v=3",
-        "alt": "6月30日現在 06"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r86-07.png?v=3",
-        "alt": "6月30日現在 07"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r86-08.png?v=3",
-        "alt": "6月30日現在 08"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r86-09.png?v=3",
-        "alt": "6月30日現在 09"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r87-01.png?v=3",
-        "alt": "7月31日現在 01"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r87-02.png?v=3",
-        "alt": "7月31日現在 02"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r87-03.png?v=3",
-        "alt": "7月31日現在 03"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r87-04.png?v=3",
-        "alt": "7月31日現在 04"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r87-05.png?v=3",
-        "alt": "7月31日現在 05"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r87-06.png?v=3",
-        "alt": "7月31日現在 06"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r87-07.png?v=3",
-        "alt": "7月31日現在 07"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r87-08.png?v=3",
-        "alt": "7月31日現在 08"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r87-09.png?v=3",
-        "alt": "7月31日現在 09"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r87-10.png?v=3",
-        "alt": "7月31日現在 10"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r88-01.png?v=3",
-        "alt": "8月31日現在 01"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r88-02.png?v=3",
-        "alt": "8月31日現在 02"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r88-03.png?v=3",
-        "alt": "8月31日現在 03"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r88-04.png?v=3",
-        "alt": "8月31日現在 04"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r88-05.png?v=3",
-        "alt": "8月31日現在 05"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r88-06.png?v=3",
-        "alt": "8月31日現在 06"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r88-07.png?v=3",
-        "alt": "8月31日現在 07"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r88-08.png?v=3",
-        "alt": "8月31日現在 08"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r88-09.png?v=3",
-        "alt": "8月31日現在 09"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r89-01.png?v=3",
-        "alt": "10月1日現在 01"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r89-02.png?v=3",
-        "alt": "10月1日現在 02"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r89-03.png?v=3",
-        "alt": "10月1日現在 03"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r89-04.png?v=3",
-        "alt": "10月1日現在 04"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r89-05.png?v=3",
-        "alt": "10月1日現在 05"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r89-06.png?v=3",
-        "alt": "10月1日現在 06"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r89-07.png?v=3",
-        "alt": "10月1日現在 07"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r89-08.png?v=3",
-        "alt": "10月1日現在 08"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r89-09.png?v=3",
-        "alt": "10月1日現在 09"
-      },
-      {
-        "src": "./assets/sites/AC-0009/progress/r89-10.png?v=3",
-        "alt": "10月1日現在 10"
+        "src": "./assets/sites/AC-0009/progress/r89.png?v=4",
+        "alt": "10月1日現在"
       }
     ]
   },
