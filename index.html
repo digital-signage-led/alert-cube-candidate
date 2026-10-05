@@ -970,8 +970,15 @@
             width: 256px; max-width: 256px; flex: 0 0 256px;
             height: var(--led-foot-bar-h);
             display: flex; align-items: center; justify-content: center;
-            overflow: hidden; box-sizing: border-box; padding: 0 6px;
+            overflow: hidden; box-sizing: border-box; padding: 0 4px;
             background: var(--led-foot-bar-bg);
+        }
+        #scene4 .fc-lv-msg-full {
+            display: block; width: 100%; max-width: 100%;
+            font-size: 18px; font-weight: 700; color: #1a1a1a;
+            line-height: var(--led-foot-bar-h); white-space: nowrap;
+            overflow: visible; text-overflow: clip; text-align: center;
+            font-family: "Noto Sans JP", sans-serif; letter-spacing: 0;
         }
         #scene4 .fc-lv-slot.fc-lv-slot-logo {
             width: 128px; flex: 0 0 128px; min-width: 128px; max-width: 128px;
@@ -10328,10 +10335,24 @@
         return `<span class="fc-lv-msg">${buildEvenCharSpans(text, 'fc-lv-ch')}</span>`;
     }
     function buildFcLvSetHtml(text) {
-        const msg = '<span class="fc-lv-msg-compact">' + escapeS1Html(text) + '</span>';
+        const msg = '<span class="fc-lv-msg-full">' + escapeS1Html(text) + '</span>';
         const src = '<div class="fc-lv-slot fc-lv-slot-src">' + msg + '</div>';
         const logo = hasContentLogo_() ? '<div class="fc-lv-slot fc-lv-slot-logo" aria-hidden="true"></div>' : '';
         return '<div class="fc-lv-set fc-lv-set-sync">' + src + src + logo + '</div>';
+    }
+    /** 出典は省略記号にせず、256pxの中に先頭から末尾まで収める */
+    function fitFcLvSourceText_() {
+        if (!fcLvTrack) return;
+        fcLvTrack.querySelectorAll('.fc-lv-msg-full').forEach(function (el) {
+            const slot = el.closest('.fc-lv-slot-src');
+            const limit = Math.max(120, (slot && slot.clientWidth ? slot.clientWidth : 256) - 8);
+            let size = 18;
+            el.style.fontSize = size + 'px';
+            while (size > 11 && el.scrollWidth > limit) {
+                size -= 1;
+                el.style.fontSize = size + 'px';
+            }
+        });
     }
     function buildFcLvTrack(clearTimers) {
         if (!fcLvTrack) return;
@@ -10339,6 +10360,7 @@
         if (clearTimers) clearScene4Timers();
         lastFcLvText_ = text;
         fcLvTrack.innerHTML = buildFcLvSetHtml(text) + buildFcLvSetHtml(text);
+        fitFcLvSourceText_();
         scene4FcLvLapPx = scene4SetWidth;
         applyScrollX_(fcLvTrack, 0);
     }
