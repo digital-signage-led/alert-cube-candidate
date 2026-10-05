@@ -1783,9 +1783,11 @@ test('雨雲レーダーは現場を中心にした降水ナウキャスト画�
   assert.strictEqual(fresh[1].label, '19:15');
   assert.strictEqual(radar.selectFrames(times, radar.parseUtcMs('20261005100000')), null);
   assert.ok(radar.radarUrl(fresh[0], view.tiles[0]).indexOf('/hrpns/8/') >= 0);
-  assert.strictEqual(radar.ZOOM, 4);
+  assert.ok(radar.mapUrl(view.tiles[0]).indexOf('/pale/8/') >= 0);
+  assert.ok(radar.lineUrl(view.tiles[0]).indexOf('/blank/8/') >= 0);
+  assert.strictEqual(radar.ZOOM, 6);
   var japan = radar.tilesForView(34.605184, 135.470949, radar.ZOOM, 128, 128);
-  assert.ok(radar.radarUrl(fresh[0], japan.tiles[0]).indexOf('/hrpns/4/') >= 0);
+  assert.ok(radar.radarUrl(fresh[0], japan.tiles[0]).indexOf('/hrpns/6/') >= 0);
   assert.ok(japan.tiles.some(function (tile) {
     return tile.left <= 64 && tile.left + 256 >= 64 && tile.top <= 64 && tile.top + 256 >= 64;
   }));
