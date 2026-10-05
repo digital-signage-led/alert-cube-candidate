@@ -6991,7 +6991,8 @@
             return;
         }
         raFlow_ = {
-            x: wrapScrollX_(globalScrollX_, RA_UNIT_W),
+            x: midBundle ? wrapScrollX_(globalScrollX_, RA_UNIT_W) : 0,
+            moved: 0,
             whiteBundle: whiteBundle,
             heroBundle: heroBundle,
             heroMode: heroMode,
@@ -7078,12 +7079,13 @@
                 raAnimId = requestAnimationFrame(step);
                 return;
             }
-            const prevX = raFlow_.x;
-            raFlow_.x = wrapScrollX_(globalScrollX_, RA_UNIT_W);
-            if (detectScrollLapCrossed_(prevX, raFlow_.x)) {
-                raFlow_.laps += 1;
-                if (raFlow_.laps >= presentationLaps_('warningLaps', RA_LAPS_BEFORE_SWITCH)) {
+            raFlow_.moved += getScrollSpeedPx_();
+            const warnUnit = RA_UNIT_W;
+            const warnNeed = warnUnit * presentationLaps_('warningLaps', RA_LAPS_BEFORE_SWITCH);
+            raFlow_.x = wrapScrollX_(-raFlow_.moved, warnUnit);
+            if (raFlow_.moved >= warnNeed) {
                     raFlow_.laps = 0;
+                    raFlow_.moved = 0;
                     const curKey = rainWarnActive[raFlow_.warnIdx] || rainWarnActive[0];
                     const curKinds = kindsForLevel_(curKey);
                     let switchedKindOnly = false;
@@ -7103,8 +7105,9 @@
                         raAnimId = null;
                         holdThenNextContent_(function () {
                             setRainWarn_(raFlow_.warnIdx, raFlow_.kindIdx);
-                            raFlow_.x = wrapScrollX_(globalScrollX_, RA_UNIT_W);
-                            applyRaTrackX_(tracks, raFlow_.x);
+                            raFlow_.x = 0;
+                            raFlow_.moved = 0;
+                            applyRaTrackX_(tracks, 0);
                         }, function () {
                             raAnimId = requestAnimationFrame(step);
                         });
@@ -7116,8 +7119,9 @@
                             raAnimId = null;
                             holdThenNextContent_(function () {
                                 setRainWarn_(raFlow_.warnIdx, raFlow_.kindIdx);
-                                raFlow_.x = wrapScrollX_(globalScrollX_, RA_UNIT_W);
-                                applyRaTrackX_(tracks, raFlow_.x);
+                                raFlow_.x = 0;
+                                raFlow_.moved = 0;
+                                applyRaTrackX_(tracks, 0);
                             }, function () {
                                 raAnimId = requestAnimationFrame(step);
                             });
@@ -7138,13 +7142,13 @@
                     raAnimId = null;
                     holdThenNextContent_(function () {
                         setRainWarn_(raFlow_.warnIdx, raFlow_.kindIdx);
-                        raFlow_.x = wrapScrollX_(globalScrollX_, RA_UNIT_W);
-                        applyRaTrackX_(tracks, raFlow_.x);
+                        raFlow_.x = 0;
+                        raFlow_.moved = 0;
+                        applyRaTrackX_(tracks, 0);
                     }, function () {
                         raAnimId = requestAnimationFrame(step);
                     });
                     return;
-                }
             }
             applyRaTrackX_(tracks, raFlow_.x);
             raAnimId = requestAnimationFrame(step);
@@ -7595,6 +7599,9 @@
         if (Number.isFinite(n) && n >= 0) return n;
         return fallback;
     }
+    function sceneSlideMs_() {
+        return sceneHoldMs_('sceneSlideMs', SCENE_SLIDE_MS);
+    }
     const GLOBAL_SCROLL_SPEED_PX = 0.75;
     const DEMO_SCROLL_SPEED_PX = 0.5;
     function getScrollSpeedPx_() {
@@ -7669,19 +7676,23 @@
     function runSceneScrollAfterHold_(fn) {
         clearSceneEndHoldTimer_();
         whenSceneSlideSettled_(function () {
+            const ms = sceneHoldMs_('scrollHoldMs', SCENE_SCROLL_HOLD_MS);
+            if (ms <= 0) { fn(); return; }
             sceneEndHoldTimerId_ = setTimeout(function () {
                 sceneEndHoldTimerId_ = null;
                 fn();
-            }, sceneHoldMs_('scrollHoldMs', SCENE_SCROLL_HOLD_MS));
+            }, ms);
         });
     }
-    /** スクロール終了後に1秒静止してから次へ */
+    /** スクロール終了後に静止してから次へ。0 のときはその場で次へ進む */
     function runAfterSceneEndHold_(fn) {
         clearScenePostHoldTimer_();
+        const ms = sceneHoldMs_('endHoldMs', SCENE_END_HOLD_MS);
+        if (ms <= 0) { fn(); return; }
         scenePostHoldTimerId_ = setTimeout(function () {
             scenePostHoldTimerId_ = null;
             fn();
-        }, sceneHoldMs_('endHoldMs', SCENE_END_HOLD_MS));
+        }, ms);
     }
     /** 1コンテンツ終了 → 1秒静止 → 次準備 → 1秒静止 → スクロール再開 */
     function holdThenNextContent_(prepareFn, resumeAnimFn) {
@@ -10421,7 +10432,7 @@
         });
         nextEl.style.display = sceneDisplayMode(nextEl);
         nextEl.classList.add('active');
-        if (!current || SCENE_SLIDE_MS <= 0) {
+        if (!current || sceneSlideMs_() <= 0) {
             if (current) hideSceneEl(current);
             applyScrollX_(nextEl, 0);
             nextEl.style.zIndex = '';
@@ -10435,7 +10446,7 @@
         runSceneCallback_(onComplete);
         const t0 = performance.now();
         function tick(now) {
-            const p = Math.min(1, (now - t0) / SCENE_SLIDE_MS);
+            const p = Math.min(1, (now - t0) / sceneSlideMs_());
             const eased = p * (2 - p);
             const off = scrollPx_(eased * SCENE_W);
             applyScrollX_(current, -off);
@@ -10720,19 +10731,20 @@
             return;
         }
         tyFlow_ = {
-            x: wrapScrollX_(globalScrollX_, TY_UNIT_W),
+            x: 0,
+            moved: 0,
             slideIdx: idx,
             laps: 0
         };
-        applyTyTrackX_(tracks, tyFlow_.x);
+        applyTyTrackX_(tracks, 0);
         function step() {
-            const prevX = tyFlow_.x;
             advanceGlobalScroll_(getScrollSpeedPx_());
-            tyFlow_.x = wrapScrollX_(globalScrollX_, TY_UNIT_W);
-            if (detectScrollLapCrossed_(prevX, tyFlow_.x)) {
-                tyFlow_.laps += 1;
-                if (tyFlow_.laps >= presentationLaps_('typhoonLaps', TY_LAPS_BEFORE_SWITCH)) {
+            tyFlow_.moved += getScrollSpeedPx_();
+            const tyNeed = TY_UNIT_W * presentationLaps_('typhoonLaps', TY_LAPS_BEFORE_SWITCH);
+            tyFlow_.x = wrapScrollX_(-tyFlow_.moved, TY_UNIT_W);
+            if (tyFlow_.moved >= tyNeed) {
                     tyFlow_.laps = 0;
+                    tyFlow_.moved = 0;
                     tyFlow_.slideIdx += 1;
                     if (tyFlow_.slideIdx >= typhoonSlidesActive.length) {
                         if (DEMO_TYPHOON_ONLY) {
@@ -10740,8 +10752,9 @@
                             tyAnimId = null;
                             holdThenNextContent_(function () {
                                 setTyphoonSlide_(tyFlow_.slideIdx);
-                                applyTyTrackX_(tracks, wrapScrollX_(globalScrollX_, TY_UNIT_W));
-                                tyFlow_.x = wrapScrollX_(globalScrollX_, TY_UNIT_W);
+                                tyFlow_.x = 0;
+                                tyFlow_.moved = 0;
+                                applyTyTrackX_(tracks, 0);
                             }, function () {
                                 tyAnimId = requestAnimationFrame(step);
                             });
@@ -10759,13 +10772,13 @@
                     tyAnimId = null;
                     holdThenNextContent_(function () {
                         setTyphoonSlide_(tyFlow_.slideIdx);
-                        tyFlow_.x = wrapScrollX_(globalScrollX_, TY_UNIT_W);
-                        applyTyTrackX_(tracks, tyFlow_.x);
+                        tyFlow_.x = 0;
+                        tyFlow_.moved = 0;
+                        applyTyTrackX_(tracks, 0);
                     }, function () {
                         tyAnimId = requestAnimationFrame(step);
                     });
                     return;
-                }
             }
             applyTyTrackX_(tracks, tyFlow_.x);
             tyAnimId = requestAnimationFrame(step);
@@ -11341,15 +11354,17 @@
         t3Flow_ = { x: 0, langIdx: 0, laps: 0 };
         applyT3TrackX_(tracks, 0);
         if (guidTrack) applyScrollX_(guidTrack, 0);
+        const guideOn = !!(guidTrack && getT3GuideTierForDisplay_() && t3GuidLapPx > 0);
+        const passPx = guideOn ? Math.max(T3_UNIT_W, t3GuidLapPx) : T3_UNIT_W;
         let moved = 0;
         function step() {
             const speed = getScrollSpeedPx_();
             moved += speed;
-            const lapsNow = Math.floor(moved / T3_UNIT_W);
-            t3Flow_.x = seamlessScrollX_(moved, T3_UNIT_W);
+            const lapsNow = Math.floor(moved / passPx);
+            t3Flow_.x = wrapScrollX_(-moved, T3_UNIT_W);
             applyT3TrackX_(tracks, t3Flow_.x);
-            if (guidTrack && getT3GuideTierForDisplay_() && t3GuidLapPx > 0) {
-                applyScrollX_(guidTrack, seamlessScrollX_(moved, t3GuidLapPx));
+            if (guideOn) {
+                applyScrollX_(guidTrack, wrapScrollX_(-moved, t3GuidLapPx));
             }
             if (lapsNow > t3Flow_.laps) {
                 t3Flow_.laps = lapsNow;
@@ -11595,7 +11610,9 @@
             scheduleDemoStep_(finishScene4);
             return;
         }
-        const totalPx = Math.max(128, scene4SetWidth * presentationLaps_('wbgtLaps', SCENE4_LAPS) - 512);
+        const wbgtTimes = presentationLaps_('wbgtLaps', SCENE4_LAPS);
+        const wbgtSet = Math.max(128, scene4SetWidth);
+        const totalPx = wbgtTimes <= 1 ? wbgtSet : Math.max(128, wbgtSet * wbgtTimes - 512);
         let totalScrolled = 0;
         applyScrollX_(fcConveyor, 0);
         applyScrollX_(fcLvTrack, 0);
@@ -11636,7 +11653,9 @@
             scheduleDemoStep_(gotoSceneAfterScene5_);
             return;
         }
-        const totalPx = Math.max(128, scene5SetWidth * presentationLaps_('forecastLaps', SCENE5_LAPS) - 512);
+        const forecastTimes = presentationLaps_('forecastLaps', SCENE5_LAPS);
+        const forecastSet = Math.max(128, scene5SetWidth);
+        const totalPx = forecastTimes <= 1 ? forecastSet : Math.max(128, forecastSet * forecastTimes - 512);
         let totalScrolled = 0;
         applyScrollX_(d5Conveyor, 0);
         d5Conveyor.style.transition = 'none';
@@ -12834,12 +12853,12 @@
         if (id !== 'news') {
             newsPlayGen_ += 1;
             clearNewsRetry_();
-            setNewsCanvasMode_(false, SCENE_SLIDE_MS);
+            setNewsCanvasMode_(false, sceneSlideMs_());
         }
         if (id !== 'boards') {
             boardsPlayGen_ += 1;
             clearBoardsHold_();
-            setBoardsCanvasMode_(false, SCENE_SLIDE_MS);
+            setBoardsCanvasMode_(false, sceneSlideMs_());
         }
         if (id !== 'progress') progressPlayGen_ += 1;
         switch (id) {
@@ -12999,7 +13018,7 @@
     }
     function finishNewsScene_(gen) {
         if (gen !== newsPlayGen_) return;
-        setNewsCanvasMode_(false, SCENE_SLIDE_MS);
+        setNewsCanvasMode_(false, sceneSlideMs_());
         if (demoOnlyLoop_('news', playSceneNews)) return;
         playlistHandoff_();
     }
@@ -13028,7 +13047,7 @@
                     return;
                 }
                 markPlaylistHeld_();
-                setNewsCanvasMode_(true, SCENE_SLIDE_MS);
+                setNewsCanvasMode_(true, sceneSlideMs_());
                 const built = window.AlertCubeNews.buildTrackHtml(rows, {
                     logoSrc: (window.SIGNAGE_CONFIG && window.SIGNAGE_CONFIG.logoSrc) || '',
                     badge: cfg.badge != null ? cfg.badge : '',
@@ -13189,12 +13208,12 @@
             markPlaylistHeld_();
             boardsPhaseIdx_ = 0;
             if (cfg.background) sceneBoards.style.background = cfg.background;
-            setBoardsCanvasMode_(true, SCENE_SLIDE_MS);
+            setBoardsCanvasMode_(true, sceneSlideMs_());
             const logoSrc = (window.SIGNAGE_CONFIG && window.SIGNAGE_CONFIG.logoSrc) || '';
             function playPhase_() {
                 if (gen !== boardsPlayGen_) return;
                 if (boardsPhaseIdx_ >= phases.length) {
-                    setBoardsCanvasMode_(false, SCENE_SLIDE_MS);
+                    setBoardsCanvasMode_(false, sceneSlideMs_());
                     if (demoOnlyLoop_('boards', playSceneBoards)) return;
                     playlistHandoff_();
                     return;

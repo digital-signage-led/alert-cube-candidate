@@ -93,8 +93,9 @@
     "observationTrailingLogo": true,
     "heatLabel": "ja",
     "i18nLangs": ["jp"],
-    "scrollHoldMs": 1000,
-    "endHoldMs": 1000,
+    "scrollHoldMs": 0,
+    "endHoldMs": 0,
+    "sceneSlideMs": 0,
     "footColor": "#ffffff",
     "solid": {
       "clock": { "top": "#4FBE6A", "body": "#36A852", "foot": "#ffffff" },
