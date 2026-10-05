@@ -13,7 +13,8 @@
     <script src="./contents/boards/index.js?v=20261005-ac0009-slide"></script>
     <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
-    <script src="./contents/rain-radar/index.js?v=20261005-rain-radar7"></script>
+    <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
+    <script src="./contents/rain-radar/index.js?v=20261005-rain-radar15"></script>
     <script src="./contents/eew/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
@@ -13214,22 +13215,26 @@
         }
         whenReady_(function (lap) {
             if (gen !== progressPlayGen_) return;
-            applyScrollX_(document.getElementById('progress-track'), 0);
+            const track = document.getElementById('progress-track');
+            const sheet = track && track.parentElement;
+            const view = sheet && sheet.clientWidth > 0 ? sheet.clientWidth : 512;
+            const end = Math.max(0, lap - view);
+            applyScrollX_(track, 0);
             let moved = 0;
             function step() {
                 if (gen !== progressPlayGen_) return;
                 moved += getScrollSpeedPx_();
-                const track = document.getElementById('progress-track');
-                if (moved >= lap) {
+                const live = document.getElementById('progress-track');
+                if (moved >= end) {
                     progressAnimId = null;
-                    if (track) applyScrollX_(track, -lap);
+                    if (live) applyScrollX_(live, -end);
                     runAfterSceneEndHold_(function () {
                         if (gen !== progressPlayGen_) return;
                         finishVisit_();
                     });
                     return;
                 }
-                if (track) applyScrollX_(track, -moved);
+                if (live) applyScrollX_(live, -moved);
                 progressAnimId = requestAnimationFrame(step);
             }
             runSceneScrollAfterHold_(function () {
@@ -13255,29 +13260,38 @@
         markPlaylistHeld_();
         sceneRainRadar.innerHTML = api.shellHtml();
         const canvases = sceneRainRadar.querySelectorAll('.rr-canvas');
-        api.drawMessage(canvases, '読込中');
+        const base = api.basemap(siteCfg_());
+        if (base) api.drawFrame(canvases, base, -1);
         api.prepare(siteCfg_(), Date.now()).then(function (plan) {
             if (gen !== rainRadarGen_) return;
             if (!plan || !plan.frames || !plan.frames.length) {
                 if (DEMO_ONLY === 'rain-radar') {
-                    api.drawMessage(canvases, '雨雲を取得できません');
+                    rainRadarTimer_ = setTimeout(function () {
+                        rainRadarTimer_ = 0;
+                        if (gen !== rainRadarGen_) return;
+                        playSceneRainRadar();
+                    }, 5000);
                     return;
                 }
                 finishRainRadar_();
                 return;
             }
+            api.preload(plan);
             let index = 0;
             function show() {
                 if (gen !== rainRadarGen_) return;
                 api.drawFrame(canvases, plan, index).then(function () {
                     if (gen !== rainRadarGen_) return;
-                    const first = index === 0;
-                    const dwell = api.FRAME_MS + (first ? sceneHoldMs_('scrollHoldMs', SCENE_SCROLL_HOLD_MS) : 0);
                     rainRadarTimer_ = setTimeout(function () {
                         rainRadarTimer_ = 0;
                         if (gen !== rainRadarGen_) return;
                         index += 1;
                         if (index >= plan.frames.length) {
+                            if (DEMO_ONLY === 'rain-radar') {
+                                index = 0;
+                                show();
+                                return;
+                            }
                             runAfterSceneEndHold_(function () {
                                 if (gen !== rainRadarGen_) return;
                                 finishRainRadar_();
@@ -13285,7 +13299,7 @@
                             return;
                         }
                         show();
-                    }, dwell);
+                    }, api.FRAME_MS);
                 });
             }
             show();

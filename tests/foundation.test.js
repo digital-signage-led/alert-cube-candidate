@@ -693,7 +693,7 @@ test('AC-0009 は大島組・米岡橋梁下部工の4面本番設定', function
   assert.strictEqual(site.label, '大島組');
   assert.strictEqual(site.siteName, '米岡橋梁下部工');
   assert.strictEqual(site.location, '〒943-0104 新潟県上越市鶴町52');
-  assert.strictEqual(site.memo, 'レンタルのニッケン上越営業。順は社名PR、時刻と気象、雨雲レーダー、日本語の暑さ指数、工事進捗、墜落・転落。ニュースは出さない。社名PRは上白・中緑・下白。時刻・気象は上中が緑、下が白。暑さ指数は気象庁のWBGT段階色。雨雲レーダーは現場を中心に気象庁の降水ナウキャストを出す。墜落・転落は4面別々の標識を横スライドで2周。工事進捗はR8.5からR8.9のPDFを、ページを分けずに1枚ずつ高さ128pxで横に続ける。');
+  assert.strictEqual(site.memo, 'レンタルのニッケン上越営業。順は警報・台風（発表中のみ）、社名PR、時刻、気象、雨雲レーダー、暑さ指数、日本語の暑さ指数、4日間予報、工事進捗、墜落・転落。ニュースは出さない。社名PRは上白・中緑・下白。時刻・気象は上中が緑、下が白。暑さ指数は気象庁のWBGT段階色。雨雲レーダーは現場を中心に気象庁の降水ナウキャストを出す。墜落・転落は4面別々の標識を横スライドで2周。工事進捗はR8.5からR8.9のPDFを、ページを分けずに1枚ずつ高さ128pxで横に続ける。');
   assert.strictEqual(site.greeting.enabled, true);
   assert.strictEqual(site.greeting.mode, 'promo');
   assert.strictEqual(site.greeting.title, '株式会社 大島組');
@@ -719,7 +719,7 @@ test('AC-0009 は大島組・米岡橋梁下部工の4面本番設定', function
   assert.ok(site.boards.phases[0].images[1].src.indexOf('safety_harness.jpg') >= 0);
   assert.ok(site.boards.phases[0].images[2].src.indexOf('safety_opening.png') >= 0);
   assert.ok(site.boards.phases[0].images[3].src.indexOf('safety_lifeline.png') >= 0);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'greeting', 'clock', 'observation', 'forecast', 'rain-radar', 'wbgt', 'wbgt-i18n', 'progress', 'boards']);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'greeting', 'clock', 'observation', 'rain-radar', 'wbgt', 'wbgt-i18n', 'forecast', 'progress', 'boards']);
   assert.strictEqual(site.presentation.heatLabel, 'ja');
   assert.deepStrictEqual(site.presentation.i18nLangs, ['jp']);
   assert.strictEqual(site.presentation.scrollHoldMs, 1000);
@@ -1752,8 +1752,9 @@ test('雨雲レーダーは現場を中心にした降水ナウキャスト画�
   assert.ok(site0.contentOrder.indexOf('forecast') < site0.contentOrder.indexOf('rain-radar'));
   assert.strictEqual(site9.contents['rain-radar'].on, true);
   assert.strictEqual(foundation.isContentOn(site9, 'rain-radar'), true);
-  assert.ok(site9.contentOrder.indexOf('forecast') < site9.contentOrder.indexOf('rain-radar'));
+  assert.ok(site9.contentOrder.indexOf('observation') < site9.contentOrder.indexOf('rain-radar'));
   assert.ok(site9.contentOrder.indexOf('rain-radar') < site9.contentOrder.indexOf('wbgt'));
+  assert.ok(site9.contentOrder.indexOf('wbgt') < site9.contentOrder.indexOf('forecast'));
   assert.strictEqual(foundation.isContentOn(require('../sites/AC-0001.json'), 'rain-radar'), false);
   var osaka = radar.worldPixel(34.605184, 135.470949, 8);
   assert.strictEqual(Math.floor(osaka.x / 256), 224);
@@ -1783,21 +1784,20 @@ test('雨雲レーダーは現場を中心にした降水ナウキャスト画�
   assert.strictEqual(fresh[1].label, '19:15');
   assert.strictEqual(radar.selectFrames(times, radar.parseUtcMs('20261005100000')), null);
   assert.ok(radar.radarUrl(fresh[0], view.tiles[0]).indexOf('/hrpns/8/') >= 0);
-  assert.ok(radar.mapUrl(view.tiles[0]).indexOf('/pale/8/') >= 0);
-  assert.ok(radar.lineUrl(view.tiles[0]).indexOf('/blank/8/') >= 0);
-  assert.strictEqual(radar.ZOOM, 6);
+  assert.strictEqual(radar.ZOOM, 8);
   var japan = radar.tilesForView(34.605184, 135.470949, radar.ZOOM, 128, 128);
-  assert.ok(radar.radarUrl(fresh[0], japan.tiles[0]).indexOf('/hrpns/6/') >= 0);
+  assert.ok(radar.radarUrl(fresh[0], japan.tiles[0]).indexOf('/hrpns/8/') >= 0);
   assert.ok(japan.tiles.some(function (tile) {
     return tile.left <= 64 && tile.left + 256 >= 64 && tile.top <= 64 && tile.top + 256 >= 64;
   }));
   var shell = radar.shellHtml();
   assert.strictEqual((shell.match(/class="rr-face"/g) || []).length, 4);
   assert.strictEqual((shell.match(/class="rr-canvas"/g) || []).length, 4);
-  assert.ok(shell.indexOf('width="128"') >= 0);
+  assert.ok(shell.indexOf('width="512"') >= 0);
   var fs = require('fs');
   var path = require('path');
   var page = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.ok(page.indexOf('contents/rain-radar/prefectures.js') >= 0);
   assert.ok(page.indexOf('contents/rain-radar/index.js') >= 0);
   assert.ok(page.indexOf('function playSceneRainRadar()') >= 0);
   assert.ok(page.indexOf("case 'rain-radar':") >= 0);

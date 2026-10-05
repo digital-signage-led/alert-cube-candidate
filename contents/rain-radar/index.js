@@ -1,24 +1,23 @@
 /**
  * 雨雲レーダー。
  * 台風情報と同じく 128×128 を4面に並べ、各面は現場を中心にした同じレーダー。
- * 下地は淡色地図の陸と海を単色にし、白地図の海岸と県境だけ重ねる。
+ * 下地は県の外形だけ。線は海岸の輪郭と県境。琵琶湖など内水面は海の色にしない。
  * 国土は雨の青・黄・赤が沈まない灰色。
  * targetTimes の時刻数字は協定世界時。
  */
 (function (global) {
   'use strict';
 
-  var ZOOM = 6;
+  var ZOOM = 8;
   var VIEW_W = 128;
   var VIEW_H = 128;
+  var DRAW_SCALE = 4;
   var FACES = 4;
   var TILE = 256;
   var FRAME_MS = 1500;
   var MAX_AGE_MS = 30 * 60 * 1000;
   var TIMES_URL = 'https://www.jma.go.jp/bosai/jmatile/data/nowc/targetTimes_N2.json';
   var RADAR_URL = 'https://www.jma.go.jp/bosai/jmatile/data/nowc/{basetime}/none/{validtime}/surf/hrpns/{z}/{x}/{y}.png';
-  var MAP_URL = 'https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png';
-  var LINE_URL = 'https://cyberjapandata.gsi.go.jp/xyz/blank/{z}/{x}/{y}.png';
   var OCEAN = [79, 143, 191];
   var LAND = [186, 191, 196];
   var LINE = [92, 99, 107];
@@ -108,14 +107,6 @@
     return frames.length ? frames : null;
   }
 
-  function mapUrl(tile) {
-    return MAP_URL.replace('{z}', tile.z).replace('{x}', tile.x).replace('{y}', tile.y);
-  }
-
-  function lineUrl(tile) {
-    return LINE_URL.replace('{z}', tile.z).replace('{x}', tile.x).replace('{y}', tile.y);
-  }
-
   function radarUrl(frame, tile) {
     return RADAR_URL
       .replace('{basetime}', frame.basetime)
@@ -129,7 +120,7 @@
     var html = '<div class="rr-faces">';
     var i;
     for (i = 0; i < FACES; i++) {
-      html += '<div class="rr-face"><canvas class="rr-canvas" width="' + VIEW_W + '" height="' + VIEW_H + '"></canvas></div>';
+      html += '<div class="rr-face"><canvas class="rr-canvas" width="' + (VIEW_W * DRAW_SCALE) + '" height="' + (VIEW_H * DRAW_SCALE) + '"></canvas></div>';
     }
     return html + '</div>';
   }
@@ -155,7 +146,6 @@
         resolve(img || null);
       }
       var img = new Image();
-      img.crossOrigin = 'anonymous';
       var timer = setTimeout(function () {
         img.onload = null;
         img.onerror = null;
@@ -178,98 +168,175 @@
     try { ctx.drawImage(img, tile.left, tile.top); } catch (e) { /* 1枚失敗でも面は出す */ }
   }
 
-  function isSeaPixel(r, g, b) {
-    return b > 200 && b > r + 25 && g + 8 >= r;
-  }
-
-  function isInkPixel(r, g, b) {
-    var max = r > g ? (r > b ? r : b) : (g > b ? g : b);
-    var min = r < g ? (r < b ? r : b) : (g < b ? g : b);
-    var y = (r + g + b) / 3;
-    return y < 160 && max - min < 45;
-  }
-
-  function flattenBasemap(ctx, w, h) {
-    var img = ctx.getImageData(0, 0, w, h);
-    var d = img.data;
-    var n = w * h;
-    var kind = new Uint8Array(n);
+  function traceRing(ctx, ring, originX, originY) {
     var i;
-    var p;
-    for (i = 0, p = 0; i < n; i++, p += 4) {
-      if (isSeaPixel(d[p], d[p + 1], d[p + 2])) kind[i] = 1;
-      else if (isInkPixel(d[p], d[p + 1], d[p + 2])) kind[i] = 3;
-      else kind[i] = 2;
+    for (i = 0; i < ring.length; i++) {
+      var p = worldPixel(ring[i][1], ring[i][0], ZOOM);
+      var x = p.x - originX;
+      var y = p.y - originY;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
     }
-    for (i = 0; i < n; i++) {
-      if (kind[i] !== 3) continue;
-      var x = i % w;
-      var y = (i / w) | 0;
-      var sea = false;
-      var dy;
-      var dx;
-      for (dy = -3; dy <= 3 && !sea; dy++) {
-        for (dx = -3; dx <= 3; dx++) {
-          var nx = x + dx;
-          var ny = y + dy;
-          if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
-          if (kind[ny * w + nx] === 1) { sea = true; break; }
+    ctx.closePath();
+  }
+
+  function landRings(pref) {
+    if (!pref) return [];
+    if (pref.land) return pref.land;
+    return Array.isArray(pref) ? pref : [];
+  }
+
+  function drawPrefectures(ctx, originX, originY) {
+    var prefs = typeof AlertCubePrefectures !== 'undefined' ? AlertCubePrefectures : [];
+    var land = 'rgb(' + LAND[0] + ',' + LAND[1] + ',' + LAND[2] + ')';
+    var line = 'rgb(' + LINE[0] + ',' + LINE[1] + ',' + LINE[2] + ')';
+    var pi;
+    var ri;
+    var rings;
+    ctx.fillStyle = land;
+    for (pi = 0; pi < prefs.length; pi++) {
+      rings = landRings(prefs[pi]);
+      for (ri = 0; ri < rings.length; ri++) {
+        ctx.beginPath();
+        traceRing(ctx, rings[ri], originX, originY);
+        ctx.fill();
+      }
+      rings = prefs[pi] && prefs[pi].lakes || [];
+      for (ri = 0; ri < rings.length; ri++) {
+        ctx.beginPath();
+        traceRing(ctx, rings[ri], originX, originY);
+        ctx.fill();
+      }
+    }
+    strokeBorders(ctx, prefs, originX, originY, line);
+  }
+
+  function borderKey(a, b) {
+    return a < b ? a + '|' + b : b + '|' + a;
+  }
+
+  function strokeBorders(ctx, prefs, originX, originY, line) {
+    var adj = Object.create(null);
+    var xy = Object.create(null);
+    var seen = Object.create(null);
+    var pi;
+    var ri;
+    var rings;
+    var i;
+    var ring;
+    function idOf(pt) {
+      return pt[0] + ',' + pt[1];
+    }
+    function link(a, b) {
+      var ia = idOf(a);
+      var ib = idOf(b);
+      if (ia === ib) return;
+      var ek = borderKey(ia, ib);
+      if (seen[ek]) return;
+      seen[ek] = 1;
+      if (!adj[ia]) adj[ia] = [];
+      if (!adj[ib]) adj[ib] = [];
+      adj[ia].push(ib);
+      adj[ib].push(ia);
+      xy[ia] = a;
+      xy[ib] = b;
+    }
+    for (pi = 0; pi < prefs.length; pi++) {
+      rings = landRings(prefs[pi]);
+      for (ri = 0; ri < rings.length; ri++) {
+        ring = rings[ri];
+        for (i = 0; i < ring.length; i++) link(ring[i], ring[(i + 1) % ring.length]);
+      }
+    }
+    var used = Object.create(null);
+    ctx.beginPath();
+    ctx.strokeStyle = line;
+    ctx.lineWidth = 1;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    Object.keys(adj).forEach(function (start) {
+      adj[start].forEach(function (nb) {
+        var e0 = borderKey(start, nb);
+        if (used[e0]) return;
+        var chain = [start, nb];
+        used[e0] = 1;
+        var prev = start;
+        var cur = nb;
+        var guard = 0;
+        while (adj[cur] && adj[cur].length === 2 && guard < 100000) {
+          var nxt = adj[cur][0] === prev ? adj[cur][1] : adj[cur][0];
+          var ek = borderKey(cur, nxt);
+          if (used[ek]) break;
+          used[ek] = 1;
+          chain.push(nxt);
+          prev = cur;
+          cur = nxt;
+          guard += 1;
+          if (cur === start) break;
         }
-      }
-      kind[i] = sea ? 1 : 2;
-    }
-    for (i = 0, p = 0; i < n; i++, p += 4) {
-      var rgb = kind[i] === 1 ? OCEAN : LAND;
-      d[p] = rgb[0];
-      d[p + 1] = rgb[1];
-      d[p + 2] = rgb[2];
-      d[p + 3] = 255;
-    }
-    ctx.putImageData(img, 0, 0);
+        if (adj[start] && adj[start].length === 2 && chain[chain.length - 1] !== start) {
+          prev = chain[1];
+          cur = start;
+          guard = 0;
+          while (adj[cur] && adj[cur].length === 2 && guard < 100000) {
+            var nxt2 = adj[cur][0] === prev ? adj[cur][1] : adj[cur][0];
+            var ek2 = borderKey(cur, nxt2);
+            if (used[ek2]) break;
+            used[ek2] = 1;
+            chain.unshift(nxt2);
+            prev = cur;
+            cur = nxt2;
+            guard += 1;
+          }
+        }
+        var p0 = worldPixel(xy[chain[0]][1], xy[chain[0]][0], ZOOM);
+        ctx.moveTo(p0.x - originX, p0.y - originY);
+        for (i = 1; i < chain.length; i++) {
+          var p = worldPixel(xy[chain[i]][1], xy[chain[i]][0], ZOOM);
+          ctx.lineTo(p.x - originX, p.y - originY);
+        }
+      });
+    });
+    ctx.stroke();
   }
 
-  function boundaryCanvas(img) {
-    if (!img || !img.width) return null;
-    if (img._acBoundary) return img._acBoundary;
-    var c = document.createElement('canvas');
-    c.width = img.width;
-    c.height = img.height;
-    var sctx = c.getContext('2d');
-    sctx.drawImage(img, 0, 0);
-    var frame = sctx.getImageData(0, 0, c.width, c.height);
-    var d = frame.data;
-    var i;
-    for (i = 0; i < d.length; i += 4) {
-      var y = (d[i] + d[i + 1] + d[i + 2]) / 3;
-      if (d[i + 3] > 16 && y < 170) {
-        d[i] = LINE[0];
-        d[i + 1] = LINE[1];
-        d[i + 2] = LINE[2];
-        d[i + 3] = 255;
-      } else {
-        d[i + 3] = 0;
-      }
-    }
-    sctx.putImageData(frame, 0, 0);
-    img._acBoundary = c;
-    return c;
+  var landCache = { key: '', canvas: null };
+
+  function landCanvas(originX, originY) {
+    var key = originX + ',' + originY;
+    if (landCache.key === key && landCache.canvas) return landCache.canvas;
+    if (typeof document === 'undefined') return null;
+    var canvas = document.createElement('canvas');
+    canvas.width = VIEW_W * DRAW_SCALE;
+    canvas.height = VIEW_H * DRAW_SCALE;
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(DRAW_SCALE, 0, 0, DRAW_SCALE, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.fillStyle = 'rgb(' + OCEAN[0] + ',' + OCEAN[1] + ',' + OCEAN[2] + ')';
+    ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+    drawPrefectures(ctx, originX, originY);
+    landCache = { key: key, canvas: canvas };
+    return canvas;
   }
 
-  function paint(canvas, plan, radarImgs) {
+  function paint(canvas, plan, radarImgs, label) {
     if (!canvas || !plan) return;
     var ctx = canvas.getContext('2d');
-    var w = canvas.width;
-    var h = canvas.height;
+    var scale = canvas.width / VIEW_W || 1;
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    var w = VIEW_W;
+    var h = VIEW_H;
     ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = 'rgb(' + OCEAN[0] + ',' + OCEAN[1] + ',' + OCEAN[2] + ')';
-    ctx.fillRect(0, 0, w, h);
-    plan.tiles.forEach(function (tile, i) { drawTile(ctx, plan.maps[i], tile); });
-    try { flattenBasemap(ctx, w, h); } catch (e) { /* 画素が読めないときは淡色のまま */ }
-    var lines = plan.lines || [];
-    plan.tiles.forEach(function (tile, i) {
-      try { drawTile(ctx, boundaryCanvas(lines[i]), tile); } catch (e) { /* 境界がなくても陸海は出す */ }
-    });
-    plan.tiles.forEach(function (tile, i) { drawTile(ctx, radarImgs[i], tile); });
+    var land = landCanvas(plan.originX, plan.originY);
+    if (land) ctx.drawImage(land, 0, 0, w, h);
+    else {
+      ctx.fillStyle = 'rgb(' + OCEAN[0] + ',' + OCEAN[1] + ',' + OCEAN[2] + ')';
+      ctx.fillRect(0, 0, w, h);
+      drawPrefectures(ctx, plan.originX, plan.originY);
+    }
+    (radarImgs || []).forEach(function (img, i) { drawTile(ctx, img, plan.tiles[i]); });
     var cx = w / 2;
     var cy = h / 2;
     ctx.beginPath();
@@ -279,28 +346,49 @@
     ctx.lineWidth = 1.5;
     ctx.strokeStyle = '#d00000';
     ctx.stroke();
-    var credit = '気象庁・地理院';
-    ctx.font = '700 11px "Noto Sans JP", sans-serif';
+    ctx.font = '700 8px "Noto Sans JP", sans-serif';
     ctx.textBaseline = 'middle';
+    if (label) {
+      var tw = ctx.measureText(label).width;
+      ctx.fillStyle = 'rgba(14,42,74,0.72)';
+      ctx.fillRect(0, h - 11, tw + 4, 11);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(label, 2, h - 5.5);
+    }
+    var credit = '気象庁・地理院';
     var cw = ctx.measureText(credit).width;
     ctx.fillStyle = 'rgba(14,42,74,0.72)';
-    ctx.fillRect(w - cw - 10, h - 16, cw + 10, 16);
+    ctx.fillRect(w - cw - 4, h - 11, cw + 4, 11);
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(credit, w - cw - 5, h - 8);
+    ctx.fillText(credit, w - cw - 2, h - 5.5);
   }
 
   function drawMessage(canvases, text) {
     canvasList(canvases).forEach(function (canvas) {
       if (!canvas) return;
       var ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var scale = canvas.width / VIEW_W || 1;
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+      ctx.clearRect(0, 0, VIEW_W, VIEW_H);
       ctx.fillStyle = '#06284A';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, VIEW_W, VIEW_H);
       ctx.fillStyle = '#ffffff';
       ctx.font = '700 18px "Noto Sans JP", sans-serif';
       ctx.textBaseline = 'middle';
-      ctx.fillText(text || '雨雲を取得できません', 8, canvas.height / 2);
+      ctx.fillText(text || '雨雲を取得できません', 8, VIEW_H / 2);
     });
+  }
+
+  function basemap(site) {
+    var loc = locationOf(site);
+    if (!loc) return null;
+    var view = tilesForView(loc.lat, loc.lon, ZOOM, VIEW_W, VIEW_H);
+    return {
+      tiles: view.tiles,
+      originX: view.originX,
+      originY: view.originY,
+      frames: []
+    };
   }
 
   function prepare(site, nowMs) {
@@ -316,29 +404,39 @@
     }).then(function (times) {
       var frames = selectFrames(times, nowMs);
       if (!frames) return null;
-      return Promise.all([
-        Promise.all(view.tiles.map(function (tile) { return loadImage(mapUrl(tile)); })),
-        Promise.all(view.tiles.map(function (tile) { return loadImage(lineUrl(tile)); }))
-      ]).then(function (pair) {
-        return { tiles: view.tiles, maps: pair[0], lines: pair[1], frames: frames };
-      });
+      return {
+        tiles: view.tiles,
+        originX: view.originX,
+        originY: view.originY,
+        frames: frames
+      };
     }).catch(function () { return null; });
   }
 
+  function loadFrame(plan, frame) {
+    if (!frame) return Promise.resolve([]);
+    if (frame.images) return Promise.resolve(frame.images);
+    return Promise.all(plan.tiles.map(function (tile) {
+      return loadImage(radarUrl(frame, tile));
+    })).then(function (imgs) {
+      if (imgs.some(Boolean)) frame.images = imgs;
+      return imgs;
+    });
+  }
+
+  function preload(plan) {
+    if (!plan || !plan.frames) return Promise.resolve([]);
+    return Promise.all(plan.frames.map(function (frame) {
+      return loadFrame(plan, frame);
+    }));
+  }
+
   function drawFrame(canvases, plan, index) {
-    var frame = plan && plan.frames && plan.frames[index];
-    if (!frame) return Promise.resolve();
-    var ready = frame.images
-      ? Promise.resolve(frame.images)
-      : Promise.all(plan.tiles.map(function (tile) {
-        return loadImage(radarUrl(frame, tile));
-      })).then(function (imgs) {
-        frame.images = imgs;
-        return imgs;
-      });
-    return ready.then(function (imgs) {
+    if (!plan) return Promise.resolve();
+    var frame = plan.frames && plan.frames[index];
+    return loadFrame(plan, frame).then(function (imgs) {
       canvasList(canvases).forEach(function (canvas) {
-        paint(canvas, plan, imgs);
+        paint(canvas, plan, imgs, frame && frame.label);
       });
     });
   }
@@ -355,11 +453,11 @@
     parseUtcMs: parseUtcMs,
     labelOf: labelOf,
     selectFrames: selectFrames,
-    mapUrl: mapUrl,
-    lineUrl: lineUrl,
     radarUrl: radarUrl,
     shellHtml: shellHtml,
+    basemap: basemap,
     prepare: prepare,
+    preload: preload,
     drawFrame: drawFrame,
     drawMessage: drawMessage
   };
