@@ -353,7 +353,7 @@
     if (json.status) base.status = json.status;
     if (json.season) base.season = json.season;
     if (json.customer != null && base.site) base.site.customer = json.customer;
-    if (json.rental && base.site) base.site.rental = json.rental;
+    if (json.rental != null && base.site) base.site.rental = json.rental;
     if (json.siteName && base.site) {
       base.site.label = json.siteName;
       base.site.locationLabel = json.siteName;
@@ -493,8 +493,8 @@
   function bootAsync() {
     var resolved = global.AlertCubeSite || bootSync();
     resolved.configReady = false;
-    return loadCatalog().then(function () {
-      return loadSiteJson(resolved.siteId);
+    return Promise.all([loadCatalog(), loadSiteJson(resolved.siteId)]).then(function (parts) {
+      return parts[1];
     }).then(function (result) {
       var networkJson = result && result.ok ? result.json : null;
       var chosen = chooseBootConfig(resolved.siteId, networkJson, readRememberedSiteJson(resolved.siteId));

@@ -121,8 +121,12 @@
       scope.querySelectorAll('#scene1 .clock-hm').forEach(function (el) {
         var hEl = el.querySelector('.clock-h');
         var mEl = el.querySelector('.clock-m');
-        if (hEl) hEl.textContent = hh;
-        if (mEl) mEl.textContent = mm;
+        if (hEl && mEl) {
+          hEl.textContent = hh;
+          mEl.textContent = mm;
+          return;
+        }
+        el.textContent = hh + ':' + mm;
       });
     } catch (_) {}
   }
@@ -248,15 +252,39 @@
     customerName: customerName
   };
 
+  function urlSiteId_() {
+    try {
+      var q = new URLSearchParams((global.location && global.location.search) || '');
+      var raw = q.get('site') || q.get('project') || q.get('ac') || '';
+      if (!raw) return 'AC-0001';
+      var id = String(raw).trim().toUpperCase();
+      return /^AC-[0-9]{4}$/.test(id) ? id : '';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  /* 読込前の既定案件（AC-0001）を、別のURLへ塗らない */
+  function shellMatchesUrl_() {
+    var want = urlSiteId_();
+    var have = String((siteCfg().projectId) || '').toUpperCase();
+    if (!want || want !== have) return false;
+    if (global.AlertCubeSite && global.AlertCubeSite.configReady === false) return false;
+    return true;
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
       injectPreloads();
+      if (!shellMatchesUrl_()) return;
       applyFixedShell();
       paintLocalClock();
     });
   } else {
     injectPreloads();
-    applyFixedShell();
-    paintLocalClock();
+    if (shellMatchesUrl_()) {
+      applyFixedShell();
+      paintLocalClock();
+    }
   }
 })(typeof window !== 'undefined' ? window : this);

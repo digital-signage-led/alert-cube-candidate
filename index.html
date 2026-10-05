@@ -19,7 +19,7 @@
     <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
-    <script src="./core/foundation.js?v=20261005-progress"></script>
+    <script src="./core/foundation.js?v=20261005-boot"></script>
     <script src="./services/densho/index.js?v=20260929-densho-live"></script>
     <script src="./services/remote.js?v=20260921-suminoe"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
@@ -27,7 +27,7 @@
     <script src="./safety/retry.js?v=20260921-suminoe"></script>
     <script src="./safety/rollback.js?v=20260921-suminoe"></script>
     <script src="./scripts/alert-cube-core.js?v=20260929-i18n-off"></script>
-    <script src="./scripts/alert-cube-runtime.js?v=20260929-ac0014"></script>
+    <script src="./scripts/alert-cube-runtime.js?v=20261005-site-shell"></script>
     <script>
     (function () {
         try {
@@ -217,6 +217,7 @@
             flex: 0 0 auto;
         }
         .content-area { width: 512px; height: 128px; position: relative; overflow: hidden; flex: 0 0 512px; flex-shrink: 0; background: #308DD8; }
+        html:not(.ac-ready) .content-area { visibility: hidden; }
         .content-area > .scene-strip-bg { z-index: 0; }
         .content-area > .scene { z-index: 1; will-change: transform; }
         .scene {
@@ -2684,7 +2685,7 @@
             <div class="band band-bot"><div class="track" id="whiteBotTrack"></div></div>
         </div>
     </div>
-    <div class="scene active" id="scene1">
+    <div class="scene" id="scene1">
         <div class="scene1-state active" id="s1-stateA">
             <div class="panel panel-clock"><div class="s1-top-bar"><span class="s1-bar-label">--</span></div><div class="s1-body"><div class="clock-hm time-val">--:--</div></div><div class="s1-foot"></div></div>
             <div class="panel panel-clock"><div class="s1-top-bar"><span class="s1-bar-label">--</span></div><div class="s1-body"><div class="clock-hm time-val">--:--</div></div><div class="s1-foot"></div></div>
@@ -7972,6 +7973,7 @@
         var siteUrl = /^AC-\d{4}$/.test(siteId) ? './sites/' + siteId + '.json' : '';
         var seenHtml = null;
         var seenSite = null;
+        var pendingLive_ = null;
         setInterval(function () {
             var jobs = [
                 fetch('./index.html', { cache: 'no-store' }).then(function (res) { return res.ok ? res.text() : ''; })
@@ -7984,7 +7986,12 @@
                 var site = parts[1] || '';
                 if (!html) return;
                 if (seenHtml == null) { seenHtml = html; seenSite = site; return; }
-                if (html !== seenHtml || (siteUrl && site && site !== seenSite)) reloadNow_();
+                var htmlChanged = html !== seenHtml;
+                var siteChanged = !!(siteUrl && site && site !== seenSite);
+                if (!htmlChanged && !siteChanged) { pendingLive_ = null; return; }
+                var stamp = html + '\n' + site;
+                if (pendingLive_ !== stamp) { pendingLive_ = stamp; return; }
+                reloadNow_();
             }).catch(function () {});
         }, LIVE_UPDATE_MS);
     }
@@ -8439,15 +8446,11 @@
         buildFcLvTrack(false);
         setS1FootBarVisible_(hasS1WbgtFootMessage_());
     }
-    /** 起動直後: キャッシュ／初期色をすぐ描画（画面を隠さない＝青画面にしない） */
+    /** 起動直後の初期時刻（--）と既定の社名は出さない。URLの案件が描けるまで画面は隠す */
     function paintBootSplash_() {
         if (timeSync.baseUtcMs == null) applySyncedUtcMs(Date.now(), 'boot-local');
         updateClock();
         if (DEMO_ONLY && DEMO_ONLY !== 's1') return;
-        if (s1) {
-            s1.style.display = sceneDisplayMode(s1);
-            s1.classList.add('active');
-        }
         syncWbgtSlotsToDomIfReady_();
         if (typeof SignageBg !== 'undefined') refreshSignageBg();
         refreshS1WbgtFootBar_(false);
@@ -10440,6 +10443,9 @@
         if (typeof fn !== 'function') return;
         try { fn(); } catch (err) { console.error('[scene]', err); }
     }
+    function markDisplayReady_() {
+        document.documentElement.classList.add('ac-ready');
+    }
     function transitionToScene(nextEl, onComplete) {
         clearSceneEndHoldTimer_();
         clearSceneSlideAnim_();
@@ -10458,6 +10464,7 @@
             applyScrollX_(nextEl, 0);
             nextEl.style.zIndex = '';
             applySignageLogoPanel_();
+            markDisplayReady_();
             runSceneCallback_(onComplete);
             return;
         }
@@ -10480,6 +10487,7 @@
                 applyScrollX_(nextEl, 0);
                 nextEl.style.zIndex = '';
                 applySignageLogoPanel_();
+                markDisplayReady_();
                 const settled = sceneSlideSettledFn_;
                 sceneSlideSettledFn_ = null;
                 if (settled) settled();
@@ -12692,6 +12700,7 @@
         if (!el) return;
         el.style.display = sceneDisplayMode(el);
         el.classList.add('active');
+        markDisplayReady_();
         el.style.transform = 'translateX(0px)';
         el.style.zIndex = '';
         try {
@@ -13503,13 +13512,63 @@
         gotoAfterRainWarnOrScene1_();
     }
 
-    window.onload = async function() {
+    function beginLivePlaylist_() {
+        applySyncedUtcMs(Date.now(), 'boot-local');
+        updateClock();
+        startClockTicker();
+        setInterval(function () {
+            syncTimeFromNetwork().then(function () { updateClock(); }).catch(function () {});
+        }, CLOCK_SYNC_INTERVAL_MS);
+        syncTimeFromNetwork().then(function () { updateClock(); }).catch(function () {});
+        bootDisplayHold_ = false;
+        mainLoopStarted_ = true;
+        scheduleDataRefresh();
+        try {
+            startSequence();
+        } catch (e) {
+            console.error('startSequence', e);
+            try { startContentOrder_(); } catch (e2) { console.error('fallback startContentOrder_', e2); }
+        }
+        try { flushInitialDisplay_(); } catch (e) { console.error('flushInitialDisplay_', e); }
+        startBackgroundFetch_({ jma: true, moe: true, nowc: true, forecast: true, labels: ['起動'] });
+        watchLiveUpdates_();
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                syncTimeFromNetwork().then(function () { updateClock(); startClockTicker(); }).catch(function () { startClockTicker(); });
+                startBackgroundFetch_({ jma: true, moe: true, nowc: true, forecast: true, labels: ['復帰'] });
+            }
+        });
+    }
+    function tryStartFromCache_() {
+        var foundation = window.AlertCubeFoundation;
+        if (!foundation || !foundation.readRememberedSiteJson || !foundation.mergeJsonOntoLegacy || !foundation.applyToGlobals) return false;
+        if (!window.AlertCubeSite && foundation.bootSync) foundation.bootSync();
+        var site = window.AlertCubeSite;
+        if (!site || DEMO_ONLY || DEMO_SIGNAGE) return false;
+        var cached = foundation.readRememberedSiteJson(site.siteId);
+        if (!cached) return false;
+        try {
+            var merged = foundation.mergeJsonOntoLegacy(cached, window.SignageConfig);
+            foundation.applyToGlobals(merged, foundation.toLegacyBrand(cached));
+            site.configReady = true;
+            refreshSiteDerived_();
+            if (!useContentOrder_()) return false;
+            beginLivePlaylist_();
+            return true;
+        } catch (err) {
+            console.warn('[boot-cache]', err && err.message ? err.message : err);
+            return false;
+        }
+    }
+    async function startPlayer_() {
+        var startedFromCache = tryStartFromCache_();
         try {
             if (window.AlertCubeFoundation && window.AlertCubeFoundation.bootAsync) {
                 await window.AlertCubeFoundation.bootAsync();
                 refreshSiteDerived_();
             }
         } catch (bootErr) { console.warn('[AC bootAsync]', bootErr && bootErr.message); }
+        if (startedFromCache) return;
         if (!window.AlertCubeSite || !window.AlertCubeSite.configReady) {
             bootDisplayHold_ = true;
             ALL_SCENES_.forEach(hideSceneEl);
@@ -13649,33 +13708,9 @@
             return;
         }
         /* 時計はデータ取得より先に開始（取得完了待ちでずれない／止まらない） */
-        applySyncedUtcMs(Date.now(), 'boot-local');
-        updateClock();
-        startClockTicker();
-        setInterval(function () {
-            syncTimeFromNetwork().then(function () { updateClock(); }).catch(function () {});
-        }, CLOCK_SYNC_INTERVAL_MS);
-        syncTimeFromNetwork().then(function () { updateClock(); }).catch(function () {});
-        /* 取得完了を待たずループ開始（工程表→挨拶→時計…）。気象は裏で差し替え */
-        try { flushInitialDisplay_(); } catch (e) { console.error('flushInitialDisplay_', e); }
-        bootDisplayHold_ = false;
-        mainLoopStarted_ = true;
-        scheduleDataRefresh();
-        try {
-            startSequence();
-        } catch (e) {
-            console.error('startSequence', e);
-            try { transitionToScene(s1, playScene1); } catch (e2) { console.error('fallback playScene1', e2); }
-        }
-        startBackgroundFetch_({ jma: true, moe: true, nowc: true, forecast: true, labels: ['起動'] });
-        watchLiveUpdates_();
-        document.addEventListener('visibilitychange', function() {
-            if (document.visibilityState === 'visible') {
-                syncTimeFromNetwork().then(function () { updateClock(); startClockTicker(); }).catch(function () { startClockTicker(); });
-                startBackgroundFetch_({ jma: true, moe: true, nowc: true, forecast: true, labels: ['復帰'] });
-            }
-        });
-    };
+        beginLivePlaylist_();
+    }
+    startPlayer_();
 
 
 </script>
