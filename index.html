@@ -3364,6 +3364,17 @@
         const laps = Number(cfg.observationLaps);
         return Number.isFinite(laps) && laps > 0 ? Math.min(2, Math.max(1, Math.floor(laps))) : 1;
     }
+    function signageViewPx_() {
+        const faces = Number(siteCfg_() && siteCfg_().faces);
+        const n = Number.isFinite(faces) && faces > 0 ? Math.round(faces) : 4;
+        return n * 128;
+    }
+    /* 指定周の最後の面が画面内に収まる位置。途中の面では次のコンテンツへ進まない。 */
+    function fullPassScrollPx_(setWidth, laps) {
+        const set = Math.max(0, Number(setWidth) || 0);
+        const times = Math.max(1, Number(laps) || 1);
+        return Math.max(0, set * times - signageViewPx_());
+    }
     function presentationLaps_(key, fallback) {
         const cfg = (siteCfg_() && siteCfg_().presentation) || {};
         const n = Number(cfg[key]);
@@ -11414,7 +11425,8 @@
         applyT3TrackX_(tracks, 0);
         if (guidTrack) applyScrollX_(guidTrack, 0);
         const guideOn = !!(guidTrack && getT3GuideTierForDisplay_() && t3GuidLapPx > 0);
-        const passPx = guideOn ? Math.max(T3_UNIT_W, t3GuidLapPx) : T3_UNIT_W;
+        const guidePx = guideOn ? Math.max(T3_UNIT_W, t3GuidLapPx) : T3_UNIT_W;
+        const passPx = Math.ceil(guidePx / T3_UNIT_W) * T3_UNIT_W;
         let moved = 0;
         function step() {
             const speed = getScrollSpeedPx_();
@@ -11579,7 +11591,7 @@
         if (typeof SignageBg !== 'undefined' && SignageBg.refreshScene2) {
             SignageBg.refreshScene2(getSignageBgLevel_(), getSignageDisplayMode_());
         }
-        const totalPx = Math.max(128, scene2SetWidth * scene2ScrollLaps_() - 512);
+        const totalPx = fullPassScrollPx_(scene2SetWidth, scene2ScrollLaps_());
         let totalScrolled = 0;
         applyScrollX_(conveyor, 0);
         applyScrollX_(s2MetaTrack, 0);
@@ -11683,7 +11695,7 @@
         }
         const wbgtTimes = presentationLaps_('wbgtLaps', SCENE4_LAPS);
         const wbgtSet = Math.max(128, scene4SetWidth);
-        const totalPx = wbgtTimes <= 1 ? wbgtSet : Math.max(128, wbgtSet * wbgtTimes - 512);
+        const totalPx = fullPassScrollPx_(wbgtSet, wbgtTimes);
         let totalScrolled = 0;
         applyScrollX_(fcConveyor, 0);
         applyScrollX_(fcLvTrack, 0);
@@ -11726,7 +11738,7 @@
         }
         const forecastTimes = presentationLaps_('forecastLaps', SCENE5_LAPS);
         const forecastSet = Math.max(128, scene5SetWidth);
-        const totalPx = forecastTimes <= 1 ? forecastSet : Math.max(128, forecastSet * forecastTimes - 512);
+        const totalPx = fullPassScrollPx_(forecastSet, forecastTimes);
         let totalScrolled = 0;
         applyScrollX_(d5Conveyor, 0);
         d5Conveyor.style.transition = 'none';
