@@ -288,6 +288,7 @@
       timeZone: site.timeZone || 'Asia/Tokyo',
       refreshMs: (site.updateSettings && site.updateSettings.refreshMs) || 60000,
       footSource: site.footSource || '出典：気象庁・環境省データ',
+      clockFoot: site.clockFoot || '',
       schedule: site.schedule || { enabled: false, weekStartsOn: 1, items: [] },
       greeting: site.greeting || { enabled: false },
       presentation: site.presentation || {},
@@ -344,6 +345,7 @@
     if (json.profile || json.layout) base.profile = json.layout || json.profile;
     if (json.timeZone) base.timeZone = json.timeZone;
     if (json.footSource) base.footSource = json.footSource;
+    if (json.clockFoot != null) base.clockFoot = json.clockFoot;
     if (json.updateSettings && json.updateSettings.refreshMs) base.refreshMs = json.updateSettings.refreshMs;
     if (json.projectId) base.projectId = json.projectId;
     if (json.schemaVersion) base.schemaVersion = json.schemaVersion;

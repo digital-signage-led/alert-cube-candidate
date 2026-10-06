@@ -10,12 +10,13 @@
   "location": "〒142-0051 東京都品川区平塚３-９-１",
   "latitude": 35.6148,
   "longitude": 139.7113,
-  "memo": "4面512×128。右端固定ロゴなし。案内は上段「五洋・松本建設共同企業体」、中段「第二戸越幹線整備工事（ひらさん広場）」。気象観測・WBGT・予報の末尾は五洋建設マーク。時刻下の下帯は五洋建設ロゴ。地点名「品川区」は予報などに残す。WBGT・AMeDASは東京44132、欠測補完は江戸川臨海44136。予報は東京地方130010・気温は東京44132。警報は東京都130000、品川区1310900。レンタル元はカナモト。Wi-Fi52。黄色の電源ケーブル。期間は2026年7月～10月（夏・4ヶ月）。",
+  "memo": "4面512×128。右端固定ロゴなし。時刻下の下帯は五洋建設ロゴと、流す文言「五洋・松本建設共同企業体／第二戸越幹線整備工事（ひらさん広場）」。気象観測・WBGT・予報の末尾は五洋建設マーク。地点名「品川区」は予報などに残す。WBGT・AMeDASは東京44132、欠測補完は江戸川臨海44136。予報は東京地方130010・気温は東京44132。警報は東京都130000、品川区1310900。レンタル元はカナモト。Wi-Fi52。黄色の電源ケーブル。期間は2026年7月～10月（夏・4ヶ月）。",
   "resolution": "512x128",
   "layout": "AC-512",
   "faces": 4,
   "timeZone": "Asia/Tokyo",
   "footSource": "出典：気象庁・環境省データ",
+  "clockFoot": "五洋・松本建設共同企業体／第二戸越幹線整備工事（ひらさん広場）",
   "releasePin": null,
   "logo": {
     "src": "./assets/sites/AC-0018/logo_mark.png?v=1",
@@ -52,22 +53,14 @@
   "season": { "override": null },
   "updateSettings": { "refreshMs": 60000 },
   "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
-  "greeting": {
-    "enabled": true,
-    "mode": "promo",
-    "title": "五洋・松本建設共同企業体",
-    "lines": ["第二戸越幹線整備工事（ひらさん広場）"],
-    "foot": "",
-    "bodyPx": 24,
-    "scrollLaps": 1
-  },
+  "greeting": { "enabled": false, "title": "", "lines": [], "foot": "" },
   "presentation": {
     "sequence": "contentOrder",
     "observationMode": "scroll",
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["warning", "typhoon", "greeting", "clock", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -89,7 +82,7 @@
     "disaster": { "on": false },
     "heat": { "on": false },
     "schedule": { "on": false },
-    "greeting": { "on": true },
+    "greeting": { "on": false },
     "news": { "on": false },
     "boards": { "on": false },
     "logo-scroll": { "on": false },

@@ -10251,20 +10251,30 @@
         if (label) return '【気温】' + label;
         return getS1FootFallbackText_() || '';
     }
+    function clockFootLine_() {
+        return String((siteCfg_() && siteCfg_().clockFoot) || '').trim();
+    }
+    function withClockFootLine_(text) {
+        const line = clockFootLine_();
+        const body = String(text || '').trim();
+        if (!line) return body;
+        if (!body) return line;
+        return line + '　' + body;
+    }
     function getS1WbgtMessageJp() {
-        if (wbgtOffSeason) return '';
+        if (wbgtOffSeason) return withClockFootLine_('');
         const rain = getRainAlertMessageJp();
         if (temperatureDisplay_()) {
             const tempMsg = temperatureFootMessageJp_();
-            if (rain && tempMsg) return rain + '　' + tempMsg;
-            return rain || tempMsg;
+            if (rain && tempMsg) return withClockFootLine_(rain + '　' + tempMsg);
+            return withClockFootLine_(rain || tempMsg);
         }
-        if (wbgtUnavailable) return unknownMsg.jp;
+        if (wbgtUnavailable) return withClockFootLine_(unknownMsg.jp);
         const lv = getS1WbgtLevelForDisplay_();
-        if (lv < 0) return rain || '';
+        if (lv < 0) return withClockFootLine_(rain || '');
         const wbgt = wbgtPhrase_(lv).jp;
-        if (rain && wbgt) return rain + '　' + wbgt;
-        return rain || wbgt;
+        if (rain && wbgt) return withClockFootLine_(rain + '　' + wbgt);
+        return withClockFootLine_(rain || wbgt);
     }
     function hasS1WbgtFootMessage_() {
         if (wbgtOffSeason) return false;
