@@ -253,6 +253,7 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.ok(index.productionSites.indexOf('AC-0024') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0025') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0026') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0027') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
   assert.ok(Array.isArray(index.demoSites));
   index.demoSites.forEach(function (id) {
@@ -497,6 +498,15 @@ test('AC-0004 は佐藤工業福山の本番設定で、共通コンテンツに
   });
   var page = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert.ok(page.indexOf('function playlistHandoff_()') >= 0);
+  assert.ok(page.indexOf('function applyLiveSiteJson_(') >= 0);
+  assert.ok(page.indexOf('function cutPlaylistForLiveReload_()') < 0);
+  assert.ok(page.indexOf('function requestLiveReload_()') < 0);
+  var watchStart = page.indexOf('function watchLiveUpdates_()');
+  var watchEnd = page.indexOf('function startClockTicker()');
+  assert.ok(watchStart >= 0 && watchEnd > watchStart);
+  var watchFn = page.slice(watchStart, watchEnd);
+  assert.ok(watchFn.indexOf('location.reload') < 0);
+  assert.ok(watchFn.indexOf('applyLiveSiteJson_') >= 0);
   assert.ok(page.indexOf('function playSceneNews()') >= 0);
   assert.ok(page.indexOf('function playSceneBoards()') >= 0);
   assert.ok(page.indexOf('function playSceneLogoScroll(opts)') >= 0);
@@ -2066,15 +2076,15 @@ test('AC-0026 は日立プラントサービス・東広島市八本松の5面�
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
-test('AC-0027 はカナモト仙台営業所の5面デモ', function () {
+test('AC-0027 はカナモト仙台営業所の5面無償本番設定', function () {
   var site = require('../sites/AC-0027.json');
   var index = require('../sites/index.json');
   assert.strictEqual(site.projectId, 'AC-0027');
-  assert.strictEqual(site.status, 'demo');
+  assert.strictEqual(site.status, 'active');
   assert.strictEqual(site.customer, '株式会社カナモト');
-  assert.strictEqual(site.rental, '');
+  assert.strictEqual(site.rental, '無償');
   assert.strictEqual(site.label, 'カナモト');
-  assert.strictEqual(site.projectName, 'デモ カナモト 仙台営業所');
+  assert.strictEqual(site.projectName, 'カナモト 仙台営業所');
   assert.strictEqual(site.siteName, '仙台営業所');
   assert.strictEqual(site.location, '〒983-0007 宮城県仙台市宮城野区仙台港北1丁目2番地の5');
   assert.strictEqual(site.faces, 5);
@@ -2115,8 +2125,8 @@ test('AC-0027 はカナモト仙台営業所の5面デモ', function () {
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.i18nTrailingLogo, true);
   assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
-  assert.ok(index.demoSites.indexOf('AC-0027') >= 0);
-  assert.ok(index.productionSites.indexOf('AC-0027') < 0);
+  assert.ok(index.productionSites.indexOf('AC-0027') >= 0);
+  assert.ok(index.demoSites.indexOf('AC-0027') < 0);
   var brand = foundation.toLegacyBrand(site);
   assert.ok(brand.logoSrc.indexOf('logo_mark.png') >= 0);
   assert.ok(brand.footBannerSrc.indexOf('logo_foot.png') >= 0);
@@ -2124,7 +2134,8 @@ test('AC-0027 はカナモト仙台営業所の5面デモ', function () {
   assert.strictEqual(merged.site.locationLabel, '仙台営業所');
   assert.strictEqual(merged.site.label, 'カナモト');
   assert.strictEqual(merged.site.customer, '株式会社カナモト');
-  assert.strictEqual(merged.status, 'demo');
+  assert.strictEqual(merged.site.rental, '無償');
+  assert.strictEqual(merged.status, 'active');
   assert.strictEqual(merged.moe.point, '34392');
   assert.strictEqual(merged.jma.warnCity, '0410001');
   assert.strictEqual(merged.jma.forecastDetail, '040010');

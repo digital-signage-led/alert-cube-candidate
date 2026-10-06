@@ -8177,21 +8177,29 @@
         fitS1DateFontSize_();
         fitClockHmFontSize_();
     }
+    /* 画面の更新は読み直して消さない。表示中の内容はそのまま残し、案件設定だけ内部へ入れる。 */
+    function applyLiveSiteJson_(text) {
+        var json;
+        try { json = JSON.parse(text); } catch (e) { return false; }
+        var foundation = window.AlertCubeFoundation;
+        if (!foundation || !foundation.validateSiteConfig || !foundation.applyToGlobals || !foundation.mergeJsonOntoLegacy) return false;
+        if (!foundation.validateSiteConfig(json).ok) return false;
+        var siteId = String((window.AlertCubeSite && window.AlertCubeSite.siteId) || '');
+        if (siteId && String(json.projectId || '').toUpperCase() !== siteId.toUpperCase()) return false;
+        if (foundation.rememberSiteJson) foundation.rememberSiteJson(siteId, json);
+        var merged = foundation.mergeJsonOntoLegacy(json, window.SignageConfig);
+        foundation.applyToGlobals(merged, foundation.toLegacyBrand(json));
+        if (window.AlertCubeSite) {
+            window.AlertCubeSite.configReady = true;
+            window.AlertCubeSite.configSource = 'network';
+        }
+        refreshSiteDerived_();
+        return true;
+    }
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
-        var reloading = false;
-        function reloadNow_() {
-            if (reloading) return;
-            reloading = true;
-            requestLiveReload_();
-        }
         if ('serviceWorker' in navigator) {
-            var hadController = !!navigator.serviceWorker.controller;
-            navigator.serviceWorker.addEventListener('controllerchange', function () {
-                if (!hadController) { hadController = true; return; }
-                reloadNow_();
-            });
-            navigator.serviceWorker.register('./sw.js?v=20261006-ac0027-kanamoto', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261006-ac0027-rental', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -8217,7 +8225,10 @@
                 if (!htmlChanged && !siteChanged) { pendingLive_ = null; return; }
                 var stamp = html + '\n' + site;
                 if (pendingLive_ !== stamp) { pendingLive_ = stamp; return; }
-                reloadNow_();
+                pendingLive_ = null;
+                seenHtml = html;
+                seenSite = site;
+                if (siteChanged) applyLiveSiteJson_(site);
             }).catch(function () {});
         }, LIVE_UPDATE_MS);
     }
@@ -13176,8 +13187,6 @@
     function markPlaylistHeld_() {
         playlistBurst_ = 0;
     }
-    let pendingLiveReload_ = false;
-    let liveReloadArmed_ = false;
     function playlistResumeKey_() {
         const id = String((window.AlertCubeSite && window.AlertCubeSite.siteId) || (siteCfg_() && siteCfg_().projectId) || 'site');
         return 'alertcube.playlist.id.' + id;
@@ -13201,26 +13210,6 @@
     function takePlaylistResumeIndex_(ids) {
         const at = ids.indexOf(readPlaylistResumeId_());
         return at >= 0 ? at : 0;
-    }
-    /* 画面や案件の更新は、いまの内容を切って先頭へ戻さない。次の内容の境目で読み直し、その内容から続ける。位置は消さず残し、再読込が重なっても先頭へ戻さない。 */
-    function requestLiveReload_() {
-        if (liveReloadArmed_) return;
-        if (!useContentOrder_() || DEMO_ONLY || !isMainLoopPlaying_()) {
-            liveReloadArmed_ = true;
-            const ids = playlistIds_();
-            if (ids[playlistIdx_]) rememberPlaylistId_(ids[playlistIdx_]);
-            location.reload();
-            return;
-        }
-        pendingLiveReload_ = true;
-    }
-    function reloadAtPlaylistBoundary_(nextId) {
-        if (!pendingLiveReload_ || liveReloadArmed_) return false;
-        liveReloadArmed_ = true;
-        pendingLiveReload_ = false;
-        rememberPlaylistId_(nextId);
-        location.reload();
-        return true;
     }
     function playlistHandoff_() {
         if (!useContentOrder_() || DEMO_ONLY) return false;
@@ -13247,12 +13236,10 @@
         if (playlistBurst_ > ids.length + 1) {
             playlistBurst_ = 0;
             playlistIdx_ = 0;
-            if (reloadAtPlaylistBoundary_(ids[0])) return;
             playContentById_(ids[0]);
             return;
         }
         playlistIdx_ = (playlistIdx_ + 1) % ids.length;
-        if (reloadAtPlaylistBoundary_(ids[playlistIdx_])) return;
         playContentById_(ids[playlistIdx_]);
     }
     function contentAreaEl_() {
