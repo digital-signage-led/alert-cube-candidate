@@ -136,6 +136,24 @@
     return [canvases];
   }
 
+  var RAIN_ALPHA = 128;
+
+  function countRainPixels(data, width, height, step) {
+    if (!data || !width || !height) return 0;
+    var stride = step > 1 ? step : 1;
+    var rain = 0;
+    var y;
+    var x;
+    var i;
+    for (y = 0; y < height; y += stride) {
+      for (x = 0; x < width; x += stride) {
+        i = (y * width + x) * 4 + 3;
+        if (data[i] >= RAIN_ALPHA) rain += 1;
+      }
+    }
+    return rain;
+  }
+
   function loadImage(url, attempt) {
     return new Promise(function (resolve) {
       if (typeof Image === 'undefined') { resolve(null); return; }
@@ -413,6 +431,57 @@
     }).catch(function () { return null; });
   }
 
+  function loadImageCors(url) {
+    return new Promise(function (resolve) {
+      if (typeof Image === 'undefined') { resolve(null); return; }
+      var img = new Image();
+      var timer = setTimeout(function () { resolve(null); }, 6000);
+      img.crossOrigin = 'anonymous';
+      img.onload = function () { clearTimeout(timer); resolve(img); };
+      img.onerror = function () { clearTimeout(timer); resolve(null); };
+      img.src = url;
+    });
+  }
+
+  function frameHasRain(plan, frame) {
+    if (!plan || !frame || typeof document === 'undefined') return Promise.resolve(false);
+    return Promise.all(plan.tiles.map(function (tile) {
+      return loadImageCors(radarUrl(frame, tile));
+    })).then(function (imgs) {
+      var canvas = document.createElement('canvas');
+      canvas.width = VIEW_W;
+      canvas.height = VIEW_H;
+      var ctx = canvas.getContext('2d');
+      var i;
+      for (i = 0; i < imgs.length; i++) {
+        if (imgs[i]) drawTile(ctx, imgs[i], plan.tiles[i]);
+      }
+      var data;
+      try {
+        data = ctx.getImageData(0, 0, VIEW_W, VIEW_H).data;
+      } catch (e) {
+        return false;
+      }
+      return countRainPixels(data, VIEW_W, VIEW_H, 2) > 0;
+    });
+  }
+
+  function viewHasRain(plan) {
+    var frames = plan && plan.frames;
+    if (!frames || !frames.length) return Promise.resolve(false);
+    var index = 0;
+    function next() {
+      if (index >= frames.length) return Promise.resolve(false);
+      var frame = frames[index];
+      index += 1;
+      return frameHasRain(plan, frame).then(function (rain) {
+        if (rain) return true;
+        return next();
+      });
+    }
+    return next();
+  }
+
   function loadFrame(plan, frame) {
     if (!frame) return Promise.resolve([]);
     if (frame.images) return Promise.resolve(frame.images);
@@ -453,6 +522,8 @@
     parseUtcMs: parseUtcMs,
     labelOf: labelOf,
     selectFrames: selectFrames,
+    countRainPixels: countRainPixels,
+    viewHasRain: viewHasRain,
     radarUrl: radarUrl,
     shellHtml: shellHtml,
     basemap: basemap,

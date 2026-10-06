@@ -1802,6 +1802,24 @@ test('雨雲レーダーは現場を中心にした降水ナウキャスト画�
   assert.ok(page.indexOf('contents/rain-radar/index.js') >= 0);
   assert.ok(page.indexOf('function playSceneRainRadar()') >= 0);
   assert.ok(page.indexOf("case 'rain-radar':") >= 0);
+  assert.ok(page.indexOf('function startRainRadarOrSkip_()') >= 0);
+  var dry = new Uint8ClampedArray(16);
+  assert.strictEqual(radar.countRainPixels(dry, 2, 2, 1), 0);
+  var wet = new Uint8ClampedArray(16);
+  wet[3] = 255;
+  assert.strictEqual(radar.countRainPixels(wet, 2, 2, 1), 1);
+  wet[3] = 40;
+  assert.strictEqual(radar.countRainPixels(wet, 2, 2, 1), 0);
+});
+
+test('時刻・気象・予報・多言語の地色は通年の気温色', function () {
+  var fs = require('fs');
+  var path = require('path');
+  var page = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.ok(page.indexOf('function ambientBgArgs_()') >= 0);
+  assert.ok(page.indexOf('function repaintAmbientStrips_') >= 0);
+  assert.ok(page.indexOf('function repaintWbgtStrips_') >= 0);
+  assert.ok(page.indexOf('setTemperatureColors(null)') < 0);
 });
 
 test('ニュースは各社の最新見出しを2件に揃える', function () {
@@ -1828,6 +1846,18 @@ test('ニュースは各社の最新見出しを2件に揃える', function () {
   assert.strictEqual(kisan.length, 2);
   assert.strictEqual(kisan[0].date, '2026年09月28日');
   assert.strictEqual(kisan[0].title, '（仮称）SmAvCm新宮FM店新築工事の進捗状況【9/21-9/27】');
+  var now = Date.parse('2026-10-06T12:00:00+09:00');
+  var kept = news.recentItems([
+    { date: '2026年09月28日', title: '新しい' },
+    { date: '2026年07月01日', title: '古い' }
+  ], now);
+  assert.strictEqual(kept.length, 1);
+  assert.strictEqual(kept[0].title, '新しい');
+  assert.strictEqual(news.recentItems([{ date: '2026年07月06日', title: '数か月前' }], now).length, 0);
+  assert.strictEqual(news.recentItems([{ date: '', title: '日付なし' }], now).length, 0);
+  var page = require('fs').readFileSync(require('path').join(__dirname, '..', 'index.html'), 'utf8');
+  assert.ok(page.indexOf('function startNewsOrSkip_()') >= 0);
+  assert.ok(page.indexOf('newsRowsNow_') >= 0);
 });
 
 console.log('');

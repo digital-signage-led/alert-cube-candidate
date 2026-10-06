@@ -274,6 +274,35 @@
     return list;
   }
 
+  /** 公式ページの日付がこれより前なら、ニュースは出さない。 */
+  var NEWS_FRESH_MS = 60 * 24 * 60 * 60 * 1000;
+
+  function newsDateMs(date) {
+    var s = String(date || '').trim();
+    var m = s.match(/^(20\d{2})年(\d{1,2})月(\d{1,2})日/);
+    if (!m) m = s.match(/^(20\d{2})-(\d{2})-(\d{2})/);
+    if (!m) return null;
+    var month = ('0' + m[2]).slice(-2);
+    var day = ('0' + m[3]).slice(-2);
+    var ms = Date.parse(m[1] + '-' + month + '-' + day + 'T12:00:00+09:00');
+    return Number.isFinite(ms) ? ms : null;
+  }
+
+  function recentItems(items, nowMs) {
+    var now = Number.isFinite(nowMs) ? nowMs : Date.now();
+    var rows = Array.isArray(items) ? items : [];
+    var fresh = [];
+    var i;
+    for (i = 0; i < rows.length; i++) {
+      var ms = newsDateMs(rows[i] && rows[i].date);
+      if (ms == null) continue;
+      if (ms - now > 36 * 60 * 60 * 1000) continue;
+      if (now - ms > NEWS_FRESH_MS) continue;
+      fresh.push(rows[i]);
+    }
+    return fresh;
+  }
+
   function lapsOf(cfg) {
     var n = Number(cfg && cfg.laps);
     if (!Number.isFinite(n) || n < 1) return 1;
@@ -324,6 +353,8 @@
     escapeHtml: escapeHtml,
     normalizeItems: normalizeItems,
     parsePage: parsePage,
+    recentItems: recentItems,
+    NEWS_FRESH_MS: NEWS_FRESH_MS,
     pageFetchUrls: pageFetchUrls,
     remember: remember,
     itemsOf: itemsOf,

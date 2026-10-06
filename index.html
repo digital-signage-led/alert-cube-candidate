@@ -9,12 +9,12 @@
     <script src="./safety/version.js?v=20260921-suminoe"></script>
     <script src="./contents/registry.js?v=20260929-eew1"></script>
     <script src="./contents/modules.js?v=20260929-eew1"></script>
-    <script src="./contents/news/index.js?v=20260929-ac0019-news"></script>
+    <script src="./contents/news/index.js?v=20261006-news-fresh"></script>
     <script src="./contents/boards/index.js?v=20261005-ac0009-slide"></script>
     <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
-    <script src="./contents/rain-radar/index.js?v=20261005-rain-radar19"></script>
+    <script src="./contents/rain-radar/index.js?v=20261006-rain-radar20"></script>
     <script src="./contents/eew/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
@@ -1565,7 +1565,7 @@
             width: 28px; height: 28px; flex: 0 0 28px; object-fit: contain; margin: 0 8px;
         }
         #sceneGreeting .promo-i18n-viewport { flex: 1 1 auto; overflow: hidden; height: 100%; }
-        #sceneGreeting .promo-i18n .promo-unit { font-size: 22px; font-family: "Noto Sans", "Noto Sans JP", sans-serif; }
+        #sceneGreeting .promo-i18n .promo-unit { font-size: 30px; font-family: "Noto Sans", "Noto Sans JP", sans-serif; }
 
         #scene3 { overflow: hidden; position: relative; }
         /* 512×128: 上バー32 + 本体72 + 白下帯24（現在WBGT指針・シーン4） */
@@ -3009,6 +3009,37 @@
         if (foot) foot.style.backgroundColor = LED_FOOT_BAR_BG;
     }
 
+    function layerInScene_(layer, sceneId) {
+        const host = layer && layer.parentElement;
+        return !!(host && host.closest && host.closest('#' + sceneId));
+    }
+
+    /** 時刻・気象・予報・多言語。暑さ指数の面（scene4）は塗らない。 */
+    function repaintAmbientStrips_(levelIdx, displayMode) {
+        const colors = colorsForDisplay(levelIdx, displayMode);
+        document.querySelectorAll('.content-area .col-bg-layer').forEach(function (layer) {
+            if (layerInScene_(layer, 'scene4')) return;
+            const host = layer.parentElement;
+            if (host && host.classList.contains('t3-unit')) {
+                applyColorsToT3UnitLayer(layer, colors);
+                return;
+            }
+            applyColorsToLayer(layer, colors, KIND.STRIP);
+        });
+        applyT3TopBar(document.querySelector('#scene3 .t3-scene-top-bar'), levelIdx, displayMode);
+        refreshLogoPanel(levelIdx, displayMode);
+    }
+
+    function repaintWbgtStrips_(levelIdx, displayMode) {
+        const colors = colorsForDisplay(levelIdx, displayMode);
+        const dark = isDarkTextForDisplay(levelIdx, displayMode);
+        document.querySelectorAll('#scene4 .col-bg-layer').forEach(function (layer) {
+            applyColorsToLayer(layer, colors, KIND.STRIP);
+            const host = layer.parentElement;
+            if (host) host.classList.toggle('col-bg-dark-text', dark);
+        });
+    }
+
     /** 既存レイヤーにも必ず色を上書き（キャッシュ・再描画ずれ対策） */
     function repaintStripHosts_(levelIdx, displayMode) {
         const colors = colorsForDisplay(levelIdx, displayMode);
@@ -3061,9 +3092,10 @@
     }
 
     function refreshScene5(levelIdx, displayMode) {
+        const yearRound = displayMode === 'temperature' || displayMode === 'offseason' || displayMode === 'unavailable';
         const dark = isDarkTextForDisplay(levelIdx, displayMode);
-        const forecastLv = dark ? levelIdx : 0;
-        const forecastMode = dark ? displayMode : 'normal';
+        const forecastLv = (!yearRound && !dark) ? 0 : levelIdx;
+        const forecastMode = (!yearRound && !dark) ? 'normal' : displayMode;
         document.querySelectorAll('#scene5 .d5-panel:not(.d5-today-focus):not(.d5-logo-panel)').forEach(panel => {
             applyStrip(panel, forecastLv, forecastMode);
             panel.classList.toggle('col-bg-dark-text', dark);
@@ -3197,7 +3229,12 @@
         colorsForLevel,
         colorsForDisplay,
         setTemperatureColors: function (colors) { temperatureColors_ = colors || null; },
+        hasTemperatureColors: function () { return !!temperatureColors_; },
+        temperatureColors: function () { return temperatureColors_; },
+        repaintAmbientStrips_: repaintAmbientStrips_,
+        repaintWbgtStrips_: repaintWbgtStrips_,
         isDarkTextLevel,
+        isDarkTextForDisplay,
         initHosts,
         initSignageLogo_,
         refreshAll,
@@ -3700,6 +3737,7 @@
     let lastT3GuideText_ = '';
     let lastSignageBgLv_ = null;
     let lastSignageBgMode_ = '';
+    let lastAmbientColorKey_ = '';
     let pendingSignageBgRefresh_ = false;
     let pendingSignageBgLv_ = null;
     let pendingSignageBgMode_ = '';
@@ -3956,21 +3994,33 @@
         });
         annualMode_ = next;
         wbgtOffSeason = String(next).indexOf('TEMPERATURE_') === 0;
-        if (!temperatureDisplay_()) {
-            if (window.SignageBg && window.SignageBg.setTemperatureColors) window.SignageBg.setTemperatureColors(null);
-            logAnnualState_(null);
-            return annualMode_;
-        }
         const season = window.AlertCubeCore.climateSeason(parts, annualSeasonCfg_());
         const color = window.AlertCubeCore.getTemperatureDisplayColor(lastAmedasTempC_, season);
-        if (window.SignageBg && window.SignageBg.setTemperatureColors) {
+        if (color && window.SignageBg && window.SignageBg.setTemperatureColors) {
             window.SignageBg.setTemperatureColors(color);
+        }
+        if (!temperatureDisplay_()) {
+            logAnnualState_(null);
+            refreshSignageBgIfChanged_(!!color);
+            return annualMode_;
         }
         paintTemperatureDom_();
         logAnnualState_(color);
         queueOrRefreshS1FootBar_();
         refreshSignageBgIfChanged_(true);
         return annualMode_;
+    }
+    /* 時刻・気象・4日間予報・多言語の地色。気温がある間は通年の気温色。無いときは直前の色を残す。 */
+    function ambientBgArgs_() {
+        if (window.SignageBg && window.SignageBg.hasTemperatureColors && window.SignageBg.hasTemperatureColors()) {
+            return { mode: 'temperature', lv: -1 };
+        }
+        return null;
+    }
+    function ambientColorKey_() {
+        const c = window.SignageBg && window.SignageBg.temperatureColors && window.SignageBg.temperatureColors();
+        if (!c || !c.bg) return '';
+        return c.bg + '|' + c.bar + '|' + (c.darkText ? '1' : '0');
     }
     function getSignageDisplayMode_() {
         if (temperatureDisplay_()) return 'temperature';
@@ -4165,8 +4215,16 @@
         const paint = resolveSignageBgPaint_(rawMode, rawLv);
         const mode = paint.mode;
         const lv = paint.lv;
-        SignageBg.refreshAll(lv, mode);
-        SignageBg.refreshTicker(lv, mode);
+        const ambient = (mode === 'normal') ? ambientBgArgs_() : null;
+        const shared = ambient || { mode: mode, lv: lv };
+        SignageBg.refreshAll(shared.lv, shared.mode);
+        SignageBg.refreshTicker(shared.lv, shared.mode);
+        if (ambient && typeof SignageBg.colorsForDisplay === 'function') {
+            const content = document.querySelector('.content-area');
+            const stage = SignageBg.colorsForDisplay(lv, mode);
+            if (content && stage && stage.bgColor) content.style.setProperty('--signage-bg', stage.bgColor);
+            if (content && stage && stage.barColor) content.style.setProperty('--signage-bar', stage.barColor);
+        }
         if (mode === 'offseason') {
             SignageBg.refreshScene1(lv, mode);
             if (typeof SignageBg.repaintStripHosts_ === 'function') SignageBg.repaintStripHosts_(lv, mode);
@@ -4177,9 +4235,9 @@
             if (typeof SignageBg.repaintStripHosts_ === 'function') SignageBg.repaintStripHosts_(-1, mode);
             return;
         }
-        SignageBg.refreshScene1(lv, mode);
-        SignageBg.refreshScene2(lv, mode);
-        SignageBg.refreshScene5(lv, mode);
+        SignageBg.refreshScene1(shared.lv, shared.mode);
+        SignageBg.refreshScene2(shared.lv, shared.mode);
+        SignageBg.refreshScene5(shared.lv, shared.mode);
         if (typeof SignageBg.refreshSchedule === 'function') SignageBg.refreshSchedule(lv, mode);
         if (typeof SignageBg.refreshGreeting === 'function') SignageBg.refreshGreeting(lv, mode);
         applyD5TodayFrame_();
@@ -4190,9 +4248,15 @@
             ? lastGoodWbgtSlots_
             : (lastWbgtSlots || (DEMO_SIGNAGE_ACTIVE ? mockSlotsForDemoLevel(lv) : null));
         if (slots) SignageBg.refreshForecast(slots, mode);
-        if (typeof SignageBg.repaintStripHosts_ === 'function') SignageBg.repaintStripHosts_(lv, mode);
+        if (ambient && typeof SignageBg.repaintAmbientStrips_ === 'function') {
+            SignageBg.repaintAmbientStrips_(shared.lv, shared.mode);
+            if (typeof SignageBg.repaintWbgtStrips_ === 'function') SignageBg.repaintWbgtStrips_(lv, mode);
+        } else if (typeof SignageBg.repaintStripHosts_ === 'function') {
+            SignageBg.repaintStripHosts_(shared.lv, shared.mode);
+        }
         lastSignageBgLv_ = lv;
         lastSignageBgMode_ = mode;
+        lastAmbientColorKey_ = ambientColorKey_();
         pendingSignageBgRefresh_ = false;
     }
     function refreshSignageBgIfChanged_(force) {
@@ -4201,7 +4265,7 @@
         const paint = resolveSignageBgPaint_(rawMode, rawLv);
         const mode = paint.mode;
         const lv = paint.lv;
-        if (!force && lv === lastSignageBgLv_ && mode === lastSignageBgMode_) return;
+        if (!force && lv === lastSignageBgLv_ && mode === lastSignageBgMode_ && ambientColorKey_() === lastAmbientColorKey_) return;
         if (shouldDeferDisplayRefresh_() && !force) {
             pendingSignageBgRefresh_ = true;
             pendingSignageBgLv_ = lv;
@@ -9311,8 +9375,9 @@
         panel.appendChild(frame);
     }
     function applyD5TodayFrame_() {
-        const mode = getSignageDisplayMode_();
-        const lv = mode === 'normal' ? getSignageBgLevel_() : -1;
+        const ambient = ambientBgArgs_();
+        const mode = ambient ? ambient.mode : getSignageDisplayMode_();
+        const lv = ambient ? ambient.lv : (mode === 'normal' ? getSignageBgLevel_() : -1);
         const dark = (typeof SignageBg !== 'undefined' && SignageBg.isDarkTextForDisplay)
             ? SignageBg.isDarkTextForDisplay(lv, mode)
             : (mode === 'normal' && (lv === 1 || lv === 2));
@@ -9328,8 +9393,9 @@
     }
     /** 全列: 注意・警戒は黒、それ以外は白（日付ラベル。下帯の気温・湿度は色固定） */
     function applyD5ForecastTextColors_() {
-        const mode = getSignageDisplayMode_();
-        const bgLv = mode === 'normal' ? getSignageBgLevel_() : -1;
+        const ambient = ambientBgArgs_();
+        const mode = ambient ? ambient.mode : getSignageDisplayMode_();
+        const bgLv = ambient ? ambient.lv : (mode === 'normal' ? getSignageBgLevel_() : -1);
         const dark = (typeof SignageBg !== 'undefined' && SignageBg.isDarkTextForDisplay)
             ? SignageBg.isDarkTextForDisplay(bgLv, mode)
             : (mode === 'normal' && (bgLv === 1 || bgLv === 2));
@@ -11541,7 +11607,7 @@
     }
     function gotoRainRadarOrNext_() {
         if (contentOn_('rain-radar') && sceneRainRadar) {
-            transitionToScene(sceneRainRadar, playSceneRainRadar);
+            startRainRadarOrSkip_();
             return;
         }
         gotoAfterScene3Tail_();
@@ -12519,7 +12585,7 @@
         if (top) {
             topLap = (nameSlot >= 128)
                 ? fillPromoNameSlots_(top, titleHtml, nameSlot)
-                : fillPromoTrack_(top, titleHtml, edgeOpts);
+                : fillPromoTrack_(top, titleHtml, seamless ? edgeOpts : { fillView: true });
         }
         const footSlot = Number(cfg.footSlot);
         if (foot && footHtml) {
@@ -12542,7 +12608,13 @@
             } else if (nameSlot >= 128) {
                 jobs.push({ track: top, lap: topLap, wrap: true, travel: travel, speed: getScrollSpeedPx_() });
             } else {
-                jobs.push({ track: top, lap: topLap, speed: getScrollSpeedPx_() });
+                jobs.push({
+                    track: top,
+                    lap: topLap,
+                    wrap: true,
+                    travel: Math.max(bodyLap, topLap, footLap, 1),
+                    speed: getScrollSpeedPx_()
+                });
             }
         }
         if (foot && footHtml && footLap) {
@@ -12969,12 +13041,12 @@
                 prepHeatAlert_(0);
                 transitionToScene(sceneAlert, function () { playSceneAlert(0); });
                 break;
-            case 'news': transitionToScene(sceneNews, playSceneNews); break;
+            case 'news': startNewsOrSkip_(); break;
             case 'boards': transitionToScene(sceneBoards, playSceneBoards); break;
             case 'progress': transitionToScene(sceneProgress, playSceneProgress); break;
             case 'rain-radar':
                 if (!contentOn_('rain-radar') || !sceneRainRadar) { advanceContentOrder_(); break; }
-                transitionToScene(sceneRainRadar, playSceneRainRadar);
+                startRainRadarOrSkip_();
                 break;
             case 'logo-scroll': transitionToScene(sceneLogo, function () { playSceneLogoScroll(); }); break;
             case 'brand':
@@ -13112,6 +13184,29 @@
         if (demoOnlyLoop_('news', playSceneNews)) return;
         playlistHandoff_();
     }
+    let newsReadyRows_ = null;
+    function newsRowsNow_(items) {
+        const api = window.AlertCubeNews;
+        if (!api || !api.recentItems) return [];
+        return api.recentItems(items || [], Date.now());
+    }
+    function startNewsOrSkip_() {
+        if (!contentOn_('news') || !sceneNews || !window.AlertCubeNews) {
+            advanceContentOrder_();
+            return;
+        }
+        loadNewsItems_(newsCfg_()).then(function (items) {
+            const rows = newsRowsNow_(items);
+            if (!rows.length) {
+                advanceContentOrder_();
+                return;
+            }
+            newsReadyRows_ = rows;
+            transitionToScene(sceneNews, playSceneNews);
+        }).catch(function () {
+            advanceContentOrder_();
+        });
+    }
     function playSceneNews() {
         const gen = ++newsPlayGen_;
         clearNewsRetry_();
@@ -13122,9 +13217,12 @@
                 return;
             }
             const cfg = newsCfg_();
-            loadNewsItems_(cfg).then(function (items) {
+            const ready = newsReadyRows_;
+            newsReadyRows_ = null;
+            const pending = ready ? Promise.resolve(ready) : loadNewsItems_(cfg);
+            pending.then(function (items) {
                 if (gen !== newsPlayGen_) return;
-                const rows = items || [];
+                const rows = newsRowsNow_(items);
                 if (!rows.length) {
                     if (DEMO_ONLY === 'news') {
                         newsRetryTimerId_ = setTimeout(function () {
@@ -13254,6 +13352,44 @@
             });
         });
     }
+    let rainRadarReadyPlan_ = null;
+    function skipRainRadarScene_() {
+        rainRadarReadyPlan_ = null;
+        if (DEMO_ONLY === 'rain-radar') {
+            if (rainRadarTimer_) { clearTimeout(rainRadarTimer_); rainRadarTimer_ = 0; }
+            rainRadarTimer_ = setTimeout(function () {
+                rainRadarTimer_ = 0;
+                startRainRadarOrSkip_();
+            }, 20000);
+            return;
+        }
+        if (useContentOrder_() && !DEMO_ONLY) advanceContentOrder_();
+        else gotoAfterScene3Tail_();
+    }
+    /* 表示範囲の予報コマに雨雲があるときだけ、雨雲レーダーを出す。 */
+    function startRainRadarOrSkip_() {
+        const api = window.AlertCubeRainRadar;
+        if ((!contentOn_('rain-radar') && DEMO_ONLY !== 'rain-radar') || !sceneRainRadar || !api) {
+            skipRainRadarScene_();
+            return;
+        }
+        api.prepare(siteCfg_(), Date.now()).then(function (plan) {
+            if (!plan || !plan.frames || !plan.frames.length) {
+                skipRainRadarScene_();
+                return;
+            }
+            return api.viewHasRain(plan).then(function (rain) {
+                if (!rain) {
+                    skipRainRadarScene_();
+                    return;
+                }
+                rainRadarReadyPlan_ = plan;
+                transitionToScene(sceneRainRadar, playSceneRainRadar);
+            });
+        }).catch(function () {
+            skipRainRadarScene_();
+        });
+    }
     function playSceneRainRadar() {
         rainRadarGen_ += 1;
         const gen = rainRadarGen_;
@@ -13268,25 +13404,19 @@
             finishRainRadar_();
             return;
         }
-        markPlaylistHeld_();
-        sceneRainRadar.innerHTML = api.shellHtml();
-        const canvases = sceneRainRadar.querySelectorAll('.rr-canvas');
-        const base = api.basemap(siteCfg_());
-        if (base) api.drawFrame(canvases, base, -1);
-        api.prepare(siteCfg_(), Date.now()).then(function (plan) {
+        const ready = rainRadarReadyPlan_;
+        rainRadarReadyPlan_ = null;
+        function begin(plan) {
             if (gen !== rainRadarGen_) return;
             if (!plan || !plan.frames || !plan.frames.length) {
-                if (DEMO_ONLY === 'rain-radar') {
-                    rainRadarTimer_ = setTimeout(function () {
-                        rainRadarTimer_ = 0;
-                        if (gen !== rainRadarGen_) return;
-                        playSceneRainRadar();
-                    }, 5000);
-                    return;
-                }
-                finishRainRadar_();
+                skipRainRadarScene_();
                 return;
             }
+            markPlaylistHeld_();
+            sceneRainRadar.innerHTML = api.shellHtml();
+            const canvases = sceneRainRadar.querySelectorAll('.rr-canvas');
+            const base = api.basemap(siteCfg_());
+            if (base) api.drawFrame(canvases, base, -1);
             api.preload(plan);
             let index = 0;
             function show() {
@@ -13314,7 +13444,12 @@
                 });
             }
             show();
-        });
+        }
+        if (ready) {
+            begin(ready);
+            return;
+        }
+        startRainRadarOrSkip_();
     }
     function playSceneProgress() {
         const gen = ++progressPlayGen_;
