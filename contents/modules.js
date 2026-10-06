@@ -22,6 +22,7 @@
     wbgt: { id: 'wbgt', fetch: ['moe-wbgt'], scene: 'scene4' },
     'wbgt-i18n': { id: 'wbgt-i18n', fetch: ['moe-wbgt'], scene: 'scene3' },
     forecast: { id: 'forecast', fetch: ['jma-forecast'], scene: 'scene5' },
+    ssc: { id: 'ssc', fetch: [], scene: 'sceneSsc' },
     warning: { id: 'warning', fetch: ['jma-warning'], scene: 'sceneWarn' },
     'warning-hero': { id: 'warning-hero', fetch: ['jma-warning'], scene: 'sceneWarnHero' },
     'rain-nowcast': { id: 'rain-nowcast', fetch: ['jma-nowc'], scene: 'sceneRainWarn' },

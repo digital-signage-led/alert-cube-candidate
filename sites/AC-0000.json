@@ -164,6 +164,7 @@
     "wbgt": { "on": true },
     "wbgt-i18n": { "on": true },
     "forecast": { "on": true },
+    "ssc": { "on": true },
     "warning": { "on": true },
     "warning-hero": { "on": true },
     "rain-nowcast": { "on": true },

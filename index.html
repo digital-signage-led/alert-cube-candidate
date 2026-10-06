@@ -15,12 +15,13 @@
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
     <script src="./contents/rain-radar/index.js?v=20261006-rain-radar20"></script>
+    <script src="./contents/ssc/index.js?v=20261006-ac0024-ssc"></script>
     <script src="./contents/eew/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
-    <script src="./core/foundation.js?v=20261006-ac0018-foot"></script>
+    <script src="./core/foundation.js?v=20261006-ac0023-ssc"></script>
     <script src="./services/densho/index.js?v=20260929-densho-live"></script>
     <script src="./services/remote.js?v=20260921-suminoe"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
@@ -1042,6 +1043,31 @@
         .content-area.news-canvas > .scene-strip-bg { display: none !important; }
         .content-area.kotei-canvas { background: #071428 !important; }
         .content-area.kotei-canvas > .scene-strip-bg { display: none !important; }
+        #sceneSsc { display: none; overflow: hidden; }
+        #sceneSsc.active { display: block; }
+        #sceneSsc .ssc-scroll-wrap { width: 512px; height: var(--led-col-main-h); overflow: hidden; position: relative; z-index: 1; }
+        #sceneSsc .ssc-track {
+            display: flex; flex-direction: row; flex-wrap: nowrap; width: 1024px; height: 100%;
+            transition: none; will-change: transform;
+        }
+        #sceneSsc .ssc-panel { height: var(--led-col-main-h); }
+        #sceneSsc .ssc-bar-label,
+        #sceneSsc .ssc-unit { color: #7CFF6B; }
+        #sceneSsc .ssc-num.ssc-pending {
+            font-size: 22px; font-weight: 800; font-variant-numeric: normal;
+            font-family: "Noto Sans JP", sans-serif; letter-spacing: 0.02em;
+        }
+        #sceneSsc .ssc-panel.is-pending .ssc-unit { display: none; }
+        .content-area.col-bg-dark-text #sceneSsc .ssc-bar-label,
+        .content-area.col-bg-dark-text #sceneSsc .ssc-unit,
+        .content-area.col-bg-dark-text #sceneSsc .ssc-num { color: #1a1a1a; }
+        #ssc-meta-track .s2-meta-set { display: inline-flex; height: 100%; flex: 0 0 auto; }
+        #ssc-meta-track .s2-meta-panel-txt {
+            display: inline-flex; align-items: center; height: var(--led-foot-bar-h);
+            padding: 0 16px; white-space: nowrap;
+            font-size: var(--led-foot-font); font-weight: 700; color: #1a1a1a;
+            font-family: "Noto Sans JP", sans-serif;
+        }
         #sceneNews { width: 512px; height: 128px; overflow: hidden; background: #0B4F9C; }
         .news-scroll-wrap {
             width: 512px; height: 128px; overflow: hidden; position: relative;
@@ -1269,6 +1295,13 @@
             position: relative;
             z-index: 2;
             flex-shrink: 0;
+        }
+        #scene5 .d5-body-temp {
+            font-size: 22px; font-weight: 800; line-height: 1; color: #ebebeb; white-space: nowrap;
+        }
+        #scene5 .d5-panel.col-bg-dark-text .d5-body-temp { color: #111111; }
+        #scene5 .d5-foot-place {
+            color: #1a1a1a; font-size: 18px; font-weight: 700; font-family: "Noto Sans JP", sans-serif;
         }
         #scene5 .d5-body .weather-icon-cell {
             width: 54px; height: 54px;
@@ -2776,6 +2809,22 @@
         </div>
     </div>
 
+    <div class="scene" id="sceneSsc">
+        <div class="ssc-scroll-wrap">
+            <div class="ssc-track" id="ssc-conveyor">
+                <div class="s2-panel-data s2-strip ssc-panel is-pending" data-ssc="noise"><div class="s2-top-bar"><span class="s2-bar-label ssc-bar-label">騒音</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num ssc-num ssc-noise-val ssc-pending">取得中</span><span class="s2-unit ssc-unit">dB</span></div></div></div>
+                <div class="s2-panel-data s2-strip ssc-panel is-pending" data-ssc="vib"><div class="s2-top-bar"><span class="s2-bar-label ssc-bar-label">振動</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num ssc-num ssc-vib-val ssc-pending">取得中</span><span class="s2-unit ssc-unit">dB</span></div></div></div>
+                <div class="s2-panel-data s2-strip ssc-panel is-pending" data-ssc="noise"><div class="s2-top-bar"><span class="s2-bar-label ssc-bar-label">騒音</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num ssc-num ssc-noise-val ssc-pending">取得中</span><span class="s2-unit ssc-unit">dB</span></div></div></div>
+                <div class="s2-panel-data s2-strip ssc-panel is-pending" data-ssc="vib"><div class="s2-top-bar"><span class="s2-bar-label ssc-bar-label">振動</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num ssc-num ssc-vib-val ssc-pending">取得中</span><span class="s2-unit ssc-unit">dB</span></div></div></div>
+                <div class="s2-panel-data s2-strip ssc-panel is-pending" data-ssc="noise"><div class="s2-top-bar"><span class="s2-bar-label ssc-bar-label">騒音</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num ssc-num ssc-noise-val ssc-pending">取得中</span><span class="s2-unit ssc-unit">dB</span></div></div></div>
+                <div class="s2-panel-data s2-strip ssc-panel is-pending" data-ssc="vib"><div class="s2-top-bar"><span class="s2-bar-label ssc-bar-label">振動</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num ssc-num ssc-vib-val ssc-pending">取得中</span><span class="s2-unit ssc-unit">dB</span></div></div></div>
+                <div class="s2-panel-data s2-strip ssc-panel is-pending" data-ssc="noise"><div class="s2-top-bar"><span class="s2-bar-label ssc-bar-label">騒音</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num ssc-num ssc-noise-val ssc-pending">取得中</span><span class="s2-unit ssc-unit">dB</span></div></div></div>
+                <div class="s2-panel-data s2-strip ssc-panel is-pending" data-ssc="vib"><div class="s2-top-bar"><span class="s2-bar-label ssc-bar-label">振動</span></div><div class="s2-body"><div class="s2-val"><span class="s2-num ssc-num ssc-vib-val ssc-pending">取得中</span><span class="s2-unit ssc-unit">dB</span></div></div></div>
+            </div>
+        </div>
+        <div class="s2-meta-bar"><div class="s2-meta-track" id="ssc-meta-track"></div></div>
+    </div>
+
     <div class="scene" id="sceneNews">
         <div class="news-scroll-wrap">
             <div class="news-track" id="news-track"></div>
@@ -3327,6 +3376,14 @@
         if (typeof rainWarnMeta !== 'undefined') {
             rainWarnMeta.cityName = (JMA_WARN_CITY_LABELS && JMA_WARN_CITY_LABELS[JMA_WARN_CITY]) || getSiteLocationLabel_();
         }
+        refineOnlyParam_();
+        if (typeof startSscRefreshLoop_ === 'function') startSscRefreshLoop_();
+    }
+    function refineOnlyParam_() {
+        const raw = String(query.get('only') || '').toLowerCase();
+        if (raw !== '3') return;
+        const order = (siteCfg_() && siteCfg_().contentOrder) || [];
+        if (order[2] === 'ssc') DEMO_ONLY = 'ssc';
     }
     function solidCssColor_(value) {
         const s = String(value == null ? '' : value).trim();
@@ -3472,6 +3529,7 @@
         if (v === 'progress') return 'progress';
         if (v === 'rain-radar' || v === 'radar') return 'rain-radar';
         if (v === 'logo') return 'logo';
+        if (v === 'ssc' || v === 'noise' || v === 'vib') return 'ssc';
         const map = { '1': 's1', '2': 's2', '3': 's4', '4': 's5', '5': 's3', s1: 's1', s2: 's2', s3: 's3', s4: 's4', s5: 's5' };
         return map[v] || null;
     }
@@ -3479,10 +3537,10 @@
         s1: 'シーン1', s2: 'シーン2', s4: 'シーン3', s5: 'シーン4', s3: 'シーン5',
         schedule: '工程表', greeting: '近隣挨拶',
         news: 'ニュース', boards: '告知ボード', logo: 'スクローリングロゴ', progress: '工事進捗',
-        'rain-radar': '雨雲レーダー',
+        'rain-radar': '雨雲レーダー', ssc: 'シーン3 騒音・振動',
         alert: '熱中症アラート', rainwarn: '大雨警報', typhoon: '防災情報・台風'
     };
-    const DEMO_ONLY = normalizeOnlyParam_(query.get('only'));
+    let DEMO_ONLY = normalizeOnlyParam_(query.get('only'));
     const ONLY_LIVE_DATA = !!DEMO_ONLY && query.get('live') === '1';
     const DEMO_EMBED = query.get('embed') === '1';  /* 確認ボード iframe 用（バッジ非表示） */
     /* 640×128 ネイティブ: embed / native640=1 / フルデモ順送り */
@@ -3811,7 +3869,8 @@
     function fcBarLabelForPanel_(index) {
         const cfg = (siteCfg_() && siteCfg_().presentation) || {};
         if (cfg.heatLabel === 'ja') return '暑さ指数';
-        return FC_BAR_LABELS[index % 2];
+        const labels = presentationWording_() === 'daitetsu' ? ['WBGT', '暑さ指数'] : FC_BAR_LABELS;
+        return labels[index % 2];
     }
     /** 一般向け案件だけ、中止・作業停止にあたる他言語を休憩・補給の表現へ替える */
     const MULTI_PUBLIC_I18N = {
@@ -4471,8 +4530,11 @@
     const sceneRainWarn = document.getElementById('sceneRainWarn');
     const sceneWarn = document.getElementById('sceneWarn');
     const sceneTyphoon = document.getElementById('sceneTyphoon');
+    const sceneSsc = document.getElementById('sceneSsc');
+    const sscConveyor = document.getElementById('ssc-conveyor');
+    const sscMetaTrack = document.getElementById('ssc-meta-track');
     const logoRotator = document.getElementById('logo-rotator');
-    const ALL_SCENES_ = [s1, s2, s3, s4, s5, sceneLogo, sceneNews, sceneBoards, sceneProgress, sceneRainRadar, sceneSchedule, sceneGreeting, sceneAlert, sceneRainWarn, sceneWarn, sceneTyphoon];
+    const ALL_SCENES_ = [s1, s2, s3, s4, s5, sceneSsc, sceneLogo, sceneNews, sceneBoards, sceneProgress, sceneRainRadar, sceneSchedule, sceneGreeting, sceneAlert, sceneRainWarn, sceneWarn, sceneTyphoon];
 
     /** ロゴパネル: 現在の WBGT 段階色に同期 */
     function applySignageLogoPanel_() {
@@ -7653,6 +7715,10 @@
     const SCENE2_FACE_COUNT = 4;
     const SCENE2_TYPE_ORDER = ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin', 'uvi', 'illumi', 'cumtemp', 'rain1h', 'rain24h'];
     const SCENE2_SCROLL_ORDER = ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin', 'uvi', 'illumi', 'cumtemp', 'rain1h', 'rain24h'];
+    function scene2ScrollOrder_() {
+        const custom = siteCfg_() && siteCfg_().presentation && siteCfg_().presentation.observationOrder;
+        return (Array.isArray(custom) && custom.length) ? custom : SCENE2_SCROLL_ORDER;
+    }
     const SCENE2_PANEL_COUNT = SCENE2_FACE_COUNT;
     const SCENE2_LAPS = 1;
     const SCENE2_SCROLL_PX = 0.8;
@@ -7858,6 +7924,7 @@
         clearScenePostHoldTimer_();
         if (scene1AnimId) { cancelAnimationFrame(scene1AnimId); scene1AnimId = null; }
         if (scene2AnimId) { cancelAnimationFrame(scene2AnimId); scene2AnimId = null; }
+        if (sceneSscAnimId) { cancelAnimationFrame(sceneSscAnimId); sceneSscAnimId = null; }
         clearScene2TypeTimer_();
         clearScene4Timers();
         if (scene5AnimId) { cancelAnimationFrame(scene5AnimId); scene5AnimId = null; }
@@ -7875,6 +7942,7 @@
         if (raAnimId) { cancelAnimationFrame(raAnimId); raAnimId = null; }
     }
     let scene2AnimId = null;
+    let sceneSscAnimId = null;
     let clockIntervalId = null;
     let clockBackupIntervalId = null;
     let clockTickWallMs_ = 0;
@@ -9383,7 +9451,13 @@
         }
         return json;
     }
+    const D5_RELATIVE_LABELS = ['今日', '明日', '明後日', '明々後日'];
+    function forecastPlaceFoot_() {
+        const p = (siteCfg_() && siteCfg_().presentation) || {};
+        return p.forecastPlaceFoot === true;
+    }
     function d5DateLabel_(dayOffset) {
+        if (forecastPlaceFoot_()) return D5_RELATIVE_LABELS[dayOffset] || '';
         const now = getSyncedUtcMs() != null ? getSyncedUtcMs() : Date.now();
         const today = jstPartsFromMs(now);
         const p = jstAddDays(today.year, today.month, today.day, dayOffset);
@@ -9504,6 +9578,30 @@
     function forecastHumidityStr_(maxC, minC) {
         const pct = forecastHumidityPct_(maxC, minC);
         return pct == null ? '--' : String(pct);
+    }
+    function paintD5DayReadout_(day, tempStr, humiStr) {
+        if (forecastPlaceFoot_()) {
+            const place = getSiteLocationLabel_() || '';
+            document.querySelectorAll('.d5-day-' + day + ' .d5-foot-txt').forEach(function (el) {
+                el.className = 'd5-foot-txt d5-foot-place';
+                el.textContent = place;
+            });
+            document.querySelectorAll('.d5-day-' + day + ' .d5-weather-row').forEach(function (row) {
+                let tempEl = row.querySelector('.d5-body-temp');
+                if (!tempEl) {
+                    tempEl = document.createElement('span');
+                    tempEl.className = 'd5-body-temp';
+                    row.appendChild(tempEl);
+                }
+                tempEl.textContent = tempStr + '℃';
+            });
+            return;
+        }
+        document.querySelectorAll('.d5-day-' + day + ' .d5-body-temp').forEach(function (el) { el.remove(); });
+        document.querySelectorAll('.d5-day-' + day + ' .d5-foot-txt').forEach(function (el) {
+            el.className = 'd5-foot-txt';
+            el.innerHTML = d5FootHtml_(tempStr, humiStr);
+        });
     }
     function d5FootHtml_(tempStr, humiStr) {
         return '<span class="d5-foot-temp"><span class="d5-temp">' + tempStr + '</span>℃</span>'
@@ -9629,9 +9727,7 @@
             const observed = day === 0 ? observedHumidityStr_() : '--';
             const humiStr = observed !== '--' ? observed : forecastHumidityStr_(temp, row.min);
             applyD5WeatherIcon_(day, row.weatherCode);
-            document.querySelectorAll(`.d5-day-${day} .d5-foot-txt`).forEach(el => {
-                el.innerHTML = d5FootHtml_(tempStr, humiStr);
-            });
+            paintD5DayReadout_(day, tempStr, humiStr);
         }
         if (days[0] && days[0].weatherCode) {
             lastForecastWeatherCode_ = days[0].weatherCode;
@@ -9734,7 +9830,7 @@
     function buildScene2ScrollConveyor_() {
         if (!conveyor) return [];
         const enabled = scene2TypesOn_();
-        const types = SCENE2_SCROLL_ORDER.filter(function (type) {
+        const types = scene2ScrollOrder_().filter(function (type) {
             return enabled.indexOf(type) >= 0;
         });
         let setHtml = types.map(scene2PanelHtml_).join('');
@@ -9871,7 +9967,7 @@
     }
     function buildScene2MetaGroups_(obs) {
         const map = new Map();
-        const order = scene2ScrollMode_() ? SCENE2_SCROLL_ORDER : SCENE2_META_ORDER;
+        const order = scene2ScrollMode_() ? scene2ScrollOrder_() : SCENE2_META_ORDER;
         const enabled = scene2TypesOn_();
         order.filter(function (type) { return enabled.indexOf(type) >= 0; }).forEach(function (type) {
             const foot = scene2FootTextForType_(type, obs);
@@ -9901,7 +9997,7 @@
     }
     function buildScene2MetaSetHtml(obs) {
         if (scene2ScrollMode_()) {
-            const types = SCENE2_SCROLL_ORDER.filter(function (type) {
+            const types = scene2ScrollOrder_().filter(function (type) {
                 return scene2TypesOn_().indexOf(type) >= 0;
             });
             let slots = types.map(function (type) {
@@ -10587,7 +10683,7 @@
     }
     function sceneDisplayMode(el) {
         if (!el) return 'block';
-        if (el.id === 'scene2' || el.id === 'scene4' || el.id === 'scene5' || el.id === 'sceneLogo' || el.id === 'sceneNews' || el.id === 'sceneBoards' || el.id === 'sceneProgress' || el.id === 'sceneRainRadar' || el.id === 'sceneSchedule' || el.id === 'sceneGreeting' || el.id === 'sceneAlert' || el.id === 'sceneRainWarn' || el.id === 'sceneWarn' || el.id === 'sceneTyphoon') return 'block';
+        if (el.id === 'scene2' || el.id === 'scene4' || el.id === 'scene5' || el.id === 'sceneSsc' || el.id === 'sceneLogo' || el.id === 'sceneNews' || el.id === 'sceneBoards' || el.id === 'sceneProgress' || el.id === 'sceneRainRadar' || el.id === 'sceneSchedule' || el.id === 'sceneGreeting' || el.id === 'sceneAlert' || el.id === 'sceneRainWarn' || el.id === 'sceneWarn' || el.id === 'sceneTyphoon') return 'block';
         if (el.id === 'scene1' || el.id === 'scene3') return 'block';
         return 'flex';
     }
@@ -12632,22 +12728,13 @@
             sceneGreetingAnimId = requestAnimationFrame(step);
         });
     }
-    let promoLinesShown_ = 0;
     function finishPromoPass_() {
         const lines = (greetingCfg_().lines || []);
         const count = Math.max(1, lines.length);
         const passes = Math.max(1, greetingPassCount_());
         const pass = greetingPassIndex_();
+        /* 1周につき1本。次の周回で次の文言になる。 */
         if (passes <= 1 || pass >= passes - 1) promoAdvanceLine_(count);
-        /* 文言が複数あるときは、この回のうちに全部出す。周回を待たないと見えない文を残さない。 */
-        if (count > 1 && passes <= 1) {
-            promoLinesShown_ += 1;
-            if (promoLinesShown_ < count) {
-                playPromoJapanese_();
-                return;
-            }
-            promoLinesShown_ = 0;
-        }
         finishGreetingScene_();
     }
     function promoLogoWidth_(src, heightPx, done) {
@@ -12809,7 +12896,6 @@
             return;
         }
         markPlaylistHeld_();
-        promoLinesShown_ = 0;
         applyDisplayRefreshAtSceneEntry_();
         sceneGreeting.classList.add('greeting-promo');
         sceneGreeting.classList.remove('greeting-fill');
@@ -12882,9 +12968,7 @@
         setTextAll('.wbgt-val', '28.0');
         buildScene2MetaTrack(getSyncedUtcMs() != null ? new Date(getSyncedUtcMs()) : new Date());
         fitScene2BodyText();
-        document.querySelectorAll('.d5-foot-txt').forEach(el => {
-            el.innerHTML = d5FootHtml_('32', '65');
-        });
+        for (let day = 0; day < SCENE5_DAY_COUNT; day++) paintD5DayReadout_(day, '32', '65');
         applyD5BarLabels_();
         applyD5TodayFrame_();
         applyD5ForecastTextColors_();
@@ -12983,6 +13067,7 @@
                 case 'schedule': showOnlyScene_(sceneSchedule, playSceneSchedule); break;
                 case 'greeting': showOnlyScene_(sceneGreeting, playSceneGreeting); break;
                 case 'news': showOnlyScene_(sceneNews, playSceneNews); break;
+                case 'ssc': showOnlyScene_(sceneSsc, playSceneSsc); break;
                 case 'boards': showOnlyScene_(sceneBoards, playSceneBoards); break;
                 case 'progress': showOnlyScene_(sceneProgress, playSceneProgress); break;
                 case 'rain-radar': showOnlyScene_(sceneRainRadar, playSceneRainRadar); break;
@@ -13192,6 +13277,130 @@
         }
         storeId(requestAnimationFrame(tick));
     }
+    function edamSscCfg_() {
+        return (siteCfg_() && siteCfg_().edamSsc) || {};
+    }
+    function sscLaps_() {
+        const pres = (siteCfg_() && siteCfg_().presentation) || {};
+        const raw = pres.sscLaps != null ? pres.sscLaps : edamSscCfg_().laps;
+        const n = Number(raw);
+        return Number.isFinite(n) && n > 0 ? Math.min(4, Math.floor(n)) : 2;
+    }
+    function resolveEdamSscId_() {
+        if (!window.EdamSsc) return 0;
+        return window.EdamSsc.resolveId(edamSscCfg_(), query);
+    }
+    function syncSscPendingDom_() {
+        document.querySelectorAll('#sceneSsc .ssc-panel').forEach(function (panel) {
+            const num = panel.querySelector('.ssc-num');
+            const pending = !!(num && num.textContent === (window.EdamSsc ? window.EdamSsc.PENDING : '取得中'));
+            panel.classList.toggle('is-pending', pending);
+            if (num) num.classList.toggle('ssc-pending', pending);
+        });
+    }
+    function applySscValuesToDom_(vals) {
+        if (!vals) return;
+        lastSscValues_ = vals;
+        const pendingLabel = window.EdamSsc ? window.EdamSsc.PENDING : '取得中';
+        const nText = vals.noise != null ? String(vals.noise) : pendingLabel;
+        const vText = vals.vibration != null ? String(vals.vibration) : pendingLabel;
+        document.querySelectorAll('.ssc-noise-val').forEach(function (el) { el.textContent = nText; });
+        document.querySelectorAll('.ssc-vib-val').forEach(function (el) { el.textContent = vText; });
+        syncSscPendingDom_();
+        buildSscMetaTrack_();
+    }
+    function buildSscMetaTrack_() {
+        if (!sscMetaTrack || !window.EdamSsc) return;
+        const ready = resolveEdamSscId_() > 0;
+        const sscCfg = edamSscCfg_();
+        const metaCfg = String(sscCfg.siteName || '').trim()
+            ? sscCfg
+            : Object.assign({}, sscCfg, { siteName: getSiteLocationLabel_() });
+        const line = window.EdamSsc.metaLine(metaCfg, lastSscValues_ || window.EdamSsc.pendingValues(), ready);
+        const html = '<div class="s2-meta-set"><div class="s2-meta-slot s2-meta-slot-wide"><span class="s2-meta-panel-txt">'
+            + window.EdamSsc.escapeHtml(line) + '</span></div></div>';
+        sscMetaTrack.innerHTML = html + html;
+        const first = sscMetaTrack.querySelector('.s2-meta-set');
+        sscMetaLapPx = first ? Math.max(512, first.offsetWidth || 512) : 512;
+    }
+    function fetchEdamSsc_() {
+        const id = resolveEdamSscId_();
+        if (!id || !window.EdamSsc) {
+            if (window.EdamSsc) applySscValuesToDom_(window.EdamSsc.pendingValues());
+            return Promise.resolve(null);
+        }
+        const cfg = edamSscCfg_();
+        return window.EdamSsc.fetchValues(id, {
+            apiHost: cfg.apiHost,
+            apiPath: cfg.apiPath,
+            corsProxy: query.get('sscProxy') || cfg.corsProxy || ''
+        }).then(function (vals) {
+            applySscValuesToDom_(vals);
+            return vals;
+        }).catch(function (err) {
+            console.warn('[SSC]', err && err.message ? err.message : err);
+            if (!lastSscValues_ || (lastSscValues_.noise == null && lastSscValues_.vibration == null)) {
+                applySscValuesToDom_(window.EdamSsc.pendingValues());
+            }
+            return null;
+        });
+    }
+    function startSscRefreshLoop_() {
+        if (sscFetchTimerId_ != null) clearInterval(sscFetchTimerId_);
+        sscFetchTimerId_ = null;
+        if (!contentOn_('ssc') && DEMO_ONLY !== 'ssc') return;
+        const id = resolveEdamSscId_();
+        if (window.EdamSsc) applySscValuesToDom_(lastSscValues_ || window.EdamSsc.pendingValues());
+        if (!id) {
+            console.info('[SSC] LoID/URL 未設定 — 「取得中」表示。SignageConfig.edamSsc.idNum（または ?sscId=）設定後に取得開始');
+            return;
+        }
+        fetchEdamSsc_();
+        const ms = Math.max(5000, parseInt(query.get('sscRefresh') || String(edamSscCfg_().refreshMs || 10000), 10) || 10000);
+        sscFetchTimerId_ = setInterval(function () { fetchEdamSsc_(); }, ms);
+    }
+    let sscFetchTimerId_ = null;
+    let sscMetaLapPx = 512;
+    let lastSscValues_ = null;
+    function playSceneSsc() {
+        markPlaylistHeld_();
+        applyDisplayRefreshAtSceneEntry_();
+        applyPendingSignageBgAtScene_();
+        buildSscMetaTrack_();
+        fetchEdamSsc_();
+        if (sceneSscAnimId) { cancelAnimationFrame(sceneSscAnimId); sceneSscAnimId = null; }
+        const panels = sscConveyor ? sscConveyor.querySelectorAll('.ssc-panel') : [];
+        const setWidth = Math.max(512, Math.floor(panels.length / 2) * 128);
+        const totalPx = setWidth * sscLaps_();
+        if (!sscConveyor || !setWidth) {
+            if (demoOnlyLoop_('ssc', playSceneSsc)) return;
+            playlistHandoff_();
+            return;
+        }
+        let moved = 0;
+        applyScrollX_(sscConveyor, 0);
+        applyScrollX_(sscMetaTrack, 0);
+        function finishSsc_() {
+            sceneSscAnimId = null;
+            if (demoOnlyLoop_('ssc', playSceneSsc)) return;
+            runAfterSceneEndHold_(function () { playlistHandoff_(); });
+        }
+        function tick() {
+            if (sceneSscAnimId == null) return;
+            const speed = getScrollSpeedPx_();
+            moved = Math.min(totalPx, moved + speed);
+            applyScrollX_(sscConveyor, wrapScrollX_(-moved, setWidth));
+            applyScrollX_(sscMetaTrack, wrapScrollX_(-moved, sscMetaLapPx));
+            if (moved >= totalPx) {
+                finishSsc_();
+                return;
+            }
+            sceneSscAnimId = requestAnimationFrame(tick);
+        }
+        runSceneScrollAfterHold_(function () {
+            sceneSscAnimId = requestAnimationFrame(tick);
+        });
+    }
     function playContentById_(id) {
         rememberPlaylistId_(id);
         if (id !== 'news') {
@@ -13213,6 +13422,10 @@
                 transitionToScene(s4, playScene4);
                 break;
             case 'forecast': transitionToScene(s5, playScene5); break;
+            case 'ssc':
+                if (!contentOn_('ssc') || !sceneSsc) { advanceContentOrder_(); break; }
+                transitionToScene(sceneSsc, playSceneSsc);
+                break;
             case 'wbgt-i18n':
                 if (!wbgtMultilingualOn_()) { advanceContentOrder_(); break; }
                 transitionToScene(s3, playScene3);
@@ -13562,6 +13775,12 @@
         api.prepare(siteCfg_(), Date.now()).then(function (plan) {
             if (!plan || !plan.frames || !plan.frames.length) {
                 skipRainRadarScene_();
+                return;
+            }
+            const always = siteCfg_() && siteCfg_().presentation && siteCfg_().presentation.rainRadarAlways === true;
+            if (always) {
+                rainRadarReadyPlan_ = plan;
+                transitionToScene(sceneRainRadar, playSceneRainRadar);
                 return;
             }
             return api.viewHasRain(plan).then(function (rain) {

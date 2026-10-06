@@ -22,6 +22,14 @@
     { id: 'wbgt', label: 'WBGT/暑さ指数', scene: 'scene4', fetch: ['moe-wbgt'], existing: true, lifecycle: 'active', seasonal: 'summer' },
     { id: 'wbgt-i18n', label: '多言語WBGT', scene: 'scene3', fetch: ['moe-wbgt'], existing: true, lifecycle: 'active', seasonal: 'summer' },
     { id: 'forecast', label: '4日予報', scene: 'scene5', fetch: ['jma-forecast'], existing: true, lifecycle: 'active' },
+    {
+      id: 'ssc', label: '騒音・振動', scene: 'sceneSsc', fetch: [],
+      existing: true, defaultOn: false, lifecycle: 'active',
+      end: 'animation', resolution: '512x128',
+      purpose: '環境クラウドの騒音と振動を騒音→振動→騒音→振動で2周流す',
+      required: [], optional: ['edamSsc.idNum'],
+      assets: 'none', source: 'edam SSCNumData'
+    },
     { id: 'warning', label: '警報・注意報', scene: 'sceneWarn', fetch: ['jma-warning'], existing: true, lifecycle: 'active', safety: true },
     { id: 'warning-hero', label: '警報情報', scene: 'sceneWarnHero', fetch: ['jma-warning'], existing: true, lifecycle: 'active', safety: true },
     { id: 'rain-nowcast', label: '雨雲・大雨', scene: 'sceneRainWarn', fetch: ['jma-nowc'], existing: true, lifecycle: 'active', safety: true },

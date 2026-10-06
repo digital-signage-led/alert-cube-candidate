@@ -294,6 +294,7 @@
       presentation: site.presentation || {},
       contents: site.contents,
       contentOrder: site.contentOrder,
+      edamSsc: site.edamSsc || null,
       news: site.news || null,
       boards: site.boards || null,
       progress: site.progress || null,
@@ -336,6 +337,7 @@
     if (json.schedule) base.schedule = json.schedule;
     if (json.greeting) base.greeting = json.greeting;
     if (json.presentation) base.presentation = Object.assign({}, base.presentation || {}, json.presentation);
+    if (json.edamSsc) base.edamSsc = json.edamSsc;
     if (json.news) base.news = json.news;
     if (json.boards) base.boards = json.boards;
     if (json.progress) base.progress = json.progress;

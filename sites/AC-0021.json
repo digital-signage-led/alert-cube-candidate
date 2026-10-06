@@ -10,12 +10,13 @@
   "location": "奈良県奈良市 奈良高架作業所",
   "latitude": 34.6697,
   "longitude": 135.8069,
-  "memo": "5面640×128。右端ロゴは大鉄マーク、背景は現在WBGTの上バー色。気象観測・WBGT・予報の末尾も大鉄マーク。時刻下帯はDAITETSUロゴとWBGT文言。WBGT・AMeDASは奈良64036（フォールバックなし）。予報は290000、詳細は奈良県北部290010、気温は奈良64036。警報・注意報と台風は発表中に出す。雨雲レーダーは現場中心。雨雲ナウキャストは下帯にも出す。熱中症アラートは発表時かつWBGT正常時のみ。多言語は日英越タガログ。PRは日本語のあと多言語。文言3本を周回。",
+  "memo": "5面640×128。右端ロゴは大鉄マーク、背景は現在WBGTの上バー色。気象観測・WBGT・予報の末尾も大鉄マーク。通常の一周は、警報・台風（発表中のみ）、時刻、WBGT、アメダス、雨雲レーダー、4日予報、WBGT、大鉄PR日本語、多言語WBGT、WBGT、大鉄PRの英越タガログ、熱中症アラート（発表時かつWBGT正常時のみ）、墜落・転落。時刻下帯はDAITETSUロゴと「大鉄工業株式会社　土木支店　奈良高架作業所」とそのときの暑さ指数の助言。WBGT上段はWBGTと暑さ指数を交互、下段は出典。アメダスは天気、気温、降水量、風向き、風速、湿度、気圧、最高/最低、最大瞬間風速。予報は今日から明々後日で、下は奈良市。PRは1周につき1本で、4周目に1本目へ戻る。WBGT・AMeDASは奈良64036（フォールバックなし）。予報は290000、詳細は奈良県北部290010、気温は奈良64036。雨雲レーダーは現場中心で、雨の有無にかかわらず一周ごとに出す。雨雲ナウキャストは下帯にも出す。多言語は日英越タガログ。",
   "resolution": "640x128",
   "layout": "AC-640",
   "faces": 5,
   "timeZone": "Asia/Tokyo",
   "footSource": "出典：気象庁・環境省データ",
+  "clockFoot": "大鉄工業株式会社　土木支店　奈良高架作業所",
   "releasePin": null,
   "logo": {
     "src": "./assets/sites/AC-0021/logo_mark.png?v=1",
@@ -70,22 +71,22 @@
     ],
     "i18n": [
       {
-        "en": "Heat risk: 28°C+, humidity 75%+, WBGT 28°C+ — severe caution!",
-        "vn": "Nguy cơ: 28°C+, ẩm 75%+, WBGT 28°C+ — cảnh báo nghiêm!",
-        "tl": "Panganib: 28°C+, halumigmig 75%+, WBGT 28°C+!",
-        "em": ["28°C+", "75%+", "severe caution", "cảnh báo nghiêm"]
+        "en": "Heat stroke risk factors: temperature 28°C or above, humidity 75% or above, WBGT 28°C or above — severe warning!",
+        "vn": "Yếu tố nguy cơ say nắng: nhiệt độ từ 28°C trở lên, độ ẩm từ 75% trở lên, WBGT từ 28°C trở lên — cảnh báo nghiêm trọng!",
+        "tl": "Mga salik sa panganib ng heat stroke: temperatura 28°C pataas, halumigmig 75% pataas, WBGT 28°C pataas — malubhang babala!",
+        "em": ["28°C", "75%", "severe warning", "cảnh báo nghiêm trọng", "malubhang babala"]
       },
       {
-        "en": "Drink 10 ml per kg each hour to prevent heatstroke!",
-        "vn": "Uống 10 ml/kg mỗi giờ để phòng say nắng!",
-        "tl": "Uminom ng 10 ml/kg bawat oras para iwas heatstroke!",
-        "em": ["10 ml/kg", "10 ml"]
+        "en": "Aim for 10ml of water per hour per 1 kg of body weight to prevent heat stroke!",
+        "vn": "Cố gắng bổ sung 10ml nước/giờ cho mỗi 1 kg cân nặng để phòng chống say nắng!",
+        "tl": "Mag-target ng 10ml na tubig bawat oras bawat 1 kg ng timbang para maiwasan ang heat stroke!",
+        "em": ["10ml"]
       },
       {
-        "en": "Rest is part of the job. Water, salt, and breaks stop heatstroke!",
-        "vn": "Nghỉ cũng là việc. Nước, muối và nghỉ ngơi để phòng say nắng!",
-        "tl": "Ang pahinga ay trabaho. Tubig, asin, at pahinga laban sa heatstroke!",
-        "em": ["Water, salt", "Nước, muối", "Tubig, asin"]
+        "en": "Rest is part of the job — hydrate, replenish salt, and rest; let’s all prevent heat stroke!",
+        "vn": "Nghỉ ngơi cũng là một phần công việc — bổ sung nước, muối và nghỉ ngơi; cùng nhau phòng chống say nắng!",
+        "tl": "Pahinga ay bahagi ng trabaho — uminom ng tubig, magdagdag ng asin, at magpahinga; sama-samang pigilan ang heat stroke!",
+        "em": ["hydrate, replenish salt", "nước, muối", "tubig", "asin"]
       }
     ],
     "footLogo": "./assets/sites/AC-0021/logo_wordmark.png?v=1",
@@ -103,9 +104,32 @@
     "scrollSpeedPx": 0.8,
     "observationMode": "scroll",
     "observationLaps": 1,
-    "observationTrailingLogo": true
+    "observationOrder": ["weather", "temp", "rain", "wdir", "wind", "humi", "pres", "tmaxmin", "gust"],
+    "observationTrailingLogo": true,
+    "forecastPlaceFoot": true,
+    "rainRadarAlways": true
   },
-  "contentOrder": ["warning", "typhoon", "clock", "wbgt", "observation", "rain-radar", "forecast", "greeting", "wbgt-i18n", "heat"],
+  "boards": {
+    "laps": 2,
+    "speed": 1,
+    "background": "#000000",
+    "phases": [
+      {
+        "id": "fall-signs",
+        "layout": "posters",
+        "play": "slide",
+        "laps": 2,
+        "width": 512,
+        "images": [
+          { "src": "./assets/sites/AC-0009/safety_fall.png?v=1", "alt": "墜落・転落災害防止" },
+          { "src": "./assets/sites/AC-0009/safety_harness.jpg?v=1", "alt": "フルハーネス 使用ヨシ" },
+          { "src": "./assets/sites/AC-0009/safety_opening.png?v=1", "alt": "開口部 足元確認" },
+          { "src": "./assets/sites/AC-0009/safety_lifeline.png?v=1", "alt": "手すり・親綱 確認ヨシ" }
+        ]
+      }
+    ]
+  },
+  "contentOrder": ["warning", "typhoon", "clock", "wbgt", "observation", "rain-radar", "forecast", "wbgt", "greeting", "wbgt-i18n", "wbgt", "greeting", "heat", "boards"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -129,7 +153,7 @@
     "schedule": { "on": false },
     "greeting": { "on": true },
     "news": { "on": false },
-    "boards": { "on": false },
+    "boards": { "on": true },
     "logo-scroll": { "on": false },
     "pollen": { "on": false },
     "pm25": { "on": false }

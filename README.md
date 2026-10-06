@@ -30,6 +30,10 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/?site=AC-0019 （戸田建設 東近江市 E3棟）
 - http://127.0.0.1:3200/?site=AC-0020 （森下組 奈良市）
 - http://127.0.0.1:3200/?site=AC-0021 （大鉄工業 奈良高架作業所）
+- http://127.0.0.1:3200/?site=AC-0022 （松鶴建設 墨田区）
+- http://127.0.0.1:3200/?site=AC-0023 （株式会社落合組 菊川市大石）
+- http://127.0.0.1:3200/?site=AC-0024 （川崎重工 千葉・中部作業所。騒音・振動）
+- http://127.0.0.1:3200/?site=AC-0025 （宇佐美工業 名古屋市・広域河川堀川浚渫工事）
 - http://127.0.0.1:3200/?site=AC-0000 （内部テスト。本番端末へ登録しない）
 - http://127.0.0.1:3200/contents/ （V2.0コンテンツ確認一覧）
 - http://127.0.0.1:3200/?offseason=1
@@ -79,8 +83,12 @@ docs/               運用
 | AC-0019 | active | 戸田建設 / 滋賀県東近江市東沖野丁目４－１ E3棟建設工事作業所 |
 | AC-0020 | active | 株式会社森下組 / 奈良県奈良市 |
 | AC-0021 | active | 大鉄工業株式会社 / 奈良県奈良市 奈良高架作業所 |
+| AC-0022 | active | 松鶴建設株式会社 / 〒131-0031 東京都墨田区墨田4丁目12-8 |
+| AC-0023 | active | 株式会社落合組 / 〒437-1524 静岡県菊川市大石（西嶺田） |
+| AC-0024 | active | 川崎重工業株式会社 / 千葉県（中部作業所） |
+| AC-0025 | active | 宇佐美工業株式会社 / 愛知県名古屋市・広域河川堀川浚渫工事 |
 
-発行済み ID は再利用しない。追加するときは `sites/_template.json` を新しい番号へ複製する。デモは別番号で `status: demo` とし、`demoSites` にだけ入れる。`?demo=1` は演出で、外してもその番号は本番にならない。
+発行済み ID は再利用しない。追加するときは `sites/_template.json` を新しい番号へ複製する。環境クラウドの騒音・振動がある案件は `sites/_template-ssc.json` を複製し、地点と `edamSsc.idNum` を入れる。デモは別番号で `status: demo` とし、`demoSites` にだけ入れる。`?demo=1` は演出で、外してもその番号は本番にならない。
 
 ## テスト
 
@@ -118,5 +126,9 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0019: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0019
 - AC-0020: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0020
 - AC-0021: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0021
+- AC-0022: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0022
+- AC-0023: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0023
+- AC-0024: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0024
+- AC-0025: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0025
 - AC-0000: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0000
 - コンテンツ一覧: https://digital-signage-led.github.io/alert-cube-candidate/contents/

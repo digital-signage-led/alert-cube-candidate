@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<!-- 千葉_KC_騒音_振動（川崎重工）AC-0024。本体は index.html -->
+<meta charset="UTF-8">
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  if (!q.get('site')) q.set('site', 'AC-0024');
+  location.replace('index.html?' + q.toString());
+})();
+</script>
