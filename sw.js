@@ -61,6 +61,7 @@ var PRECACHE = [
   './assets/sites/AC-0014/logo_banner.png?v=1',
   './sites/AC-0015.json',
   './sites/AC-0016.json',
+  './assets/sites/AC-0016/logo_mark.png?v=1',
   './sites/AC-0017.json',
   './assets/sites/AC-0017/logo_foot.png?v=1',
   './sites/AC-0018.json',

@@ -1228,6 +1228,7 @@ test('AC-0016 はIHI瀧上・神戸市東灘区の4面本番設定', function ()
   assert.strictEqual(site.status, 'active');
   assert.strictEqual(site.customer, 'IHI瀧上特定建設工事共同企業体');
   assert.strictEqual(site.rental, 'IHI瀧上特定建設工事共同企業体');
+  assert.strictEqual(site.label, 'IHI瀧上特定建設工事共同企業体');
   assert.strictEqual(site.siteName, '東灘区');
   assert.strictEqual(site.location, '兵庫県神戸市東灘区');
   assert.strictEqual(site.faces, 4);
@@ -1249,7 +1250,7 @@ test('AC-0016 はIHI瀧上・神戸市東灘区の4面本番設定', function ()
   assert.strictEqual(site.jma.warnArea, '280000');
   assert.strictEqual(site.jma.warnCity, '2810100');
   assert.strictEqual(site.jma.warnCityLabel, '神戸市東灘区');
-  assert.ok(site.logo.src.indexOf('logo.svg') >= 0);
+  assert.ok(site.logo.src.indexOf('AC-0016/logo_mark.png') >= 0);
   assert.strictEqual(site.logo.bannerSrc, '');
   assert.strictEqual(site.contents.warning.on, true);
   assert.strictEqual(site.contents.typhoon.on, true);
@@ -1270,12 +1271,12 @@ test('AC-0016 はIHI瀧上・神戸市東灘区の4面本番設定', function ()
   assert.ok(index.productionSites.indexOf('AC-0016') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0016') < 0);
   var brand = foundation.toLegacyBrand(site);
-  assert.ok(brand.logoSrc.indexOf('logo.svg') >= 0);
+  assert.ok(brand.logoSrc.indexOf('AC-0016/logo_mark.png') >= 0);
   assert.strictEqual(brand.footBannerSrc, '');
-  assert.ok(brand.footLogoSrc.indexOf('logo.svg') >= 0);
+  assert.ok(brand.footLogoSrc.indexOf('AC-0016/logo_mark.png') >= 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
   assert.strictEqual(merged.site.locationLabel, '東灘区');
-  assert.strictEqual(merged.site.label, '東灘区');
+  assert.strictEqual(merged.site.label, 'IHI瀧上特定建設工事共同企業体');
   assert.strictEqual(merged.site.customer, 'IHI瀧上特定建設工事共同企業体');
   assert.strictEqual(merged.moe.point, '63518');
   assert.strictEqual(merged.jma.warnCity, '2810100');

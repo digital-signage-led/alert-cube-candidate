@@ -4,12 +4,13 @@
   "status": "active",
   "customer": "IHI瀧上特定建設工事共同企業体",
   "rental": "IHI瀧上特定建設工事共同企業体",
+  "label": "IHI瀧上特定建設工事共同企業体",
   "projectName": "IHI瀧上 WBGTサイネージ",
   "siteName": "東灘区",
   "location": "兵庫県神戸市東灘区",
   "latitude": 34.7205,
   "longitude": 135.2655,
-  "memo": "4面512×128。時刻の下帯は住之江と同じく共通ロゴ＋地点名「東灘区」。WBGT・AMeDASは神戸63518（フォールバックなし）。予報・警報は兵庫県280000、警報市区町村は神戸市東灘区2810100。熱中症アラートと気象警報を出す。ニュースは戸田建設（AC-0019）と同じ公式新着。",
+  "memo": "4面512×128。気象観測・WBGT・予報の末尾はIHIロゴ。時刻の下帯はIHIロゴ＋社名「IHI瀧上特定建設工事共同企業体」。地点名「東灘区」は予報などに残す。WBGT・AMeDASは神戸63518（フォールバックなし）。予報・警報は兵庫県280000、警報市区町村は神戸市東灘区2810100。熱中症アラートと気象警報を出す。ニュースは戸田建設（AC-0019）と同じ公式新着。",
   "resolution": "512x128",
   "layout": "AC-512",
   "faces": 4,
@@ -17,7 +18,7 @@
   "footSource": "出典：気象庁・環境省データ",
   "releasePin": null,
   "logo": {
-    "src": "./images/logo.svg?v=20260921-suminoe",
+    "src": "./assets/sites/AC-0016/logo_mark.png?v=1",
     "panelBg": "#ffffff",
     "bannerSrc": ""
   },
