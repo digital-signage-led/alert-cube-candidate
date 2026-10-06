@@ -1853,6 +1853,8 @@ test('ニュースは各社の最新見出しを2件に揃える', function () {
   ], now);
   assert.strictEqual(kept.length, 1);
   assert.strictEqual(kept[0].title, '新しい');
+  assert.strictEqual(news.recentItems([{ date: '2026年09月07日', title: '30日以内' }], now).length, 1);
+  assert.strictEqual(news.recentItems([{ date: '2026年09月01日', title: '30日より前' }], now).length, 0);
   assert.strictEqual(news.recentItems([{ date: '2026年07月06日', title: '数か月前' }], now).length, 0);
   assert.strictEqual(news.recentItems([{ date: '', title: '日付なし' }], now).length, 0);
   var page = require('fs').readFileSync(require('path').join(__dirname, '..', 'index.html'), 'utf8');

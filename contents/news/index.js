@@ -274,8 +274,8 @@
     return list;
   }
 
-  /** 公式ページの日付がこれより前なら、ニュースは出さない。 */
-  var NEWS_FRESH_MS = 60 * 24 * 60 * 60 * 1000;
+  /** 公式ページの日付が30日より前なら、ニュースは出さない。 */
+  var NEWS_FRESH_MS = 30 * 24 * 60 * 60 * 1000;
 
   function newsDateMs(date) {
     var s = String(date || '').trim();
