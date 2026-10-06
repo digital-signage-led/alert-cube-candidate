@@ -195,7 +195,7 @@
             width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
         }
         html.site-ac-0027 .logo-img {
-            width: 120px; max-width: 120px; height: 120px; max-height: 120px;
+            width: 128px; max-width: 128px; height: 128px; max-height: 128px;
         }
         html.site-ac-0027 .logo-corp-img { display: none !important; }
         html.site-ac-0027 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
@@ -8199,7 +8199,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261006-ac0027-rental', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261006-ac0027-mark', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
