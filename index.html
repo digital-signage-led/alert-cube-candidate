@@ -3364,10 +3364,9 @@
         const laps = Number(cfg.observationLaps);
         return Number.isFinite(laps) && laps > 0 ? Math.min(2, Math.max(1, Math.floor(laps))) : 1;
     }
+    /* 流れる範囲は内容4面（512px）。5面の右端ロゴは固定で、この幅には含めない。 */
     function signageViewPx_() {
-        const faces = Number(siteCfg_() && siteCfg_().faces);
-        const n = Number.isFinite(faces) && faces > 0 ? Math.round(faces) : 4;
-        return n * 128;
+        return 4 * 128;
     }
     /* 指定周の最後の面が画面内に収まる位置。途中の面では次のコンテンツへ進まない。 */
     function fullPassScrollPx_(setWidth, laps) {
@@ -8497,6 +8496,8 @@
     function queueOrRefreshS1FootBar_() {
         if (shouldDeferDisplayRefresh_()) {
             queueDisplayRefresh_();
+            /* 時刻はすでに流れている。文言だけはその場で入れる。次の画面まで待つと下帯がロゴだけになる */
+            refreshS1WbgtFootBar_(false, true);
             return;
         }
         refreshS1WbgtFootBar_(false);
@@ -10413,20 +10414,20 @@
             el.style.display = visible ? 'block' : 'none';
         });
     }
-    function refreshS1WbgtFootBar_(resetTransform) {
+    function refreshS1WbgtFootBar_(resetTransform, keepScroll) {
         if (!s1WbgtTrack) return;
         const text = getS1WbgtMessageJp();
         const showBar = hasS1WbgtFootMessage_();
         if (s1FootBannerReady_()) {
             if (text !== lastS1FootMsg_) updateS1FootMsgSlots_(text);
             else fitS1FootMsgSlots_();
-            applyGlobalScroll_(s1WbgtTrack, getS1FootLapPx_());
+            if (!keepScroll) applyGlobalScroll_(s1WbgtTrack, getS1FootLapPx_());
             setS1FootBarVisible_(showBar);
             return;
         }
         if (text === lastS1FootMsg_ && s1WbgtTrack.querySelector('.s1-wbgt-site-label, .s1-foot-co-txt')) {
             sizeS1FootCompanyText_();
-            applyGlobalScroll_(s1WbgtTrack, getS1FootLapPx_());
+            if (!keepScroll) applyGlobalScroll_(s1WbgtTrack, getS1FootLapPx_());
             setS1FootBarVisible_(showBar);
             return;
         }
@@ -10435,7 +10436,7 @@
         for (let i = 0; i < SCENE1_WBGT_SETS; i++) html += buildS1WbgtSetHtml(text);
         s1WbgtTrack.innerHTML = html;
         fitS1FootMsgSlots_();
-        applyGlobalScroll_(s1WbgtTrack, getS1FootLapPx_());
+        if (!keepScroll) applyGlobalScroll_(s1WbgtTrack, getS1FootLapPx_());
         sizeS1FootCompanyText_();
         sizeS1FootWbgtText_();
         setS1FootBarVisible_(showBar);

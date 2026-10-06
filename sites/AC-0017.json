@@ -38,7 +38,7 @@
     "amedasPoint": "72111",
     "amedasSupplementPoint": "72086",
     "forecastArea": "370000",
-    "forecastDetail": "",
+    "forecastDetail": "370000",
     "forecastLabel": "塩飽町",
     "warnArea": "370000",
     "warnCity": "3720200",
@@ -58,7 +58,7 @@
     "observationLaps": 2,
     "observationTrailingLogo": false
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -76,6 +76,7 @@
     "warning-hero": { "on": false },
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
+    "rain-radar": { "on": true },
     "disaster": { "on": false },
     "heat": { "on": false },
     "schedule": { "on": false },

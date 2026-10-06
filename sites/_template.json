@@ -80,7 +80,7 @@
       "progress": { "top": "", "body": "", "foot": "", "ink": "", "footInk": "" }
     }
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },
@@ -97,6 +97,7 @@
     "warning-hero": { "on": true },
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
+    "rain-radar": { "on": true },
     "disaster": { "on": true },
     "heat": { "on": false },
     "schedule": { "on": true },

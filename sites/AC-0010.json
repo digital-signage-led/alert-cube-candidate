@@ -37,7 +37,7 @@
     "amedasPoint": "84496",
     "amedasSupplementPoint": "",
     "forecastArea": "420000",
-    "forecastDetail": "",
+    "forecastDetail": "420010",
     "forecastLabel": "諫早市",
     "warnArea": "420000",
     "warnCity": "4220400",
@@ -79,7 +79,7 @@
       }
     ]
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "forecast", "greeting", "wbgt-i18n", "logo-scroll", "wbgt"],
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "forecast", "greeting", "wbgt-i18n", "logo-scroll", "wbgt"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -97,6 +97,7 @@
     "warning-hero": { "on": false },
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
+    "rain-radar": { "on": true },
     "disaster": { "on": false },
     "heat": { "on": false },
     "schedule": { "on": false },

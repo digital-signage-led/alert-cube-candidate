@@ -38,7 +38,7 @@
     "amedasPoint": "72111",
     "amedasSupplementPoint": "",
     "forecastArea": "370000",
-    "forecastDetail": "",
+    "forecastDetail": "370000",
     "forecastLabel": "丸亀市",
     "warnArea": "370000",
     "warnCity": "3720200",
@@ -69,7 +69,7 @@
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "forecast", "wbgt-i18n", "wbgt", "news"],
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "forecast", "wbgt-i18n", "wbgt", "news"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -87,6 +87,7 @@
     "warning-hero": { "on": false },
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
+    "rain-radar": { "on": true },
     "disaster": { "on": true },
     "heat": { "on": false },
     "schedule": { "on": false },

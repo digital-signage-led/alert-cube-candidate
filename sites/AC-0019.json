@@ -93,7 +93,7 @@
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "logo-scroll", "brand", "wbgt", "logo-scroll", "forecast", "logo-scroll", "wbgt-i18n", "logo-scroll", "brand", "news"],
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "logo-scroll", "brand", "wbgt", "logo-scroll", "forecast", "logo-scroll", "wbgt-i18n", "logo-scroll", "brand", "news"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -111,6 +111,7 @@
     "warning-hero": { "on": false },
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
+    "rain-radar": { "on": true },
     "disaster": { "on": false },
     "heat": { "on": false },
     "schedule": { "on": false },

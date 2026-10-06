@@ -45,7 +45,7 @@
     "amedasPoint": "",
     "amedasSupplementPoint": "",
     "forecastArea": "340000",
-    "forecastDetail": "",
+    "forecastDetail": "340010",
     "forecastLabel": "広島市",
     "warnArea": "340000",
     "warnCity": "3410500",
@@ -76,7 +76,7 @@
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["warning", "warning-hero", "typhoon", "clock", "observation", "forecast", "wbgt-i18n", "wbgt", "news"],
+  "contentOrder": ["warning", "warning-hero", "typhoon", "clock", "observation", "rain-radar", "forecast", "wbgt-i18n", "wbgt", "news"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -99,6 +99,7 @@
     "warning-hero": { "on": true },
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
+    "rain-radar": { "on": true },
     "disaster": { "on": true },
     "heat": { "on": false },
     "schedule": { "on": false },

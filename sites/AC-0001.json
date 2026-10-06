@@ -33,7 +33,8 @@
     "amedasPoint": "62078",
     "amedasSupplementPoint": "62091",
     "forecastArea": "270000",
-    "forecastDetail": "270010",
+    "forecastDetail": "270000",
+    "forecastPoint": "62078",
     "forecastLabel": "大阪市",
     "warnArea": "270000",
     "warnCity": "2710000",
@@ -70,7 +71,7 @@
     "observationLaps": 2,
     "observationTrailingLogo": true
   },
-  "contentOrder": ["clock", "observation", "wbgt", "wbgt-i18n", "forecast", "schedule"],
+  "contentOrder": ["clock", "observation", "rain-radar", "wbgt", "wbgt-i18n", "forecast", "schedule"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },
@@ -87,6 +88,7 @@
     "warning-hero": { "on": true },
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
+    "rain-radar": { "on": true },
     "disaster": { "on": true },
     "heat": { "on": false },
     "schedule": { "on": true },
