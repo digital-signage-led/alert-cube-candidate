@@ -21,7 +21,7 @@
     <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
-    <script src="./core/foundation.js?v=20261006-ac0023-ssc"></script>
+    <script src="./core/foundation.js?v=20261006-ac0027-end"></script>
     <script src="./services/densho/index.js?v=20260929-densho-live"></script>
     <script src="./services/remote.js?v=20260921-suminoe"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
@@ -8199,7 +8199,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261006-ac0027-mark', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261006-ac0027-end', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -8397,9 +8397,13 @@
         }
         refreshSignageBgIfChanged_();
     }
+    function contentEndLogoSrc_() {
+        const cfg = window.SIGNAGE_CONFIG || {};
+        return String(cfg.contentLogoSrc || cfg.logoSrc || '').trim();
+    }
     function applyContentEndLogoSrc_() {
         const cfg = window.SIGNAGE_CONFIG || {};
-        const src = cfg.logoSrc || '';
+        const src = contentEndLogoSrc_();
         const alt = cfg.logoAlt || (window.AlertCubeRuntime && window.AlertCubeRuntime.customerName()) || '';
         document.querySelectorAll('.s2-logo-face-img, .fc-logo-face-img, .d5-logo-face-img, .logo-face-img').forEach(function (face) {
             if (src && face.getAttribute('src') !== src) face.src = src;
@@ -8407,8 +8411,7 @@
         });
     }
     function hasContentLogo_() {
-        const cfg = window.SIGNAGE_CONFIG || {};
-        return !!String(cfg.logoSrc || '').trim();
+        return !!contentEndLogoSrc_();
     }
     function compactScene4Panels() {
         if (!fcConveyor) return;
@@ -9884,9 +9887,9 @@
         let setHtml = types.map(scene2PanelHtml_).join('');
         const presentation = (siteCfg_() && siteCfg_().presentation) || {};
         const brand = window.SIGNAGE_CONFIG || {};
-        if (presentation.observationTrailingLogo !== false && brand.logoSrc) {
+        if (presentation.observationTrailingLogo !== false && contentEndLogoSrc_()) {
             setHtml += '<div class="s2-panel s2-logo-panel" data-s2="logo"><div class="s2-body">' +
-                '<img class="s2-logo-face-img" src="' + escapeS1Html(brand.logoSrc) + '" alt="' +
+                '<img class="s2-logo-face-img" src="' + escapeS1Html(contentEndLogoSrc_()) + '" alt="' +
                 escapeS1Html(brand.logoAlt || '') + '" decoding="async"></div></div>';
         }
         conveyor.innerHTML = setHtml + setHtml;
@@ -10056,7 +10059,7 @@
             }).join('');
             const presentation = (siteCfg_() && siteCfg_().presentation) || {};
             const brand = window.SIGNAGE_CONFIG || {};
-            if (presentation.observationTrailingLogo !== false && brand.logoSrc) {
+            if (presentation.observationTrailingLogo !== false && contentEndLogoSrc_()) {
                 slots += '<div class="s2-meta-slot s2-meta-slot-panel s2-meta-slot-logo" aria-hidden="true"></div>';
             }
             return '<div class="s2-meta-set s2-meta-set-panels">' + slots + '</div>';
@@ -11662,7 +11665,7 @@
     }
     function showT3EndLogoThen_(done) {
         const presentation = (siteCfg_() && siteCfg_().presentation) || {};
-        const src = (window.SIGNAGE_CONFIG && window.SIGNAGE_CONFIG.logoSrc) || '';
+        const src = contentEndLogoSrc_();
         const shell = document.getElementById('t3-shell');
         if (presentation.i18nTrailingLogo !== true || !src || !shell) {
             runAfterSceneEndHold_(done);
@@ -13391,7 +13394,7 @@
         sscConveyor.setAttribute('data-ssc-mounted', '1');
         const brand = window.SIGNAGE_CONFIG || {};
         const presentation = (siteCfg_() && siteCfg_().presentation) || {};
-        const src = String(brand.logoSrc || '').trim();
+        const src = contentEndLogoSrc_();
         if (presentation.observationTrailingLogo === false || !src || !sceneSsc) return;
         const data = Array.prototype.slice.call(sscConveyor.querySelectorAll('.ssc-panel'));
         const half = Math.floor(data.length / 2);

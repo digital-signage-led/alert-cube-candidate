@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20261006-ac0027-mark';
+var CACHE_NAME = 'alert-cube-sites-20261006-ac0027-end';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -19,7 +19,7 @@ var PRECACHE = [
   './contents/index.html',
   './data/jma-weather-icons.js?v=20260921-suminoe',
   './data/jma-regions.js?v=20260921-suminoe',
-  './core/foundation.js?v=20261006-ac0018-foot',
+  './core/foundation.js?v=20261006-ac0027-end',
   './services/densho/index.js?v=20260929-densho-live',
   './services/remote.js?v=20260921-suminoe',
   './services/typhoon/index.js?v=20260921-suminoe',
@@ -95,6 +95,7 @@ var PRECACHE = [
   './assets/sites/AC-0026/logo_foot.png?v=1',
   './sites/AC-0027.json',
   './assets/sites/AC-0027/logo_mark.png?v=2',
+  './assets/sites/AC-0027/logo_end.png?v=1',
   './assets/sites/AC-0027/logo_foot.png?v=1',
   './contents/ssc/index.js?v=20261006-ac0024-ssc',
   './assets/sites/AC-0015/logo_banner.png?v=1',

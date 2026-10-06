@@ -2110,6 +2110,7 @@ test('AC-0027 はカナモト仙台営業所の5面無償本番設定', function
   assert.strictEqual(site.jma.warnCity, '0410001');
   assert.strictEqual(site.jma.warnCityLabel, '仙台市東部');
   assert.ok(site.logo.src.indexOf('AC-0027/logo_mark.png') >= 0);
+  assert.ok(site.logo.endSrc.indexOf('AC-0027/logo_end.png') >= 0);
   assert.strictEqual(site.logo.footSrc, '');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0027/logo_foot.png') >= 0);
   assert.strictEqual(site.contents.warning.on, true);
@@ -2129,6 +2130,7 @@ test('AC-0027 はカナモト仙台営業所の5面無償本番設定', function
   assert.ok(index.demoSites.indexOf('AC-0027') < 0);
   var brand = foundation.toLegacyBrand(site);
   assert.ok(brand.logoSrc.indexOf('logo_mark.png') >= 0);
+  assert.ok(brand.contentLogoSrc.indexOf('logo_end.png') >= 0);
   assert.ok(brand.footBannerSrc.indexOf('logo_foot.png') >= 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
   assert.strictEqual(merged.site.locationLabel, '仙台営業所');

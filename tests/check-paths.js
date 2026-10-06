@@ -98,6 +98,7 @@ var paths = [
   '/assets/sites/AC-0026/logo_foot.png',
   '/sites/AC-0027.json',
   '/assets/sites/AC-0027/logo_mark.png',
+  '/assets/sites/AC-0027/logo_end.png',
   '/assets/sites/AC-0027/logo_foot.png',
   '/contents/ssc/index.js',
   '/assets/sites/AC-0021/logo_mark.png',

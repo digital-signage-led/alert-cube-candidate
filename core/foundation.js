@@ -314,6 +314,7 @@
     var src = logo.src != null ? String(logo.src) : './images/logo.svg?v=20260921-suminoe';
     return {
       logoSrc: src,
+      contentLogoSrc: String(logo.endSrc || '').trim() || src,
       logoAlt: (site && site.customer) || (site && site.siteName) || '',
       logoPanelBg: logo.panelBg || '#ffffff',
       logoPanelFollow: logo.panelFollow || '',
