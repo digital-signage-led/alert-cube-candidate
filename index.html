@@ -184,6 +184,30 @@
             width: 112px; max-width: 112px; height: 112px; max-height: 112px;
         }
         html.site-ac-0021 .logo-corp-img { display: none !important; }
+        html.site-ac-0026 .logo-stack {
+            width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
+        }
+        html.site-ac-0026 .logo-img {
+            width: 120px; max-width: 120px; height: 120px; max-height: 120px;
+        }
+        html.site-ac-0026 .logo-corp-img { display: none !important; }
+        html.site-ac-0027 .logo-stack {
+            width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
+        }
+        html.site-ac-0027 .logo-img {
+            width: 120px; max-width: 120px; height: 120px; max-height: 120px;
+        }
+        html.site-ac-0027 .logo-corp-img { display: none !important; }
+        html.site-ac-0027 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
+            height: 24px;
+            max-width: 230px;
+            transform: none;
+        }
+        html.site-ac-0026 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
+            height: 26px;
+            max-width: 244px;
+            transform: none;
+        }
         html.site-ac-0021 #sceneGreeting .promo-body .promo-unit { font-size: 52px; }
         html.site-ac-0014 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
             height: 22px;
@@ -1051,6 +1075,17 @@
             transition: none; will-change: transform;
         }
         #sceneSsc .ssc-panel { height: var(--led-col-main-h); }
+        #sceneSsc.ssc-with-logo .ssc-scroll-wrap { height: 128px; z-index: 13; }
+        #sceneSsc.ssc-with-logo .s2-meta-bar { z-index: 12; }
+        #sceneSsc .ssc-logo-panel {
+            width: 128px; min-width: 128px; max-width: 128px; height: 128px;
+            flex: 0 0 128px; padding: 0; margin: 0; background: #ffffff;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; z-index: 13; box-sizing: border-box; overflow: hidden;
+        }
+        #sceneSsc .ssc-logo-panel .s2-logo-face-img {
+            width: 112px; height: 112px; object-fit: contain; background: #ffffff;
+        }
         #sceneSsc .ssc-bar-label,
         #sceneSsc .ssc-unit { color: #7CFF6B; }
         #sceneSsc .ssc-num.ssc-pending {
@@ -3369,6 +3404,8 @@
         document.documentElement.classList.toggle('site-ac-0014', String(c.projectId || '') === 'AC-0014');
         document.documentElement.classList.toggle('site-ac-0016', String(c.projectId || '') === 'AC-0016');
         document.documentElement.classList.toggle('site-ac-0021', String(c.projectId || '') === 'AC-0021');
+        document.documentElement.classList.toggle('site-ac-0026', String(c.projectId || '') === 'AC-0026');
+        document.documentElement.classList.toggle('site-ac-0027', String(c.projectId || '') === 'AC-0027');
         applyFaceLayout_();
         if (typeof compactScene4Panels === 'function') compactScene4Panels();
         if (typeof compactScene5Panels === 'function') compactScene5Panels();
@@ -8154,7 +8191,7 @@
                 if (!hadController) { hadController = true; return; }
                 reloadNow_();
             });
-            navigator.serviceWorker.register('./sw.js?v=20261006-ac0021-resume', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261006-ac0027-kanamoto', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -13362,15 +13399,35 @@
     let sscFetchTimerId_ = null;
     let sscMetaLapPx = 512;
     let lastSscValues_ = null;
+    function mountSscTrailingLogo_() {
+        if (!sscConveyor || sscConveyor.getAttribute('data-ssc-mounted')) return;
+        sscConveyor.setAttribute('data-ssc-mounted', '1');
+        const brand = window.SIGNAGE_CONFIG || {};
+        const presentation = (siteCfg_() && siteCfg_().presentation) || {};
+        const src = String(brand.logoSrc || '').trim();
+        if (presentation.observationTrailingLogo === false || !src || !sceneSsc) return;
+        const data = Array.prototype.slice.call(sscConveyor.querySelectorAll('.ssc-panel'));
+        const half = Math.floor(data.length / 2);
+        if (!half) return;
+        const logo = '<div class="ssc-logo-panel" data-ssc="logo"><img class="s2-logo-face-img" src="' +
+            escapeS1Html(src) + '" alt="' + escapeS1Html(brand.logoAlt || '') + '" decoding="async"></div>';
+        let setHtml = '';
+        for (let i = 0; i < half; i++) setHtml += data[i].outerHTML;
+        setHtml += logo;
+        sscConveyor.innerHTML = setHtml + setHtml;
+        sceneSsc.classList.add('ssc-with-logo');
+    }
     function playSceneSsc() {
         markPlaylistHeld_();
         applyDisplayRefreshAtSceneEntry_();
         applyPendingSignageBgAtScene_();
+        mountSscTrailingLogo_();
         buildSscMetaTrack_();
         fetchEdamSsc_();
         if (sceneSscAnimId) { cancelAnimationFrame(sceneSscAnimId); sceneSscAnimId = null; }
-        const panels = sscConveyor ? sscConveyor.querySelectorAll('.ssc-panel') : [];
-        const setWidth = Math.max(512, Math.floor(panels.length / 2) * 128);
+        const kids = sscConveyor ? sscConveyor.children.length : 0;
+        const setWidth = Math.max(128, Math.floor(kids / 2) * 128);
+        if (sscConveyor && setWidth) sscConveyor.style.width = (setWidth * 2) + 'px';
         const totalPx = setWidth * sscLaps_();
         if (!sscConveyor || !setWidth) {
             if (demoOnlyLoop_('ssc', playSceneSsc)) return;
