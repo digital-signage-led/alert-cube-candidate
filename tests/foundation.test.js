@@ -1815,11 +1815,12 @@ test('雨雲レーダーは現場を中心にした降水ナウキャスト画�
   assert.strictEqual(radar.countRainPixels(wet, 2, 2, 1), 0);
 });
 
-test('時刻・気象・予報・多言語の地色は通年の気温色', function () {
+test('時刻・気象・予報・多言語はWBGT提供中は暑さ指数の色', function () {
   var fs = require('fs');
   var path = require('path');
   var page = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert.ok(page.indexOf('function ambientBgArgs_()') >= 0);
+  assert.ok(page.indexOf('if (!temperatureDisplay_()) return null;') >= 0);
   assert.ok(page.indexOf('function repaintAmbientStrips_') >= 0);
   assert.ok(page.indexOf('function repaintWbgtStrips_') >= 0);
   assert.ok(page.indexOf('setTemperatureColors(null)') < 0);

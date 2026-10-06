@@ -4022,8 +4022,9 @@
         refreshSignageBgIfChanged_(true);
         return annualMode_;
     }
-    /* 時刻・気象・4日間予報・多言語の地色。気温がある間は通年の気温色。無いときは直前の色を残す。 */
+    /* 時刻・気象・4日間予報・多言語。WBGT提供中は暑さ指数の段階色。気温色は期間外と取得失敗のときだけ。 */
     function ambientBgArgs_() {
+        if (!temperatureDisplay_()) return null;
         if (window.SignageBg && window.SignageBg.hasTemperatureColors && window.SignageBg.hasTemperatureColors()) {
             return { mode: 'temperature', lv: -1 };
         }
