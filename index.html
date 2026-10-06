@@ -279,7 +279,16 @@
             display: none !important;
         }
         .ticker-scene { width: 512px; height: 128px; background: transparent !important; position: relative; }
-        .ticker-scene > .t3-shell { z-index: 1; }
+        .ticker-scene > .t3-shell { z-index: 1; position: relative; }
+        #scene3 .t3-end-logo {
+            position: absolute; top: 0; left: 512px; width: 128px; height: 128px;
+            background: #ffffff; display: flex; align-items: center; justify-content: center;
+            z-index: 6;
+        }
+        #scene3 .t3-end-logo img {
+            width: 112px; height: 112px; object-fit: contain; background: #ffffff;
+        }
+        #scene3 .t3-shell.is-end-logo { transform: translate3d(-128px, 0, 0); }
         .panel, .s2-panel, .s2-panel-data, .fc-panel, .d5-panel { background: transparent; }
         /* 注意(黄)・警戒(橙黄): 上バー・本体の文字は黒（白い下帯の地点ラベルは従来どおり） */
         .content-area.col-bg-dark-text .s1-bar-label,
@@ -1695,8 +1704,8 @@
             line-height: var(--led-foot-bar-h);
             font-family: "Noto Sans JP", sans-serif; letter-spacing: 0;
         }
-        /* 空きは画面幅。次の文は、今の文が左へ出切ってから右端に入る */
-        #scene3 .t3-guide-gap { flex: 0 0 512px; width: 512px; height: 1px; }
+        /* 同じ文を短い空きで繰り返し、1周の幅でつなぐ */
+        #scene3 .t3-guide-gap { flex: 0 0 48px; width: 48px; height: 1px; }
         .t3-scroll-body {
             width: 100%; height: var(--led-col-body-h); flex-shrink: 0;
             overflow: hidden; position: relative; box-sizing: border-box;
@@ -7717,7 +7726,6 @@
     const T3_TOP_HA_FONT_MAX = 20;
     const T3_LAPS_BEFORE_SWITCH = 1;
     let t3GuidLapPx = SCENE2_META_LAP_PX;
-    let t3GuidCopyPx = SCENE2_META_LAP_PX;
     let t3Messages_ = [];
     let t3Flow_ = null;
     const SCENE_W = 512;
@@ -11046,44 +11054,27 @@
         }
         return '（' + tier.title + '）：' + guide;
     }
-    function t3GuideViewPx_() {
-        const bar = document.querySelector('#scene3 .t3-guid-bar');
-        const w = bar && bar.clientWidth > 0 ? bar.clientWidth : 512;
-        return w;
-    }
+    const T3_GUIDE_GAP_PX = 48;
     function buildT3GuideRunHtml_(text) {
-        const gapPx = t3GuideViewPx_();
         const copy = '<span class="t3-guide-copy">' + escapeS1Html(text) + '</span>';
-        const gap = '<span class="t3-guide-gap" style="width:' + gapPx + 'px;flex-basis:' + gapPx + 'px"></span>';
+        const gap = '<span class="t3-guide-gap" style="width:' + T3_GUIDE_GAP_PX + 'px;flex-basis:' + T3_GUIDE_GAP_PX + 'px"></span>';
         return '<div class="t3-guide-run">' + (copy + gap).repeat(4) + '</div>';
     }
     function measureT3GuideLapPx_(trackEl) {
-        if (!trackEl) {
-            t3GuidCopyPx = SCENE2_META_LAP_PX;
-            return SCENE2_META_LAP_PX;
-        }
+        if (!trackEl) return SCENE2_META_LAP_PX;
         const copies = trackEl.querySelectorAll('.t3-guide-copy');
         const gap = trackEl.querySelector('.t3-guide-gap');
         if (copies.length >= 2) {
             const span = copies[1].offsetLeft - copies[0].offsetLeft;
-            const copyW = copies[0].offsetWidth;
-            if (span > 0 && copyW > 0) {
-                t3GuidCopyPx = copyW;
-                return span;
-            }
+            if (span > 0 && copies[0].offsetWidth > 0) return span;
         }
         const copyW = copies[0] ? copies[0].offsetWidth : 0;
         const gapW = gap ? gap.offsetWidth : 0;
-        if (copyW > 0) {
-            t3GuidCopyPx = copyW;
-            return copyW + gapW;
-        }
-        t3GuidCopyPx = SCENE2_META_LAP_PX;
+        if (copyW > 0) return copyW + gapW;
         return SCENE2_META_LAP_PX;
     }
     function remeasureT3GuideLapPx_(trackEl) {
         t3GuidLapPx = measureT3GuideLapPx_(trackEl);
-        if (trackEl) applyGlobalScroll_(trackEl, t3GuidLapPx);
     }
     /** 環境省発表または ?heatalert= 指定時のみアラート指針を下帯に出す（フルデモの仮アラートは除く） */
     function isHeatAlertPublishedForGuide_() {
@@ -11118,7 +11109,6 @@
             el.innerHTML = '';
             if (bar) bar.style.display = 'none';
             t3GuidLapPx = SCENE2_META_LAP_PX;
-            t3GuidCopyPx = SCENE2_META_LAP_PX;
             return;
         }
         if (bar) bar.style.display = '';
@@ -11526,8 +11516,40 @@
     function buildTicker() {
         syncScene3Display_(false);
     }
+    function showT3EndLogoThen_(done) {
+        const presentation = (siteCfg_() && siteCfg_().presentation) || {};
+        const src = (window.SIGNAGE_CONFIG && window.SIGNAGE_CONFIG.logoSrc) || '';
+        const shell = document.getElementById('t3-shell');
+        if (presentation.i18nTrailingLogo !== true || !src || !shell) {
+            runAfterSceneEndHold_(done);
+            return;
+        }
+        let face = shell.querySelector('.t3-end-logo');
+        if (!face) {
+            face = document.createElement('div');
+            face.className = 't3-end-logo';
+            face.innerHTML = '<img alt="" decoding="async">';
+            shell.appendChild(face);
+        }
+        const img = face.querySelector('img');
+        if (img && img.getAttribute('src') !== src) img.src = src;
+        shell.style.transition = 'transform 0.45s linear';
+        shell.classList.add('is-end-logo');
+        setTimeout(function () {
+            runAfterSceneEndHold_(function () {
+                shell.style.transition = 'none';
+                shell.classList.remove('is-end-logo');
+                done();
+            });
+        }, 450);
+    }
     function playScene3() {
         if (tickerAnimId) { cancelAnimationFrame(tickerAnimId); tickerAnimId = null; }
+        const t3Shell = document.getElementById('t3-shell');
+        if (t3Shell) {
+            t3Shell.style.transition = 'none';
+            t3Shell.classList.remove('is-end-logo');
+        }
         if (!wbgtMultilingualOn_()) {
             gotoAfterScene3_();
             return;
@@ -11567,19 +11589,20 @@
             applyScrollX_(guidTrack, 0);
         }
         const guideOn = !!(guidTrack && getT3GuideTierForDisplay_() && t3GuidLapPx > 0);
-        /* 日本語1周は、本体512pxと下段の文がどちらも最後まで流れてから次へ。
-           下段は文の幅まで。次の複製は画面幅ぶん後ろにあり、文が左へ出切るまで入ってこない。 */
+        /* 本体の言語切替と下帯は別。下帯は文＋短い空きを1周にして、言語が替わっても先頭へ戻さない */
         const bodyLap = T3_UNIT_W * 2;
-        const onePass = guideOn ? Math.max(bodyLap, t3GuidCopyPx) : bodyLap;
+        const onePass = bodyLap;
         let moved = 0;
+        let guideMoved = 0;
         function step() {
             const speed = getScrollSpeedPx_();
             moved += speed;
+            if (guideOn) guideMoved += speed;
             const lapsNow = Math.floor(moved / onePass);
             t3Flow_.x = wrapScrollX_(-moved, T3_UNIT_W);
             applyT3TrackX_(tracks, t3Flow_.x);
             if (guideOn) {
-                applyScrollX_(guidTrack, seamlessScrollX_(moved, t3GuidLapPx));
+                applyScrollX_(guidTrack, seamlessScrollX_(guideMoved, t3GuidLapPx));
             }
             if (lapsNow > t3Flow_.laps) {
                 t3Flow_.laps = lapsNow;
@@ -11592,7 +11615,7 @@
                         tickerAnimId = null;
                         t3Flow_ = null;
                         stopLogoSpinInterval();
-                        runAfterSceneEndHold_(gotoAfterScene3_);
+                        showT3EndLogoThen_(gotoAfterScene3_);
                         return;
                     }
                     tickerAnimId = null;
@@ -11600,7 +11623,6 @@
                         t3Flow_.x = 0;
                         setT3Lang_(t3Flow_.langIdx);
                         applyT3TrackX_(tracks, 0);
-                        if (guidTrack) applyScrollX_(guidTrack, 0);
                     }, function () {
                         tickerAnimId = requestAnimationFrame(step);
                     });
