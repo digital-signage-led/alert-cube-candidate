@@ -71,6 +71,7 @@ var paths = [
   '/assets/sites/AC-0017/logo_foot.png',
   '/sites/AC-0018.json',
   '/assets/sites/AC-0018/logo_foot.png',
+  '/assets/sites/AC-0018/logo_mark.png',
   '/sites/AC-0019.json',
   '/assets/sites/AC-0019/news.json',
   '/assets/sites/AC-0019/toda_logo_stack.png',

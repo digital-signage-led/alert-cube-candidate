@@ -8574,11 +8574,21 @@
         }
         if (mainLoopStarted_ && shouldDeferDisplayRefresh_()) return;
     }
+    /* 下帯の文言は時刻の途中でも入れ替える。地色を次の画面まで残すと、注意なのに黄色のままになる */
+    function syncScene1ColorWithFoot_() {
+        if (!s1 || !s1.classList.contains('active')) return;
+        const rawMode = getSignageDisplayMode_();
+        const rawLv = rawMode === 'normal' ? getSignageBgLevel_() : -1;
+        const paint = resolveSignageBgPaint_(rawMode, rawLv);
+        if (paint.lv === lastSignageBgLv_ && paint.mode === lastSignageBgMode_) return;
+        refreshSignageBg();
+    }
     function queueOrRefreshS1FootBar_() {
         if (shouldDeferDisplayRefresh_()) {
             queueDisplayRefresh_();
             /* 時刻はすでに流れている。文言だけはその場で入れる。次の画面まで待つと下帯がロゴだけになる */
             refreshS1WbgtFootBar_(false, true);
+            syncScene1ColorWithFoot_();
             return;
         }
         refreshS1WbgtFootBar_(false);
@@ -11818,8 +11828,8 @@
         }
         const wbgtTimes = presentationLaps_('wbgtLaps', SCENE4_LAPS);
         const wbgtSet = Math.max(128, scene4SetWidth);
-        /* 1周は4面と末尾ロゴが開始位置へ戻る距離。画面幅を引くと128pxで途中終了する */
-        const totalPx = wbgtSet * wbgtTimes;
+        /* 最終面（末尾ロゴ）が右端に収まる位置で止める。セット幅のまま流すとロゴのあとが空く */
+        const totalPx = fullPassScrollPx_(wbgtSet, wbgtTimes);
         let totalScrolled = 0;
         applyScrollX_(fcConveyor, 0);
         applyScrollX_(fcLvTrack, 0);
