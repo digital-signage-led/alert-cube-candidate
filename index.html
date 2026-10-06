@@ -3407,8 +3407,8 @@
         document.documentElement.classList.toggle('site-ac-0026', String(c.projectId || '') === 'AC-0026');
         document.documentElement.classList.toggle('site-ac-0027', String(c.projectId || '') === 'AC-0027');
         applyFaceLayout_();
-        if (typeof compactScene4Panels === 'function') compactScene4Panels();
-        if (typeof compactScene5Panels === 'function') compactScene5Panels();
+        if (typeof compactScene4Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s4))) compactScene4Panels();
+        if (typeof compactScene5Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s5))) compactScene5Panels();
         if (typeof MOE_POINT_CFG !== 'undefined') MOE_POINT_CFG.pointName = getSiteLocationLabel_();
         if (typeof rainWarnMeta !== 'undefined') {
             rainWarnMeta.cityName = (JMA_WARN_CITY_LABELS && JMA_WARN_CITY_LABELS[JMA_WARN_CITY]) || getSiteLocationLabel_();
@@ -3845,6 +3845,13 @@
     let lastAmedasRainNow = false;
     let lastAmedasObsTime = null;
     let pendingDisplayRefresh = false;
+    /* 見えているコンテンツの再生中は、その面のDOMを更新で組み直さない */
+    let playbackLockId_ = '';
+    let sceneEntryId_ = '';
+    /* 起動後の自動更新ではプレイリストを最初からやり直さない */
+    let signagePlaybackLive_ = false;
+    let lastForecastDays_ = null;
+    let lastForecastTodayMax_ = null;
     /** シーン切替直後のみ表示組み替えを許可（取得中は現在シーンを維持） */
     let sceneEntryRefreshAllowed_ = false;
     let mainLoopStarted_ = false;
@@ -4086,13 +4093,20 @@
         console.log('[AlertCube][WBGT] season=ACTIVE fetch=SUCCESS wbgt=' + wbgt + ' mode=' + annualMode_);
     }
     function paintTemperatureDom_() {
+        if (playbackLockId_ && !sceneDomOpen_(s4) && !sceneDomOpen_(s3)) return;
         const html = formatTempHtml_(lastAmedasTempC_);
+        if (!sceneDomOpen_(s4)) {
+            document.querySelectorAll('#scene3 .t3-lv-static').forEach(function (el) { el.textContent = '気温'; });
+            return;
+        }
         document.querySelectorAll('#scene4 .fc-track .fc-panel').forEach(function (panel) {
             if (panel.classList.contains('fc-logo-panel') || panel.getAttribute('data-fc') === 'logo') return;
             panel.querySelectorAll('.fc-bar-label').forEach(function (el) { el.textContent = '気温'; });
             panel.querySelectorAll('.fc-val-live').forEach(function (el) { el.innerHTML = html; });
         });
-        document.querySelectorAll('#scene3 .t3-lv-static').forEach(function (el) { el.textContent = '気温'; });
+        if (sceneDomOpen_(s3)) {
+            document.querySelectorAll('#scene3 .t3-lv-static').forEach(function (el) { el.textContent = '気温'; });
+        }
         document.querySelectorAll('#scene4 .fc-scroll-wrap, #scene4 .fc-lv-bar').forEach(function (el) {
             el.style.display = '';
         });
@@ -4120,13 +4134,13 @@
         }
         if (!temperatureDisplay_()) {
             logAnnualState_(null);
-            refreshSignageBgIfChanged_(!!color);
+            refreshSignageBgIfChanged_(!!color && !playbackLockId_);
             return annualMode_;
         }
         paintTemperatureDom_();
         logAnnualState_(color);
         queueOrRefreshS1FootBar_();
-        refreshSignageBgIfChanged_(true);
+        refreshSignageBgIfChanged_(!playbackLockId_);
         return annualMode_;
     }
     /* 時刻・気象・4日間予報・多言語。WBGT提供中は暑さ指数の段階色。気温色は期間外と取得失敗のときだけ。 */
@@ -7914,9 +7928,25 @@
         }
     }
     /** 画面の切替が終わってから1秒静止し、その後にスクロールを始める */
+    function lockVisiblePlayback_() {
+        const el = getActiveScene();
+        if (el && el.id) playbackLockId_ = el.id;
+    }
+    /* 再生中の面は閉じる。今入りつつある面と、画面の外の面は開く */
+    function sceneDomOpen_(el) {
+        if (!el) return !playbackLockId_;
+        if (!mainLoopStarted_) return true;
+        if (sceneEntryId_ && el.id === sceneEntryId_) return true;
+        if (playbackLockId_ && el.id === playbackLockId_) return false;
+        return true;
+    }
     function whenSceneSlideSettled_(fn) {
-        if (sceneSlideAnimId == null) { fn(); return; }
-        sceneSlideSettledFn_ = fn;
+        const run = function () {
+            lockVisiblePlayback_();
+            fn();
+        };
+        if (sceneSlideAnimId == null) { run(); return; }
+        sceneSlideSettledFn_ = run;
     }
     function runSceneScrollAfterHold_(fn) {
         clearSceneEndHoldTimer_();
@@ -8199,7 +8229,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261006-ac0027-end', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261006-playback-hold', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -8676,9 +8706,11 @@
         bootDisplayHold_ = false;
         updateClock();
         if (!wbgtOffSeason) wbgtUnavailable = false;
-        if (scene2ScrollMode_()) buildScene2ScrollConveyor_();
-        else buildScene2Conveyor_(SCENE2_TYPE_ORDER[0]);
-        compactScene2Panels();
+        if (sceneDomOpen_(s2)) {
+            if (scene2ScrollMode_()) buildScene2ScrollConveyor_();
+            else buildScene2Conveyor_(SCENE2_TYPE_ORDER[0]);
+            compactScene2Panels();
+        }
         syncWbgtSlotsToDomIfReady_();
         refreshSignageBgIfChanged_(true);
         buildTicker();
@@ -8698,7 +8730,7 @@
     }
     function queueDisplayRefresh_() {
         pendingDisplayRefresh = true;
-        if (s3 && s3.classList.contains('active')) {
+        if (s3 && s3.classList.contains('active') && sceneDomOpen_(s3)) {
             syncScene3Display_(true);
             return;
         }
@@ -8714,9 +8746,13 @@
         refreshSignageBg();
     }
     function queueOrRefreshS1FootBar_() {
-        if (shouldDeferDisplayRefresh_()) {
+        /* 時刻の再生が始まったあとは、下帯も次に時刻が来るまで変えない。初回の文言待ちだけはその場で出す */
+        if (!sceneDomOpen_(s1) && !s1FootWaitMsg_) {
             queueDisplayRefresh_();
-            /* 時刻はすでに流れている。文言だけはその場で入れる。次の画面まで待つと下帯がロゴだけになる */
+            return;
+        }
+        if (shouldDeferDisplayRefresh_() && sceneDomOpen_(s1)) {
+            queueDisplayRefresh_();
             refreshS1WbgtFootBar_(false, true);
             syncScene1ColorWithFoot_();
             return;
@@ -8727,18 +8763,21 @@
         if (!pendingDisplayRefresh && !force) return;
         if (!force && shouldDeferDisplayRefresh_()) return;
         pendingDisplayRefresh = false;
-        flushPendingForecastSlots_();
-        refreshS1WbgtFootBar_(false);
-        if (lastAmedasObsTime) buildScene2MetaTrack(lastAmedasObsTime);
-        buildTicker();
-        buildFcLvTrack(false);
+        if (sceneDomOpen_(s4)) flushPendingForecastSlots_();
+        if (sceneDomOpen_(s1)) refreshS1WbgtFootBar_(false);
+        if (sceneDomOpen_(s2) && lastAmedasObsTime) buildScene2MetaTrack(lastAmedasObsTime);
+        if (sceneDomOpen_(s3)) buildTicker();
+        if (sceneDomOpen_(s4)) buildFcLvTrack(false);
+        if (sceneDomOpen_(s5)) paintStoredForecast_();
     }
-    function applyDisplayRefreshAtSceneEntry_() {
+    function applyDisplayRefreshAtSceneEntry_(el) {
+        sceneEntryId_ = el && el.id ? el.id : '';
         sceneEntryRefreshAllowed_ = true;
         try {
             flushDisplayRefresh_(true);
         } finally {
             sceneEntryRefreshAllowed_ = false;
+            sceneEntryId_ = '';
         }
     }
     function rememberDenshoDaily_(temp, when) {
@@ -9762,13 +9801,10 @@
         if (Array.isArray(shortSeries)) shortSeries.forEach(function (block) { applyBlock_(block, true); });
         return days;
     }
-    function applyJmaDailyForecastToDom(forecastJson, todayMaxTemp) {
-        const days = extractJmaDailyForecastDays_(forecastJson);
-        lastForecastSuccessAtMs_ = getNowMs();
-        lastJmaForecastByYmd_ = {};
-        days.forEach(function (row) {
-            if (row && row.ymd) lastJmaForecastByYmd_[row.ymd] = row;
-        });
+    function paintStoredForecast_() {
+        const days = lastForecastDays_;
+        if (!days || !sceneDomOpen_(s5)) return;
+        const todayMaxTemp = lastForecastTodayMax_;
         applyD5BarLabels_();
         for (let day = 0; day < SCENE5_DAY_COUNT; day++) {
             const row = days[day] || {};
@@ -9782,12 +9818,28 @@
         }
         if (days[0] && days[0].weatherCode) {
             lastForecastWeatherCode_ = days[0].weatherCode;
-            applyScene2WeatherIcon_(lastForecastWeatherCode_);
+            if (sceneDomOpen_(s2)) applyScene2WeatherIcon_(lastForecastWeatherCode_);
         }
         applyD5TodayFrame_();
         applyD5ForecastTextColors_();
         fitD5PanelText_();
         if (typeof refreshScheduleWeatherWarn_ === 'function') refreshScheduleWeatherWarn_();
+    }
+    function applyJmaDailyForecastToDom(forecastJson, todayMaxTemp) {
+        const days = extractJmaDailyForecastDays_(forecastJson);
+        lastForecastSuccessAtMs_ = getNowMs();
+        lastForecastDays_ = days;
+        lastForecastTodayMax_ = todayMaxTemp;
+        lastJmaForecastByYmd_ = {};
+        days.forEach(function (row) {
+            if (row && row.ymd) lastJmaForecastByYmd_[row.ymd] = row;
+        });
+        if (days[0] && days[0].weatherCode) lastForecastWeatherCode_ = days[0].weatherCode;
+        if (!sceneDomOpen_(s5)) {
+            queueDisplayRefresh_();
+            return;
+        }
+        paintStoredForecast_();
     }
     function formatScene2ObsClock_(date) {
         const d = date instanceof Date ? date : new Date(date);
@@ -10092,7 +10144,8 @@
     }
     function applyJmaAmedasToDom(obs, latest) {
         if (latest) lastAmedasObsTime = latest instanceof Date ? latest : new Date(latest);
-        applyScene2WeatherIcon_(lastForecastWeatherCode_ || amedasToTelopsCode_(obs));
+        const paintObs = sceneDomOpen_(s2);
+        if (paintObs) applyScene2WeatherIcon_(lastForecastWeatherCode_ || amedasToTelopsCode_(obs));
         const temp = amedasFieldValue(obs.temp);
         const parsedTemp = window.AlertCubeCore ? window.AlertCubeCore.parseTemperature(temp) : (Number.isFinite(Number(temp)) ? Number(temp) : null);
         if (parsedTemp != null) lastAmedasTempC_ = parsedTemp;
@@ -10105,32 +10158,30 @@
         const maxT = amedasFieldValue(obs.maxTemp);
         const minT = amedasFieldValue(obs.minTemp);
         const gust = amedasFieldValue(obs.gust);
-        setTextAll('.temp-val', parsedTemp != null ? String(Math.round(parsedTemp)) : '');
         if (parsedTemp != null) syncAnnualMode_();
-        setTextAll('.humi-val', humi != null ? String(Math.round(Number(humi))) : '');
-        setTextAll('.rain-val', p10 != null ? Number(p10).toFixed(1) : '');
-        setTextAll('.pres-val', pres != null ? String(Math.round(Number(pres))) : '');
-        const windDirTxt = wdir != null ? jmaWindDirFromCode(wdir) : '';
-        setTextAll('.dir-val', windDirTxt);
-        setTextAll('.wind-val', wind != null ? Number(wind).toFixed(1) : '');
-
-        const maxTxt = maxT != null ? Math.round(Number(maxT)) : null;
-        const minTxt = minT != null ? Math.round(Number(minT)) : null;
-        setTextAll('.tmaxmax-val', maxTxt != null ? String(maxTxt) : '--');
-        setTextAll('.tmin-val', minTxt != null ? String(minTxt) : '--');
-        setTextAll('.gust-val', gust != null ? Number(gust).toFixed(1) : '');
-        /* 暑さ指数は updateForecastSlots（環境省）側で .wbgt-val を更新 */
-
         lastAmedasRainNow = (p10 != null && Number(p10) > 0) || (p1h != null && Number(p1h) > 0);
-
-        if (shouldDeferDisplayRefresh_()) {
-            queueDisplayRefresh_();
+        if (paintObs) {
+            setTextAll('.temp-val', parsedTemp != null ? String(Math.round(parsedTemp)) : '');
+            setTextAll('.humi-val', humi != null ? String(Math.round(Number(humi))) : '');
+            setTextAll('.rain-val', p10 != null ? Number(p10).toFixed(1) : '');
+            setTextAll('.pres-val', pres != null ? String(Math.round(Number(pres))) : '');
+            const windDirTxt = wdir != null ? jmaWindDirFromCode(wdir) : '';
+            setTextAll('.dir-val', windDirTxt);
+            setTextAll('.wind-val', wind != null ? Number(wind).toFixed(1) : '');
+            const maxTxt = maxT != null ? Math.round(Number(maxT)) : null;
+            const minTxt = minT != null ? Math.round(Number(minT)) : null;
+            setTextAll('.tmaxmax-val', maxTxt != null ? String(maxTxt) : '--');
+            setTextAll('.tmin-val', minTxt != null ? String(minTxt) : '--');
+            setTextAll('.gust-val', gust != null ? Number(gust).toFixed(1) : '');
+            if (shouldDeferDisplayRefresh_()) queueDisplayRefresh_();
+            else buildScene2MetaTrack(lastAmedasObsTime);
+            fitScene2BodyText();
         } else {
-            buildScene2MetaTrack(lastAmedasObsTime);
+            queueDisplayRefresh_();
         }
-        fitScene2BodyText();
+        /* 暑さ指数は updateForecastSlots（環境省）側で .wbgt-val を更新 */
         captureAmedasSnapshot_(obs, latest);
-        applyD5ObservedHumidity_();
+        if (sceneDomOpen_(s5)) applyD5ObservedHumidity_();
         persistSignageStateCache_();
         return {
             todayMaxTemp: maxT != null ? Number(maxT) : (temp != null ? Number(temp) : null)
@@ -10226,7 +10277,7 @@
     }
     /* 気象庁アメダス + 環境省WBGT: WN比較用9項目を固定順でスクロール */
     function compactScene2Panels() {
-        if (!conveyor) return;
+        if (!conveyor || !sceneDomOpen_(s2)) return;
         if (scene2ScrollMode_()) {
             /* 末尾ロゴが無い案件でも、更新のたびに欄を作り直して数値を消さない */
             if (!conveyor.querySelector('.s2-panel-data, .s2-panel[data-s2="weather"]')) {
@@ -11706,7 +11757,7 @@
             return;
         }
         markPlaylistHeld_();
-        applyDisplayRefreshAtSceneEntry_();
+        applyDisplayRefreshAtSceneEntry_(s3);
         buildTicker();
         applyPendingSignageBgAtScene_();
         /* 気温色で塗ったあと、多言語面だけ段階色（上バーと中段）に戻す */
@@ -11826,7 +11877,7 @@
         if (pendingSignageBgRefresh_) applyPendingSignageBgAtScene_();
         clearScene1WbgtTimers();
         clearDemoStepTimer_();
-        applyDisplayRefreshAtSceneEntry_();
+        applyDisplayRefreshAtSceneEntry_(s1);
         applyPendingSignageBgAtScene_();
         updateClock();
         stepLogo90(420, true);
@@ -11844,17 +11895,20 @@
                 s1Flow_ = null;
                 applyScrollX_(s1WbgtTrack, 0);
                 setS1FootBarVisible_(false);
+                whenSceneSlideSettled_(function () {});
             } else {
                 s1FootWaitMsg_ = false;
                 startS1FootScroll_(advanceToken);
             }
         } else {
             s1Flow_ = null;
-            scene1HoldTimerId = setTimeout(function () {
-                scene1HoldTimerId = null;
-                if (advanceToken !== scene1AdvanceToken + 1) return;
-                finishScene1();
-            }, contentDurationMs_('clock', SCENE1_CLOCK_HOLD_MS));
+            whenSceneSlideSettled_(function () {
+                scene1HoldTimerId = setTimeout(function () {
+                    scene1HoldTimerId = null;
+                    if (advanceToken !== scene1AdvanceToken + 1) return;
+                    finishScene1();
+                }, contentDurationMs_('clock', SCENE1_CLOCK_HOLD_MS));
+            });
         }
     }
     /* シーン2の次はシーン3（WBGT表示） */
@@ -11955,7 +12009,7 @@
         });
     }
     function playScene2() {
-        applyDisplayRefreshAtSceneEntry_();
+        applyDisplayRefreshAtSceneEntry_(s2);
         applyPendingSignageBgAtScene_();
         clearScene2TypeTimer_();
         clearScene2SlideLayers_();
@@ -12008,7 +12062,7 @@
         gotoSceneAfterScene4_();
     }
     function playScene4() {
-        applyDisplayRefreshAtSceneEntry_();
+        applyDisplayRefreshAtSceneEntry_(s4);
         clearScene4Timers();
         if (window.AlertCubeContent && !window.AlertCubeContent.isOn('wbgt')) {
             finishScene4();
@@ -12064,7 +12118,8 @@
         markPlaylistHeld_();
         if (scene5AnimId) cancelAnimationFrame(scene5AnimId);
         if (scene5HoldTimerId) clearTimeout(scene5HoldTimerId);
-        applyDisplayRefreshAtSceneEntry_();
+        applyDisplayRefreshAtSceneEntry_(s5);
+        paintStoredForecast_();
         compactScene5Panels();
         fitD5PanelText_();
         applyD5TodayFrame_();
@@ -12307,6 +12362,7 @@
         });
     }
     function refreshScheduleWeatherWarn_() {
+        if (!sceneDomOpen_(sceneSchedule)) return;
         if (!schTrack || !schTrack.children.length) return;
         const warn = schActiveWarnChip_();
         document.querySelectorAll('#sceneSchedule .sch-day').forEach(function (panel) {
@@ -12397,7 +12453,7 @@
         if (sceneScheduleHoldTimerId) { clearTimeout(sceneScheduleHoldTimerId); sceneScheduleHoldTimerId = null; }
         try { applyScheduleToDom_(); } catch (err) { console.error('[schedule]', err); }
         if (DEMO_ONLY !== 'schedule') {
-            applyDisplayRefreshAtSceneEntry_();
+            applyDisplayRefreshAtSceneEntry_(sceneSchedule);
             applyPendingSignageBgAtScene_();
             if (typeof SignageBg !== 'undefined' && SignageBg.refreshSchedule) {
                 SignageBg.refreshSchedule(getSignageBgLevel_(), getSignageDisplayMode_());
@@ -12947,7 +13003,7 @@
             return;
         }
         markPlaylistHeld_();
-        applyDisplayRefreshAtSceneEntry_();
+        applyDisplayRefreshAtSceneEntry_(sceneGreeting);
         sceneGreeting.classList.add('greeting-promo');
         sceneGreeting.classList.remove('greeting-fill');
         applyPendingSignageBgAtScene_();
@@ -12968,7 +13024,7 @@
             return;
         }
         markPlaylistHeld_();
-        applyDisplayRefreshAtSceneEntry_();
+        applyDisplayRefreshAtSceneEntry_(sceneGreeting);
         applyGreetingToDom_();
         applyPendingSignageBgAtScene_();
         if (typeof SignageBg !== 'undefined' && SignageBg.refreshGreeting) {
@@ -13210,9 +13266,23 @@
         }
         return saved;
     }
+    function playlistTyphoonActive_() {
+        if (NO_TYPHOON || !contentOn_('typhoon')) return false;
+        return !!(typhoonSlidesActive && typhoonSlidesActive.length) || !!typhoonMapModel_ || !!(typhoonMapModels_ && typhoonMapModels_.length);
+    }
     function takePlaylistResumeIndex_(ids) {
         const at = ids.indexOf(readPlaylistResumeId_());
         return at >= 0 ? at : 0;
+    }
+    function openingPlaylistIndex_(ids) {
+        const pres = (siteCfg_() && siteCfg_().presentation) || {};
+        if (pres.resume !== false) return takePlaylistResumeIndex_(ids);
+        for (let i = 0; i < ids.length; i++) {
+            if (ids[i] === 'warning' && !playlistWarningActive_()) continue;
+            if (ids[i] === 'typhoon' && !playlistTyphoonActive_()) continue;
+            return i;
+        }
+        return 0;
     }
     function playlistHandoff_() {
         if (!useContentOrder_() || DEMO_ONLY) return false;
@@ -13220,13 +13290,15 @@
         return true;
     }
     function startContentOrder_() {
+        if (signagePlaybackLive_ && !DEMO_SIGNAGE) return;
+        signagePlaybackLive_ = true;
         playlistBurst_ = 0;
         const ids = playlistIds_();
         if (!ids.length) {
             transitionToScene(s1, playScene1);
             return;
         }
-        playlistIdx_ = takePlaylistResumeIndex_(ids);
+        playlistIdx_ = openingPlaylistIndex_(ids);
         playContentById_(ids[playlistIdx_]);
     }
     function advanceContentOrder_() {
@@ -13328,6 +13400,7 @@
     function applySscValuesToDom_(vals) {
         if (!vals) return;
         lastSscValues_ = vals;
+        if (!sceneDomOpen_(sceneSsc)) return;
         const pendingLabel = window.EdamSsc ? window.EdamSsc.PENDING : '取得中';
         const nText = vals.noise != null ? String(vals.noise) : pendingLabel;
         const vText = vals.vibration != null ? String(vals.vibration) : pendingLabel;
@@ -13409,7 +13482,7 @@
     }
     function playSceneSsc() {
         markPlaylistHeld_();
-        applyDisplayRefreshAtSceneEntry_();
+        applyDisplayRefreshAtSceneEntry_(sceneSsc);
         applyPendingSignageBgAtScene_();
         mountSscTrailingLogo_();
         buildSscMetaTrack_();
@@ -13895,7 +13968,7 @@
                     }, api.FRAME_MS);
                 });
             }
-            show();
+            whenSceneSlideSettled_(function () { show(); });
         }
         if (ready) {
             begin(ready);
@@ -14145,6 +14218,7 @@
     }
 
     function startSequence() {
+        if (signagePlaybackLive_ && !DEMO_SIGNAGE) return;
         clearDemoStepTimer_();
         resetLogoRotation();
         ALL_SCENES_.forEach(hideSceneEl);
@@ -14152,6 +14226,7 @@
             startContentOrder_();
             return;
         }
+        signagePlaybackLive_ = true;
         gotoAfterRainWarnOrScene1_();
     }
 
@@ -14244,7 +14319,7 @@
                 siteWaitBusy_ = true;
                 window.AlertCubeFoundation.bootAsync().then(function (result) {
                     siteWaitBusy_ = false;
-                    if (result && result.configReady) location.reload();
+                    if (result && result.configReady && !signagePlaybackLive_) location.reload();
                 }).catch(function () { siteWaitBusy_ = false; });
             }, 5000);
             return;

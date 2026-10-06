@@ -10,7 +10,7 @@
   "location": "〒983-0007 宮城県仙台市宮城野区仙台港北1丁目2番地の5",
   "latitude": 38.280594,
   "longitude": 140.99571,
-  "memo": "無償。表示は本番仕様。店舗名は株式会社カナモト 仙台営業所。5面640×128。右端固定ロゴは青地のアライアンスグループマーク。時刻下の白帯は kanamoto 文字。気象観測・WBGT・予報の末尾はキャラクター。地点名「仙台営業所」。WBGT・AMeDASは仙台34392（気圧まで揃う官署。塩釜34331は近いが要素が足りない）。予報は宮城県東部040010、気温は仙台34392。警報は宮城県040000、仙台市東部0410001。熱中症アラートは出さない。",
+  "memo": "無償。表示は本番仕様。店舗名は株式会社カナモト 仙台営業所。5面640×128。右端固定ロゴは青地のアライアンスグループマーク。時刻下の白帯は kanamoto 文字。気象観測・WBGT・予報の末尾はキャラクター。起動は時刻から。地点名「仙台営業所」。WBGT・AMeDASは仙台34392（気圧まで揃う官署。塩釜34331は近いが要素が足りない）。予報は宮城県東部040010、気温は仙台34392。警報は宮城県040000、仙台市東部0410001。熱中症アラートは出さない。",
   "resolution": "640x128",
   "layout": "AC-640",
   "faces": 5,
@@ -59,7 +59,8 @@
     "observationMode": "scroll",
     "observationLaps": 2,
     "observationTrailingLogo": true,
-    "i18nTrailingLogo": true
+    "i18nTrailingLogo": true,
+    "resume": false
   },
   "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {
