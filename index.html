@@ -8078,7 +8078,7 @@
         function reloadNow_() {
             if (reloading) return;
             reloading = true;
-            location.reload();
+            requestLiveReload_();
         }
         if ('serviceWorker' in navigator) {
             var hadController = !!navigator.serviceWorker.controller;
@@ -8086,7 +8086,7 @@
                 if (!hadController) { hadController = true; return; }
                 reloadNow_();
             });
-            navigator.serviceWorker.register('./sw.js?v=20261006-ac0018-foot', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261006-ac0020-logo', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -13043,6 +13043,42 @@
     function markPlaylistHeld_() {
         playlistBurst_ = 0;
     }
+    let pendingLiveReload_ = false;
+    let liveReloadArmed_ = false;
+    function playlistResumeKey_() {
+        const id = String((window.AlertCubeSite && window.AlertCubeSite.siteId) || (siteCfg_() && siteCfg_().projectId) || 'site');
+        return 'alertcube.playlist.id.' + id;
+    }
+    function rememberPlaylistId_(id) {
+        try { sessionStorage.setItem(playlistResumeKey_(), String(id || '')); } catch (e) {}
+    }
+    function takePlaylistResumeIndex_(ids) {
+        let saved = '';
+        try {
+            saved = sessionStorage.getItem(playlistResumeKey_()) || '';
+            sessionStorage.removeItem(playlistResumeKey_());
+        } catch (e) { saved = ''; }
+        const at = ids.indexOf(saved);
+        return at >= 0 ? at : 0;
+    }
+    /* 画面や案件の更新は、いまの内容を切って先頭へ戻さない。次の内容の境目で読み直し、その内容から続ける。 */
+    function requestLiveReload_() {
+        if (liveReloadArmed_) return;
+        if (!useContentOrder_() || DEMO_ONLY || !isMainLoopPlaying_()) {
+            liveReloadArmed_ = true;
+            location.reload();
+            return;
+        }
+        pendingLiveReload_ = true;
+    }
+    function reloadAtPlaylistBoundary_(nextId) {
+        if (!pendingLiveReload_ || liveReloadArmed_) return false;
+        liveReloadArmed_ = true;
+        pendingLiveReload_ = false;
+        rememberPlaylistId_(nextId);
+        location.reload();
+        return true;
+    }
     function playlistHandoff_() {
         if (!useContentOrder_() || DEMO_ONLY) return false;
         advanceContentOrder_();
@@ -13050,13 +13086,13 @@
     }
     function startContentOrder_() {
         playlistBurst_ = 0;
-        playlistIdx_ = 0;
         const ids = playlistIds_();
         if (!ids.length) {
             transitionToScene(s1, playScene1);
             return;
         }
-        playContentById_(ids[0]);
+        playlistIdx_ = takePlaylistResumeIndex_(ids);
+        playContentById_(ids[playlistIdx_]);
     }
     function advanceContentOrder_() {
         const ids = playlistIds_();
@@ -13068,10 +13104,12 @@
         if (playlistBurst_ > ids.length + 1) {
             playlistBurst_ = 0;
             playlistIdx_ = 0;
+            if (reloadAtPlaylistBoundary_(ids[0])) return;
             playContentById_(ids[0]);
             return;
         }
         playlistIdx_ = (playlistIdx_ + 1) % ids.length;
+        if (reloadAtPlaylistBoundary_(ids[playlistIdx_])) return;
         playContentById_(ids[playlistIdx_]);
     }
     function contentAreaEl_() {

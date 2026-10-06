@@ -82,6 +82,7 @@ var paths = [
   '/assets/sites/AC-0019/eco_first.png',
   '/sites/AC-0020.json',
   '/assets/sites/AC-0020/logo_foot.png',
+  '/assets/sites/AC-0020/logo_mark.png',
   '/sites/AC-0021.json',
   '/assets/sites/AC-0021/logo_mark.png',
   '/assets/sites/AC-0021/logo_wordmark.png',
