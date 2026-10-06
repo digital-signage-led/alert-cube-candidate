@@ -2819,6 +2819,7 @@
                     <div class="t3-scroll-body"><div class="t3-track">
                         <div class="t3-slot"><div class="t3-l1"></div><div class="t3-l2"></div></div>
                         <div class="t3-slot"><div class="t3-l1"></div><div class="t3-l2"></div></div>
+                        <div class="t3-slot"><div class="t3-l1"></div><div class="t3-l2"></div></div>
                     </div></div>
                 </div>
                 <div class="t3-col t3-unit s2-strip">
@@ -2827,6 +2828,7 @@
                         <div class="t3-top-ha-slot"><span class="t3-top-ha-msg"></span></div>
                     </div></div></div>
                     <div class="t3-scroll-body"><div class="t3-track">
+                        <div class="t3-slot"><div class="t3-l1"></div><div class="t3-l2"></div></div>
                         <div class="t3-slot"><div class="t3-l1"></div><div class="t3-l2"></div></div>
                         <div class="t3-slot"><div class="t3-l1"></div><div class="t3-l2"></div></div>
                     </div></div>
@@ -11490,15 +11492,19 @@
         }
         t3Flow_ = { x: 0, langIdx: 0, laps: 0 };
         applyT3TrackX_(tracks, 0);
-        if (guidTrack) applyScrollX_(guidTrack, 0);
+        if (guidTrack) {
+            remeasureT3GuideLapPx_(guidTrack);
+            applyScrollX_(guidTrack, 0);
+        }
         const guideOn = !!(guidTrack && getT3GuideTierForDisplay_() && t3GuidLapPx > 0);
-        const guidePx = guideOn ? Math.max(T3_UNIT_W, t3GuidLapPx) : T3_UNIT_W;
-        const passPx = Math.ceil(guidePx / T3_UNIT_W) * T3_UNIT_W;
+        /* 日本語1周は、本体512pxと下段の文がどちらも最後まで流れてから次へ */
+        const bodyLap = T3_UNIT_W * 2;
+        const onePass = guideOn ? Math.max(bodyLap, t3GuidLapPx) : bodyLap;
         let moved = 0;
         function step() {
             const speed = getScrollSpeedPx_();
             moved += speed;
-            const lapsNow = Math.floor(moved / passPx);
+            const lapsNow = Math.floor(moved / onePass);
             t3Flow_.x = wrapScrollX_(-moved, T3_UNIT_W);
             applyT3TrackX_(tracks, t3Flow_.x);
             if (guideOn) {
@@ -11762,7 +11768,8 @@
         }
         const wbgtTimes = presentationLaps_('wbgtLaps', SCENE4_LAPS);
         const wbgtSet = Math.max(128, scene4SetWidth);
-        const totalPx = fullPassScrollPx_(wbgtSet, wbgtTimes);
+        /* 1周は4面と末尾ロゴが開始位置へ戻る距離。画面幅を引くと128pxで途中終了する */
+        const totalPx = wbgtSet * wbgtTimes;
         let totalScrolled = 0;
         applyScrollX_(fcConveyor, 0);
         applyScrollX_(fcLvTrack, 0);
