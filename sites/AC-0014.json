@@ -10,7 +10,7 @@
   "location": "滋賀県近江八幡市",
   "latitude": 35.1286,
   "longitude": 136.0978,
-  "memo": "ニッケンさんのデモ貸し出し。無償。表示は本番仕様。5面640×128。右端ロゴ列は円形マーク。時刻下の白帯はNIKKEN文字ロゴ。警報と台風は気象庁の発表時のみ。WBGTとアメダスは彦根60131。予報は滋賀県南部。",
+  "memo": "ニッケンさんのデモ貸し出し。無償。表示は本番仕様。5面640×128。右端ロゴ列は円形マーク、背景は3段の上段色。時刻下の白帯はNIKKEN文字ロゴ。警報と台風は気象庁の発表時のみ。WBGTとアメダスは彦根60131。予報は滋賀県南部。",
   "resolution": "640x128",
   "layout": "AC-640",
   "faces": 5,
@@ -23,6 +23,7 @@
     "corpSrc": "",
     "footSrc": "",
     "panelBg": "#ffffff",
+    "panelFollow": "bar",
     "bannerSrc": "./assets/sites/AC-0014/logo_banner.png?v=1"
   },
   "moe": {

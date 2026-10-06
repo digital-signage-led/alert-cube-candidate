@@ -1109,6 +1109,7 @@ test('AC-0014 はレンタルのニッケン近江八幡の5面デモ', function
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.rental, '無償');
   assert.ok(site.logo.src.indexOf('AC-0014/logo_mark.png') >= 0);
+  assert.strictEqual(site.logo.panelFollow, 'bar');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0014/logo_banner.png') >= 0);
   assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'forecast', 'wbgt-i18n', 'wbgt', 'heat']);
   assert.ok(index.demoSites.indexOf('AC-0014') >= 0);
@@ -1121,6 +1122,7 @@ test('AC-0014 はレンタルのニッケン近江八幡の5面デモ', function
   assert.strictEqual(merged.site.rental, '無償');
   assert.strictEqual(merged.status, 'demo');
   assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('logo_mark.png') >= 0);
+  assert.strictEqual(foundation.toLegacyBrand(site).logoPanelFollow, 'bar');
   assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('logo_banner.png') >= 0);
   assert.ok(foundation.validateSiteConfig(site).ok);
 });

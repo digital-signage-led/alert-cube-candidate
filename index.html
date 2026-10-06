@@ -3161,7 +3161,7 @@
         applySceneStripBg(content, levelIdx, displayMode);
     }
 
-    /** 右端 128×128。AC-0014 は左画面の真ん中と同じ地色 */
+    /** 右端 128×128。panelFollow 未指定の AC-0014 は左画面の真ん中と同じ地色 */
     function logoPanelFollowsContent_() {
         const site = global.SignageConfig || {};
         return String(site.projectId || '') === 'AC-0014'
