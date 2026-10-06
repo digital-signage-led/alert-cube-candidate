@@ -20,7 +20,7 @@
     <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
-    <script src="./core/foundation.js?v=20261005-boot"></script>
+    <script src="./core/foundation.js?v=20261006-ac0018-foot"></script>
     <script src="./services/densho/index.js?v=20260929-densho-live"></script>
     <script src="./services/remote.js?v=20260921-suminoe"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
@@ -1684,6 +1684,7 @@
             padding: 0;
             justify-content: flex-start;
         }
+        #scene3 .t3-guid-track { width: max-content; }
         #scene3 .t3-guide-run {
             display: flex; flex-direction: row; align-items: center;
             height: var(--led-foot-bar-h); width: max-content;
@@ -1694,7 +1695,8 @@
             line-height: var(--led-foot-bar-h);
             font-family: "Noto Sans JP", sans-serif; letter-spacing: 0;
         }
-        #scene3 .t3-guide-gap { flex: 0 0 48px; width: 48px; height: 1px; }
+        /* 空きは画面幅。次の文は、今の文が左へ出切ってから右端に入る */
+        #scene3 .t3-guide-gap { flex: 0 0 512px; width: 512px; height: 1px; }
         .t3-scroll-body {
             width: 100%; height: var(--led-col-body-h); flex-shrink: 0;
             overflow: hidden; position: relative; box-sizing: border-box;
@@ -7715,6 +7717,7 @@
     const T3_TOP_HA_FONT_MAX = 20;
     const T3_LAPS_BEFORE_SWITCH = 1;
     let t3GuidLapPx = SCENE2_META_LAP_PX;
+    let t3GuidCopyPx = SCENE2_META_LAP_PX;
     let t3Messages_ = [];
     let t3Flow_ = null;
     const SCENE_W = 512;
@@ -8075,7 +8078,7 @@
                 if (!hadController) { hadController = true; return; }
                 reloadNow_();
             });
-            navigator.serviceWorker.register('./sw.js?v=20261001-live5s', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261006-ac0018-foot', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -11043,18 +11046,39 @@
         }
         return '（' + tier.title + '）：' + guide;
     }
+    function t3GuideViewPx_() {
+        const bar = document.querySelector('#scene3 .t3-guid-bar');
+        const w = bar && bar.clientWidth > 0 ? bar.clientWidth : 512;
+        return w;
+    }
     function buildT3GuideRunHtml_(text) {
+        const gapPx = t3GuideViewPx_();
         const copy = '<span class="t3-guide-copy">' + escapeS1Html(text) + '</span>';
-        const gap = '<span class="t3-guide-gap"></span>';
+        const gap = '<span class="t3-guide-gap" style="width:' + gapPx + 'px;flex-basis:' + gapPx + 'px"></span>';
         return '<div class="t3-guide-run">' + (copy + gap).repeat(4) + '</div>';
     }
     function measureT3GuideLapPx_(trackEl) {
-        if (!trackEl) return SCENE2_META_LAP_PX;
-        const copy = trackEl.querySelector('.t3-guide-copy');
+        if (!trackEl) {
+            t3GuidCopyPx = SCENE2_META_LAP_PX;
+            return SCENE2_META_LAP_PX;
+        }
+        const copies = trackEl.querySelectorAll('.t3-guide-copy');
         const gap = trackEl.querySelector('.t3-guide-gap');
-        const copyW = copy ? copy.offsetWidth : 0;
+        if (copies.length >= 2) {
+            const span = copies[1].offsetLeft - copies[0].offsetLeft;
+            const copyW = copies[0].offsetWidth;
+            if (span > 0 && copyW > 0) {
+                t3GuidCopyPx = copyW;
+                return span;
+            }
+        }
+        const copyW = copies[0] ? copies[0].offsetWidth : 0;
         const gapW = gap ? gap.offsetWidth : 0;
-        if (copyW > 0) return copyW + gapW;
+        if (copyW > 0) {
+            t3GuidCopyPx = copyW;
+            return copyW + gapW;
+        }
+        t3GuidCopyPx = SCENE2_META_LAP_PX;
         return SCENE2_META_LAP_PX;
     }
     function remeasureT3GuideLapPx_(trackEl) {
@@ -11094,6 +11118,7 @@
             el.innerHTML = '';
             if (bar) bar.style.display = 'none';
             t3GuidLapPx = SCENE2_META_LAP_PX;
+            t3GuidCopyPx = SCENE2_META_LAP_PX;
             return;
         }
         if (bar) bar.style.display = '';
@@ -11542,9 +11567,10 @@
             applyScrollX_(guidTrack, 0);
         }
         const guideOn = !!(guidTrack && getT3GuideTierForDisplay_() && t3GuidLapPx > 0);
-        /* 日本語1周は、本体512pxと下段の文がどちらも最後まで流れてから次へ */
+        /* 日本語1周は、本体512pxと下段の文がどちらも最後まで流れてから次へ。
+           下段は文の幅まで。次の複製は画面幅ぶん後ろにあり、文が左へ出切るまで入ってこない。 */
         const bodyLap = T3_UNIT_W * 2;
-        const onePass = guideOn ? Math.max(bodyLap, t3GuidLapPx) : bodyLap;
+        const onePass = guideOn ? Math.max(bodyLap, t3GuidCopyPx) : bodyLap;
         let moved = 0;
         function step() {
             const speed = getScrollSpeedPx_();
@@ -13074,7 +13100,8 @@
             if (currentId() == null) return;
             total += speed;
             const done = total >= scrollTotal;
-            applyScrollX_(track, seamlessScrollX_(done ? scrollTotal : total, width));
+            /* 2周分の端まで進むと、画面幅の分だけ中身のあとに空白が出る */
+            applyScrollX_(track, wrapScrollX_(done ? -scrollTotal : -total, width));
             if (done) {
                 storeId(null);
                 if (typeof onDone === 'function') onDone();

@@ -65,13 +65,13 @@
   },
   "logoScroll": {
     "laps": 2,
-    "panelWidth": 256,
+    "panelWidth": 441,
     "direction": "rtl",
     "end": "complete",
     "background": "#ffffff",
     "images": [
-      { "src": "./assets/sites/AC-0019/toda_name_yoko.png?v=1", "alt": "戸田建設", "panelWidth": 256 },
-      { "src": "./assets/sites/AC-0019/toda_bct_flow.png?v=1", "alt": "Build the Culture.", "panelWidth": 256 }
+      { "src": "./assets/sites/AC-0019/toda_name_yoko.png?v=1", "alt": "戸田建設", "panelWidth": 441 },
+      { "src": "./assets/sites/AC-0019/toda_bct_flow.png?v=1", "alt": "Build the Culture.", "panelWidth": 577 }
     ]
   },
   "brandScroll": {

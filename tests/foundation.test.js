@@ -1481,6 +1481,8 @@ test('AC-0019 は戸田建設・東近江市E3棟の4面本番設定', function 
   assert.strictEqual(site.news.pageUrl, 'https://www.toda.co.jp/news/');
   assert.strictEqual(site.logoScroll.laps, 2);
   assert.strictEqual(site.logoScroll.images.length, 2);
+  assert.strictEqual(site.logoScroll.images[0].panelWidth, 441);
+  assert.strictEqual(site.logoScroll.images[1].panelWidth, 577);
   assert.strictEqual(site.brandScroll.images.length, 4);
   assert.ok(site.logo.src.indexOf('AC-0019/toda_logo_stack.png') >= 0);
   assert.strictEqual(site.logo.bannerSrc, '');
