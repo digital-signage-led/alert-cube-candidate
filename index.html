@@ -3518,15 +3518,11 @@
         const laps = Number(cfg.observationLaps);
         return Number.isFinite(laps) && laps > 0 ? Math.min(2, Math.max(1, Math.floor(laps))) : 1;
     }
-    /* 流れる範囲は内容4面（512px）。5面の右端ロゴは固定で、この幅には含めない。 */
-    function signageViewPx_() {
-        return 4 * 128;
-    }
-    /* 指定周の最後の面が画面内に収まる位置。途中の面では次のコンテンツへ進まない。 */
+    /* 1周はセットの先頭へ戻る距離。画面幅を引くと、末尾ロゴ付きは128px、ロゴなし4面は0pxで途中終了する。 */
     function fullPassScrollPx_(setWidth, laps) {
-        const set = Math.max(0, Number(setWidth) || 0);
+        const set = Math.max(128, Number(setWidth) || 0);
         const times = Math.max(1, Number(laps) || 1);
-        return Math.max(0, set * times - signageViewPx_());
+        return set * times;
     }
     function presentationLaps_(key, fallback) {
         const cfg = (siteCfg_() && siteCfg_().presentation) || {};
@@ -9803,7 +9799,7 @@
     }
     function paintStoredForecast_() {
         const days = lastForecastDays_;
-        if (!days || !sceneDomOpen_(s5)) return;
+        if (!days) return;
         const todayMaxTemp = lastForecastTodayMax_;
         applyD5BarLabels_();
         for (let day = 0; day < SCENE5_DAY_COUNT; day++) {
@@ -9835,11 +9831,8 @@
             if (row && row.ymd) lastJmaForecastByYmd_[row.ymd] = row;
         });
         if (days[0] && days[0].weatherCode) lastForecastWeatherCode_ = days[0].weatherCode;
-        if (!sceneDomOpen_(s5)) {
-            queueDisplayRefresh_();
-            return;
-        }
         paintStoredForecast_();
+        if (!sceneDomOpen_(s5)) queueDisplayRefresh_();
     }
     function formatScene2ObsClock_(date) {
         const d = date instanceof Date ? date : new Date(date);
@@ -12087,7 +12080,6 @@
         }
         const wbgtTimes = presentationLaps_('wbgtLaps', SCENE4_LAPS);
         const wbgtSet = Math.max(128, scene4SetWidth);
-        /* 最終面（末尾ロゴ）が右端に収まる位置で止める。セット幅のまま流すとロゴのあとが空く */
         const totalPx = fullPassScrollPx_(wbgtSet, wbgtTimes);
         let totalScrolled = 0;
         applyScrollX_(fcConveyor, 0);
