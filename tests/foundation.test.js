@@ -1863,6 +1863,7 @@ test('AC-0023 は落合組・菊川市大石の4面本番設定', function () {
   assert.strictEqual(site.jma.warnCity, '2222400');
   assert.strictEqual(site.jma.warnCityLabel, '菊川市');
   assert.ok(site.logo.src.indexOf('AC-0023/logo_mark.png') >= 0);
+  assert.ok(site.logo.endSrc.indexOf('AC-0023/logo_end.png') >= 0);
   assert.ok(site.logo.bannerSrc.indexOf('AC-0023/logo_foot.png') >= 0);
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.i18nTrailingLogo, true);
@@ -1876,6 +1877,7 @@ test('AC-0023 は落合組・菊川市大石の4面本番設定', function () {
   assert.ok(index.demoSites.indexOf('AC-0023') < 0);
   var brand = foundation.toLegacyBrand(site);
   assert.ok(brand.logoSrc.indexOf('logo_mark.png') >= 0);
+  assert.ok(brand.contentLogoSrc.indexOf('logo_end.png') >= 0);
   assert.ok(brand.footBannerSrc.indexOf('logo_foot.png') >= 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
   assert.strictEqual(merged.clockFoot, '令和7年度　菊川大石上地区河道整備工事');

@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20261006-playback-hold';
+var CACHE_NAME = 'alert-cube-sites-20261007-ac0023-end';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -85,6 +85,7 @@ var PRECACHE = [
   './assets/sites/AC-0022/logo_foot.png?v=1',
   './sites/AC-0023.json',
   './assets/sites/AC-0023/logo_mark.png?v=1',
+  './assets/sites/AC-0023/logo_end.png?v=1',
   './assets/sites/AC-0023/logo_foot.png?v=1',
   './sites/AC-0024.json',
   './sites/AC-0025.json',
