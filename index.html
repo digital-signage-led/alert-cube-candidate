@@ -313,7 +313,6 @@
         #scene3 .t3-end-logo img {
             width: 112px; height: 112px; object-fit: contain; background: #ffffff;
         }
-        #scene3 .t3-shell.is-end-logo { transform: translate3d(-128px, 0, 0); }
         .panel, .s2-panel, .s2-panel-data, .fc-panel, .d5-panel { background: transparent; }
         /* 注意(黄)・警戒(橙黄): 上バー・本体の文字は黒（白い下帯の地点ラベルは従来どおり） */
         .content-area.col-bg-dark-text .s1-bar-label,
@@ -1649,11 +1648,11 @@
         #scene3 { overflow: hidden; position: relative; }
         /* 512×128: 上バー32 + 本体72 + 白下帯24（現在WBGT指針・シーン4） */
         .t3-shell {
-            width: 512px; height: 128px; flex-shrink: 0;
-            display: flex; flex-direction: column; overflow: hidden;
+            width: 640px; height: 128px; flex-shrink: 0;
+            display: flex; flex-direction: column; overflow: visible;
         }
         .t3-scene-top-bar {
-            width: 100%; height: 32px; flex-shrink: 0;
+            width: 512px; height: 32px; flex-shrink: 0;
             display: flex; align-items: stretch; justify-content: flex-start;
             box-sizing: border-box; position: relative; z-index: 2;
             overflow: hidden; padding: 0;
@@ -1743,7 +1742,7 @@
         #scene3 .t3-unit .col-bg-foot, #scene3 .t3-col .col-bg-foot { display: none; }
         .t3-guid-bar {
             position: relative; left: auto; bottom: auto;
-            width: 100%; height: var(--led-foot-bar-h); flex-shrink: 0;
+            width: 512px; height: var(--led-foot-bar-h); flex-shrink: 0;
             background: var(--led-foot-bar-bg); overflow: hidden;
             z-index: 2; box-sizing: border-box;
         }
@@ -11724,21 +11723,33 @@
         }
         const img = face.querySelector('img');
         if (img && img.getAttribute('src') !== src) img.src = src;
-        shell.style.transition = 'transform 0.45s linear';
-        shell.classList.add('is-end-logo');
-        setTimeout(function () {
-            runAfterSceneEndHold_(function () {
-                shell.style.transition = 'none';
-                shell.classList.remove('is-end-logo');
-                done();
-            });
-        }, 450);
+        /* 最後の言語と同じ速さで、128pxの末尾ロゴが右端に収まるまで流す */
+        shell.style.transition = 'none';
+        shell.style.transform = 'translate3d(0,0,0)';
+        let moved = 0;
+        const target = 128;
+        function step() {
+            moved = Math.min(target, moved + getScrollSpeedPx_());
+            shell.style.transform = 'translate3d(' + scrollPx_(-moved) + 'px,0,0)';
+            if (moved >= target) {
+                tickerAnimId = null;
+                runAfterSceneEndHold_(function () {
+                    shell.style.transition = 'none';
+                    shell.style.transform = 'none';
+                    done();
+                });
+                return;
+            }
+            tickerAnimId = requestAnimationFrame(step);
+        }
+        tickerAnimId = requestAnimationFrame(step);
     }
     function playScene3() {
         if (tickerAnimId) { cancelAnimationFrame(tickerAnimId); tickerAnimId = null; }
         const t3Shell = document.getElementById('t3-shell');
         if (t3Shell) {
             t3Shell.style.transition = 'none';
+            t3Shell.style.transform = 'none';
             t3Shell.classList.remove('is-end-logo');
         }
         if (!wbgtMultilingualOn_()) {
