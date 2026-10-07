@@ -3,14 +3,14 @@
   "projectId": "AC-0026",
   "status": "active",
   "customer": "株式会社日立プラントサービス",
-  "rental": "",
+  "rental": "レンタルのニッケン",
   "label": "日立プラントサービス",
   "projectName": "東広島 WBGTサイネージ",
   "siteName": "東広島市",
   "location": "広島県東広島市八本松町吉川2518",
   "latitude": 34.392071,
   "longitude": 132.66655,
-  "memo": "5面640×128。右端固定ロゴは日立プラントサービスのマーク。時刻下の白帯は社名ロックアップ。気象観測・WBGT・予報の末尾は同じマーク。地点名「東広島市」。WBGT・AMeDASは東広島67376（フォールバックなし）。予報は広島県南部340010、気温は広島67437（67376は予報気温地点にない）。警報は広島県340000、東広島市3421200。熱中症アラートは出さない。",
+  "memo": "5面640×128。レンタルのニッケンから日立プラントサービスへ入っている。右端固定ロゴは日立プラントサービスのマーク。時刻下の白帯は社名ロックアップ。気象観測・WBGT・予報の末尾は同じマーク。地点名「東広島市」。WBGT・AMeDASは東広島67376。東広島は気圧を観測しないので、気圧だけ広島67437で補う。予報は広島県南部340010、気温は広島67437（67376は予報気温地点にない）。警報は広島県340000、東広島市3421200。熱中症アラートは出さない。多言語WBGTは日本語・英語・ベトナム語。気象観測・WBGT・4日予報は1周。警報と台風は発表中だけ2周。最後は墜落・転落の標識4枚を各1周。",
   "resolution": "640x128",
   "layout": "AC-640",
   "faces": 5,
@@ -36,7 +36,7 @@
   },
   "jma": {
     "amedasPoint": "67376",
-    "amedasSupplementPoint": "",
+    "amedasSupplementPoint": "67437",
     "forecastArea": "340000",
     "forecastDetail": "340010",
     "forecastPoint": "67437",
@@ -53,14 +53,39 @@
   "updateSettings": { "refreshMs": 60000 },
   "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
   "greeting": { "enabled": false, "title": "", "lines": [], "foot": "" },
+  "boards": {
+    "laps": 1,
+    "speed": 1,
+    "background": "#000000",
+    "phases": [
+      {
+        "id": "fall-signs",
+        "layout": "posters",
+        "play": "slide",
+        "laps": 1,
+        "width": 512,
+        "images": [
+          { "src": "./assets/sites/AC-0009/safety_fall.png?v=1", "alt": "墜落・転落災害防止" },
+          { "src": "./assets/sites/AC-0009/safety_harness.jpg?v=1", "alt": "フルハーネス 使用ヨシ" },
+          { "src": "./assets/sites/AC-0009/safety_opening.png?v=1", "alt": "開口部 足元確認" },
+          { "src": "./assets/sites/AC-0009/safety_lifeline.png?v=1", "alt": "手すり・親綱 確認ヨシ" }
+        ]
+      }
+    ]
+  },
   "presentation": {
     "sequence": "contentOrder",
     "observationMode": "scroll",
-    "observationLaps": 2,
+    "observationLaps": 1,
+    "wbgtLaps": 1,
+    "forecastLaps": 1,
+    "warningLaps": 2,
+    "typhoonLaps": 2,
     "observationTrailingLogo": true,
-    "i18nTrailingLogo": true
+    "i18nTrailingLogo": true,
+    "i18nLangs": ["jp", "en", "vn"]
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n", "boards"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -84,7 +109,7 @@
     "schedule": { "on": false },
     "greeting": { "on": false },
     "news": { "on": false },
-    "boards": { "on": false },
+    "boards": { "on": true },
     "logo-scroll": { "on": false },
     "pollen": { "on": false },
     "pm25": { "on": false }
