@@ -1694,7 +1694,8 @@ test('AC-0021 は大鉄工業・奈良高架作業所の5面本番設定', funct
   assert.ok(site.greeting.i18n[2].vn.indexOf('Nghỉ ngơi cũng là') === 0);
   assert.strictEqual(site.clockFoot, '大鉄工業株式会社　土木支店　奈良高架作業所');
   assert.deepStrictEqual(site.presentation.observationOrder, ['weather', 'temp', 'rain', 'wdir', 'wind', 'humi', 'pres', 'tmaxmin', 'gust']);
-  assert.strictEqual(site.presentation.forecastPlaceFoot, true);
+  assert.strictEqual(site.presentation.forecastPlaceFoot, false);
+  assert.strictEqual(site.presentation.wbgtLaps, 1);
   assert.ok(!site.presentation.rainRadarAlways);
   assert.strictEqual(site.contents.boards.on, true);
   assert.strictEqual(site.boards.phases[0].id, 'fall-signs');
@@ -1741,7 +1742,7 @@ test('AC-0021 は大鉄工業・奈良高架作業所の5面本番設定', funct
   assert.strictEqual(merged.profile, 'AC-640');
   assert.strictEqual(merged.greeting.mode, 'promo');
   assert.strictEqual(merged.clockFoot, '大鉄工業株式会社　土木支店　奈良高架作業所');
-  assert.strictEqual(merged.presentation.forecastPlaceFoot, true);
+  assert.strictEqual(merged.presentation.forecastPlaceFoot, false);
   var fetches = foundation.neededFetches(site);
   assert.ok(fetches.indexOf('jma-warning') >= 0);
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
