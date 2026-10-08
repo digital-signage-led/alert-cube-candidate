@@ -36,6 +36,7 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/?site=AC-0025 （宇佐美工業 名古屋市・広域河川堀川浚渫工事）
 - http://127.0.0.1:3200/?site=AC-0026 （日立プラントサービス 東広島市八本松町。5面）
 - http://127.0.0.1:3200/?site=AC-0027 （カナモト 仙台営業所。無償。5面。表示は本番仕様）
+- http://127.0.0.1:3200/?site=AC-0028 （JGC 千代田町赤岩。5面）
 - http://127.0.0.1:3200/?site=AC-0000 （内部テスト。本番端末へ登録しない）
 - http://127.0.0.1:3200/contents/ （V2.0コンテンツ確認一覧）
 - http://127.0.0.1:3200/?offseason=1
@@ -91,6 +92,7 @@ docs/               運用
 | AC-0025 | active | 宇佐美工業株式会社 / 愛知県名古屋市・広域河川堀川浚渫工事 |
 | AC-0026 | active | 株式会社日立プラントサービス / 広島県東広島市八本松町吉川2518。レンタルのニッケンから日立プラントサービスへ |
 | AC-0027 | active | 株式会社カナモト / 〒983-0007 宮城県仙台市宮城野区仙台港北1丁目2番地の5。無償。5面 |
+| AC-0028 | active | 日揮株式会社 / 〒370-0503 群馬県邑楽郡千代田町赤岩くらかけ2716-1。5面 |
 
 発行済み ID は再利用しない。追加するときは `sites/_template.json` を新しい番号へ複製する。環境クラウドの騒音・振動がある案件は `sites/_template-ssc.json` を複製し、地点と `edamSsc.idNum` を入れる。デモは別番号で `status: demo` とし、`demoSites` にだけ入れる。`?demo=1` は演出で、外してもその番号は本番にならない。
 
@@ -136,5 +138,6 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0025: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0025
 - AC-0026: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0026
 - AC-0027: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0027
+- AC-0028: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0028
 - AC-0000: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0000
 - コンテンツ一覧: https://digital-signage-led.github.io/alert-cube-candidate/contents/

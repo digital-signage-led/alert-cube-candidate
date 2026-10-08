@@ -198,6 +198,31 @@
             width: 128px; max-width: 128px; height: 128px; max-height: 128px;
         }
         html.site-ac-0027 .logo-corp-img { display: none !important; }
+        html.site-ac-0028 .logo-stack {
+            width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
+        }
+        html.site-ac-0028 .logo-img {
+            width: 128px; max-width: 128px; height: 128px; max-height: 128px;
+        }
+        html.site-ac-0028 .logo-corp-img { display: none !important; }
+        html.site-ac-0028 .logo-panel,
+        html.site-ac-0028 #scene2 .s2-logo-panel,
+        html.site-ac-0028 #scene2 .s2-logo-panel .s2-body,
+        html.site-ac-0028 #scene2 .s2-logo-face-img,
+        html.site-ac-0028 #scene4 .fc-logo-panel,
+        html.site-ac-0028 #scene4 .fc-logo-panel .fc-logo-face-img,
+        html.site-ac-0028 #scene5 .d5-logo-panel,
+        html.site-ac-0028 #scene5 .d5-logo-panel .d5-logo-face-img,
+        html.site-ac-0028 #sceneLogo,
+        html.site-ac-0028 #sceneLogo .logo-face-panel,
+        html.site-ac-0028 #sceneLogo .logo-face-img {
+            background: #e50014 !important;
+        }
+        html.site-ac-0028 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
+            height: 26px;
+            max-width: 248px;
+            transform: none;
+        }
         html.site-ac-0027 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
             height: 24px;
             max-width: 230px;
@@ -3441,6 +3466,7 @@
         document.documentElement.classList.toggle('site-ac-0021', String(c.projectId || '') === 'AC-0021');
         document.documentElement.classList.toggle('site-ac-0026', String(c.projectId || '') === 'AC-0026');
         document.documentElement.classList.toggle('site-ac-0027', String(c.projectId || '') === 'AC-0027');
+        document.documentElement.classList.toggle('site-ac-0028', String(c.projectId || '') === 'AC-0028');
         applyFaceLayout_();
         if (typeof compactScene4Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s4))) compactScene4Panels();
         if (typeof compactScene5Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s5))) compactScene5Panels();

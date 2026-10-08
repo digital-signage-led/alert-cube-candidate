@@ -254,6 +254,7 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.ok(index.productionSites.indexOf('AC-0025') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0026') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0027') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0028') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
   assert.ok(Array.isArray(index.demoSites));
   index.demoSites.forEach(function (id) {
@@ -2186,12 +2187,91 @@ test('AC-0027 はカナモト仙台営業所の5面無償本番設定', function
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
+test('AC-0028 はJGC・千代田町の5面本番設定', function () {
+  var site = require('../sites/AC-0028.json');
+  var index = require('../sites/index.json');
+  assert.strictEqual(site.projectId, 'AC-0028');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '日揮株式会社');
+  assert.strictEqual(site.rental, '');
+  assert.strictEqual(site.label, 'JGC');
+  assert.strictEqual(site.projectName, 'JGC WBGTサイネージ');
+  assert.strictEqual(site.siteName, '千代田町');
+  assert.strictEqual(site.location, '〒370-0503 群馬県邑楽郡千代田町赤岩くらかけ2716-1');
+  assert.strictEqual(site.faces, 5);
+  assert.strictEqual(site.resolution, '640x128');
+  assert.strictEqual(site.layout, 'AC-640');
+  assert.strictEqual(site.timeZone, 'Asia/Tokyo');
+  assert.strictEqual(site.latitude, 36.214874);
+  assert.strictEqual(site.longitude, 139.443558);
+  assert.strictEqual(site.footSource, '出典：気象庁・環境省データ');
+  assert.strictEqual(site.moe.point, '42366');
+  assert.strictEqual(site.moe.fallbackPoint, '');
+  assert.strictEqual(site.moe.pointName, '館林');
+  assert.strictEqual(site.moe.alertArea, '群馬県');
+  assert.strictEqual(site.moe.region, '03');
+  assert.strictEqual(site.moe.prefecture, '42');
+  assert.strictEqual(site.jma.amedasPoint, '42366');
+  assert.strictEqual(site.jma.amedasSupplementPoint, '43056');
+  assert.strictEqual(site.jma.forecastArea, '100000');
+  assert.strictEqual(site.jma.forecastDetail, '100010');
+  assert.strictEqual(site.jma.forecastPoint, '42251');
+  assert.strictEqual(site.jma.forecastLabel, '千代田町');
+  assert.strictEqual(site.jma.warnArea, '100000');
+  assert.strictEqual(site.jma.warnCity, '1052300');
+  assert.strictEqual(site.jma.warnCityLabel, '千代田町');
+  assert.ok(site.logo.src.indexOf('AC-0028/logo_mark.png') >= 0);
+  assert.strictEqual(site.logo.panelBg, '#e50014');
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0028/logo_foot.png') >= 0);
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.typhoon.on, true);
+  assert.strictEqual(site.contents['rain-nowcast'].on, true);
+  assert.strictEqual(site.contents.heat.on, false);
+  assert.strictEqual(site.contents.news.on, false);
+  assert.strictEqual(site.contents.clock.on, true);
+  assert.strictEqual(site.contents.wbgt.on, true);
+  assert.strictEqual(site.contents.forecast.on, true);
+  assert.strictEqual(site.contents['wbgt-i18n'].on, true);
+  assert.strictEqual(site.presentation.sequence, 'contentOrder');
+  assert.strictEqual(site.presentation.observationTrailingLogo, true);
+  assert.strictEqual(site.presentation.i18nTrailingLogo, true);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.ok(index.productionSites.indexOf('AC-0028') >= 0);
+  assert.ok(index.demoSites.indexOf('AC-0028') < 0);
+  var brand = foundation.toLegacyBrand(site);
+  assert.ok(brand.logoSrc.indexOf('logo_mark.png') >= 0);
+  assert.ok(brand.contentLogoSrc.indexOf('logo_mark.png') >= 0);
+  assert.ok(brand.footBannerSrc.indexOf('logo_foot.png') >= 0);
+  assert.strictEqual(brand.logoPanelBg, '#e50014');
+  var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
+  assert.strictEqual(merged.site.locationLabel, '千代田町');
+  assert.strictEqual(merged.site.label, 'JGC');
+  assert.strictEqual(merged.site.customer, '日揮株式会社');
+  assert.strictEqual(merged.status, 'active');
+  assert.strictEqual(merged.moe.point, '42366');
+  assert.strictEqual(merged.jma.warnCity, '1052300');
+  assert.strictEqual(merged.jma.forecastDetail, '100010');
+  assert.strictEqual(merged.jma.forecastPoint, '42251');
+  assert.strictEqual(merged.jma.amedasSupplementPoint, '43056');
+  assert.strictEqual(merged.geo.lat, 36.214874);
+  assert.strictEqual(merged.geo.lon, 139.443558);
+  assert.strictEqual(merged.faces, 5);
+  assert.strictEqual(merged.profile, 'AC-640');
+  var fetches = foundation.neededFetches(site);
+  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.ok(fetches.indexOf('jma-typhoon') >= 0);
+  assert.ok(fetches.indexOf('jma-amedas') >= 0);
+  assert.ok(fetches.indexOf('jma-forecast') >= 0);
+  assert.ok(fetches.indexOf('moe-wbgt') >= 0);
+  assert.ok(fetches.indexOf('moe-heat') < 0);
+  assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
 test('注意報・警報・特別警報と台風は全案件と新規テンプレートでオン', function () {
   var index = require('../sites/index.json');
   var tpl = require('../sites/_template.json');
   index.sites.forEach(function (row) {
     var site = require('../sites/' + row.projectId + '.json');
-    assert.ok(!(site.presentation && site.presentation.rainRadarAlways), row.projectId + ' rain radar only when rain is in view');
     if (row.projectId === 'AC-0024') {
       assert.strictEqual(site.contents.warning.on, false, row.projectId + ' warning');
       assert.strictEqual(site.contents.typhoon.on, false, row.projectId + ' typhoon');
@@ -2201,6 +2281,7 @@ test('注意報・警報・特別警報と台風は全案件と新規テンプ�
     assert.strictEqual(site.contents.warning.on, true, row.projectId + ' warning');
     assert.strictEqual(site.contents.typhoon.on, true, row.projectId + ' typhoon');
     assert.strictEqual(site.contents['rain-radar'].on, true, row.projectId + ' rain-radar');
+    assert.ok(!(site.presentation && site.presentation.rainRadarAlways), row.projectId + ' rain radar only when rain is in view');
     assert.ok(site.contentOrder.indexOf('rain-radar') >= 0, row.projectId + ' order rain-radar');
     if (site.presentation && site.presentation.sequence === 'contentOrder') {
       assert.ok(site.contentOrder.indexOf('warning') >= 0, row.projectId + ' order warning');
@@ -2397,7 +2478,7 @@ test('1周は開始位置に戻る距離', function () {
   assert.ok(page.indexOf('function scrollCopyCount_') >= 0);
   assert.ok(page.indexOf('pass < passNeed') >= 0);
   assert.ok(page.indexOf('width: 256px; max-width: 256px; flex: 0 0 256px;') >= 0);
-  assert.ok(page.indexOf('src + src + logo') >= 0);
+  assert.ok(page.indexOf("src + src + logo") >= 0);
 });
 
 console.log('');
