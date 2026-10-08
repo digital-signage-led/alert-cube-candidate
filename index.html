@@ -8224,7 +8224,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261007-ac0023-end', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261008-rain-lap', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -13888,7 +13888,7 @@
         if (useContentOrder_() && !DEMO_ONLY) advanceContentOrder_();
         else gotoAfterScene3Tail_();
     }
-    /* 表示範囲の予報コマに雨雲があるときだけ、雨雲レーダーを出す。 */
+    /* 全案件同じ。表示範囲の予報コマに雨雲があるときだけ出し、予報コマを1周して次へ進む。 */
     function startRainRadarOrSkip_() {
         const api = window.AlertCubeRainRadar;
         if ((!contentOn_('rain-radar') && DEMO_ONLY !== 'rain-radar') || !sceneRainRadar || !api) {
@@ -13898,12 +13898,6 @@
         api.prepare(siteCfg_(), Date.now()).then(function (plan) {
             if (!plan || !plan.frames || !plan.frames.length) {
                 skipRainRadarScene_();
-                return;
-            }
-            const always = siteCfg_() && siteCfg_().presentation && siteCfg_().presentation.rainRadarAlways === true;
-            if (always) {
-                rainRadarReadyPlan_ = plan;
-                transitionToScene(sceneRainRadar, playSceneRainRadar);
                 return;
             }
             return api.viewHasRain(plan).then(function (rain) {

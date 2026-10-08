@@ -1695,7 +1695,7 @@ test('AC-0021 は大鉄工業・奈良高架作業所の5面本番設定', funct
   assert.strictEqual(site.clockFoot, '大鉄工業株式会社　土木支店　奈良高架作業所');
   assert.deepStrictEqual(site.presentation.observationOrder, ['weather', 'temp', 'rain', 'wdir', 'wind', 'humi', 'pres', 'tmaxmin', 'gust']);
   assert.strictEqual(site.presentation.forecastPlaceFoot, true);
-  assert.strictEqual(site.presentation.rainRadarAlways, true);
+  assert.ok(!site.presentation.rainRadarAlways);
   assert.strictEqual(site.contents.boards.on, true);
   assert.strictEqual(site.boards.phases[0].id, 'fall-signs');
   assert.deepStrictEqual(site.presentation.i18nLangs, ['jp', 'en', 'vn', 'tl']);
@@ -2190,6 +2190,7 @@ test('注意報・警報・特別警報と台風は全案件と新規テンプ�
   var tpl = require('../sites/_template.json');
   index.sites.forEach(function (row) {
     var site = require('../sites/' + row.projectId + '.json');
+    assert.ok(!(site.presentation && site.presentation.rainRadarAlways), row.projectId + ' rain radar only when rain is in view');
     if (row.projectId === 'AC-0024') {
       assert.strictEqual(site.contents.warning.on, false, row.projectId + ' warning');
       assert.strictEqual(site.contents.typhoon.on, false, row.projectId + ' typhoon');
