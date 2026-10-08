@@ -2221,6 +2221,7 @@ test('AC-0028 はJGC・千代田町の5面本番設定', function () {
   assert.strictEqual(site.jma.warnCity, '1052300');
   assert.strictEqual(site.jma.warnCityLabel, '千代田町');
   assert.ok(site.logo.src.indexOf('AC-0028/logo_mark.png') >= 0);
+  assert.ok(site.logo.endSrc.indexOf('AC-0028/logo_end.png') >= 0);
   assert.strictEqual(site.logo.panelBg, '#e30518');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0028/logo_foot.png') >= 0);
   assert.strictEqual(site.contents.warning.on, true);
@@ -2240,7 +2241,7 @@ test('AC-0028 はJGC・千代田町の5面本番設定', function () {
   assert.ok(index.demoSites.indexOf('AC-0028') < 0);
   var brand = foundation.toLegacyBrand(site);
   assert.ok(brand.logoSrc.indexOf('logo_mark.png') >= 0);
-  assert.ok(brand.contentLogoSrc.indexOf('logo_mark.png') >= 0);
+  assert.ok(brand.contentLogoSrc.indexOf('logo_end.png') >= 0);
   assert.ok(brand.footBannerSrc.indexOf('logo_foot.png') >= 0);
   assert.strictEqual(brand.logoPanelBg, '#e30518');
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });

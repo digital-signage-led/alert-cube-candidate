@@ -100,6 +100,7 @@ var paths = [
   '/sites/AC-0027.json',
   '/sites/AC-0028.json',
   '/assets/sites/AC-0028/logo_mark.png',
+  '/assets/sites/AC-0028/logo_end.png',
   '/assets/sites/AC-0028/logo_foot.png',
   '/assets/sites/AC-0027/logo_mark.png',
   '/assets/sites/AC-0027/logo_end.png',

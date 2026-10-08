@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20261008-ac0028-mark';
+var CACHE_NAME = 'alert-cube-sites-20261008-ac0028-end';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -97,6 +97,7 @@ var PRECACHE = [
   './sites/AC-0027.json',
   './sites/AC-0028.json',
   './assets/sites/AC-0028/logo_mark.png?v=2',
+  './assets/sites/AC-0028/logo_end.png?v=1',
   './assets/sites/AC-0028/logo_foot.png?v=1',
   './assets/sites/AC-0027/logo_mark.png?v=2',
   './assets/sites/AC-0027/logo_end.png?v=1',
