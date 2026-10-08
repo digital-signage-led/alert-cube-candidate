@@ -39,7 +39,7 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+Myanmar:wght@700;900&family=M+PLUS+Rounded+1c:wght@700&display=swap">
     <link rel="stylesheet" href="./styles/fonts.css?v=20260921-webfont">
     <link rel="stylesheet" href="./styles/white-hero.css?v=20260929-midband">
 
@@ -1095,10 +1095,27 @@
         .content-area.col-bg-dark-text #sceneSsc .ssc-bar-label,
         .content-area.col-bg-dark-text #sceneSsc .ssc-unit,
         .content-area.col-bg-dark-text #sceneSsc .ssc-num { color: #1a1a1a; }
-        #ssc-meta-track .s2-meta-set { display: inline-flex; height: 100%; flex: 0 0 auto; }
-        #ssc-meta-track .s2-meta-panel-txt {
+        #ssc-meta-track .s2-meta-set.ssc-meta-set {
+            width: max-content; max-width: none; min-width: 0;
+            display: flex; flex-direction: row; align-items: stretch;
+            height: var(--led-foot-bar-h); flex: 0 0 auto;
+        }
+        #sceneSsc .ssc-meta-line {
+            width: 512px; flex: 0 0 512px; height: var(--led-foot-bar-h);
+            overflow: hidden; position: relative;
+        }
+        #sceneSsc .ssc-meta-line-track {
+            display: flex; flex-direction: row; flex-wrap: nowrap;
+            width: max-content; height: 100%; will-change: transform;
+        }
+        #sceneSsc .ssc-meta-logo {
+            width: 128px; flex: 0 0 128px; height: var(--led-foot-bar-h);
+            background: #ffffff;
+        }
+        #ssc-meta-track .ssc-meta-line .s2-meta-panel-txt {
             display: inline-flex; align-items: center; height: var(--led-foot-bar-h);
-            padding: 0 16px; white-space: nowrap;
+            width: auto; max-width: none; flex: 0 0 auto;
+            padding: 0 32px 0 16px; white-space: nowrap;
             font-size: var(--led-foot-font); font-weight: 700; color: #1a1a1a;
             font-family: "Noto Sans JP", sans-serif;
         }
@@ -1594,7 +1611,7 @@
         }
         #sceneGreeting.col-bg-dark-text .ng-title,
         #sceneGreeting.col-bg-dark-text .ng-line { color: #000000; }
-        #sceneGreeting.greeting-promo { background: transparent; }
+        #sceneGreeting.greeting-promo { background: var(--signage-bg, #3181BD); }
         #sceneGreeting.greeting-promo .promo-shell { width: 512px; height: 128px; }
         #sceneGreeting.greeting-promo .promo-top,
         #sceneGreeting.greeting-promo .promo-body,
@@ -1630,9 +1647,11 @@
         #sceneGreeting.promo-em-on-danger .promo-em { color: #fff9f0; }
         #sceneGreeting .promo-i18n {
             width: 512px; height: 128px; display: flex; flex-direction: column;
+            background: var(--signage-bg, #3181BD);
         }
         #sceneGreeting .promo-i18n-row {
             height: 42px; flex: 1 1 42px; display: flex; align-items: center; overflow: hidden;
+            background: var(--signage-bg, #3181BD);
         }
         #sceneGreeting .promo-i18n-row + .promo-i18n-row { box-shadow: inset 0 1px 0 rgba(0,0,0,0.18); }
         #sceneGreeting .promo-i18n-tag {
@@ -1642,7 +1661,7 @@
         #sceneGreeting .promo-i18n-mark {
             width: 28px; height: 28px; flex: 0 0 28px; object-fit: contain; margin: 0 8px;
         }
-        #sceneGreeting .promo-i18n-viewport { flex: 1 1 auto; overflow: hidden; height: 100%; }
+        #sceneGreeting .promo-i18n-viewport { flex: 1 1 auto; width: 100%; overflow: hidden; height: 100%; }
         #sceneGreeting .promo-i18n .promo-unit { font-size: 30px; font-family: "Noto Sans", "Noto Sans JP", sans-serif; }
 
         #scene3 { overflow: hidden; position: relative; }
@@ -3226,18 +3245,35 @@
     function refreshGreeting(levelIdx, displayMode) {
         const el = document.getElementById('sceneGreeting');
         if (!el) return;
-        el.classList.toggle('col-bg-dark-text', isDarkTextForDisplay(levelIdx, displayMode));
+        const dark = isDarkTextForDisplay(levelIdx, displayMode);
+        el.classList.toggle('col-bg-dark-text', dark);
         const g = (global.SignageConfig && global.SignageConfig.greeting) || {};
         const fill = g.fill === 'body';
         el.classList.toggle('greeting-fill', fill);
+        const colors = colorsForDisplay(levelIdx, displayMode);
+        const bg = (colors && colors.bgColor) || '';
+        const bar = (colors && colors.barColor) || '';
+        if (el.classList.contains('greeting-promo')) {
+            const ink = dark ? '#000000' : '#ebebeb';
+            el.style.color = ink;
+            el.style.backgroundColor = bg;
+            el.classList.toggle('promo-em-on-danger', displayMode === 'normal' && levelIdx === 4);
+            const top = el.querySelector('.promo-top');
+            const body = el.querySelector('.promo-body');
+            if (top) top.style.backgroundColor = bar;
+            if (body) body.style.backgroundColor = bg;
+            el.querySelectorAll('.promo-i18n-row').forEach(function (row) {
+                row.style.backgroundColor = bg;
+                row.style.color = ink;
+            });
+            return;
+        }
         const shell = el.querySelector('.ng-shell');
         if (!fill) {
             el.style.backgroundColor = '';
             if (shell) shell.style.backgroundColor = '';
             return;
         }
-        const colors = colorsForDisplay(levelIdx, displayMode);
-        const bg = (colors && colors.bgColor) || '';
         el.style.backgroundColor = bg;
         if (shell) shell.style.backgroundColor = bg;
     }
@@ -3414,6 +3450,7 @@
         }
         refineOnlyParam_();
         if (typeof startSscRefreshLoop_ === 'function') startSscRefreshLoop_();
+        if (typeof paintStoredForecast_ === 'function') paintStoredForecast_();
     }
     function refineOnlyParam_() {
         const raw = String(query.get('only') || '').toLowerCase();
@@ -3517,11 +3554,28 @@
         const laps = Number(cfg.observationLaps);
         return Number.isFinite(laps) && laps > 0 ? Math.min(2, Math.max(1, Math.floor(laps))) : 1;
     }
-    /* 1周はセットの先頭へ戻る距離。画面幅を引くと、末尾ロゴ付きは128px、ロゴなし4面は0pxで途中終了する。 */
+    /* 1周は開始位置から、同じ並びの開始位置へ戻る距離。セット幅そのもの。 */
+    function signageViewPx_() {
+        return faceLayoutWide_() ? 640 : 512;
+    }
     function fullPassScrollPx_(setWidth, laps) {
         const set = Math.max(128, Number(setWidth) || 0);
-        const times = Math.max(1, Number(laps) || 1);
+        const times = Math.max(1, Math.floor(Number(laps) || 1));
         return set * times;
+    }
+    /* 終端は次のコピーの開始位置。画面幅の分、その先も置いておく */
+    function scrollCopyCount_(laps) {
+        const times = Math.max(1, Math.floor(Number(laps) || 1));
+        return times + 1;
+    }
+    function repeatTrackSets_(track, panelsPerSet, copies) {
+        if (!track || panelsPerSet < 1 || copies < 1) return;
+        const set = Array.prototype.slice.call(track.children, 0, panelsPerSet);
+        if (set.length < panelsPerSet) return;
+        track.textContent = '';
+        for (let c = 0; c < copies; c++) {
+            set.forEach(function (node) { track.appendChild(node.cloneNode(true)); });
+        }
     }
     function presentationLaps_(key, fallback) {
         const cfg = (siteCfg_() && siteCfg_().presentation) || {};
@@ -3609,11 +3663,11 @@
     const T3_LANG_KEYS = ['jp', 'en', 'id', 'fil', 'vn'];
     /** シーン3 多言語: 5段階 × 言語別 目標比率（1段目 / 2段目 px・256×68 内で最大化） */
     const T3_LANG_FONT_SIZES = [
-        { jp: [48, 28], en: [48, 28], id: [36, 21], vn: [48, 28], fil: [34, 20] }, /* ほぼ安全 */
-        { jp: [48, 28], en: [48, 28], id: [36, 21], vn: [38, 22], fil: [36, 21] }, /* 注意 */
-        { jp: [48, 28], en: [48, 28], id: [38, 22], vn: [48, 28], fil: [38, 22] }, /* 警戒 */
-        { jp: [48, 28], en: [36, 21], id: [32, 19], vn: [28, 16], fil: [32, 19] }, /* 厳重警戒 */
-        { jp: [48, 28], en: [42, 24], id: [36, 21], vn: [47, 27], fil: [44, 25] }  /* 危険 */
+        { jp: [48, 28], en: [48, 28], id: [36, 21], vn: [48, 28], fil: [34, 20], my: [32, 18] }, /* ほぼ安全 */
+        { jp: [48, 28], en: [48, 28], id: [36, 21], vn: [38, 22], fil: [36, 21], my: [32, 18] }, /* 注意 */
+        { jp: [48, 28], en: [48, 28], id: [38, 22], vn: [48, 28], fil: [38, 22], my: [32, 18] }, /* 警戒 */
+        { jp: [48, 28], en: [36, 21], id: [32, 19], vn: [28, 16], fil: [32, 19], my: [28, 16] }, /* 厳重警戒 */
+        { jp: [48, 28], en: [42, 24], id: [36, 21], vn: [47, 27], fil: [44, 25], my: [32, 16] }  /* 危険 */
     ];
     let t3LangIdx_ = 0;
     function getT3LangFontSize_(levelIdx, langKey) {
@@ -3630,7 +3684,8 @@
             en: 1, '1': 1,
             id: 2, '2': 2,
             fil: 3, ph: 3, tl: 3, '3': 3,
-            vn: 4, '4': 4
+            vn: 4, '4': 4,
+            my: 5, '5': 5, mm: 5
         };
         return map[v] != null ? map[v] : -1;
     })();
@@ -3896,11 +3951,11 @@
     let wbgtUnavailableTimerId_ = null;
 
     const multi = [
-        { jp:"【ほぼ安全】適宜水分補給", en:"Safe: Stay hydrated", id:"Aman: Minum air cukup", fil:"Halos ligtas: Uminom ng tubig", vn:"An toàn: Bổ sung nước" },
-        { jp:"【注意】積極的に水分補給", en:"Caution: Actively hydrate", id:"Waspada: Minum air aktif", fil:"Babala: Uminom ng tubig", vn:"Chú ý: Uống nước thường xuyên" },
-        { jp:"【警戒】定期的に休憩", en:"Warning: Take regular breaks", id:"Siaga: Istirahat rutin", fil:"Alerto: Magpahinga", vn:"Cảnh báo: Nghỉ ngơi định kỳ" },
-        { jp:"【厳重警戒】こまめに休憩・体調確認", en:"Severe Warning: Stop intense work", id:"Waspada: Hentikan kerja berat", fil:"Malubha: Itigil ang trabaho", vn:"Cảnh báo nghiêm trọng: Ngừng làm việc nặng" },
-        { jp:"【危険】休憩・水分塩分補給を徹底", en:"Danger: Stop work immediately", id:"Bahaya: Hentikan kerja", fil:"Panganib: Itigil ang trabaho", vn:"Nguy hiểm: Dừng công việc ngay" }
+        { jp:"【ほぼ安全】適宜水分補給", en:"Safe: Stay hydrated", id:"Aman: Minum air cukup", fil:"Halos ligtas: Uminom ng tubig", vn:"An toàn: Bổ sung nước", my:"အန္တရာယ်နည်း: ရေသောက်ပါ" },
+        { jp:"【注意】積極的に水分補給", en:"Caution: Actively hydrate", id:"Waspada: Minum air aktif", fil:"Babala: Uminom ng tubig", vn:"Chú ý: Uống nước thường xuyên", my:"သတိပြု: မကြာခဏရေသောက်ပါ" },
+        { jp:"【警戒】定期的に休憩", en:"Warning: Take regular breaks", id:"Siaga: Istirahat rutin", fil:"Alerto: Magpahinga", vn:"Cảnh báo: Nghỉ ngơi định kỳ", my:"သတိပေး: ပုံမှန်နားပါ" },
+        { jp:"【厳重警戒】こまめに休憩・体調確認", en:"Severe Warning: Stop intense work", id:"Waspada: Hentikan kerja berat", fil:"Malubha: Itigil ang trabaho", vn:"Cảnh báo nghiêm trọng: Ngừng làm việc nặng", my:"အထူးသတိ: လေးလံသောအလုပ် ရပ်ပါ" },
+        { jp:"【危険】休憩・水分塩分補給を徹底", en:"Danger: Stop work immediately", id:"Bahaya: Hentikan kerja", fil:"Panganib: Itigil ang trabaho", vn:"Nguy hiểm: Dừng công việc ngay", my:"အန္တရာယ်: အလုပ်ချက်ချင်းရပ်ပါ" }
     ];
     const SCENE4_FOOT_ATTR = '出典：気象庁・環境省データ';
     const FC_BAR_LABELS = ['暑さ指数', 'WBGT'];
@@ -3917,22 +3972,24 @@
             en: "Severe Warning: Rest often and check in",
             id: "Waspada keras: Istirahat dan cek kondisi",
             fil: "Malubha: Magpahinga at suriin",
-            vn: "Cảnh báo nghiêm trọng: Nghỉ và theo dõi"
+            vn: "Cảnh báo nghiêm trọng: Nghỉ và theo dõi",
+            my: "အထူးသတိ: မကြာခဏနားပြီး စစ်ဆေးပါ"
         },
         4: {
             en: "Danger: Rest, water and salt",
             id: "Bahaya: Istirahat, air dan garam",
             fil: "Panganib: Pahinga, tubig at asin",
-            vn: "Nguy hiểm: Nghỉ, bổ sung nước muối"
+            vn: "Nguy hiểm: Nghỉ, bổ sung nước muối",
+            my: "အန္တရာယ်: နားပါ၊ ရေနှင့်ဆားဖြည့်ပါ"
         }
     };
     /** 大鉄: 短文（特にベトナム語を長くしない）。tl は既存キー fil */
     const MULTI_DAITETSU_I18N = {
-        0: { en: "Safe: Stay hydrated", vn: "An toàn: Uống nước", fil: "Ligtas: Uminom ng tubig" },
-        1: { en: "Caution: Hydrate often", vn: "Chú ý: Uống nước", fil: "Babala: Uminom ng tubig" },
-        2: { en: "Warning: Take breaks", vn: "Cảnh báo: Nghỉ định kỳ", fil: "Alerto: Magpahinga" },
-        3: { en: "Severe: Stop heavy work", vn: "Nghiêm trọng: Ngừng việc nặng", fil: "Malubha: Itigil trabaho" },
-        4: { en: "Danger: Stop work now", vn: "Nguy hiểm: Dừng ngay", fil: "Panganib: Itigil trabaho" }
+        0: { en: "Safe: Stay hydrated", vn: "An toàn: Uống nước", fil: "Ligtas: Uminom ng tubig", my: "အန္တရာယ်နည်း: ရေသောက်ပါ" },
+        1: { en: "Caution: Hydrate often", vn: "Chú ý: Uống nước", fil: "Babala: Uminom ng tubig", my: "သတိပြု: ရေသောက်ပါ" },
+        2: { en: "Warning: Take breaks", vn: "Cảnh báo: Nghỉ định kỳ", fil: "Alerto: Magpahinga", my: "သတိပေး: နားပါ" },
+        3: { en: "Severe: Stop heavy work", vn: "Nghiêm trọng: Ngừng việc nặng", fil: "Malubha: Itigil trabaho", my: "အထူးသတိ: အလုပ်ကြီးရပ်" },
+        4: { en: "Danger: Stop work now", vn: "Nguy hiểm: Dừng ngay", fil: "Panganib: Itigil trabaho", my: "အန္တရာယ်: ချက်ချင်းရပ်" }
     };
     function presentationWording_() {
         return (siteCfg_() && siteCfg_().presentation && siteCfg_().presentation.wording) || '';
@@ -3958,7 +4015,8 @@
                 jp: unknownMsg.jp,
                 en: "WBGT unavailable",
                 vn: "Không có WBGT",
-                fil: "Walang datos ng WBGT"
+                fil: "Walang datos ng WBGT",
+                my: "WBGT မရပါ"
             };
             if (alt[key]) return alt[key];
         }
@@ -3969,7 +4027,8 @@
         en: "WBGT data unavailable",
         id: "WBGT: Tidak tersedia",
         fil: "WBGT: Hindi makuha",
-        vn: "Không có dữ liệu WBGT"
+        vn: "Không có dữ liệu WBGT",
+        my: "WBGT: အချက်အလက်မရပါ"
     };
     const levelNames = ['ほぼ安全', '注意', '警戒', '厳重警戒', '危険'];
     /* 暑さ指数（WBGT）全7段階 — シーン4白下帯（現在レベル／発表中アラートのみ） */
@@ -5710,11 +5769,23 @@
             tyHoldTimerId = setTimeout(function () { runAfterSceneEndHold_(nextFn); }, TY_MAP_HOLD_MS);
             return;
         }
+        let pass = 0;
+        const passNeed = (function () {
+            const n = Number(((siteCfg_() && siteCfg_().presentation) || {}).typhoonLaps);
+            return Number.isFinite(n) && n >= 1 ? Math.min(8, Math.floor(n)) : 1;
+        })();
         let stormIdx = typhoonMapIndex_ || 0;
         if (stormIdx >= typhoonMapModels_.length) stormIdx = 0;
         let skips = 0;
         function endAll_() {
             if (DEMO_TYPHOON_ONLY) {
+                stormIdx = 0;
+                skips = 0;
+                playStorm_();
+                return;
+            }
+            pass += 1;
+            if (pass < passNeed) {
                 stormIdx = 0;
                 skips = 0;
                 playStorm_();
@@ -7830,6 +7901,7 @@
     const T3_BODY_VERT_PAD = 2;
     const T3_LINE_LH_JP = 1.04;
     const T3_LINE_LH_LATIN = 1.10;
+    const T3_LINE_LH_MY = 1.45;
     const T3_L1_MAX = 56;       /* l1 上限（l1 > l2、l2 は T3_L2_RATIO 倍） */
     const T3_L2_RATIO = 0.82;
     const T3_LINE_H = 1.02;
@@ -8444,8 +8516,11 @@
         document.querySelectorAll('#scene4 .fc-logo-panel').forEach(function (el) {
             el.style.display = withLogo ? '' : 'none';
         });
-        scene4SetWidth = (withLogo ? SCENE4_PANEL_COUNT : SCENE4_DATA_COUNT) * 128;
-        fcConveyor.style.width = (scene4SetWidth * 2) + 'px';
+        const per = withLogo ? SCENE4_PANEL_COUNT : SCENE4_DATA_COUNT;
+        const copies = scrollCopyCount_(presentationLaps_('wbgtLaps', SCENE4_LAPS));
+        repeatTrackSets_(fcConveyor, per, copies);
+        scene4SetWidth = per * 128;
+        fcConveyor.style.width = (scene4SetWidth * copies) + 'px';
         fcConveyor.style.transition = 'none';
         applyContentEndLogoSrc_();
     }
@@ -9612,8 +9687,11 @@
         document.querySelectorAll('#scene5 .d5-logo-panel').forEach(function (el) {
             el.style.display = withLogo ? '' : 'none';
         });
-        scene5SetWidth = (withLogo ? SCENE5_PANEL_COUNT : SCENE5_DAY_COUNT) * 128;
-        d5Conveyor.style.width = `${scene5SetWidth * 2}px`;
+        const per = withLogo ? SCENE5_PANEL_COUNT : SCENE5_DAY_COUNT;
+        const copies = scrollCopyCount_(presentationLaps_('forecastLaps', SCENE5_LAPS));
+        repeatTrackSets_(d5Conveyor, per, copies);
+        scene5SetWidth = per * 128;
+        d5Conveyor.style.width = (scene5SetWidth * copies) + 'px';
         applyContentEndLogoSrc_();
     }
     function fitD5PanelText_() {
@@ -9936,9 +10014,12 @@
                 '<img class="s2-logo-face-img" src="' + escapeS1Html(contentEndLogoSrc_()) + '" alt="' +
                 escapeS1Html(brand.logoAlt || '') + '" decoding="async"></div></div>';
         }
-        conveyor.innerHTML = setHtml + setHtml;
         scene2SetWidth = Math.max(128, (types.length + (setHtml.indexOf('s2-logo-panel') >= 0 ? 1 : 0)) * 128);
-        conveyor.style.width = (scene2SetWidth * 2) + 'px';
+        const copies = scrollCopyCount_(scene2ScrollLaps_());
+        let html = '';
+        for (let c = 0; c < copies; c++) html += setHtml;
+        conveyor.innerHTML = html;
+        conveyor.style.width = (scene2SetWidth * copies) + 'px';
         conveyor.style.transition = 'none';
         applyScrollX_(conveyor, 0);
         if (s2) s2.classList.add('scene2-scroll-mode');
@@ -10668,15 +10749,17 @@
         const logo = hasContentLogo_() ? '<div class="fc-lv-slot fc-lv-slot-logo" aria-hidden="true"></div>' : '';
         return '<div class="fc-lv-set fc-lv-set-sync">' + src + src + logo + '</div>';
     }
-    /** 出典は省略記号にせず、256pxの中に先頭から末尾まで収める */
+    /** 出典は省略記号にせず、256px列の中に先頭から末尾まで収める */
     function fitFcLvSourceText_() {
         if (!fcLvTrack) return;
         fcLvTrack.querySelectorAll('.fc-lv-msg-full').forEach(function (el) {
             const slot = el.closest('.fc-lv-slot-src');
-            const limit = Math.max(120, (slot && slot.clientWidth ? slot.clientWidth : 256) - 8);
+            const limit = Math.max(120, (slot && slot.clientWidth ? slot.clientWidth : 248) - 2);
+            el.style.letterSpacing = '0px';
+            el.style.transform = '';
             let size = 18;
             el.style.fontSize = size + 'px';
-            while (size > 11 && el.scrollWidth > limit) {
+            while (size > 8 && el.scrollWidth > limit) {
                 size -= 1;
                 el.style.fontSize = size + 'px';
             }
@@ -10687,7 +10770,10 @@
         const text = getFcLvText();
         if (clearTimers) clearScene4Timers();
         lastFcLvText_ = text;
-        fcLvTrack.innerHTML = buildFcLvSetHtml(text) + buildFcLvSetHtml(text);
+        const copies = scrollCopyCount_(presentationLaps_('wbgtLaps', SCENE4_LAPS));
+        let lvHtml = '';
+        for (let c = 0; c < copies; c++) lvHtml += buildFcLvSetHtml(text);
+        fcLvTrack.innerHTML = lvHtml;
         fitFcLvSourceText_();
         scene4FcLvLapPx = scene4SetWidth;
         applyScrollX_(fcLvTrack, 0);
@@ -11206,7 +11292,7 @@
         if (colon) return { l1: colon[1].trim(), l2: colon[2].trim() };
         return { l1: '', l2: s };
     }
-    /* シーン3（多言語枠）: 日・英・インドネシア・フィリピン・ベトナム */
+    /* シーン3（多言語枠）: 日・英・インドネシア・フィリピン・ベトナム。ミャンマーは i18nLangs に my を入れた案件だけ */
     function wbgtMultilingualOn_() {
         if (window.AlertCubeCore && window.AlertCubeCore.showsWbgtMultilingual) {
             return window.AlertCubeCore.showsWbgtMultilingual(annualMode_);
@@ -11218,19 +11304,27 @@
         if (temperatureDisplay_()) {
             const shown = formatTempLabel_(lastAmedasTempC_);
             if (!shown) return [];
-            const words = { jp: '気温', en: 'Temperature', id: 'Suhu', fil: 'Temperatura', vn: 'Nhiệt độ' };
-            return t3LangKeys_().map(function (key) { return { l1: words[key] || '気温', l2: shown }; });
+            const words = { jp: '気温', en: 'Temperature', id: 'Suhu', fil: 'Temperatura', vn: 'Nhiệt độ', my: 'အပူချိန်' };
+            return t3LangKeys_().map(function (key) { return { lang: key, l1: words[key] || '気温', l2: shown }; });
         }
         if (wbgtOffSeason) return [];
         if (wbgtUnavailable) {
-            const all = t3LangKeys_().map(function (key) { return splitT3Message_(unknownTextFor_(key)); });
+            const all = t3LangKeys_().map(function (key) {
+                const parts = splitT3Message_(unknownTextFor_(key));
+                parts.lang = key;
+                return parts;
+            });
             if (DEMO_T3_LANG_IDX >= 0 && DEMO_T3_LANG_IDX < all.length) return [all[DEMO_T3_LANG_IDX]];
             return all;
         }
         const lv = getS1WbgtLevelForDisplay_();
         if (lv < 0) return [];
         const m = wbgtPhrase_(lv);
-        const all = t3LangKeys_().map(function (key) { return splitT3Message_(m[key]); });
+        const all = t3LangKeys_().map(function (key) {
+            const parts = splitT3Message_(m[key]);
+            parts.lang = key;
+            return parts;
+        });
         if (DEMO_T3_LANG_IDX >= 0 && DEMO_T3_LANG_IDX < all.length) return [all[DEMO_T3_LANG_IDX]];
         return all;
     }
@@ -11487,13 +11581,20 @@
         return node.getBoundingClientRect().width <= maxW + 0.5;
     }
     function t3LineHeightForLang_(langKey) {
+        if (langKey === 'my') return T3_LINE_LH_MY;
         return langKey === 'jp' ? T3_LINE_LH_JP : T3_LINE_LH_LATIN;
+    }
+    function t3FontFamilyForLang_(langKey) {
+        if (langKey === 'my') return '"Noto Sans Myanmar", "Noto Sans JP", sans-serif';
+        return '"Noto Sans JP", "Inter", sans-serif';
     }
     function applyT3LineStyle_(nodes, fontPx, langKey) {
         if (!nodes || !nodes.length) return;
         const lh = t3LineHeightForLang_(langKey);
+        const family = t3FontFamilyForLang_(langKey);
         nodes.forEach(function (n) {
             n.style.lineHeight = String(lh);
+            n.style.fontFamily = family;
             n.style.height = 'auto';
             n.style.minHeight = '0';
             n.style.maxHeight = 'none';
@@ -11598,6 +11699,7 @@
         const seeded = t3SeedFonts_(fixed, hasL1, langKey, usableH, gap);
         t3FinalizeTextFit_(seeded.f1, seeded.f2, hasL1, langKey, ratio);
     }
+    let t3MyanmarFontReady_ = false;
     function sizeT3Text_(langIdx) {
         const slot = document.querySelector('#scene3 .t3-slot');
         if (!slot) return;
@@ -11605,7 +11707,17 @@
         const probe2 = slot.querySelector('.t3-l2');
         if (!probe1 || !probe2) return;
         const li = langIdx != null ? langIdx : t3LangIdx_;
-        const langKey = t3LangKeys_()[li];
+        const msg = t3Messages_[li];
+        const langKey = (msg && msg.lang) || t3LangKeys_()[li];
+        if (langKey === 'my' && document.fonts && !t3MyanmarFontReady_) {
+            const face = '700 32px "Noto Sans Myanmar"';
+            const refit = function () {
+                t3MyanmarFontReady_ = true;
+                if ((t3Messages_[t3LangIdx_] || {}).lang === 'my') sizeT3Text_(t3LangIdx_);
+            };
+            if (document.fonts.check(face)) refit();
+            else document.fonts.load(face).then(refit);
+        }
         const levelIdx = getS1WbgtLevelForDisplay_();
         const hasL1 = String(probe1.textContent || '').trim().length > 0;
         const setAll = function (f1, f2) {
@@ -12983,19 +13095,30 @@
             { tag: 'VN', text: pack.vn || '' },
             { tag: 'TL', text: pack.tl || '' }
         ];
-        const lead = markSrc
-            ? '<img class="promo-i18n-mark" src="' + escapeS1Html(markSrc) + '" alt="">'
-            : '';
         sceneGreeting.innerHTML = '<div class="promo-i18n">' + rows.map(function (row, i) {
-            return '<div class="promo-i18n-row">' + (lead || ('<span class="promo-i18n-tag">' + row.tag + '</span>')) +
-                '<div class="promo-i18n-viewport"><div class="promo-track" id="promo-i18n-' + i + '"></div></div></div>';
+            return '<div class="promo-i18n-row"><div class="promo-i18n-viewport"><div class="promo-track" id="promo-i18n-' + i + '"></div></div></div>';
         }).join('') + '</div>';
         paintPromoChrome_();
         const jobs = rows.map(function (row, i) {
             const track = document.getElementById('promo-i18n-' + i);
             if (!track) return null;
-            return { track: track, lap: fillPromoTrack_(track, promoHtml_(row.text, marks)), speed: getScrollSpeedPx_() };
+            const lead = markSrc
+                ? '<img class="promo-i18n-mark" src="' + escapeS1Html(markSrc) + '" alt="">'
+                : '<span class="promo-i18n-tag">' + row.tag + '</span>';
+            const html = lead + promoHtml_(row.text, marks);
+            const lap = fillPromoTrack_(track, html);
+            return { track: track, html: html, lap: lap, speed: getScrollSpeedPx_(), wrap: true };
         }).filter(Boolean);
+        const shared = jobs.reduce(function (max, job) { return Math.max(max, job.lap); }, 1);
+        jobs.forEach(function (job) {
+            const pad = shared - job.lap;
+            if (pad > 1) job.lap = fillPromoTrack_(job.track, job.html, { gapPx: 64 + pad });
+        });
+        const travel = jobs.reduce(function (max, job) { return Math.max(max, job.lap); }, 1);
+        jobs.forEach(function (job) {
+            job.lap = travel;
+            job.travel = travel;
+        });
         playPromoTracks_(jobs, finishPromoPass_);
     }
     function playPromoGreeting_() {
@@ -13420,11 +13543,35 @@
             ? sscCfg
             : Object.assign({}, sscCfg, { siteName: getSiteLocationLabel_() });
         const line = window.EdamSsc.metaLine(metaCfg, lastSscValues_ || window.EdamSsc.pendingValues(), ready);
-        const html = '<div class="s2-meta-set"><div class="s2-meta-slot s2-meta-slot-wide"><span class="s2-meta-panel-txt">'
-            + window.EdamSsc.escapeHtml(line) + '</span></div></div>';
-        sscMetaTrack.innerHTML = html + html;
-        const first = sscMetaTrack.querySelector('.s2-meta-set');
-        sscMetaLapPx = first ? Math.max(512, first.offsetWidth || 512) : 512;
+        const withLogo = !!(sceneSsc && sceneSsc.classList.contains('ssc-with-logo'));
+        const span = '<span class="s2-meta-panel-txt">' + window.EdamSsc.escapeHtml(line) + '</span>';
+        const logo = withLogo ? '<div class="ssc-meta-logo" aria-hidden="true"></div>' : '';
+        const set = '<div class="s2-meta-set ssc-meta-set"><div class="ssc-meta-line"><div class="ssc-meta-line-track">'
+            + span + '</div></div>' + logo + '</div>';
+        sscMetaTrack.innerHTML = set + set;
+        const setW = withLogo ? 640 : 512;
+        sscMetaTrack.querySelectorAll('.ssc-meta-set').forEach(function (el) {
+            el.style.width = setW + 'px';
+        });
+        const track = sscMetaTrack.querySelector('.ssc-meta-line-track');
+        const textW = track ? track.scrollWidth : 0;
+        sscMetaTextPx = 0;
+        sscMetaTextShift = 0;
+        if (textW > 512) {
+            sscMetaTrack.querySelectorAll('.ssc-meta-line-track').forEach(function (el) {
+                el.insertAdjacentHTML('beforeend', span);
+            });
+            sscMetaTextPx = textW;
+        }
+        sscMetaLapPx = setW;
+    }
+    function scrollSscMetaLine_(speed) {
+        if (!(sscMetaTextPx > 0) || !sscMetaTrack) return;
+        sscMetaTextShift = (sscMetaTextShift + speed) % sscMetaTextPx;
+        const x = wrapScrollX_(-sscMetaTextShift, sscMetaTextPx);
+        sscMetaTrack.querySelectorAll('.ssc-meta-line-track').forEach(function (el) {
+            applyScrollX_(el, x);
+        });
     }
     function fetchEdamSsc_() {
         const id = resolveEdamSscId_();
@@ -13464,6 +13611,8 @@
     }
     let sscFetchTimerId_ = null;
     let sscMetaLapPx = 512;
+    let sscMetaTextPx = 0;
+    let sscMetaTextShift = 0;
     let lastSscValues_ = null;
     function mountSscTrailingLogo_() {
         if (!sscConveyor || sscConveyor.getAttribute('data-ssc-mounted')) return;
@@ -13513,7 +13662,8 @@
             const speed = getScrollSpeedPx_();
             moved = Math.min(totalPx, moved + speed);
             applyScrollX_(sscConveyor, wrapScrollX_(-moved, setWidth));
-            applyScrollX_(sscMetaTrack, wrapScrollX_(-moved, sscMetaLapPx));
+            applyScrollX_(sscMetaTrack, wrapScrollX_(-moved, setWidth));
+            scrollSscMetaLine_(speed);
             if (moved >= totalPx) {
                 finishSsc_();
                 return;

@@ -2384,6 +2384,21 @@ test('ニュースは各社の最新見出しを2件に揃える', function () {
   assert.ok(page.indexOf('newsRowsNow_') >= 0);
 });
 
+test('1周は開始位置に戻る距離', function () {
+  var page = require('fs').readFileSync(require('path').join(__dirname, '..', 'index.html'), 'utf8');
+  var start = page.indexOf('function fullPassScrollPx_');
+  var end = page.indexOf('function scrollCopyCount_');
+  assert.ok(start >= 0 && end > start);
+  var fn = new Function('setWidth', 'laps', page.slice(start, end) + '\nreturn fullPassScrollPx_(setWidth, laps);');
+  assert.strictEqual(fn(1024, 1), 1024);
+  assert.strictEqual(fn(640, 1), 640);
+  assert.strictEqual(fn(640, 2), 1280);
+  assert.ok(page.indexOf('function scrollCopyCount_') >= 0);
+  assert.ok(page.indexOf('pass < passNeed') >= 0);
+  assert.ok(page.indexOf('width: 256px; max-width: 256px; flex: 0 0 256px;') >= 0);
+  assert.ok(page.indexOf('src + src + logo') >= 0);
+});
+
 console.log('');
 console.log(passed + ' passed, ' + failed + ' failed');
 if (failed) process.exit(1);
