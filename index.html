@@ -10231,7 +10231,7 @@
             return;
         }
         let html = '';
-        const copies = scene2ScrollMode_() ? 2 : SCENE2_META_SETS;
+        const copies = scene2ScrollMode_() ? scrollCopyCount_(scene2ScrollLaps_()) : SCENE2_META_SETS;
         for (let i = 0; i < copies; i++) html += buildScene2MetaSetHtml(obs);
         s2MetaTrack.innerHTML = html;
         if (scene2ScrollMode_()) fitScene2ScrollMetaText_();
