@@ -16,7 +16,7 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/?site=AC-0005 （レイズネクスト 摂津）
 - http://127.0.0.1:3200/?site=AC-0006 （錦建設 広島市中区）
 - http://127.0.0.1:3200/?site=AC-0007 （佐々木建設 北島町）
-- http://127.0.0.1:3200/?site=AC-0008&demo=1 （デモ 大鉄 大阪市。本番端末へ登録しない）
+- http://127.0.0.1:3200/?site=AC-0008 （デモカー シリーズ2・名古屋市。ロゴなし。デモと本番の混合。演出は &demo=1）
 - http://127.0.0.1:3200/?site=AC-0009 （大島組 米岡橋梁下部工）
 - http://127.0.0.1:3200/?site=AC-0010 （有限会社フジケン長崎 諫早市永昌町）
 - http://127.0.0.1:3200/?site=AC-0011 （起産建設 博多区）
@@ -72,7 +72,7 @@ docs/               運用
 | AC-0005 | active | レイズネクスト / 〒566-0044 大阪府摂津市西一津屋1-1 |
 | AC-0006 | active | 錦建設株式会社 / 広島県広島市中区舟入本町7 |
 | AC-0007 | active | 佐々木建設株式会社 / 徳島県板野郡北島町 |
-| AC-0008 | demo | 大鉄 / 大阪府大阪市。本番端末へ登録しない |
+| AC-0008 | demo | デモカー シリーズ2 / 愛知県名古屋市。ロゴなし。デモと本番の混合 |
 | AC-0009 | active | 株式会社大島組 / 〒943-0104 新潟県上越市鶴町52 |
 | AC-0010 | active | 有限会社フジケン長崎 / 〒854-0072 長崎県諫早市永昌町５−２３ |
 | AC-0011 | active | 起産建設株式会社 / 〒812-0041 福岡県福岡市博多区吉塚4丁目9-31 |
@@ -118,7 +118,7 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0005: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0005
 - AC-0006: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0006
 - AC-0007: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0007
-- AC-0008: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0008&demo=1
+- AC-0008: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0008 （デモカー。演出は &demo=1）
 - AC-0009: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0009
 - AC-0010: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0010
 - AC-0011: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0011

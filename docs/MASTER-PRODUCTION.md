@@ -8,7 +8,7 @@
 |---|---|
 | AC-0000 | 内部システムテスト（`testSites`、status=test）。本番端末へ登録しない |
 | AC-0001以降の顧客番号 | 本番案件（`productionSites`、status=active）。IDは再利用しない |
-| デモ専用番号 | デモ案件（`demoSites`、status=demo）。本番端末へ登録しない。本番へ転用しない |
+| デモ専用番号 | デモ案件（`demoSites`、status=demo）。本番端末へ登録しない。本番へ転用しない。例外は AC-0008（デモカー・シリーズ2。デモと本番の混合） |
 | `sites/` | 案件設定の正本。本番・テスト・デモを同じフォルダに置く |
 | `sites/index.json` | 案件一覧・status の正本。`productionSites` / `testSites` / `demoSites` で分ける |
 | `contents/` | 共通Content（案件コピー禁止） |

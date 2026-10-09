@@ -114,8 +114,6 @@ var paths = [
   '/assets/sites/AC-0012/logo_banner.png',
   '/assets/sites/AC-0012/logo_stack.png',
   '/assets/sites/AC-0012/news.json',
-  '/assets/sites/AC-0008/logo_mark.png',
-  '/assets/sites/AC-0008/logo_banner.png',
   '/assets/sites/AC-0009/logo_mark.png',
   '/assets/sites/AC-0009/logo_banner.png',
   '/assets/sites/AC-0009/news.json',

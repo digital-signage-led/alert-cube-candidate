@@ -23,7 +23,7 @@
 2. `sites/_template.json` を `sites/AC-xxxx.json` に複製
 3. `status: demo`、`projectName` は「デモ …」とする。AC-0000 は上書きしない
 4. `sites/index.json` の `sites` / `demoSites` に追加する。`productionSites` には入れない
-5. 見せるときは `/?site=AC-xxxx&demo=1`。端末には登録しない
+5. 見せるときは `/?site=AC-xxxx&demo=1`。端末には登録しない。AC-0008 は例外で、デモカーのシリーズ2として本番URLも使う
 
 ## 案件終了
 

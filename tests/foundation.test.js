@@ -258,9 +258,12 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
   assert.ok(Array.isArray(index.demoSites));
   index.demoSites.forEach(function (id) {
-    assert.ok(index.productionSites.indexOf(id) < 0, id + ' is both demo and production');
+    if (id !== 'AC-0008') {
+      assert.ok(index.productionSites.indexOf(id) < 0, id + ' is both demo and production');
+    }
     assert.ok(index.testSites.indexOf(id) < 0, id + ' is both demo and test');
   });
+  assert.ok(index.productionSites.indexOf('AC-0008') >= 0);
 });
 
 test('AC-0002 はENEOS磯子の独立した本番案件設定', function () {
@@ -667,39 +670,49 @@ test('AC-0007 は佐々木建設北島町の4面本番設定', function () {
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
-test('AC-0008 は大鉄大阪市のデモ', function () {
+test('AC-0008 はデモカー・シリーズ2の名古屋市設定', function () {
   var site = require('../sites/AC-0008.json');
   var index = require('../sites/index.json');
   assert.strictEqual(site.projectId, 'AC-0008');
   assert.strictEqual(site.status, 'demo');
-  assert.strictEqual(site.customer, '大鉄');
-  assert.strictEqual(site.label, '大鉄');
-  assert.strictEqual(site.projectName, 'デモ 大鉄');
-  assert.strictEqual(site.siteName, '大阪市');
-  assert.strictEqual(site.location, '大阪府大阪市');
+  assert.strictEqual(site.customer, '');
+  assert.strictEqual(site.rental, '');
+  assert.strictEqual(site.label, '');
+  assert.strictEqual(site.series, 2);
+  assert.strictEqual(site.projectName, 'デモカー シリーズ2');
+  assert.strictEqual(site.siteName, '名古屋市');
+  assert.strictEqual(site.location, '愛知県名古屋市');
   assert.strictEqual(site.faces, 4);
   assert.strictEqual(site.resolution, '512x128');
-  assert.strictEqual(site.moe.point, '62078');
-  assert.strictEqual(site.moe.pointName, '大阪');
-  assert.strictEqual(site.moe.alertArea, '大阪府');
-  assert.strictEqual(site.moe.region, '07');
-  assert.strictEqual(site.moe.prefecture, '62');
-  assert.strictEqual(site.jma.amedasPoint, '62078');
-  assert.strictEqual(site.jma.forecastArea, '270000');
-  assert.strictEqual(site.jma.forecastDetail, '270000');
-  assert.strictEqual(site.jma.forecastPoint, '62078');
-  assert.strictEqual(site.jma.warnCity, '2710000');
-  assert.strictEqual(site.jma.warnCityLabel, '大阪市');
-  assert.strictEqual(site.latitude, 34.68);
-  assert.strictEqual(site.longitude, 135.5183);
-  assert.ok(site.logo.src.indexOf('AC-0008/logo_mark.png') >= 0);
-  assert.ok(site.logo.bannerSrc.indexOf('AC-0008/logo_banner.png') >= 0);
+  assert.strictEqual(site.moe.point, '51106');
+  assert.strictEqual(site.moe.pointName, '名古屋');
+  assert.strictEqual(site.moe.alertArea, '愛知県');
+  assert.strictEqual(site.moe.region, '05');
+  assert.strictEqual(site.moe.prefecture, '51');
+  assert.strictEqual(site.jma.amedasPoint, '51106');
+  assert.strictEqual(site.jma.forecastArea, '230000');
+  assert.strictEqual(site.jma.forecastDetail, '230010');
+  assert.strictEqual(site.jma.forecastPoint, '51106');
+  assert.strictEqual(site.jma.forecastLabel, '名古屋市');
+  assert.strictEqual(site.jma.warnCity, '2310000');
+  assert.strictEqual(site.jma.warnCityLabel, '名古屋市');
+  assert.strictEqual(site.latitude, 35.1669);
+  assert.strictEqual(site.longitude, 136.9653);
+  assert.strictEqual(site.logo.src, '');
+  assert.strictEqual(site.logo.bannerSrc, '');
+  assert.strictEqual(site.presentation.observationTrailingLogo, false);
   assert.ok(index.demoSites.indexOf('AC-0008') >= 0);
-  assert.ok(index.productionSites.indexOf('AC-0008') < 0);
+  assert.ok(index.productionSites.indexOf('AC-0008') >= 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
-  assert.strictEqual(merged.site.locationLabel, '大阪市');
-  assert.strictEqual(merged.site.label, '大鉄');
+  var brand = foundation.toLegacyBrand(site);
+  assert.strictEqual(merged.site.locationLabel, '名古屋市');
+  assert.strictEqual(merged.site.customer, '');
+  assert.strictEqual(merged.site.label, '名古屋市');
   assert.strictEqual(merged.status, 'demo');
+  assert.strictEqual(merged.moe.point, '51106');
+  assert.strictEqual(brand.logoSrc, '');
+  assert.strictEqual(brand.contentLogoSrc, '');
+  assert.strictEqual(brand.footBannerSrc, '');
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 

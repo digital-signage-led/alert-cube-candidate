@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "defaultSite": "AC-0001",
-  "productionSites": ["AC-0001", "AC-0002", "AC-0003", "AC-0004", "AC-0005", "AC-0006", "AC-0007", "AC-0009", "AC-0010", "AC-0011", "AC-0012", "AC-0013", "AC-0015", "AC-0016", "AC-0017", "AC-0018", "AC-0019", "AC-0020", "AC-0021", "AC-0022", "AC-0023", "AC-0024", "AC-0025", "AC-0026", "AC-0027", "AC-0028"],
+  "productionSites": ["AC-0001", "AC-0002", "AC-0003", "AC-0004", "AC-0005", "AC-0006", "AC-0007", "AC-0008", "AC-0009", "AC-0010", "AC-0011", "AC-0012", "AC-0013", "AC-0015", "AC-0016", "AC-0017", "AC-0018", "AC-0019", "AC-0020", "AC-0021", "AC-0022", "AC-0023", "AC-0024", "AC-0025", "AC-0026", "AC-0027", "AC-0028"],
   "testSites": ["AC-0000"],
   "demoSites": ["AC-0008", "AC-0014"],
-  "notes": "案件JSONはすべて sites/ に置く。AC-0000 は内部システムテスト専用（testSites、status=test、本番端末へ登録しない）。productionSites は本番案件（status=active）。demoSites はデモ専用番号（status=demo、本番端末へ登録しない）。demo=1 は画面の演出だけで、案件の種類は変えない。発行済みIDは再利用しない。デモ番号を本番へ移さない。",
+  "notes": "案件JSONはすべて sites/ に置く。AC-0000 は内部システムテスト専用（testSites、status=test、本番端末へ登録しない）。productionSites は本番案件（status=active）。demoSites はデモ専用番号（status=demo、本番端末へ登録しない）。例外は AC-0008。デモカーのシリーズ2で、demoSites と productionSites の両方に入る。通常URLは本番表示、?demo=1 はデモ演出。demo=1 は画面の演出だけで、案件の種類は変えない。発行済みIDは再利用しない。AC-0008 以外のデモ番号を本番へ移さない。",
   "sites": [
     { "projectId": "AC-0000", "status": "test" },
     { "projectId": "AC-0001", "status": "active" },
