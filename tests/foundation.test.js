@@ -205,7 +205,7 @@ test('気圧パネルは共通pressureに対応', function () {
 test('Project Lifecycle: test/demo/active のみ通信可。ended/archived は停止', function () {
   assert.strictEqual(foundation.isStatusOperable('test', 'AC-0000'), true);
   assert.strictEqual(foundation.isStatusOperable('active', 'AC-0001'), true);
-  assert.strictEqual(foundation.isStatusOperable('demo', 'AC-0008'), true);
+  assert.strictEqual(foundation.isStatusOperable('demo', 'AC-0005'), true);
   assert.strictEqual(foundation.isStatusOperable('demo', 'AC-0000'), false);
   assert.strictEqual(foundation.isStatusOperable('test', 'AC-0001'), false);
   assert.strictEqual(foundation.isStatusOperable('ended', 'AC-0001'), false);
@@ -258,12 +258,11 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
   assert.ok(Array.isArray(index.demoSites));
   index.demoSites.forEach(function (id) {
-    if (id !== 'AC-0008') {
-      assert.ok(index.productionSites.indexOf(id) < 0, id + ' is both demo and production');
-    }
+    assert.ok(index.productionSites.indexOf(id) < 0, id + ' is both demo and production');
     assert.ok(index.testSites.indexOf(id) < 0, id + ' is both demo and test');
   });
   assert.ok(index.productionSites.indexOf('AC-0008') >= 0);
+  assert.ok(index.demoSites.indexOf('AC-0008') < 0);
 });
 
 test('AC-0002 はENEOS磯子の独立した本番案件設定', function () {
@@ -688,18 +687,18 @@ test('AC-0007 は佐々木建設北島町の4面本番設定', function () {
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
-test('AC-0008 はデモカー・シリーズ2の名古屋市設定', function () {
+test('AC-0008 は塩浜工業・東海市の本番設定', function () {
   var site = require('../sites/AC-0008.json');
   var index = require('../sites/index.json');
   assert.strictEqual(site.projectId, 'AC-0008');
-  assert.strictEqual(site.status, 'demo');
-  assert.strictEqual(site.customer, '');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '塩浜工業株式会社');
   assert.strictEqual(site.rental, '');
-  assert.strictEqual(site.label, '');
-  assert.strictEqual(site.series, 2);
-  assert.strictEqual(site.projectName, 'デモカー シリーズ2');
-  assert.strictEqual(site.siteName, '名古屋市');
-  assert.strictEqual(site.location, '愛知県名古屋市');
+  assert.strictEqual(site.label, '塩浜工業');
+  assert.strictEqual(site.projectName, 'ＧＬＰ名和物流倉庫');
+  assert.strictEqual(site.siteName, '東海市');
+  assert.strictEqual(site.location, '愛知県東海市名和町四番割');
+  assert.strictEqual(site.clockFoot, 'ＧＬＰ名和物流倉庫');
   assert.strictEqual(site.faces, 4);
   assert.strictEqual(site.resolution, '512x128');
   assert.strictEqual(site.moe.point, '51106');
@@ -707,30 +706,33 @@ test('AC-0008 はデモカー・シリーズ2の名古屋市設定', function ()
   assert.strictEqual(site.moe.alertArea, '愛知県');
   assert.strictEqual(site.moe.region, '05');
   assert.strictEqual(site.moe.prefecture, '51');
-  assert.strictEqual(site.jma.amedasPoint, '51106');
+  assert.strictEqual(site.jma.amedasPoint, '51216');
+  assert.strictEqual(site.jma.amedasSupplementPoint, '51106');
   assert.strictEqual(site.jma.forecastArea, '230000');
   assert.strictEqual(site.jma.forecastDetail, '230010');
   assert.strictEqual(site.jma.forecastPoint, '51106');
-  assert.strictEqual(site.jma.forecastLabel, '名古屋市');
-  assert.strictEqual(site.jma.warnCity, '2310000');
-  assert.strictEqual(site.jma.warnCityLabel, '名古屋市');
-  assert.strictEqual(site.latitude, 35.1669);
-  assert.strictEqual(site.longitude, 136.9653);
-  assert.strictEqual(site.logo.src, '');
-  assert.strictEqual(site.logo.bannerSrc, '');
-  assert.strictEqual(site.presentation.observationTrailingLogo, false);
-  assert.ok(index.demoSites.indexOf('AC-0008') >= 0);
+  assert.strictEqual(site.jma.forecastLabel, '東海市');
+  assert.strictEqual(site.jma.warnCity, '2322200');
+  assert.strictEqual(site.jma.warnCityLabel, '東海市');
+  assert.strictEqual(site.latitude, 35.0609);
+  assert.strictEqual(site.longitude, 136.9117);
+  assert.ok(site.logo.src.indexOf('AC-0008/logo_mark.png') >= 0);
+  assert.ok(site.logo.bannerSrc.indexOf('AC-0008/logo_foot.png') >= 0);
+  assert.strictEqual(site.presentation.observationTrailingLogo, true);
+  assert.strictEqual(site.presentation.i18nTrailingLogo, true);
+  assert.strictEqual(site.presentation.observationLaps, 1);
+  assert.ok(index.demoSites.indexOf('AC-0008') < 0);
   assert.ok(index.productionSites.indexOf('AC-0008') >= 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
   var brand = foundation.toLegacyBrand(site);
-  assert.strictEqual(merged.site.locationLabel, '名古屋市');
-  assert.strictEqual(merged.site.customer, '');
-  assert.strictEqual(merged.site.label, '名古屋市');
-  assert.strictEqual(merged.status, 'demo');
+  assert.strictEqual(merged.site.locationLabel, '東海市');
+  assert.strictEqual(merged.site.customer, '塩浜工業株式会社');
+  assert.strictEqual(merged.site.label, '塩浜工業');
+  assert.strictEqual(merged.status, 'active');
   assert.strictEqual(merged.moe.point, '51106');
-  assert.strictEqual(brand.logoSrc, '');
-  assert.strictEqual(brand.contentLogoSrc, '');
-  assert.strictEqual(brand.footBannerSrc, '');
+  assert.ok(brand.logoSrc.indexOf('AC-0008/logo_mark.png') >= 0);
+  assert.ok(brand.contentLogoSrc.indexOf('AC-0008/logo_mark.png') >= 0);
+  assert.ok(brand.footBannerSrc.indexOf('AC-0008/logo_foot.png') >= 0);
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
