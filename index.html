@@ -15,7 +15,7 @@
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
     <script src="./contents/rain-radar/index.js?v=20261006-rain-radar20"></script>
-    <script src="./contents/ssc/index.js?v=20261006-ac0024-ssc"></script>
+    <script src="./contents/ssc/index.js?v=20261012-ac0024-ssc-url"></script>
     <script src="./contents/eew/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
@@ -13609,6 +13609,7 @@
         return window.EdamSsc.fetchValues(id, {
             apiHost: cfg.apiHost,
             apiPath: cfg.apiPath,
+            gasUrl: query.get('sscGas') || cfg.gasUrl || '',
             corsProxy: query.get('sscProxy') || cfg.corsProxy || ''
         }).then(function (vals) {
             applySscValuesToDom_(vals);

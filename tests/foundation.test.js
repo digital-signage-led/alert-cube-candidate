@@ -1951,7 +1951,9 @@ test('AC-0024 は川崎重工・千葉中部作業所の騒音振動4面', funct
   assert.strictEqual(site.jma.forecastArea, '120000');
   assert.strictEqual(site.jma.forecastDetail, '120010');
   assert.strictEqual(site.jma.forecastPoint, '45212');
-  assert.strictEqual(site.edamSsc.idNum, null);
+  assert.strictEqual(site.edamSsc.idNum, 2526);
+  assert.strictEqual(site.edamSsc.publicId, '18237');
+  assert.ok(site.edamSsc.gasUrl.indexOf('script.google.com') >= 0);
   assert.strictEqual(site.edamSsc.laps, 2);
   assert.strictEqual(site.presentation.sscLaps, 2);
   assert.strictEqual(site.contents.ssc.on, true);
@@ -1965,7 +1967,7 @@ test('AC-0024 は川崎重工・千葉中部作業所の騒音振動4面', funct
   assert.strictEqual(merged.site.locationLabel, '中部作業所');
   assert.strictEqual(merged.site.label, '川崎重工');
   assert.strictEqual(merged.edamSsc.siteName, '中部作業所');
-  assert.strictEqual(merged.edamSsc.idNum, null);
+  assert.strictEqual(merged.edamSsc.idNum, 2526);
   assert.strictEqual(merged.moe.point, '45212');
   assert.strictEqual(foundation.isContentOn(site, 'ssc'), true);
   assert.strictEqual(foundation.isContentOn(site, 'heat'), true);

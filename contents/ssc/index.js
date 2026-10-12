@@ -1,7 +1,8 @@
 /**
  * 環境クラウド（EDAM）騒音・振動の瞬時値。
- * API: {apiHost}/Json/SSCNumData/{idNum}
+ * API: {apiHost}/Json/SSCNumData/{idNum}?r={cacheBust}
  * RNSoVal … 騒音(dB) / RNShVal … 振動(dB)
+ * ブラウザは EDAM を CORS で読めないことがある。そのときだけ gasUrl の中継を使う。
  * idNum が空のときは取得せず、画面側は「取得中」のままにする。
  */
 (function (global) {
@@ -105,26 +106,99 @@
   }
 
   function parsePayload(url, text) {
+    var s = String(text || '').trim();
+    if (!s || /^<!DOCTYPE/i.test(s) || /<html[\s>]/i.test(s)) throw new Error('html body');
     if (url.indexOf('allorigins.win/get') >= 0) {
-      var wrap = JSON.parse(text);
+      var wrap = JSON.parse(s);
       var inner = wrap.contents;
       return typeof inner === 'string' ? JSON.parse(inner) : inner;
     }
-    return JSON.parse(text);
+    return JSON.parse(s);
   }
 
-  function fetchValues(idNum, options) {
-    options = options || {};
-    var direct = apiBase(options) + '/' + idNum + '?r=' + Date.now();
+  function rowFromPayload(data) {
+    var row = null;
+    if (Array.isArray(data) && data.length) row = data[0];
+    else if (data && Array.isArray(data.data) && data.data.length) row = data.data[0];
+    else if (data && data.Time != null) row = data;
+    if (!row || typeof row !== 'object') throw new Error('empty');
+    var vals = rowToValues(row);
+    if (vals.noise == null && vals.vibration == null) throw new Error('SSC values missing');
+    return vals;
+  }
+
+  function fetchJsonp(url, ms) {
+    return new Promise(function (resolve, reject) {
+      if (typeof document === 'undefined') {
+        reject(new Error('JSONP unavailable'));
+        return;
+      }
+      var cb = '_edamSscCb_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+      var sep = url.indexOf('?') >= 0 ? '&' : '?';
+      var script = document.createElement('script');
+      var settled = false;
+      var timer = setTimeout(function () {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(new Error('JSONP timeout'));
+      }, ms);
+      function cleanup() {
+        clearTimeout(timer);
+        try { delete global[cb]; } catch (e) { global[cb] = undefined; }
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+      global[cb] = function (payload) {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve(payload);
+      };
+      script.async = true;
+      script.src = url + sep + 'callback=' + encodeURIComponent(cb);
+      script.onerror = function () {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(new Error('JSONP load error'));
+      };
+      (document.head || document.documentElement).appendChild(script);
+    });
+  }
+
+  function fetchViaGas(idNum, gasUrl) {
+    var base = String(gasUrl || '').replace(/\/$/, '');
+    if (!base) return Promise.reject(new Error('gasUrl empty'));
+    var q = 'idNum=' + encodeURIComponent(idNum) + '&r=' + Date.now();
+    var url = base + (base.indexOf('?') >= 0 ? '&' : '?') + q;
+    return fetchWithTimeout(url, 12000).then(function (res) {
+      return res.text().then(function (text) {
+        if (!res.ok) throw new Error('GAS HTTP ' + res.status);
+        return rowFromPayload(parsePayload(url, text));
+      });
+    }).catch(function () {
+      return fetchJsonp(url, 12000).then(rowFromPayload);
+    });
+  }
+
+  function dataUrl(idNum, options) {
+    var bust = (options && options.cacheBust != null) ? options.cacheBust : Date.now();
+    return apiBase(options) + '/' + idNum + '?r=' + bust;
+  }
+
+  function fetchDirect(idNum, options) {
+    var direct = dataUrl(idNum, options);
     var enc = encodeURIComponent(direct);
-    var proxy = options.corsProxy !== 'off' && options.corsProxy !== 'none'
-      ? (options.corsProxy || 'https://api.allorigins.win/raw?url=')
-      : '';
-    var urls = [direct];
+    var proxyRaw = options.corsProxy;
+    var proxy = (proxyRaw && proxyRaw !== 'off' && proxyRaw !== 'none') ? proxyRaw : '';
+    var urls = [];
     if (proxy) {
       urls.push(proxy + enc);
-      urls.push('https://api.allorigins.win/get?url=' + enc);
+      if (proxy.indexOf('allorigins.win/raw') >= 0) {
+        urls.push('https://api.allorigins.win/get?url=' + enc);
+      }
     }
+    urls.push(direct);
     var i = 0;
     var lastErr = null;
     function next() {
@@ -133,9 +207,7 @@
       return fetchWithTimeout(url, 12000).then(function (res) {
         return res.text().then(function (text) {
           if (!res.ok) throw new Error('HTTP ' + res.status);
-          var data = parsePayload(url, text);
-          if (!Array.isArray(data) || !data.length) throw new Error('empty');
-          return rowToValues(data[0]);
+          return rowFromPayload(parsePayload(url, text));
         });
       }).catch(function (err) {
         lastErr = err;
@@ -145,12 +217,22 @@
     return next();
   }
 
+  function fetchValues(idNum, options) {
+    options = options || {};
+    return fetchDirect(idNum, options).catch(function (err) {
+      if (!options.gasUrl) throw err;
+      return fetchViaGas(idNum, options.gasUrl);
+    });
+  }
+
   var api = {
     PENDING: PENDING,
     formatDb: formatDb,
     rowToValues: rowToValues,
     pendingValues: pendingValues,
     resolveId: resolveId,
+    dataUrl: dataUrl,
+    rowFromPayload: rowFromPayload,
     metaLine: metaLine,
     escapeHtml: escapeHtml,
     fetchValues: fetchValues

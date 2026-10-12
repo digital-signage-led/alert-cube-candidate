@@ -31,6 +31,24 @@ test('SSCNumData の行を騒音・振動にする', function () {
   assert.strictEqual(vals.pending, false);
 });
 
+test('取得 URL は SSCNumData/{idNum}?r=', function () {
+  assert.strictEqual(
+    ssc.dataUrl(2526, { cacheBust: '1' }),
+    'https://www2.edam.ne.jp/Json/SSCNumData/2526?r=1'
+  );
+});
+
+test('GAS の data 配列も騒音・振動にする', function () {
+  var vals = ssc.rowFromPayload({
+    source: 'edam-ssc',
+    idNum: '2526',
+    data: [{ RNSoVal: 64.3, RNShVal: 41.4, Time: '20261009091511' }]
+  });
+  assert.strictEqual(vals.noise, '64.3');
+  assert.strictEqual(vals.vibration, '41.4');
+  assert.strictEqual(vals.time, '2026/10/09 09:15:11');
+});
+
 test('LoID 未設定は 0。?sscId= が設定より先', function () {
   assert.strictEqual(ssc.resolveId({ idNum: null, loId: null }, { get: function () { return ''; } }), 0);
   assert.strictEqual(ssc.resolveId({ idNum: '738' }, null), 738);
