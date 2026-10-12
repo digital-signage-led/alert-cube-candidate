@@ -158,10 +158,13 @@
     var light = c.theme === 'light' ? ' kotei-col-light' : '';
     var date = c.date ? '<div class="kotei-safety-date">' + escapeHtml(c.date) + '</div>' : '';
     var line = c.line ? '<div class="' + safetyLineClass(c) + '">' + escapeHtml(c.line) + '</div>' : '';
+    var icon = (c.icon === false || c.icon === 'none')
+      ? ''
+      : '<div class="kotei-safety-icon">' + iconHtml(c.icon) + '</div>';
     return '<div class="kotei-col kotei-col-safety' + light + '"><div class="kotei-safety-panel">' +
       '<div class="kotei-safety-badge">' + escapeHtml(c.badge || '') + '</div>' +
       '<div class="kotei-safety-hero">' +
-      '<div class="kotei-safety-icon">' + iconHtml(c.icon) + '</div>' +
+      icon +
       '<div class="kotei-safety-hero-text">' + date + line + '</div>' +
       '</div></div></div>';
   }

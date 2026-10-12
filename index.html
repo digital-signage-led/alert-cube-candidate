@@ -10,7 +10,7 @@
     <script src="./contents/registry.js?v=20260929-eew1"></script>
     <script src="./contents/modules.js?v=20260929-eew1"></script>
     <script src="./contents/news/index.js?v=20261006-news-30d"></script>
-    <script src="./contents/boards/index.js?v=20261005-ac0009-slide"></script>
+    <script src="./contents/boards/index.js?v=20261012-ac0004-noicon"></script>
     <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
@@ -1173,7 +1173,7 @@
         .news-item { flex-shrink: 0; display: flex; flex-direction: row; align-items: center; gap: 16px; white-space: nowrap; }
         .news-date { font-size: 40px; font-weight: 800; color: #8AD0F0; font-variant-numeric: tabular-nums; white-space: nowrap; }
         .news-title { font-size: 48px; font-weight: 800; color: #F0F8FF; white-space: nowrap; }
-        #sceneBoards { width: 512px; height: 128px; overflow: hidden; background: #071428; }
+        #sceneBoards { width: 512px; height: 128px; overflow: hidden; background: #ffffff; }
         #sceneProgress { width: 512px; height: 128px; overflow: hidden; background: #ffffff; }
         #sceneRainRadar { width: 512px; height: 128px; overflow: hidden; background: #4f8fbf; }
         #sceneRainRadar.active { display: block; }
@@ -1221,39 +1221,42 @@
             display: flex; align-items: center; background: #ffffff;
         }
         .pr-sheet-frame img { display: block; height: 128px; width: auto; max-height: 128px; }
-        .kotei-scroll-wrap { width: 512px; height: 128px; overflow: hidden; position: relative; background: #071428; }
+        .kotei-scroll-wrap { width: 512px; height: 128px; overflow: hidden; position: relative; background: #ffffff; }
         .kotei-track { display: flex; flex-direction: row; flex-wrap: nowrap; height: 128px; align-items: stretch; will-change: transform; }
         .kotei-card {
             width: 256px; height: 128px; flex: 0 0 256px; box-sizing: border-box;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 8px 10px 10px; overflow: hidden;
+            padding: 2px 2px 4px; overflow: hidden;
             font-family: "Noto Sans JP", sans-serif;
         }
-        .kotei-card-dark { background: #071428; color: #fff; }
+        .kotei-card-dark { background: #ffffff; color: #111; }
         .kotei-card-light { background: #ffffff; color: #111; }
         .kotei-term-period {
             position: relative; display: flex; align-items: baseline; justify-content: center;
             gap: 2px; line-height: 1; white-space: nowrap; max-width: 100%; overflow: hidden;
-            padding-bottom: 8px; margin-bottom: 6px;
+            padding-bottom: 12px; margin-bottom: 0;
         }
         .kotei-term-period::after {
-            content: ""; position: absolute; left: 8%; right: 8%; bottom: 5px;
-            height: 2px; background: #E8C21A;
+            content: ""; position: absolute; left: 8%; right: 8%; bottom: 6px;
+            height: 2px; background: #E8A000;
         }
         .kotei-term-period::before {
             content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
             width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent;
-            border-top: 6px solid #E8C21A; z-index: 1;
+            border-top: 6px solid #E8A000; z-index: 1;
         }
-        .kotei-reiwa { font-size: 16px; font-weight: 900; letter-spacing: 0; }
-        .kotei-card-dark .kotei-reiwa { color: #fff; }
+        .kotei-card-light .kotei-term-period::after { background: #E8A000; }
+        .kotei-card-light .kotei-term-period::before { border-top-color: #E8A000; }
+        .kotei-reiwa { font-size: 24px; font-weight: 900; letter-spacing: 0; }
+        .kotei-card-dark .kotei-reiwa { color: #111; }
         .kotei-card-light .kotei-reiwa { color: #111; }
-        .kotei-term-hl { font-size: 16px; font-weight: 900; color: #E8C21A; letter-spacing: 0; line-height: 1.15; }
+        .kotei-term-hl { font-size: 24px; font-weight: 900; color: #E8A000; letter-spacing: 0; line-height: 1; }
+        .kotei-card-light .kotei-term-hl { color: #E8A000; }
         .kotei-term-title {
-            font-size: 24px; font-weight: 900; letter-spacing: 0; line-height: 1.05;
+            font-size: 31px; font-weight: 900; letter-spacing: 0; line-height: 1;
             white-space: nowrap; text-align: center; max-width: 100%; overflow: hidden;
         }
-        .kotei-term-sub { font-size: 18px; font-weight: 900; letter-spacing: 0; line-height: 1; margin-top: 4px; white-space: nowrap; }
+        .kotei-term-sub { font-size: 28px; font-weight: 900; letter-spacing: 0; line-height: 1; margin-top: 1px; white-space: nowrap; }
         .kotei-set { display: flex; flex-direction: row; flex-wrap: nowrap; height: 128px; flex-shrink: 0; width: auto; }
         .kotei-poster {
             width: 128px; height: 128px; flex: 0 0 128px; max-width: 128px;
@@ -1283,33 +1286,33 @@
         .kotei-col-safety {
             width: 256px; max-width: 256px; flex: 0 0 256px;
             flex-direction: column; align-items: stretch; justify-content: center;
-            gap: 0; padding: 6px 8px; background: #071428; color: #fff;
+            gap: 0; padding: 0 0; background: #071428; color: #fff;
         }
         .kotei-col-safety.kotei-col-light { background: #ffffff; color: #111; }
-        .kotei-safety-panel { display: flex; flex-direction: column; align-items: stretch; width: 100%; gap: 5px; }
+        .kotei-safety-panel { display: flex; flex-direction: column; align-items: stretch; width: 100%; gap: 2px; }
         .kotei-safety-badge {
-            align-self: flex-start; display: inline-flex; align-items: center; padding: 2px 8px;
-            background: #E8C21A; color: #111; font-size: 12px; font-weight: 900; letter-spacing: 0.02em;
-            line-height: 1.15; white-space: nowrap; border-radius: 2px; max-width: 100%; box-sizing: border-box;
+            align-self: flex-start; display: inline-flex; align-items: center; padding: 1px 8px;
+            background: #FFE14A; color: #111; font-size: 22px; font-weight: 900; letter-spacing: 0;
+            line-height: 1.1; white-space: nowrap; border-radius: 2px; max-width: 100%; box-sizing: border-box;
         }
-        .kotei-safety-hero { display: flex; flex-direction: row; align-items: center; gap: 8px; min-width: 0; }
+        .kotei-safety-hero { display: flex; flex-direction: row; align-items: center; gap: 2px; min-width: 0; }
         .kotei-safety-icon { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; }
         .kotei-safety-hero-text {
             flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column;
             align-items: flex-start; justify-content: center; gap: 2px; line-height: 1;
         }
         .kotei-safety-date {
-            font-size: 13px; font-weight: 900; color: #F2D24A; line-height: 1.1; white-space: nowrap;
-            max-width: 168px; overflow: hidden;
+            font-size: 25px; font-weight: 900; color: #FFF200; line-height: 1; white-space: nowrap;
+            max-width: 100%; overflow: hidden;
         }
-        .kotei-col-light .kotei-safety-date { color: #C9A00E; }
+        .kotei-col-light .kotei-safety-date { color: #C48A00; }
         .kotei-safety-line {
-            font-size: 22px; font-weight: 900; letter-spacing: 0.02em; color: #fff; line-height: 1.05;
-            white-space: nowrap; text-align: left; max-width: 168px; overflow: hidden;
+            font-size: 34px; font-weight: 900; letter-spacing: 0; color: #FFF200; line-height: 1;
+            white-space: nowrap; text-align: left; max-width: 100%; overflow: hidden;
         }
         .kotei-col-light .kotei-safety-line { color: #111; }
-        .kotei-safety-line.kotei-safety-line-sm { font-size: 20px; letter-spacing: 0; }
-        .kotei-safety-line.kotei-safety-line-one { font-size: 22px; letter-spacing: 0; max-width: 168px; }
+        .kotei-safety-line.kotei-safety-line-sm { font-size: 32px; letter-spacing: 0; max-width: 100%; }
+        .kotei-safety-line.kotei-safety-line-one { font-size: 36px; letter-spacing: 0; max-width: 100%; }
         .kotei-safety-line.kotei-safety-line-term { font-size: 16px; letter-spacing: 0; max-width: 168px; }
         .kotei-safety-line.kotei-safety-line-head { font-size: 18px; letter-spacing: 0; max-width: 176px; }
         .kotei-col-logo { background: #ffffff; padding: 2px 4px 4px; }

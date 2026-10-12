@@ -74,14 +74,14 @@
   "boards": {
     "laps": 1,
     "speed": 1,
-    "background": "#071428",
+    "background": "#ffffff",
     "phases": [
       {
         "id": "term",
         "layout": "cards",
         "cards": [
-          { "theme": "dark", "era": "令和8年", "highlight": "9月から12月", "title": "ポンプ棟躯体構築", "sub": "（地下部）" },
-          { "theme": "light", "era": "令和8年", "highlight": "9月から12月", "title": "ポンプ棟躯体構築", "sub": "（地下部）" }
+          { "theme": "dark", "era": "令和8年", "highlight": "10月から12月", "title": "ポンプ棟躯体構築", "sub": "（地下部）" },
+          { "theme": "light", "era": "令和8年", "highlight": "10月から12月", "title": "ポンプ棟躯体構築", "sub": "（地下部）" }
         ]
       },
       {
@@ -92,9 +92,10 @@
         "card": {
           "theme": "dark",
           "badge": "１週間の重要工程",
-          "date": "令和８年１０月３日",
+          "date": "令和８年１０月３０日",
           "line": "コンクリート打設",
-          "lineSize": "sm"
+          "lineSize": "sm",
+          "icon": false
         },
         "logo": { "name": "佐藤工業", "en": "SATO KOGYO CO.,LTD." }
       },
@@ -106,8 +107,9 @@
         "card": {
           "theme": "dark",
           "badge": "今週の安全ミッション",
-          "line": "保護具の着用！！",
-          "lineSize": "one"
+          "line": "段差の確認！！",
+          "lineSize": "one",
+          "icon": false
         },
         "logo": { "name": "佐藤工業", "en": "SATO KOGYO CO.,LTD." }
       }
