@@ -13,7 +13,7 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/?site=AC-0002 （ENEOS磯子 V2.0）
 - http://127.0.0.1:3200/?site=AC-0003 （但南建設。本番URLは未切替）
 - http://127.0.0.1:3200/?site=AC-0004 （佐藤工業 福山）
-- http://127.0.0.1:3200/?site=AC-0005 （レイズネクスト 摂津）
+- http://127.0.0.1:3200/?site=AC-0005&demo=1 （デモ 清水建設 大井川トンネル・中津川市。本番端末へ登録しない）
 - http://127.0.0.1:3200/?site=AC-0006 （錦建設 広島市中区）
 - http://127.0.0.1:3200/?site=AC-0007 （佐々木建設 北島町）
 - http://127.0.0.1:3200/?site=AC-0008 （デモカー シリーズ2・名古屋市。ロゴなし。デモと本番の混合。演出は &demo=1）
@@ -69,7 +69,7 @@ docs/               運用
 | AC-0002 | active | エネオス株式会社 / 横浜市磯子区鳳町1番1号 |
 | AC-0003 | active | 但南建設株式会社 / 兵庫県朝来市生野町円山862-1 |
 | AC-0004 | active | 佐藤工業 / 広島県福山市 |
-| AC-0005 | active | レイズネクスト / 〒566-0044 大阪府摂津市西一津屋1-1 |
+| AC-0005 | demo | 清水建設 / 岐阜県中津川市 大井川トンネル。本番端末へ登録しない |
 | AC-0006 | active | 錦建設株式会社 / 広島県広島市中区舟入本町7 |
 | AC-0007 | active | 佐々木建設株式会社 / 徳島県板野郡北島町 |
 | AC-0008 | demo | デモカー シリーズ2 / 愛知県名古屋市。ロゴなし。デモと本番の混合 |
@@ -115,7 +115,7 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0002: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0002
 - AC-0003: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0003
 - AC-0004: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0004
-- AC-0005: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0005
+- AC-0005: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0005&demo=1
 - AC-0006: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0006
 - AC-0007: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0007
 - AC-0008: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0008 （デモカー。演出は &demo=1）
