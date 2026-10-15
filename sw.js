@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20261016-greeting-join';
+var CACHE_NAME = 'alert-cube-sites-20261016-greeting-continue';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -153,6 +153,13 @@ self.addEventListener('activate', function (event) {
       }));
     }).then(function () {
       return self.clients.claim();
+    }).then(function () {
+      return self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clients) {
+        return Promise.all(clients.map(function (client) {
+          if (!client.navigate) return null;
+          return client.navigate(client.url);
+        }));
+      });
     })
   );
 });

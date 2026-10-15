@@ -1608,7 +1608,9 @@
         #sceneGreeting.active { display: block; }
         #sceneGreeting.greeting-image { background: #7ec8f2; overflow: hidden; }
         #sceneGreeting.greeting-image .ng-poster-track {
-            display: flex; height: 128px; width: max-content; will-change: transform;
+            position: absolute; left: 0; top: 0;
+            display: flex; height: 128px; width: max-content; min-width: max-content;
+            flex-shrink: 0; will-change: transform;
         }
         #sceneGreeting.greeting-image .ng-poster {
             display: block; height: 128px; width: 512px; flex: 0 0 auto; max-width: none;
@@ -13248,11 +13250,14 @@
             const viewW = greetingPosterViewWidth_();
             img.style.width = viewW + 'px';
             img.style.height = '128px';
+            img.style.flex = '0 0 ' + viewW + 'px';
             img.style.objectFit = 'cover';
             img.style.objectPosition = 'center';
             const lap = viewW;
-            track.innerHTML = img.outerHTML + img.outerHTML;
             const laps = greetingImageLaps_();
+            const copies = laps + 1;
+            track.innerHTML = new Array(copies).fill(img.outerHTML).join('');
+            track.style.width = (lap * copies) + 'px';
             const total = lap * laps;
             let moved = 0;
             applyScrollX_(track, 0);
