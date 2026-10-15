@@ -97,11 +97,11 @@
   },
   "greeting": {
     "enabled": true,
-    "title": "",
-    "lines": ["ここに文言"],
-    "foot": "",
-    "fill": "body",
-    "scrollLaps": 2
+    "mode": "image",
+    "image": "./assets/greeting/neighborhood.jpg?v=1",
+    "title": "近隣の皆様へ",
+    "lines": [],
+    "foot": ""
   },
   "progress": {
     "projectName": "工事名（確認用）",

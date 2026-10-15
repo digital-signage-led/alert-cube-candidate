@@ -53,7 +53,14 @@
   "season": { "override": null },
   "updateSettings": { "refreshMs": 60000 },
   "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
-  "greeting": { "enabled": false, "title": "", "lines": [], "foot": "" },
+  "greeting": {
+    "enabled": true,
+    "mode": "image",
+    "image": "./assets/greeting/neighborhood.jpg?v=1",
+    "title": "近隣の皆様へ",
+    "lines": [],
+    "foot": ""
+  },
   "presentation": {
     "sequence": "contentOrder",
     "observationMode": "scroll",
@@ -67,7 +74,7 @@
     "observationTrailingLogo": true,
     "i18nTrailingLogo": true
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": ["warning", "typhoon", "clock", "greeting", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -89,7 +96,7 @@
     "disaster": { "on": false },
     "heat": { "on": false },
     "schedule": { "on": false },
-    "greeting": { "on": false },
+    "greeting": { "on": true },
     "news": { "on": false },
     "boards": { "on": false },
     "logo-scroll": { "on": false },

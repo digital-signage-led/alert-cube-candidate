@@ -349,9 +349,9 @@ test('AC-0000 は内部テスト・全共通Contents ON、未実装はOFF', func
   ]);
   assert.strictEqual(site.boards.phases[0].id, 'fall-signs');
   assert.strictEqual(site.boards.phases[0].images[0].alt, '墜落・転落災害防止');
-  assert.strictEqual(site.greeting.fill, 'body');
-  assert.strictEqual(site.greeting.scrollLaps, 2);
-  assert.strictEqual(site.greeting.lines[0], 'ここに文言');
+  assert.strictEqual(site.greeting.mode, 'image');
+  assert.ok(site.greeting.image.indexOf('assets/greeting/neighborhood.jpg') >= 0);
+  assert.strictEqual(site.greeting.title, '近隣の皆様へ');
   assert.strictEqual(site.contents.greeting.on, true);
   assert.deepStrictEqual(prod.contentOrder, ['clock', 'observation', 'rain-radar', 'wbgt', 'wbgt-i18n', 'forecast', 'schedule']);
 });
@@ -700,6 +700,11 @@ test('AC-0008 は淺沼組・小牧市の本番設定', function () {
   assert.strictEqual(site.siteName, '小牧市');
   assert.strictEqual(site.location, '愛知県小牧市');
   assert.strictEqual(site.clockFoot, '');
+  assert.strictEqual(site.greeting.enabled, true);
+  assert.strictEqual(site.greeting.mode, 'image');
+  assert.ok(site.greeting.image.indexOf('assets/greeting/neighborhood.jpg') >= 0);
+  assert.strictEqual(site.contents.greeting.on, true);
+  assert.ok(site.contentOrder.indexOf('greeting') > site.contentOrder.indexOf('clock'));
   assert.strictEqual(site.faces, 4);
   assert.strictEqual(site.resolution, '512x128');
   assert.strictEqual(site.moe.point, '51106');

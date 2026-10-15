@@ -1607,7 +1607,7 @@
         #sceneGreeting.active { display: block; }
         #sceneGreeting.greeting-image { background: #7ec8f2; }
         #sceneGreeting.greeting-image .ng-poster {
-            display: block; width: 512px; height: 128px; object-fit: cover; object-position: center;
+            display: block; width: 100%; height: 128px; object-fit: cover; object-position: center;
         }
         .ng-shell {
             width: 512px; height: 128px; display: flex; flex-direction: column;
@@ -13205,8 +13205,15 @@
         if (pass % 2 === 1) playPromoI18n_();
         else playPromoJapanese_();
     }
-    function playGreetingPoster_() {
+    const GREETING_STANDARD_IMAGE = './assets/greeting/neighborhood.jpg?v=1';
+    function greetingPosterSrc_() {
         const src = String(greetingCfg_().image || '').trim();
+        if (src) return src;
+        if (greetingCfg_().mode === 'image') return GREETING_STANDARD_IMAGE;
+        return '';
+    }
+    function playGreetingPoster_() {
+        const src = greetingPosterSrc_();
         clearGreetingHoldTimer_();
         if (!sceneGreeting || !src) {
             finishGreetingScene_();
