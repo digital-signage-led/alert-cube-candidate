@@ -8365,6 +8365,7 @@
                 pendingLive_ = null;
                 seenHtml = html;
                 seenSite = site;
+                if (htmlChanged) { location.reload(); return; }
                 if (siteChanged) applyLiveSiteJson_(site);
             }).catch(function () {});
         }, LIVE_UPDATE_MS);

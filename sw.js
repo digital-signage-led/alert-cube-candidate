@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20261016-ac0008-clock-logo';
+var CACHE_NAME = 'alert-cube-sites-20261016-greeting-join';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -186,7 +186,7 @@ self.addEventListener('fetch', function (event) {
   var isHtml = url.pathname === '/' || /\.html$/i.test(url.pathname);
   if (isHtml) {
     event.respondWith(
-      fetch(req).then(function (res) {
+      fetch(req.url, { cache: 'no-store', credentials: 'same-origin', redirect: 'follow' }).then(function (res) {
         if (res && res.ok) {
           var copy = res.clone();
           caches.open(CACHE_NAME).then(function (cache) { cache.put(req, copy); });
