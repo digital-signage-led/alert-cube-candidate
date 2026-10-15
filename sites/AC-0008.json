@@ -52,7 +52,16 @@
   },
   "season": { "override": null },
   "updateSettings": { "refreshMs": 60000 },
-  "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "schedule": {
+    "enabled": true,
+    "weekStartsOn": 1,
+    "items": [
+      { "work": "足場組立", "sub": "" },
+      { "work": "外装工事", "sub": "" },
+      { "work": "内装工事", "sub": "" },
+      { "work": "仕上げ", "sub": "" }
+    ]
+  },
   "greeting": {
     "enabled": true,
     "mode": "image",
@@ -75,7 +84,7 @@
     "observationTrailingLogo": true,
     "i18nTrailingLogo": true
   },
-  "contentOrder": ["warning", "typhoon", "clock", "greeting", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": ["warning", "warning-hero", "typhoon", "clock", "greeting", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n", "schedule"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -90,13 +99,13 @@
     "wbgt-i18n": { "on": true },
     "forecast": { "on": true },
     "warning": { "on": true },
-    "warning-hero": { "on": false },
+    "warning-hero": { "on": true },
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
     "rain-radar": { "on": true },
     "disaster": { "on": false },
     "heat": { "on": false },
-    "schedule": { "on": false },
+    "schedule": { "on": true },
     "greeting": { "on": true },
     "news": { "on": false },
     "boards": { "on": false },
