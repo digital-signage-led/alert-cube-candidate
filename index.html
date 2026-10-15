@@ -1606,9 +1606,13 @@
         #sceneGreeting { overflow: hidden; position: relative; }
         #sceneGreeting.active { display: block; }
         #sceneGreeting.greeting-image { background: #7ec8f2; }
-        #sceneGreeting.greeting-image .ng-poster {
-            display: block; width: 100%; height: 128px; object-fit: cover; object-position: center;
+        #sceneGreeting.greeting-image .ng-poster-track {
+            display: flex; height: 128px; width: max-content; will-change: transform;
         }
+        #sceneGreeting.greeting-image .ng-poster {
+            display: block; height: 128px; width: auto; flex: 0 0 auto; max-width: none;
+        }
+        #sceneGreeting.greeting-image .ng-poster-gap { height: 128px; flex: 0 0 auto; }
         .ng-shell {
             width: 512px; height: 128px; display: flex; flex-direction: column;
             overflow: hidden; position: relative; z-index: 1;
@@ -8331,7 +8335,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261008-rain-lap', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261015-ac0008-greeting-scroll', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -13223,21 +13227,54 @@
         applyDisplayRefreshAtSceneEntry_(sceneGreeting);
         sceneGreeting.classList.remove('greeting-promo', 'greeting-fill', 'greeting-copy');
         sceneGreeting.classList.add('greeting-image');
-        sceneGreeting.innerHTML = '<img class="ng-poster" src="' + escapeS1Html(src) + '" alt="近隣の皆様へ" decoding="sync">';
+        sceneGreeting.innerHTML = '<div class="ng-poster-track" id="ng-poster-track"><img class="ng-poster" src="' + escapeS1Html(src) + '" alt="近隣の皆様へ" decoding="sync"></div>';
         applyPendingSignageBgAtScene_();
         if (isFullDemoStep_()) {
             scheduleDemoStep_(function () { transitionToScene(s1, playScene1); });
             return;
         }
-        sceneGreetingHoldTimerId = setTimeout(function () {
-            sceneGreetingHoldTimerId = null;
-            stopLogoSpinInterval();
-            if (demoOnlyLoop_('greeting', playSceneGreeting)) return;
-            runAfterSceneEndHold_(function () {
-                if (playlistHandoff_()) return;
-                transitionToScene(s1, playScene1);
+        const img = sceneGreeting.querySelector('.ng-poster');
+        const track = document.getElementById('ng-poster-track');
+        function beginScroll_() {
+            if (!img || !track || !sceneGreeting.classList.contains('greeting-image')) return;
+            const natW = img.naturalWidth;
+            const natH = img.naturalHeight;
+            if (!(natW > 0 && natH > 0)) {
+                finishGreetingScene_();
+                return;
+            }
+            const posterW = Math.max(1, Math.round(natW * 128 / natH));
+            const gap = 128;
+            const lap = posterW + gap;
+            img.style.width = posterW + 'px';
+            img.style.height = '128px';
+            const gapHtml = '<div class="ng-poster-gap" style="width:' + gap + 'px;flex-basis:' + gap + 'px"></div>';
+            const imgHtml = img.outerHTML;
+            track.innerHTML = (imgHtml + gapHtml).repeat(2);
+            const laps = greetingImageLaps_();
+            const total = lap * laps;
+            let moved = 0;
+            applyScrollX_(track, 0);
+            function step() {
+                moved += getScrollSpeedPx_();
+                if (moved >= total) {
+                    sceneGreetingAnimId = null;
+                    applyScrollX_(track, seamlessScrollX_(total, lap));
+                    finishGreetingScene_();
+                    return;
+                }
+                applyScrollX_(track, seamlessScrollX_(moved, lap));
+                sceneGreetingAnimId = requestAnimationFrame(step);
+            }
+            runSceneScrollAfterHold_(function () {
+                sceneGreetingAnimId = requestAnimationFrame(step);
             });
-        }, SCENE_GREETING_HOLD_MS * greetingImageLaps_());
+        }
+        if (img.complete && img.naturalWidth > 0) beginScroll_();
+        else {
+            img.addEventListener('load', beginScroll_);
+            img.addEventListener('error', function () { finishGreetingScene_(); });
+        }
     }
     function greetingImageLaps_() {
         const n = Number(greetingCfg_().scrollLaps);
