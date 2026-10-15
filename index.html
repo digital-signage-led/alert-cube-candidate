@@ -13237,7 +13237,12 @@
                 if (playlistHandoff_()) return;
                 transitionToScene(s1, playScene1);
             });
-        }, SCENE_GREETING_HOLD_MS);
+        }, SCENE_GREETING_HOLD_MS * greetingImageLaps_());
+    }
+    function greetingImageLaps_() {
+        const n = Number(greetingCfg_().scrollLaps);
+        if (!Number.isFinite(n) || n < 1) return 1;
+        return Math.min(8, Math.floor(n));
     }
     function playSceneGreeting() {
         if (greetingCfg_().mode === 'image') {

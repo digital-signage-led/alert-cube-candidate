@@ -57,6 +57,7 @@
     "enabled": true,
     "mode": "image",
     "image": "./assets/greeting/neighborhood.jpg?v=1",
+    "scrollLaps": 2,
     "title": "近隣の皆様へ",
     "lines": [],
     "foot": ""

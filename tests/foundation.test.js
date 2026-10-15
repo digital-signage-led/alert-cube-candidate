@@ -703,6 +703,7 @@ test('AC-0008 は淺沼組・小牧市の本番設定', function () {
   assert.strictEqual(site.greeting.enabled, true);
   assert.strictEqual(site.greeting.mode, 'image');
   assert.ok(site.greeting.image.indexOf('assets/greeting/neighborhood.jpg') >= 0);
+  assert.strictEqual(site.greeting.scrollLaps, 2);
   assert.strictEqual(site.contents.greeting.on, true);
   assert.ok(site.contentOrder.indexOf('greeting') > site.contentOrder.indexOf('clock'));
   assert.strictEqual(site.faces, 4);
