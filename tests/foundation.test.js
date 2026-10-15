@@ -711,6 +711,7 @@ test('AC-0008 は淺沼組・小牧市の本番設定', function () {
   assert.strictEqual(site.contents.schedule.on, true);
   assert.strictEqual(site.schedule.enabled, true);
   assert.strictEqual(site.schedule.items[0].work, '足場組立');
+  assert.strictEqual(site.schedule.items[4].work, '検査');
   assert.strictEqual(site.contentOrder[site.contentOrder.length - 1], 'schedule');
   assert.strictEqual(site.faces, 4);
   assert.strictEqual(site.resolution, '512x128');
