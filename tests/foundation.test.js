@@ -688,18 +688,18 @@ test('AC-0007 は佐々木建設北島町の4面本番設定', function () {
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
-test('AC-0008 は塩浜工業・東海市の本番設定', function () {
+test('AC-0008 は淺沼組・小牧市の本番設定', function () {
   var site = require('../sites/AC-0008.json');
   var index = require('../sites/index.json');
   assert.strictEqual(site.projectId, 'AC-0008');
   assert.strictEqual(site.status, 'active');
-  assert.strictEqual(site.customer, '塩浜工業株式会社');
+  assert.strictEqual(site.customer, '株式会社淺沼組');
   assert.strictEqual(site.rental, '');
-  assert.strictEqual(site.label, '塩浜工業');
-  assert.strictEqual(site.projectName, 'ＧＬＰ名和物流倉庫');
-  assert.strictEqual(site.siteName, '東海市');
-  assert.strictEqual(site.location, '愛知県東海市名和町四番割');
-  assert.strictEqual(site.clockFoot, 'ＧＬＰ名和物流倉庫');
+  assert.strictEqual(site.label, '淺沼組');
+  assert.strictEqual(site.projectName, '');
+  assert.strictEqual(site.siteName, '小牧市');
+  assert.strictEqual(site.location, '愛知県小牧市');
+  assert.strictEqual(site.clockFoot, '');
   assert.strictEqual(site.faces, 4);
   assert.strictEqual(site.resolution, '512x128');
   assert.strictEqual(site.moe.point, '51106');
@@ -707,16 +707,16 @@ test('AC-0008 は塩浜工業・東海市の本番設定', function () {
   assert.strictEqual(site.moe.alertArea, '愛知県');
   assert.strictEqual(site.moe.region, '05');
   assert.strictEqual(site.moe.prefecture, '51');
-  assert.strictEqual(site.jma.amedasPoint, '51216');
-  assert.strictEqual(site.jma.amedasSupplementPoint, '51106');
+  assert.strictEqual(site.jma.amedasPoint, '51106');
+  assert.strictEqual(site.jma.amedasSupplementPoint, '');
   assert.strictEqual(site.jma.forecastArea, '230000');
   assert.strictEqual(site.jma.forecastDetail, '230010');
   assert.strictEqual(site.jma.forecastPoint, '51106');
-  assert.strictEqual(site.jma.forecastLabel, '東海市');
-  assert.strictEqual(site.jma.warnCity, '2322200');
-  assert.strictEqual(site.jma.warnCityLabel, '東海市');
-  assert.strictEqual(site.latitude, 35.0609);
-  assert.strictEqual(site.longitude, 136.9117);
+  assert.strictEqual(site.jma.forecastLabel, '小牧市');
+  assert.strictEqual(site.jma.warnCity, '2321900');
+  assert.strictEqual(site.jma.warnCityLabel, '小牧市');
+  assert.strictEqual(site.latitude, 35.2911);
+  assert.strictEqual(site.longitude, 136.9122);
   assert.ok(site.logo.src.indexOf('AC-0008/logo_mark.png') >= 0);
   assert.ok(site.logo.bannerSrc.indexOf('AC-0008/logo_foot.png') >= 0);
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
@@ -726,9 +726,9 @@ test('AC-0008 は塩浜工業・東海市の本番設定', function () {
   assert.ok(index.productionSites.indexOf('AC-0008') >= 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
   var brand = foundation.toLegacyBrand(site);
-  assert.strictEqual(merged.site.locationLabel, '東海市');
-  assert.strictEqual(merged.site.customer, '塩浜工業株式会社');
-  assert.strictEqual(merged.site.label, '塩浜工業');
+  assert.strictEqual(merged.site.locationLabel, '小牧市');
+  assert.strictEqual(merged.site.customer, '株式会社淺沼組');
+  assert.strictEqual(merged.site.label, '淺沼組');
   assert.strictEqual(merged.status, 'active');
   assert.strictEqual(merged.moe.point, '51106');
   assert.ok(brand.logoSrc.indexOf('AC-0008/logo_mark.png') >= 0);
