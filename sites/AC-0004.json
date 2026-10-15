@@ -56,7 +56,8 @@
     "sequence": "contentOrder",
     "observationMode": "scroll",
     "observationLaps": 2,
-    "observationTrailingLogo": true
+    "observationTrailingLogo": true,
+    "observationStamp": "now"
   },
   "news": {
     "badge": "新着情報",

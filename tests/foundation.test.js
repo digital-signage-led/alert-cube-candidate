@@ -401,6 +401,7 @@ test('AC-0004 は佐藤工業福山の本番設定で、共通コンテンツに
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.presentation.observationMode, 'scroll');
   assert.strictEqual(site.presentation.observationLaps, 2);
+  assert.strictEqual(site.presentation.observationStamp, 'now');
   assert.strictEqual(site.presentation.scrollSpeedPx, undefined);
   assert.strictEqual(site.news.speed, 1);
   assert.strictEqual(site.news.pageUrl, 'https://www.satokogyo.co.jp/news/');

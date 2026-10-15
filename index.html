@@ -8303,6 +8303,7 @@
         document.querySelectorAll('#scene1 .s1-bar-label').forEach(function (el) { el.innerText = d; });
         fitS1DateFontSize_();
         fitClockHmFontSize_();
+        refreshScene2NowStamp_();
     }
     /* 画面の更新は読み直して消さない。表示中の内容はそのまま残し、案件設定だけ内部へ入れる。 */
     function applyLiveSiteJson_(text) {
@@ -10163,7 +10164,16 @@
             fitScene2ScrollMetaLine_(el, 12, 9);
         });
     }
+    function scene2StampUsesNow_() {
+        const presentation = (siteCfg_() && siteCfg_().presentation) || {};
+        return presentation.observationStamp === 'now';
+    }
+    function scene2NowObs_() {
+        const ms = getSyncedUtcMs();
+        return formatScene2ObsClock_(ms != null ? new Date(ms) : new Date());
+    }
     function scene2FootTextForType_(type, obs) {
+        if (scene2StampUsesNow_()) return scene2NowObs_().stamp + '時点';
         switch (type) {
             case 'rain': return obs.time + '・10分';
             case 'tmaxmin': return obs.date + '日中';
@@ -10244,6 +10254,16 @@
             ? scene2SetWidth
             : (set ? Math.max(SCENE2_META_LAP_PX, set.offsetWidth) : SCENE2_META_LAP_PX);
         applyGlobalScroll_(s2MetaTrack, scene2MetaLapPx);
+    }
+    let scene2NowStamp_ = '';
+    function refreshScene2NowStamp_() {
+        if (!scene2StampUsesNow_() || !s2MetaTrack) return;
+        const stamp = scene2NowObs_().stamp + '時点';
+        if (stamp === scene2NowStamp_) return;
+        scene2NowStamp_ = stamp;
+        s2MetaTrack.querySelectorAll('.s2-meta-panel-txt').forEach(function (el) {
+            if ((el.textContent || '').slice(-2) === '時点') el.textContent = stamp;
+        });
     }
     function applyJmaAmedasToDom(obs, latest) {
         if (latest) lastAmedasObsTime = latest instanceof Date ? latest : new Date(latest);
