@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20261012-ac0024-ssc-url';
+var CACHE_NAME = 'alert-cube-sites-20261015-ac0008-asanuma';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -43,8 +43,9 @@ var PRECACHE = [
   './sites/AC-0006.json',
   './sites/AC-0007.json',
   './sites/AC-0008.json',
-  './assets/sites/AC-0008/logo_mark.png?v=1',
-  './assets/sites/AC-0008/logo_foot.png?v=1',
+  './assets/sites/AC-0008/logo_foot.png?v=2',
+  './assets/sites/AC-0008/logo_mark.png?v=2',
+  './assets/sites/AC-0008/greeting.jpg?v=1',
   './sites/AC-0009.json',
   './sites/AC-0010.json',
   './assets/sites/AC-0010/logo_banner.png?v=1',

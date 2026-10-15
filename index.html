@@ -1605,6 +1605,10 @@
         /* ---------- 近隣挨拶（sceneGreeting） ---------- */
         #sceneGreeting { overflow: hidden; position: relative; }
         #sceneGreeting.active { display: block; }
+        #sceneGreeting.greeting-image { background: #7ec8f2; }
+        #sceneGreeting.greeting-image .ng-poster {
+            display: block; width: 512px; height: 128px; object-fit: cover; object-position: center;
+        }
         .ng-shell {
             width: 512px; height: 128px; display: flex; flex-direction: column;
             overflow: hidden; position: relative; z-index: 1;
@@ -13188,7 +13192,38 @@
         if (pass % 2 === 1) playPromoI18n_();
         else playPromoJapanese_();
     }
+    function playGreetingPoster_() {
+        const src = String(greetingCfg_().image || '').trim();
+        clearGreetingHoldTimer_();
+        if (!sceneGreeting || !src) {
+            finishGreetingScene_();
+            return;
+        }
+        markPlaylistHeld_();
+        applyDisplayRefreshAtSceneEntry_(sceneGreeting);
+        sceneGreeting.classList.remove('greeting-promo', 'greeting-fill', 'greeting-copy');
+        sceneGreeting.classList.add('greeting-image');
+        sceneGreeting.innerHTML = '<img class="ng-poster" src="' + escapeS1Html(src) + '" alt="近隣の皆様へ" decoding="sync">';
+        applyPendingSignageBgAtScene_();
+        if (isFullDemoStep_()) {
+            scheduleDemoStep_(function () { transitionToScene(s1, playScene1); });
+            return;
+        }
+        sceneGreetingHoldTimerId = setTimeout(function () {
+            sceneGreetingHoldTimerId = null;
+            stopLogoSpinInterval();
+            if (demoOnlyLoop_('greeting', playSceneGreeting)) return;
+            runAfterSceneEndHold_(function () {
+                if (playlistHandoff_()) return;
+                transitionToScene(s1, playScene1);
+            });
+        }, SCENE_GREETING_HOLD_MS);
+    }
     function playSceneGreeting() {
+        if (greetingCfg_().mode === 'image') {
+            playGreetingPoster_();
+            return;
+        }
         if (greetingCfg_().mode === 'promo') {
             playPromoGreeting_();
             return;
