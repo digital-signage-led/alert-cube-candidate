@@ -1605,14 +1605,14 @@
         /* ---------- 近隣挨拶（sceneGreeting） ---------- */
         #sceneGreeting { overflow: hidden; position: relative; }
         #sceneGreeting.active { display: block; }
-        #sceneGreeting.greeting-image { background: #7ec8f2; }
+        #sceneGreeting.greeting-image { background: #7ec8f2; overflow: hidden; }
         #sceneGreeting.greeting-image .ng-poster-track {
             display: flex; height: 128px; width: max-content; will-change: transform;
         }
         #sceneGreeting.greeting-image .ng-poster {
-            display: block; height: 128px; width: auto; flex: 0 0 auto; max-width: none;
+            display: block; height: 128px; width: 512px; flex: 0 0 auto; max-width: none;
+            object-fit: cover; object-position: center;
         }
-        #sceneGreeting.greeting-image .ng-poster-gap { height: 128px; flex: 0 0 auto; }
         .ng-shell {
             width: 512px; height: 128px; display: flex; flex-direction: column;
             overflow: hidden; position: relative; z-index: 1;
@@ -13243,14 +13243,13 @@
                 finishGreetingScene_();
                 return;
             }
-            const posterW = Math.max(1, Math.round(natW * 128 / natH));
-            const gap = 128;
-            const lap = posterW + gap;
-            img.style.width = posterW + 'px';
+            const viewW = greetingPosterViewWidth_();
+            img.style.width = viewW + 'px';
             img.style.height = '128px';
-            const gapHtml = '<div class="ng-poster-gap" style="width:' + gap + 'px;flex-basis:' + gap + 'px"></div>';
-            const imgHtml = img.outerHTML;
-            track.innerHTML = (imgHtml + gapHtml).repeat(2);
+            img.style.objectFit = 'cover';
+            img.style.objectPosition = 'center';
+            const lap = viewW;
+            track.innerHTML = img.outerHTML + img.outerHTML;
             const laps = greetingImageLaps_();
             const total = lap * laps;
             let moved = 0;
@@ -13275,6 +13274,13 @@
             img.addEventListener('load', beginScroll_);
             img.addEventListener('error', function () { finishGreetingScene_(); });
         }
+    }
+    function greetingPosterViewWidth_() {
+        const sceneW = sceneGreeting ? sceneGreeting.clientWidth : 0;
+        if (sceneW >= 128) return sceneW;
+        const area = document.querySelector('.content-area');
+        const areaW = area ? area.clientWidth : 0;
+        return areaW >= 128 ? areaW : 512;
     }
     function greetingImageLaps_() {
         const n = Number(greetingCfg_().scrollLaps);
