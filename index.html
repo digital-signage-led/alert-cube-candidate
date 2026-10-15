@@ -12008,6 +12008,18 @@
         const line = s1WbgtTrack.querySelector('.s1-wbgt-msg-line, .s1-wbgt-msg, .s1-wbgt-msg-compact');
         return !!(line && String(line.textContent || '').trim());
     }
+    /* 下帯の文言が後から入る案件だけ待つ。ロゴだけの時刻は待たずに流す */
+    function s1FootPhrasePending_() {
+        if (s1FootMsgReady_()) return false;
+        if (String(getS1WbgtMessageJp() || '').trim()) return true;
+        if (clockFootLine_()) return true;
+        const site = siteCfg_() || {};
+        const moe = site.moe || {};
+        if (!wbgtOffSeason && String(moe.point || moe.fallbackPoint || '').trim()) return true;
+        const jma = site.jma || {};
+        if (temperatureDisplay_() && String(jma.amedasPoint || '').trim()) return true;
+        return false;
+    }
     function maybeStartS1FootAfterMsg_() {
         if (!s1FootWaitMsg_ || !s1FootMsgReady_()) return;
         if (!s1 || !s1.classList.contains('active')) return;
@@ -12060,7 +12072,7 @@
         }
         if (s1WbgtTrack && showWbgtFoot) {
             if (!s1WbgtTrack.children.length) refreshS1WbgtFootBar_(true);
-            if (!s1FootMsgReady_()) {
+            if (s1FootPhrasePending_()) {
                 s1FootWaitMsg_ = true;
                 s1Flow_ = null;
                 applyScrollX_(s1WbgtTrack, 0);
@@ -12068,6 +12080,7 @@
                 whenSceneSlideSettled_(function () {});
             } else {
                 s1FootWaitMsg_ = false;
+                setS1FootBarVisible_(true);
                 startS1FootScroll_(advanceToken);
             }
         } else {
