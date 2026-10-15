@@ -1553,7 +1553,7 @@
         }
         .sch-work {
             color: #ffffff;
-            font-size: 18px;
+            font-size: 32px;
             font-weight: 700;
             line-height: 1.1;
             text-align: center;
@@ -8335,7 +8335,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261015-ac0008-greeting-scroll', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261016-ac0008-schedule-work', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -12514,7 +12514,7 @@
             const date = panel.querySelector('.sch-date');
             const warn = panel.querySelector('.sch-warn.is-on');
             if (work) {
-                let size = 18;
+                let size = 32;
                 work.classList.remove('is-wrap');
                 work.style.whiteSpace = 'nowrap';
                 work.style.fontSize = size + 'px';
