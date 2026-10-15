@@ -57,10 +57,10 @@
     "weekStartsOn": 1,
     "items": [
       { "work": "足場組立", "sub": "" },
-      { "work": "外装工事", "sub": "" },
-      { "work": "内装工事", "sub": "" },
-      { "work": "仕上げ", "sub": "" },
-      { "work": "検査", "sub": "" }
+      { "work": "鉄筋工事", "sub": "" },
+      { "work": "型枠工事", "sub": "" },
+      { "work": "防水工事", "sub": "" },
+      { "work": "塗装工事", "sub": "" }
     ]
   },
   "greeting": {

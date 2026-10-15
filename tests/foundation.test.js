@@ -711,10 +711,10 @@ test('AC-0008 は淺沼組・小牧市の本番設定', function () {
   assert.strictEqual(site.contents.schedule.on, true);
   assert.strictEqual(site.schedule.enabled, true);
   assert.strictEqual(site.schedule.items[0].work, '足場組立');
-  assert.strictEqual(site.schedule.items[1].work, '外装工事');
-  assert.strictEqual(site.schedule.items[2].work, '内装工事');
-  assert.strictEqual(site.schedule.items[3].work, '仕上げ');
-  assert.strictEqual(site.schedule.items[4].work, '検査');
+  assert.strictEqual(site.schedule.items[1].work, '鉄筋工事');
+  assert.strictEqual(site.schedule.items[2].work, '型枠工事');
+  assert.strictEqual(site.schedule.items[3].work, '防水工事');
+  assert.strictEqual(site.schedule.items[4].work, '塗装工事');
   assert.strictEqual(site.contentOrder[site.contentOrder.length - 1], 'schedule');
   assert.strictEqual(site.faces, 4);
   assert.strictEqual(site.resolution, '512x128');
