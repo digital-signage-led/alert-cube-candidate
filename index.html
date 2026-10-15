@@ -563,6 +563,7 @@
             transform: scale(1.08);
             transform-origin: center center;
         }
+        #scene1 .s1-wbgt-site-slot .s1-wbgt-banner:not([src]) { visibility: hidden; }
         #scene1 .s1-wbgt-site-slot .s1-wbgt-banner-svg {
             height: 30px; max-width: 256px;
         }
@@ -2854,7 +2855,7 @@
             <div class="panel panel-clock"><div class="s1-top-bar"><span class="s1-bar-label">--</span></div><div class="s1-body"><div class="clock-hm time-val">--:--</div></div><div class="s1-foot"></div></div>
             <div class="panel panel-clock"><div class="s1-top-bar"><span class="s1-bar-label">--</span></div><div class="s1-body"><div class="clock-hm time-val">--:--</div></div><div class="s1-foot"></div></div>
         </div>
-        <div class="s1-wbgt-bar"><div class="s1-wbgt-track" id="s1-wbgt-track"><div class="s1-wbgt-set"><div class="s1-wbgt-slot s1-wbgt-site-slot"><img class="s1-wbgt-banner" src="./images/logo.svg?v=20260921-suminoe" alt="" decoding="sync" fetchpriority="high"></div><div class="s1-wbgt-slot s1-wbgt-msg-slot"></div></div><div class="s1-wbgt-set"><div class="s1-wbgt-slot s1-wbgt-site-slot"><img class="s1-wbgt-banner" src="./images/logo.svg?v=20260921-suminoe" alt="" decoding="sync"></div><div class="s1-wbgt-slot s1-wbgt-msg-slot"></div></div><div class="s1-wbgt-set"><div class="s1-wbgt-slot s1-wbgt-site-slot"><img class="s1-wbgt-banner" src="./images/logo.svg?v=20260921-suminoe" alt="" decoding="sync"></div><div class="s1-wbgt-slot s1-wbgt-msg-slot"></div></div></div></div>
+        <div class="s1-wbgt-bar"><div class="s1-wbgt-track" id="s1-wbgt-track"><div class="s1-wbgt-set"><div class="s1-wbgt-slot s1-wbgt-site-slot"><img class="s1-wbgt-banner" alt="" decoding="sync" fetchpriority="high"></div><div class="s1-wbgt-slot s1-wbgt-msg-slot"></div></div><div class="s1-wbgt-set"><div class="s1-wbgt-slot s1-wbgt-site-slot"><img class="s1-wbgt-banner" alt="" decoding="sync"></div><div class="s1-wbgt-slot s1-wbgt-msg-slot"></div></div><div class="s1-wbgt-set"><div class="s1-wbgt-slot s1-wbgt-site-slot"><img class="s1-wbgt-banner" alt="" decoding="sync"></div><div class="s1-wbgt-slot s1-wbgt-msg-slot"></div></div></div></div>
     </div>
 
     <div class="scene" id="scene2">
@@ -8335,7 +8336,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261016-ac0008-schedule-date', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261016-ac0008-clock-logo', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
