@@ -8335,7 +8335,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261016-ac0008-schedule-names', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261016-ac0008-schedule-date', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -12492,7 +12492,7 @@
             ? '<div class="sch-warn is-on is-' + warn.level + '">' + escapeS1Html(warn.label) + '</div>'
             : '<div class="sch-warn" aria-hidden="true"></div>';
         el.innerHTML = '<div class="sch-date" style="background:' + schDayBarColor_(day.color) + '">'
-            + '<span class="sch-date-txt">' + day.year + '年' + day.month + '月' + day.day + '日</span></div>'
+            + '<span class="sch-date-txt">' + day.month + '月' + day.day + '日</span></div>'
             + '<div class="sch-body">'
             + '<div class="sch-mid">'
             + '<div class="sch-youbi" style="color:' + day.color + '">' + day.youbi + '</div>'
