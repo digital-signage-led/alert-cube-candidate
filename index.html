@@ -1403,8 +1403,9 @@
             z-index: 3;
             flex-shrink: 0;
         }
+        /* 気象観測と同じ横長の白地 */
         #scene5 .d5-body .weather-icon-cell::before {
-            width: 52px; height: 52px;
+            width: 76px; height: 58px;
             z-index: 0;
         }
         #scene5 .d5-body .weather-svg,
@@ -6949,6 +6950,7 @@
             if (!rainWarnForced) return rainWarnKindActive.length ? rainWarnKindActive : ['rain'];
             return rainWarnKindActive.length > 1 ? rainWarnKindActive : JMA_L3_KIND_ORDER.slice();
         }
+        if (!rainWarnForced && !whiteModeForced_()) return [];
         return [order[0]];
     }
     function triggerRaLineAnnounceBlink_(line2) {
@@ -7060,7 +7062,7 @@
                 return;
             }
         }
-        if (RAIN_WHITE_DESIGN && !whiteModeForced_()) {
+        if (!rainWarnForced || (RAIN_WHITE_DESIGN && !whiteModeForced_())) {
             await refreshRainWhiteQueueFromJma_();
         } else {
             applyRainWarnLevel_(json && json.level, json && json.l3Kinds);
@@ -7333,7 +7335,8 @@
         }
         const ki = kindIdx != null ? kindIdx : 0;
         const kinds = kindsForLevel_(key);
-        const kind = kinds[ki] || kinds[0] || (JMA_LEVEL_KIND_ORDER[key] || ['rain'])[0];
+        if (!kinds.length) return false;
+        const kind = kinds[ki] || kinds[0];
         const txt = isRainWarnGenericOnly_(key) ? rainWarnGenericText_(key) : rainWarnDisplayText_(key, kind);
         pair.classList.remove('ra-early', 'ra-advisory', 'ra-warning', 'ra-hero-mode', 'ra-white-mode', 'ra-white-bundle', 'ra-hero-bundle', 'ra-danger', 'ra-special', 'ra-line-announce', 'ra-line-announce-done');
         pair.classList.add(def.cls);
