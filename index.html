@@ -6840,7 +6840,7 @@
                 if (areaCodes.indexOf(String(area.code)) < 0) return;
                 (area.warnings || []).forEach(function (w) {
                     const st = String(w.status || '');
-                    if (!st || st.indexOf('解除') >= 0) return;
+                    if (!warningStatusLive_(st)) return;
                     const entry = jmaEntryFromWarnCode_(w.code, warnJson);
                     if (!entry || !entry.name) return;
                     const key = entry.level + '|' + entry.kind + '|' + entry.code;
@@ -7013,7 +7013,7 @@
                     if (areaCodes.indexOf(String(area.code)) < 0) return;
                     (area.warnings || []).forEach(function (w) {
                         const st = String(w.status || '');
-                        if (!st || st.indexOf('解除') >= 0) return;
+                        if (!warningStatusLive_(st)) return;
                         const entry = JMA_WARN_CODE_MAP[String(w.code || '')];
                         if (entry && entry.level === 'warning') found[entry.kind] = true;
                     });
@@ -7056,10 +7056,83 @@
         console.log('[大雨警報]', (json && json.level) || 'none', json && json.label ? json.label : '',
             RAIN_WHITE_DESIGN ? ('白ベース ' + rainWhiteQueue.length + '件') : '');
     }
+    function warningStatusLive_(st) {
+        const s = String(st || '');
+        if (!s || s.indexOf('解除') >= 0 || s.indexOf('なし') >= 0) return false;
+        return s.indexOf('発表') >= 0 || s.indexOf('継続') >= 0;
+    }
+    /** いまの発表だけ残す。解除・発表なしで、それ以前の警報は消す */
+    function currentWarningJson_(raw) {
+        if (!raw) return null;
+        const records = (Array.isArray(raw) ? raw : [raw]).slice().sort(function (a, b) {
+            return String((a && a.reportDatetime) || '').localeCompare(String((b && b.reportDatetime) || ''));
+        });
+        const byArea = {};
+        let latestDt = '';
+        let headline = '';
+        let headlineDt = '';
+        records.forEach(function (rec) {
+            if (!rec || typeof rec !== 'object') return;
+            const dt = rec.reportDatetime || '';
+            if (dt && (!latestDt || dt > latestDt)) latestDt = dt;
+            const ht = rec.headlineText || '';
+            if (ht && dt && (!headlineDt || dt > headlineDt)) {
+                headline = ht;
+                headlineDt = dt;
+            }
+            const body = rec.warning || rec;
+            const items = [].concat(body.class20Items || [], body.class15Items || [], body.class15sItems || [], body.class10Items || []);
+            if (!items.length && rec.areaTypes) {
+                rec.areaTypes.forEach(function (at) {
+                    (at.areas || []).forEach(function (area) {
+                        const code = String(area.code || '');
+                        if (!code) return;
+                        if (!byArea[code]) byArea[code] = { code: code, name: area.name || '', warnings: {} };
+                        (area.warnings || []).forEach(function (k) {
+                            const st = String(k.status || '');
+                            const kc = String(k.code || '');
+                            if (st.indexOf('なし') >= 0) { byArea[code].warnings = {}; return; }
+                            if (!kc) return;
+                            if (!warningStatusLive_(st)) { delete byArea[code].warnings[kc]; return; }
+                            byArea[code].warnings[kc] = { code: kc, status: st, issuedAt: dt };
+                        });
+                    });
+                });
+                return;
+            }
+            items.forEach(function (it) {
+                const code = String(it.areaCode || it.code || '');
+                if (!code) return;
+                if (!byArea[code]) byArea[code] = { code: code, name: it.areaName || '', warnings: {} };
+                if (it.areaName) byArea[code].name = it.areaName;
+                (it.kinds || it.warnings || []).forEach(function (k) {
+                    const st = String(k.status || '');
+                    const kc = String(k.code || '');
+                    if (st.indexOf('なし') >= 0) { byArea[code].warnings = {}; return; }
+                    if (!kc || kc === '-') return;
+                    if (!warningStatusLive_(st)) { delete byArea[code].warnings[kc]; return; }
+                    byArea[code].warnings[kc] = { code: kc, status: st, issuedAt: dt };
+                });
+            });
+        });
+        const areas = Object.keys(byArea).map(function (code) {
+            const a = byArea[code];
+            return {
+                code: a.code,
+                name: a.name,
+                warnings: Object.keys(a.warnings).map(function (c) { return a.warnings[c]; })
+            };
+        }).filter(function (a) { return a.warnings.length; });
+        return { reportDatetime: latestDt, headlineText: headline, areaTypes: [{ areas: areas }] };
+    }
+    async function fetchCurrentWarningJson_() {
+        const res = await fetch('https://www.jma.go.jp/bosai/warning/data/r8/' + JMA_WARN_AREA + '.json?t=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) return null;
+        return currentWarningJson_(await res.json());
+    }
     async function refreshRainWhiteQueueFromJma_() {
         try {
-            const wRes = await fetch('https://www.jma.go.jp/bosai/warning/data/warning/' + JMA_WARN_AREA + '.json', { cache: 'no-store' });
-            const warnJson = wRes.ok ? await wRes.json() : null;
+            const warnJson = await fetchCurrentWarningJson_();
             const kinds = parseJmaActiveL3Kinds_(warnJson);
             applyRainWarnLevel_(parseJmaRainWarnLevel_(warnJson, null), kinds, warnJson);
             if (warnJson) applyRainWarnMeta_(null, warnJson);
@@ -7085,7 +7158,7 @@
                     if (areaCodes.indexOf(String(area.code)) < 0) return;
                     (area.warnings || []).forEach(function (w) {
                         const st = String(w.status || '');
-                        if (!st || st.indexOf('解除') >= 0) return;
+                        if (!warningStatusLive_(st)) return;
                         const levelKey = jmaLevelFromWarnCode_(w.code, dangerHeadline);
                         if (levelKey) consider(w.code, levelKey);
                     });
@@ -7099,10 +7172,10 @@
         if (WBGT_ONLY || NO_JMA_WARN) return;
         try {
             const [wRes, pRes] = await Promise.all([
-                fetch('https://www.jma.go.jp/bosai/warning/data/warning/' + JMA_WARN_AREA + '.json', { cache: 'no-store' }),
+                fetch('https://www.jma.go.jp/bosai/warning/data/r8/' + JMA_WARN_AREA + '.json?t=' + Date.now(), { cache: 'no-store' }),
                 fetch('https://www.jma.go.jp/bosai/probability/data/probability/' + JMA_WARN_AREA + '.json', { cache: 'no-store' })
             ]);
-            const warnJson = wRes.ok ? await wRes.json() : null;
+            const warnJson = wRes.ok ? currentWarningJson_(await wRes.json()) : null;
             const probJson = pRes.ok ? await pRes.json() : null;
             const kinds = parseJmaActiveL3Kinds_(warnJson);
             applyRainWarnLevel_(parseJmaRainWarnLevel_(warnJson, probJson), kinds, warnJson);
@@ -8348,7 +8421,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261016-ac0005-end', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261016-ac0005-warn', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }

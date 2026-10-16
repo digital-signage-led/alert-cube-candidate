@@ -175,7 +175,7 @@
 
   function warningActive(status) {
     var text = String(status || '');
-    if (!text || text.indexOf('解除') >= 0) return false;
+    if (!text || text.indexOf('解除') >= 0 || text.indexOf('なし') >= 0) return false;
     return true;
   }
 
@@ -191,6 +191,31 @@
   function parseWarnings(warnJson, site, settings) {
     var found = {};
     var types = warnJson && warnJson.areaTypes;
+    if (!types && Array.isArray(warnJson)) {
+      var byArea = {};
+      warnJson.slice().sort(function (a, b) {
+        return String((a && a.reportDatetime) || '').localeCompare(String((b && b.reportDatetime) || ''));
+      }).forEach(function (rec) {
+        var body = (rec && rec.warning) || rec || {};
+        [].concat(body.class20Items || [], body.class15Items || [], body.class15sItems || [], body.class10Items || []).forEach(function (it) {
+          var code = String(it.areaCode || it.code || '');
+          if (!code) return;
+          if (!byArea[code]) byArea[code] = { code: code, warnings: {} };
+          (it.kinds || []).forEach(function (k) {
+            var st = String(k.status || '');
+            var kc = String(k.code || '');
+            if (st.indexOf('なし') >= 0) { byArea[code].warnings = {}; return; }
+            if (!kc || kc === '-') return;
+            if (!warningActive(st)) { delete byArea[code].warnings[kc]; return; }
+            byArea[code].warnings[kc] = { code: kc, status: st };
+          });
+        });
+      });
+      types = [{ areas: Object.keys(byArea).map(function (code) {
+        var a = byArea[code];
+        return { code: a.code, warnings: Object.keys(a.warnings).map(function (c) { return a.warnings[c]; }) };
+      }).filter(function (a) { return a.warnings.length; }) }];
+    }
     if (!types || !site) return [];
     types.forEach(function (areaType) {
       (areaType.areas || []).forEach(function (area) {

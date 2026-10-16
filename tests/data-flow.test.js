@@ -133,14 +133,14 @@ async function run() {
     assert.ok(jmaFc.json[0] && (jmaFc.json[0].timeSeries || jmaFc.json[0].publishingOffice));
   });
 
-  var jmaWarn = await fetchJson('https://www.jma.go.jp/bosai/warning/data/warning/' + site1.jma.warnArea + '.json');
+  var jmaWarn = await fetchJson('https://www.jma.go.jp/bosai/warning/data/r8/' + site1.jma.warnArea + '.json');
   await test('Warning: JMA警報JSONを取得できる', function () {
     assert.ok(jmaWarn.ok, 'HTTP ' + jmaWarn.status + ' ' + (jmaWarn.error || ''));
-    assert.ok(jmaWarn.json && (jmaWarn.json.areaTypes || jmaWarn.json.headlineText != null || jmaWarn.json.reportDatetime));
+    assert.ok(Array.isArray(jmaWarn.json) || (jmaWarn.json && jmaWarn.json.reportDatetime));
   });
 
   var eneosFc = await fetchJson('https://www.jma.go.jp/bosai/forecast/data/forecast/' + site2.jma.forecastArea + '.json');
-  var eneosWarn = await fetchJson('https://www.jma.go.jp/bosai/warning/data/warning/' + site2.jma.warnArea + '.json');
+  var eneosWarn = await fetchJson('https://www.jma.go.jp/bosai/warning/data/r8/' + site2.jma.warnArea + '.json');
   await test('AC-0002: 神奈川JMA予報・警報JSONを取得できる', function () {
     assert.ok(eneosFc.ok && Array.isArray(eneosFc.json), 'forecast HTTP ' + eneosFc.status);
     assert.ok(eneosWarn.ok && eneosWarn.json, 'warning HTTP ' + eneosWarn.status);

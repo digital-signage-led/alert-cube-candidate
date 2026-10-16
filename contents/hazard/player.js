@@ -308,7 +308,7 @@
     Promise.all([
       fetchJson(QUAKE_URL).then(function (json) { return { ok: true, json: json }; }).catch(function () { return { ok: false }; }),
       area
-        ? fetchJson('https://www.jma.go.jp/bosai/warning/data/warning/' + area + '.json').then(function (json) { return { ok: true, json: json }; }).catch(function () { return { ok: false }; })
+        ? fetchJson('https://www.jma.go.jp/bosai/warning/data/r8/' + area + '.json?t=' + Date.now()).then(function (json) { return { ok: true, json: json }; }).catch(function () { return { ok: false }; })
         : Promise.resolve({ ok: false }),
       wantEew && eewEval
         ? fetchJson(eewEval.SOURCE_URL || EEW_URL).then(function (json) { return { ok: true, json: json }; }).catch(function () { return { ok: false }; })
