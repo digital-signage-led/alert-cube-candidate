@@ -2323,7 +2323,7 @@ test('AC-0028 はJGC・千代田町の5面本番設定', function () {
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
-test('AC-0029 は志摩機械・舞鶴市の5面本番設定', function () {
+test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   var site = require('../sites/AC-0029.json');
   var index = require('../sites/index.json');
   assert.strictEqual(site.projectId, 'AC-0029');
@@ -2334,9 +2334,9 @@ test('AC-0029 は志摩機械・舞鶴市の5面本番設定', function () {
   assert.strictEqual(site.projectName, '志摩機械 WBGTサイネージ');
   assert.strictEqual(site.siteName, '舞鶴市');
   assert.strictEqual(site.location, '〒624-0951 京都府舞鶴市字上福井117番地');
-  assert.strictEqual(site.faces, 5);
-  assert.strictEqual(site.resolution, '640x128');
-  assert.strictEqual(site.layout, 'AC-640');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.layout, 'AC-512');
   assert.strictEqual(site.timeZone, 'Asia/Tokyo');
   assert.strictEqual(site.latitude, 35.446386);
   assert.strictEqual(site.longitude, 135.299612);
@@ -2376,7 +2376,7 @@ test('AC-0029 は志摩機械・舞鶴市の5面本番設定', function () {
   assert.strictEqual(site.presentation.i18nLaps, 1);
   assert.strictEqual(site.presentation.warningLaps, 2);
   assert.strictEqual(site.presentation.typhoonLaps, 2);
-  assert.strictEqual(site.presentation.logoRotate, true);
+  assert.strictEqual(site.presentation.logoRotate, false);
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.i18nTrailingLogo, true);
   assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n']);
@@ -2397,8 +2397,8 @@ test('AC-0029 は志摩機械・舞鶴市の5面本番設定', function () {
   assert.strictEqual(merged.jma.forecastPoint, '61111');
   assert.strictEqual(merged.geo.lat, 35.446386);
   assert.strictEqual(merged.geo.lon, 135.299612);
-  assert.strictEqual(merged.faces, 5);
-  assert.strictEqual(merged.profile, 'AC-640');
+  assert.strictEqual(merged.faces, 4);
+  assert.strictEqual(merged.profile, 'AC-512');
   var fetches = foundation.neededFetches(site);
   assert.ok(fetches.indexOf('jma-warning') >= 0);
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
