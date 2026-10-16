@@ -228,6 +228,16 @@
         html.site-ac-0028 #sceneLogo .logo-face-img {
             background: #e30518 !important;
         }
+        /* AC-0005: 横長の社名は拡大すると256pxの下帯ではみ出す */
+        html.site-ac-0005 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
+            height: auto;
+            max-height: 24px;
+            width: auto;
+            max-width: 248px;
+            transform: none;
+            object-fit: contain;
+            object-position: center center;
+        }
         html.site-ac-0028 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
             height: 26px;
             max-width: 248px;
@@ -3485,6 +3495,7 @@
         if (!query.get('warnArea') && jma.warnArea) JMA_WARN_AREA = jma.warnArea;
         if (!query.get('warnCity') && jma.warnCity) JMA_WARN_CITY = jma.warnCity;
         applySolidTheme_();
+        document.documentElement.classList.toggle('site-ac-0005', String(c.projectId || '') === 'AC-0005');
         document.documentElement.classList.toggle('site-ac-0007', String(c.projectId || '') === 'AC-0007');
         document.documentElement.classList.toggle('site-ac-0009', String(c.projectId || '') === 'AC-0009');
         document.documentElement.classList.toggle('site-ac-0010', String(c.projectId || '') === 'AC-0010');
