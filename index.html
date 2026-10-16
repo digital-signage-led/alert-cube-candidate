@@ -6932,6 +6932,18 @@
             if (f.length) return f;
         }
         if (levelKindAllMode_(levelKey)) return order;
+        /* 注意報は段階の先頭（大雨）に落とさない。取得した種別をそのまま出す */
+        if (!rainWarnForced && !whiteModeForced_()) {
+            const seen = {};
+            const live = [];
+            (rainWhiteQueue || []).forEach(function (e) {
+                if (!e || e.level !== levelKey || !e.kind || seen[e.kind]) return;
+                if (!map[e.kind]) return;
+                seen[e.kind] = true;
+                live.push(e.kind);
+            });
+            if (live.length) return live;
+        }
         if (levelKey === 'warning') {
             if (!rainWarnForced) return rainWarnKindActive.length ? rainWarnKindActive : ['rain'];
             return rainWarnKindActive.length > 1 ? rainWarnKindActive : JMA_L3_KIND_ORDER.slice();
@@ -8421,7 +8433,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261016-ac0005-warn', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261016-ac0005-kind', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }

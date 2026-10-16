@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20261016-ac0005-warn';
+var CACHE_NAME = 'alert-cube-sites-20261016-ac0005-kind';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
