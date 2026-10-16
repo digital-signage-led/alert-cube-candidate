@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "projectId": "DM-0003",
+  "status": "demo",
+  "customer": "",
+  "rental": "",
+  "projectName": "",
+  "siteName": "",
+  "location": "",
+  "latitude": 0,
+  "longitude": 0,
+  "elevation": null,
+  "memo": "未確定。請求しない。表示する中身は本番と同じ共通コンテンツ（大本は AC-0000）。複製したら projectId を demo/index.json の nextId にし、sites と nextId を更新する。現場が決まったら sites/ の次の AC 番号へ写す。この DM 番号は AC に付け替えない。本番端末へ登録しない。",
+  "inundation": { "expectedDepthM": null },
+  "evacuation": {
+    "assembly": "",
+    "shelter": "",
+    "shelterName": "",
+    "distanceM": null
+  },
+  "hazard": {
+    "minIntensity": "5弱",
+    "earthquakeVisibleMinutes": 30,
+    "faceMs": 4000
+  },
+  "resolution": "512x128",
+  "layout": "AC-512",
+  "faces": 4,
+  "timeZone": "Asia/Tokyo",
+  "footSource": "出典：気象庁・環境省データ",
+  "releasePin": null,
+  "logo": {
+    "src": "./images/digital-signage-end.png?v=20261014",
+    "panelBg": "#ffffff",
+    "bannerSrc": ""
+  },
+  "moe": {
+    "gasUrl": "",
+    "point": "",
+    "fallbackPoint": "",
+    "pointName": "",
+    "alertArea": "",
+    "region": "",
+    "prefecture": ""
+  },
+  "jma": {
+    "amedasPoint": "",
+    "amedasSupplementPoint": "",
+    "forecastArea": "",
+    "forecastDetail": "",
+    "forecastLabel": "",
+    "warnArea": "",
+    "warnCity": "",
+    "warnCityLabel": ""
+  },
+  "wbgt": {
+    "seasonStart": { "month": 4, "day": 22 },
+    "seasonEnd": { "month": 10, "day": 22 }
+  },
+  "season": { "override": null },
+  "updateSettings": { "refreshMs": 60000 },
+  "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "greeting": {
+    "enabled": false,
+    "mode": "image",
+    "image": "./assets/greeting/neighborhood.jpg?v=1",
+    "title": "近隣の皆様へ",
+    "lines": [],
+    "foot": ""
+  },
+  "presentation": {
+    "observationMode": "scroll",
+    "observationLaps": 2,
+    "observationTrailingLogo": true,
+    "footColor": "",
+    "solid": {
+      "clock": { "top": "", "body": "", "foot": "" },
+      "observation": { "top": "", "body": "", "foot": "" },
+      "forecast": { "top": "", "body": "", "foot": "" },
+      "greeting": { "top": "", "body": "", "foot": "", "ink": "" },
+      "progress": { "top": "", "body": "", "foot": "", "ink": "", "footInk": "" }
+    }
+  },
+  "news": {
+    "badge": "新着情報",
+    "laps": 1,
+    "speed": 1,
+    "maxItems": 2,
+    "pageUrl": "",
+    "urls": [],
+    "cacheKey": ""
+  },
+  "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n"],
+  "contents": {
+    "clock": { "on": true },
+    "weather": { "on": true },
+    "temperature": { "on": true },
+    "rain": { "on": true },
+    "wind": { "on": true },
+    "humidity": { "on": true },
+    "pressure": { "on": true },
+    "temp-range": { "on": true },
+    "wbgt": { "on": true },
+    "wbgt-i18n": { "on": true },
+    "forecast": { "on": true },
+    "warning": { "on": true },
+    "warning-hero": { "on": true },
+    "rain-nowcast": { "on": true },
+    "typhoon": { "on": true },
+    "rain-radar": { "on": true },
+    "lightning": { "on": true },
+    "disaster": { "on": true },
+    "heat": { "on": false },
+    "schedule": { "on": true },
+    "greeting": { "on": false },
+    "news": { "on": false },
+    "boards": { "on": false },
+    "logo-scroll": { "on": false },
+    "hazard": { "on": false },
+    "eew": { "on": false },
+    "uv": { "on": false },
+    "illuminance": { "on": false },
+    "cumtemp": { "on": false },
+    "rain-1h": { "on": false },
+    "rain-24h": { "on": false },
+    "pollen": { "on": false },
+    "pm25": { "on": false }
+  }
+}

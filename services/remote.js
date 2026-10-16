@@ -48,11 +48,14 @@
    * いまは静的 JSON。将来 /api/sites/{id} に差し替える入口。
    */
   function siteConfigUrl(siteId, source) {
-    var src = source || { type: 'static', path: './sites/{id}.json' };
-    if (src.type === 'api') {
+    var src = source || null;
+    if (src && src.type === 'api') {
       return String(src.path || '/api/sites/{id}').replace('{id}', siteId);
     }
-    return String(src.path || './sites/{id}.json').replace('{id}', siteId);
+    if (src && src.path) return String(src.path).replace('{id}', siteId);
+    var id = String(siteId || '').toUpperCase();
+    if (/^DM-[0-9]{4}$/.test(id)) return './demo/' + id + '.json';
+    return './sites/' + id + '.json';
   }
 
   var api = {

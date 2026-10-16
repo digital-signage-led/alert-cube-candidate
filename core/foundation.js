@@ -6,27 +6,43 @@
   'use strict';
 
   var DEFAULT_SITE = 'AC-0001';
-  var SITE_RE = /^AC-[0-9]{4}$/i;
+  var AC_RE = /^AC-[0-9]{4}$/;
+  var DM_RE = /^DM-[0-9]{4}$/;
+  var SITE_RE = /^(AC|DM)-[0-9]{4}$/i;
   var logs_ = [];
   var MAX_LOGS = 200;
   var lastGoodConfig_ = null;
   var catalog_ = null;
 
-  var OPERABLE_STATUS = { test: 1, demo: 1, active: 1 };
-
   function normalizeStatus(status, siteId) {
     var s = status != null && status !== '' ? String(status).toLowerCase() : '';
     var id = String(siteId || '').toUpperCase();
     if (id === 'AC-0000') return s || 'test';
+    if (DM_RE.test(id)) return s || 'demo';
     return s || 'active';
+  }
+
+  function isAcCustomerId(id) {
+    return AC_RE.test(id) && id !== 'AC-0000';
+  }
+
+  function isDemoSeriesId(id) {
+    return DM_RE.test(id) && id !== 'DM-0000';
   }
 
   function isStatusOperable(status, siteId) {
     var id = String(siteId || '').toUpperCase();
     var s = normalizeStatus(status, id);
     if (s === 'test') return id === 'AC-0000';
-    if (s === 'demo') return SITE_RE.test(id) && id !== 'AC-0000';
-    return !!OPERABLE_STATUS[s] && s === 'active';
+    if (s === 'demo') return isDemoSeriesId(id) || isAcCustomerId(id);
+    if (s === 'active') return isAcCustomerId(id);
+    return false;
+  }
+
+  function siteJsonPath(siteId) {
+    var id = String(siteId || '').toUpperCase();
+    if (DM_RE.test(id)) return './demo/' + id + '.json';
+    return './sites/' + id + '.json';
   }
 
   function catalogStatus(siteId) {
@@ -48,7 +64,18 @@
       return res.json();
     }).then(function (json) {
       catalog_ = json;
-      return { ok: true, catalog: json };
+      return fetch('./demo/index.json', { cache: 'no-store' }).then(function (res) {
+        if (!res.ok) return { ok: true, catalog: json };
+        return res.json().then(function (demo) {
+          var extra = demo && Array.isArray(demo.sites) ? demo.sites : [];
+          if (extra.length && Array.isArray(json.sites)) json.sites = json.sites.concat(extra);
+          json.demoCatalog = demo;
+          catalog_ = json;
+          return { ok: true, catalog: json };
+        });
+      }).catch(function () {
+        return { ok: true, catalog: json };
+      });
     }).catch(function (err) {
       Log.warn('catalog', 'sites/index.json load failed', { err: String(err && err.message || err) });
       return { ok: false, reason: 'fetch', error: String(err && err.message || err) };
@@ -475,7 +502,7 @@
   }
 
   function loadSiteJson(siteId) {
-    var path = './sites/' + siteId + '.json';
+    var path = siteJsonPath(siteId);
     if (typeof fetch !== 'function') {
       return Promise.resolve({ ok: false, reason: 'no-fetch', path: path });
     }
@@ -569,6 +596,7 @@
     bootSync: bootSync,
     bootAsync: bootAsync,
     loadSiteJson: loadSiteJson,
+    siteJsonPath: siteJsonPath,
     loadCatalog: loadCatalog,
     normalizeStatus: normalizeStatus,
     isStatusOperable: isStatusOperable,
