@@ -10,7 +10,7 @@
   "location": "愛知県名古屋市",
   "latitude": 35.1669,
   "longitude": 136.9653,
-  "memo": "デモ。4面512×128。三菱重工、名古屋市。時刻下の白帯は三菱重工の一行ロゴ。末尾マークは置かない。時刻・気象観測・雨雲レーダー・暑さ指数・4日予報・多言語は1周。警報と台風は発表中だけ2周。WBGT・AMeDASは名古屋51106（フォールバックなし）。予報は愛知県西部230010、気温は名古屋51106。警報は愛知県230000、名古屋市2310000。本番端末へ登録しない。",
+  "memo": "デモ。4面512×128。三菱重工、名古屋市。時刻下の白帯は三菱重工の一行ロゴ。気象観測・WBGT・4日間予報の末尾は同じ一行ロゴ。時刻・気象観測・雨雲レーダー・暑さ指数・4日予報・多言語は1周。警報と台風は発表中だけ2周。WBGT・AMeDASは名古屋51106（フォールバックなし）。予報は愛知県西部230010、気温は名古屋51106。警報は愛知県230000、名古屋市2310000。本番端末へ登録しない。",
   "resolution": "512x128",
   "layout": "AC-512",
   "faces": 4,
@@ -19,7 +19,7 @@
   "clockFoot": "",
   "releasePin": null,
   "logo": {
-    "src": "",
+    "src": "./assets/sites/AC-0005/logo_mark.png?v=1",
     "wideSrc": "",
     "corpSrc": "",
     "footSrc": "",
@@ -64,7 +64,7 @@
     "i18nLaps": 1,
     "warningLaps": 2,
     "typhoonLaps": 2,
-    "observationTrailingLogo": false
+    "observationTrailingLogo": true
   },
   "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {

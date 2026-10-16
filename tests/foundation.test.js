@@ -574,15 +574,15 @@ test('AC-0005 は三菱重工・名古屋市のデモ', function () {
   assert.strictEqual(site.jma.warnArea, '230000');
   assert.strictEqual(site.jma.warnCity, '2310000');
   assert.strictEqual(site.jma.warnCityLabel, '名古屋市');
-  assert.strictEqual(site.logo.src, '');
+  assert.ok(site.logo.src.indexOf('AC-0005/logo_mark.png') >= 0);
   assert.strictEqual(site.logo.corpSrc, '');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0005/logo_foot.png') >= 0);
-  assert.strictEqual(foundation.toLegacyBrand(site).logoSrc, '');
+  assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('logo_mark.png') >= 0);
   assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('logo_foot.png') >= 0);
   assert.strictEqual(site.presentation.observationLaps, 1);
   assert.strictEqual(site.presentation.warningLaps, 2);
   assert.strictEqual(site.presentation.typhoonLaps, 2);
-  assert.strictEqual(site.presentation.observationTrailingLogo, false);
+  assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.presentation.observationMode, 'scroll');
   assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
