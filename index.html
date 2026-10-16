@@ -53,6 +53,16 @@
 /** 4面は 512×128。5面（AC-0014 など）は右端ロゴ列付き 640×128 */
 (function () {
     var q = new URLSearchParams(location.search);
+    if (String(q.get('site') || '').toUpperCase() === 'AC-0008') {
+        var hadDemo = q.has('demo') || q.get('typhoon') === '1' || q.get('only') === 'typhoon';
+        q.delete('demo');
+        if (q.get('typhoon') === '1') q.delete('typhoon');
+        if (q.get('only') === 'typhoon') q.delete('only');
+        if (hadDemo) {
+            var cleaned = q.toString();
+            history.replaceState(null, '', location.pathname + (cleaned ? '?' + cleaned : '') + location.hash);
+        }
+    }
     var localDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     var wide = String(q.get('site') || '').toUpperCase() === 'AC-0014' || q.get('layout') === '640';
     if (wide) q.delete('layout512');
