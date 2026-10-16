@@ -575,9 +575,11 @@ test('AC-0005 は三菱重工・名古屋市のデモ', function () {
   assert.strictEqual(site.jma.warnCity, '2310000');
   assert.strictEqual(site.jma.warnCityLabel, '名古屋市');
   assert.ok(site.logo.src.indexOf('AC-0005/logo_mark.png') >= 0);
+  assert.ok(site.logo.endSrc.indexOf('AC-0005/logo_end.png') >= 0);
   assert.strictEqual(site.logo.corpSrc, '');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0005/logo_foot.png') >= 0);
   assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('logo_mark.png') >= 0);
+  assert.ok(foundation.toLegacyBrand(site).contentLogoSrc.indexOf('logo_end.png') >= 0);
   assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('logo_foot.png') >= 0);
   assert.strictEqual(site.presentation.observationLaps, 1);
   assert.strictEqual(site.presentation.warningLaps, 2);
