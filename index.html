@@ -228,6 +228,26 @@
         html.site-ac-0028 #sceneLogo .logo-face-img {
             background: #e30518 !important;
         }
+        html.site-ac-0029 .logo-stack {
+            width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
+        }
+        html.site-ac-0029 .logo-img {
+            width: 128px; max-width: 128px; height: 128px; max-height: 128px;
+        }
+        html.site-ac-0029 .logo-corp-img { display: none !important; }
+        html.site-ac-0029 .logo-panel,
+        html.site-ac-0029 #scene2 .s2-logo-panel,
+        html.site-ac-0029 #scene2 .s2-logo-panel .s2-body,
+        html.site-ac-0029 #scene2 .s2-logo-face-img,
+        html.site-ac-0029 #scene4 .fc-logo-panel,
+        html.site-ac-0029 #scene4 .fc-logo-panel .fc-logo-face-img,
+        html.site-ac-0029 #scene5 .d5-logo-panel,
+        html.site-ac-0029 #scene5 .d5-logo-panel .d5-logo-face-img,
+        html.site-ac-0029 #sceneLogo,
+        html.site-ac-0029 #sceneLogo .logo-face-panel,
+        html.site-ac-0029 #sceneLogo .logo-face-img {
+            background: #2ca8de !important;
+        }
         /* AC-0005: 横長の社名は拡大すると256pxの下帯ではみ出す */
         html.site-ac-0005 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
             height: auto;
@@ -239,6 +259,11 @@
             object-position: center center;
         }
         html.site-ac-0028 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
+            height: 26px;
+            max-width: 248px;
+            transform: none;
+        }
+        html.site-ac-0029 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
             height: 26px;
             max-width: 248px;
             transform: none;
@@ -3505,6 +3530,7 @@
         document.documentElement.classList.toggle('site-ac-0026', String(c.projectId || '') === 'AC-0026');
         document.documentElement.classList.toggle('site-ac-0027', String(c.projectId || '') === 'AC-0027');
         document.documentElement.classList.toggle('site-ac-0028', String(c.projectId || '') === 'AC-0028');
+        document.documentElement.classList.toggle('site-ac-0029', String(c.projectId || '') === 'AC-0029');
         applyFaceLayout_();
         if (typeof compactScene4Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s4))) compactScene4Panels();
         if (typeof compactScene5Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s5))) compactScene5Panels();
