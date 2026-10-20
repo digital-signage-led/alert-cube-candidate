@@ -7,6 +7,6 @@
   "sites": [
     { "projectId": "DM-0001", "status": "demo", "customer": "デジタルサイネージ", "siteName": "住之江区" },
     { "projectId": "DM-0002", "status": "demo", "customer": "大林組", "siteName": "枚方市" },
-    { "projectId": "DM-0003", "status": "demo", "customer": "西松建設", "siteName": "地点未定" }
+    { "projectId": "DM-0003", "status": "demo", "customer": "西松建設", "siteName": "枚方市" }
   ]
 }
