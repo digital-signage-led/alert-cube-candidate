@@ -4237,23 +4237,7 @@
         console.log('[AlertCube][WBGT] season=ACTIVE fetch=SUCCESS wbgt=' + wbgt + ' mode=' + annualMode_);
     }
     function paintTemperatureDom_() {
-        if (playbackLockId_ && !sceneDomOpen_(s4) && !sceneDomOpen_(s3)) return;
-        const html = formatTempHtml_(lastAmedasTempC_);
-        if (!sceneDomOpen_(s4)) {
-            document.querySelectorAll('#scene3 .t3-lv-static').forEach(function (el) { el.textContent = '気温'; });
-            return;
-        }
-        document.querySelectorAll('#scene4 .fc-track .fc-panel').forEach(function (panel) {
-            if (panel.classList.contains('fc-logo-panel') || panel.getAttribute('data-fc') === 'logo') return;
-            panel.querySelectorAll('.fc-bar-label').forEach(function (el) { el.textContent = '気温'; });
-            panel.querySelectorAll('.fc-val-live').forEach(function (el) { el.innerHTML = html; });
-        });
-        if (sceneDomOpen_(s3)) {
-            document.querySelectorAll('#scene3 .t3-lv-static').forEach(function (el) { el.textContent = '気温'; });
-        }
-        document.querySelectorAll('#scene4 .fc-scroll-wrap, #scene4 .fc-lv-bar').forEach(function (el) {
-            el.style.display = '';
-        });
+        /* 暑さ指数の4面と多言語は気温に書き換えない。出せないあいだは再生で飛ばす。 */
     }
     function syncAnnualMode_() {
         if (!window.AlertCubeCore || !window.AlertCubeCore.resolveAnnualMode) return annualMode_;
@@ -8638,7 +8622,6 @@
     }
     function updateForecastSlots(slots) {
         if (temperatureDisplay_()) {
-            paintTemperatureDom_();
             refreshSignageBgIfChanged_();
             return;
         }
@@ -11498,13 +11481,7 @@
         return !wbgtOffSeason;
     }
     function getT3Messages_() {
-        if (!wbgtMultilingualOn_()) return [];
-        if (temperatureDisplay_()) {
-            const shown = formatTempLabel_(lastAmedasTempC_);
-            if (!shown) return [];
-            const words = { jp: '気温', en: 'Temperature', id: 'Suhu', fil: 'Temperatura', vn: 'Nhiệt độ', my: 'အပူချိန်' };
-            return t3LangKeys_().map(function (key) { return { lang: key, l1: words[key] || '気温', l2: shown }; });
-        }
+        if (!wbgtMultilingualOn_() || temperatureDisplay_()) return [];
         if (wbgtOffSeason) return [];
         if (wbgtUnavailable) {
             const all = t3LangKeys_().map(function (key) {
@@ -12062,7 +12039,7 @@
             t3Shell.style.transform = 'none';
             t3Shell.classList.remove('is-end-logo');
         }
-        if (!wbgtMultilingualOn_()) {
+        if (!wbgtMultilingualOn_() || temperatureDisplay_() || wbgtOffSeason) {
             gotoAfterScene3_();
             return;
         }
@@ -12241,7 +12218,7 @@
     /* シーン2の次はシーン3（WBGT表示） */
     function gotoSceneAfterScene2_() {
         if (playlistHandoff_()) return;
-        if (!s4) { gotoSceneAfterScene4_(); return; }
+        if (!s4 || skipWbgtOffSeason_()) { gotoSceneAfterScene4_(); return; }
         transitionToScene(s4, playScene4);
     }
     /* 再生順があるときは、その並びだけを進める */
@@ -12391,11 +12368,18 @@
     function playScene4() {
         applyDisplayRefreshAtSceneEntry_(s4);
         clearScene4Timers();
+        if (skipWbgtOffSeason_()) {
+            if (DEMO_ONLY === 's4') {
+                hideSceneEl(s4);
+                return;
+            }
+            finishScene4();
+            return;
+        }
         if (window.AlertCubeContent && !window.AlertCubeContent.isOn('wbgt')) {
             finishScene4();
             return;
         }
-        if (temperatureDisplay_()) paintTemperatureDom_();
         markPlaylistHeld_();
         if (!lastWbgtSlots && DEMO_SIGNAGE_ACTIVE && currentWbgtLevel >= 0) {
             updateForecastSlots(mockSlotsForDemoLevel(currentWbgtLevel));
@@ -12947,8 +12931,7 @@
         });
     }
     function skipWbgtOffSeason_() {
-        const p = (siteCfg_() && siteCfg_().presentation) || {};
-        return p.skipWbgtOffSeason === true && (temperatureDisplay_() || wbgtOffSeason);
+        return !!wbgtOffSeason || temperatureDisplay_();
     }
     function skipHeatAlert_() {
         const p = (siteCfg_() && siteCfg_().presentation) || {};
@@ -13997,7 +13980,7 @@
                 transitionToScene(sceneSsc, playSceneSsc);
                 break;
             case 'wbgt-i18n':
-                if (!wbgtMultilingualOn_()) { advanceContentOrder_(); break; }
+                if (!wbgtMultilingualOn_() || temperatureDisplay_() || wbgtOffSeason) { advanceContentOrder_(); break; }
                 transitionToScene(s3, playScene3);
                 break;
             case 'schedule': transitionToScene(sceneSchedule, playSceneSchedule); break;
