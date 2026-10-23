@@ -377,6 +377,16 @@
         #scene4 .fc-panel:not(.fc-logo-panel) .col-bg-layer {
             display: none !important;
         }
+        /* 気象観測の横スクロールは4面を超える。各面の上帯を面といっしょに置く。 */
+        #scene2.scene2-scroll-mode .s2-panel:not(.s2-logo-panel) .col-bg-layer,
+        #scene2.scene2-scroll-mode .s2-panel-data:not(.s2-logo-panel) .col-bg-layer {
+            display: flex !important;
+            height: var(--led-col-main-h);
+        }
+        #scene2.scene2-scroll-mode .s2-panel .col-bg-foot,
+        #scene2.scene2-scroll-mode .s2-panel-data .col-bg-foot {
+            display: none;
+        }
         .ticker-scene { width: 512px; height: 128px; background: transparent !important; position: relative; }
         .ticker-scene > .t3-shell { z-index: 1; position: relative; }
         #scene3 .t3-end-logo {
@@ -3105,11 +3115,35 @@
         return { bgColor: body, barColor: top, darkText: brand.darkText === true };
     }
 
+    /** イメージカラーの案件は、カレンダーの提供期間外なら段階色より先にその色を塗る */
+    function brandOutsideSeason_() {
+        const brand = brandAmbient_();
+        if (!brand) return null;
+        const site = global.SignageConfig || {};
+        const pres = site.presentation || {};
+        if (pres.hideWbgtAfterSeason !== true) return null;
+        const core = global.AlertCubeCore;
+        if (!core || !core.isCalendarWbgtSeason) return null;
+        const fmt = new Intl.DateTimeFormat('en-CA', {
+            timeZone: site.timeZone || 'Asia/Tokyo',
+            year: 'numeric', month: '2-digit', day: '2-digit'
+        });
+        const p = Object.fromEntries(fmt.formatToParts(new Date()).map(function (part) { return [part.type, part.value]; }));
+        const parts = { year: Number(p.year), month: Number(p.month), day: Number(p.day) };
+        const wbgt = site.wbgt || {};
+        const season = {
+            start: wbgt.seasonStart || { month: 4, day: 22 },
+            end: wbgt.seasonEnd || { month: 10, day: 22 }
+        };
+        if (core.isCalendarWbgtSeason(parts, season)) return null;
+        return brand;
+    }
+
     /** displayMode: 'normal' | 'unavailable' | 'offseason' | 'temperature' */
     function colorsForDisplay(levelIdx, displayMode) {
-        if (displayMode === 'temperature' || displayMode === 'offseason') {
-            const brand = brandAmbient_();
-            if (brand) return { bgColor: brand.bgColor, barColor: brand.barColor };
+        if (displayMode !== 'unavailable') {
+            const outside = brandOutsideSeason_();
+            if (outside) return { bgColor: outside.bgColor, barColor: outside.barColor };
         }
         if (displayMode === 'temperature' && temperatureColors_) {
             return { bgColor: temperatureColors_.bg, barColor: temperatureColors_.bar };
@@ -3126,9 +3160,9 @@
     }
 
     function isDarkTextForDisplay(levelIdx, displayMode) {
-        if (displayMode === 'temperature' || displayMode === 'offseason') {
-            const brand = brandAmbient_();
-            if (brand) return brand.darkText;
+        if (displayMode !== 'unavailable') {
+            const outside = brandOutsideSeason_();
+            if (outside) return outside.darkText;
         }
         if (displayMode === 'temperature' && temperatureColors_) return !!temperatureColors_.darkText;
         if (displayMode === 'offseason' || displayMode === 'unavailable') return false;
