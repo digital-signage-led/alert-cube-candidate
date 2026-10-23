@@ -178,13 +178,16 @@
         body.browser-preview.layout-640 .canvas {
             transform: scale(min(calc(100vw / 640), calc(100vh / 128))) !important;
         }
-        html.site-ac-0014 .logo-stack {
+        html.site-ac-0014 .logo-stack,
+        html.site-dm-0004 .logo-stack {
             width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
         }
-        html.site-ac-0014 .logo-img {
+        html.site-ac-0014 .logo-img,
+        html.site-dm-0004 .logo-img {
             width: 120px; max-width: 120px; height: 120px; max-height: 120px;
         }
-        html.site-ac-0014 .logo-corp-img { display: none !important; }
+        html.site-ac-0014 .logo-corp-img,
+        html.site-dm-0004 .logo-corp-img { display: none !important; }
         html.site-ac-0016 .s1-wbgt-logo-wrap { width: 78px; height: 20px; }
         html.site-ac-0016 .s1-wbgt-logo { height: 18px; max-width: 78px; }
         html.site-ac-0021 .logo-stack {
@@ -279,7 +282,8 @@
             transform: none;
         }
         html.site-ac-0021 #sceneGreeting .promo-body .promo-unit { font-size: 52px; }
-        html.site-ac-0014 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
+        html.site-ac-0014 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner,
+        html.site-dm-0004 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
             height: 22px;
             max-width: 240px;
             mix-blend-mode: normal;
@@ -3088,8 +3092,25 @@
 
     let temperatureColors_ = null;
 
+    /** 案件のイメージカラー。気温色と期間外の灰色の代わり。WBGT提供中（normal）には使わない */
+    function brandAmbient_() {
+        const site = global.SignageConfig || {};
+        const pres = site.presentation || {};
+        if (pres.ambient !== 'brand') return null;
+        const brand = pres.brand || {};
+        const body = String(brand.body || '').trim();
+        const top = String(brand.top || '').trim() || body;
+        if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(body)) return null;
+        if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(top)) return null;
+        return { bgColor: body, barColor: top, darkText: brand.darkText === true };
+    }
+
     /** displayMode: 'normal' | 'unavailable' | 'offseason' | 'temperature' */
     function colorsForDisplay(levelIdx, displayMode) {
+        if (displayMode === 'temperature' || displayMode === 'offseason') {
+            const brand = brandAmbient_();
+            if (brand) return { bgColor: brand.bgColor, barColor: brand.barColor };
+        }
         if (displayMode === 'temperature' && temperatureColors_) {
             return { bgColor: temperatureColors_.bg, barColor: temperatureColors_.bar };
         }
@@ -3105,6 +3126,10 @@
     }
 
     function isDarkTextForDisplay(levelIdx, displayMode) {
+        if (displayMode === 'temperature' || displayMode === 'offseason') {
+            const brand = brandAmbient_();
+            if (brand) return brand.darkText;
+        }
         if (displayMode === 'temperature' && temperatureColors_) return !!temperatureColors_.darkText;
         if (displayMode === 'offseason' || displayMode === 'unavailable') return false;
         return isDarkTextLevel(levelIdx);
@@ -3531,6 +3556,7 @@
         document.documentElement.classList.toggle('site-ac-0027', String(c.projectId || '') === 'AC-0027');
         document.documentElement.classList.toggle('site-ac-0028', String(c.projectId || '') === 'AC-0028');
         document.documentElement.classList.toggle('site-ac-0029', String(c.projectId || '') === 'AC-0029');
+        document.documentElement.classList.toggle('site-dm-0004', String(c.projectId || '') === 'DM-0004');
         applyFaceLayout_();
         if (typeof compactScene4Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s4))) compactScene4Panels();
         if (typeof compactScene5Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s5))) compactScene5Panels();
@@ -4199,6 +4225,20 @@
     function annualSeasonCfg_() {
         return { start: { month: 4, day: 22 }, end: { month: 10, day: 22 } };
     }
+    function siteWbgtSeasonCfg_() {
+        const wbgt = (siteCfg_() && siteCfg_().wbgt) || {};
+        return {
+            start: wbgt.seasonStart || annualSeasonCfg_().start,
+            end: wbgt.seasonEnd || annualSeasonCfg_().end
+        };
+    }
+    /** 案件が明示したときだけ、カレンダーの提供期間を過ぎたら暑さ指数を畳む。環境省がまだ値を返しても出さない。 */
+    function hideWbgtAfterSeason_() {
+        const p = (siteCfg_() && siteCfg_().presentation) || {};
+        if (p.hideWbgtAfterSeason !== true) return false;
+        if (!window.AlertCubeCore || !window.AlertCubeCore.isCalendarWbgtSeason) return false;
+        return !window.AlertCubeCore.isCalendarWbgtSeason(jstPartsNow_(), siteWbgtSeasonCfg_());
+    }
     function wbgtCacheFresh_() {
         return !!(lastGoodWbgtSlots_ && hasFull4Slots(lastGoodWbgtSlots_) && lastWbgtSuccessAtMs_ &&
             (getNowMs() - lastWbgtSuccessAtMs_) <= WBGT_MAX_AGE_MS);
@@ -4242,12 +4282,13 @@
     function syncAnnualMode_() {
         if (!window.AlertCubeCore || !window.AlertCubeCore.resolveAnnualMode) return annualMode_;
         const parts = jstPartsNow_();
+        const apiInService = hideWbgtAfterSeason_() ? false : moeService_;
         const next = window.AlertCubeCore.resolveAnnualMode({
-            apiInService: moeService_,
+            apiInService: apiInService,
             previewOffseason: DEMO_WBGT_OFF,
-            currentMode: moeService_ === true
+            currentMode: apiInService === true
                 ? window.AlertCubeCore.WBGT_MODE
-                : (moeService_ === false ? window.AlertCubeCore.TEMPERATURE_MODE : undefined),
+                : (apiInService === false ? window.AlertCubeCore.TEMPERATURE_MODE : undefined),
             jstParts: parts,
             seasonCfg: annualSeasonCfg_(),
             fetchOk: wbgtFetchOk_ === true ? true : (wbgtFetchOk_ === false ? false : undefined),
