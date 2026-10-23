@@ -142,5 +142,6 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0027: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0027
 - AC-0028: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0028
 - AC-0029: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0029
+- DM-0004: https://digital-signage-led.github.io/alert-cube-candidate/?site=DM-0004 （インテックス大阪 展示会。レンタルのニッケン。5面。本番端末へ登録しない）
 - AC-0000: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0000
 - コンテンツ一覧: https://digital-signage-led.github.io/alert-cube-candidate/contents/
