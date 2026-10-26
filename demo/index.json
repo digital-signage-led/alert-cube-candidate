@@ -2,12 +2,13 @@
   "schemaVersion": 1,
   "series": "DM",
   "firstId": "DM-0001",
-  "nextId": "DM-0005",
+  "nextId": "DM-0006",
   "notes": "未確定で、まだ請求できない現場。番号は DM-0001 から。DM-0000 は作らない。表示する中身は本番と同じ共通コンテンツで、大本は AC-0000。現場が決まったら sites/ の次の AC 番号を発行してそちらで出す。DM 番号は AC に付け替えない。本番端末へ登録しない。",
   "sites": [
     { "projectId": "DM-0001", "status": "demo", "customer": "デジタルサイネージ", "siteName": "住之江区" },
     { "projectId": "DM-0002", "status": "demo", "customer": "大林組", "siteName": "枚方市" },
     { "projectId": "DM-0003", "status": "demo", "customer": "西松建設", "siteName": "枚方市" },
-    { "projectId": "DM-0004", "status": "demo", "customer": "株式会社レンタルのニッケン", "siteName": "インテックス" }
+    { "projectId": "DM-0004", "status": "demo", "customer": "株式会社レンタルのニッケン", "siteName": "インテックス" },
+    { "projectId": "DM-0005", "status": "demo", "customer": "デジタルサイネージ", "siteName": "インテックス" }
   ]
 }
