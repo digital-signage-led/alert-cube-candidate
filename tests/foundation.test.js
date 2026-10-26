@@ -2423,6 +2423,7 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.strictEqual(site.presentation.logoRotate, false);
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.i18nTrailingLogo, true);
+  assert.strictEqual(site.presentation.hideWbgtAfterSeason, true);
   assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n']);
   assert.ok(index.productionSites.indexOf('AC-0029') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0029') < 0);
