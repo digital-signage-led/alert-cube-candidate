@@ -90,7 +90,7 @@
     "urls": [],
     "cacheKey": ""
   },
-  "contentOrder": ["warning", "typhoon", "clock", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": [ "typhoon", "clock", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },
@@ -103,8 +103,8 @@
     "wbgt": { "on": true },
     "wbgt-i18n": { "on": true },
     "forecast": { "on": true },
-    "warning": { "on": true },
-    "warning-hero": { "on": true },
+    "warning": { "on": false },
+    "warning-hero": { "on": false },
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
     "rain-radar": { "on": true },

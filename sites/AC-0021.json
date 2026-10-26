@@ -129,7 +129,7 @@
       }
     ]
   },
-  "contentOrder": ["warning", "typhoon", "clock", "wbgt", "observation", "rain-radar", "forecast", "wbgt", "greeting", "wbgt-i18n", "wbgt", "greeting", "heat", "boards"],
+  "contentOrder": [ "typhoon", "clock", "wbgt", "observation", "rain-radar", "forecast", "wbgt", "greeting", "wbgt-i18n", "wbgt", "greeting", "heat", "boards"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -143,7 +143,7 @@
     "wbgt": { "on": true },
     "wbgt-i18n": { "on": true },
     "forecast": { "on": true },
-    "warning": { "on": true },
+    "warning": { "on": false },
     "warning-hero": { "on": false },
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },

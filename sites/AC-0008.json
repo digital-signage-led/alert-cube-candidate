@@ -85,7 +85,7 @@
     "observationTrailingLogo": true,
     "i18nTrailingLogo": true
   },
-  "contentOrder": ["warning", "warning-hero", "typhoon", "clock", "greeting", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n", "schedule"],
+  "contentOrder": [ "typhoon", "clock", "greeting", "observation", "rain-radar", "wbgt", "forecast", "wbgt-i18n", "schedule"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -99,8 +99,8 @@
     "wbgt": { "on": true },
     "wbgt-i18n": { "on": true },
     "forecast": { "on": true },
-    "warning": { "on": true },
-    "warning-hero": { "on": true },
+    "warning": { "on": false },
+    "warning-hero": { "on": false },
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
     "rain-radar": { "on": true },

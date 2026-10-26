@@ -213,7 +213,6 @@
     ]
   },
   "contentOrder": [
-    "warning",
     "typhoon",
     "greeting",
     "clock",
@@ -262,9 +261,7 @@
     "forecast": {
       "on": true
     },
-    "warning": {
-      "on": true
-    },
+    "warning": { "on": false },
     "warning-hero": {
       "on": false
     },

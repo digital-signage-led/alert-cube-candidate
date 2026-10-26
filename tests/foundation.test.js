@@ -293,7 +293,7 @@ test('AC-0003 は但南建設の本番案件設定', function () {
   assert.strictEqual(site.jma.amedasSupplementPoint, '63518');
   assert.strictEqual(site.jma.warnCity, '2822500');
   assert.strictEqual(site.contents.heat.on, false);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.schedule.on, false);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
@@ -317,7 +317,7 @@ test('AC-0000 は内部テスト・全共通Contents ON、未実装はOFF', func
   registry.CONTENTS.forEach(function (c) {
     var item = site.contents[c.id];
     assert.ok(item, 'missing contents.' + c.id);
-    if (c.id === 'heat') {
+    if (c.id === 'heat' || c.id === 'warning' || c.id === 'warning-hero') {
       assert.strictEqual(item.on, false, c.id + ' stays off');
       assert.strictEqual(foundation.isContentOn(site, c.id), false, c.id + ' isContentOn');
       return;
@@ -408,13 +408,13 @@ test('AC-0004 は佐藤工業福山の本番設定で、共通コンテンツに
   assert.strictEqual(site.news.pageUrl, 'https://www.satokogyo.co.jp/news/');
   assert.strictEqual(site.news.maxItems, 2);
   assert.strictEqual(site.boards.speed, 1);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'news', 'boards', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'news', 'boards', 'wbgt-i18n']);
   assert.strictEqual(site.contents.observation.on, true);
   assert.strictEqual(site.contents.news.on, true);
   assert.strictEqual(site.contents.boards.on, true);
   assert.strictEqual(site.contents['logo-scroll'].on, false);
   assert.strictEqual(site.contents.heat.on, false);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents['warning-hero'].on, false);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.typhoon.on, true);
@@ -588,9 +588,9 @@ test('AC-0005 は三菱重工・名古屋市のデモ', function () {
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.presentation.observationMode, 'scroll');
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
   assert.strictEqual(site.contents.heat.on, false);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents['warning-hero'].on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.ok(index.demoSites.indexOf('AC-0005') >= 0);
@@ -619,8 +619,8 @@ test('AC-0006 は錦建設広島市中区の通常版', function () {
   assert.strictEqual(site.jma.forecastArea, '340000');
   assert.strictEqual(site.jma.warnCity, '3410100');
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'news', 'wbgt-i18n']);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'news', 'wbgt-i18n']);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.disaster.on, true);
   assert.strictEqual(site.contents.news.on, true);
@@ -680,8 +680,8 @@ test('AC-0007 は佐々木建設北島町の4面本番設定', function () {
   assert.strictEqual(site.jma.warnCity, '3640200');
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.presentation.observationMode, 'scroll');
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'news', 'wbgt-i18n']);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'news', 'wbgt-i18n']);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.news.on, true);
   assert.strictEqual(site.news.pageUrl, 'https://www.ssk-con.co.jp/wp-json/wp/v2/posts?per_page=5&_fields=date,title');
@@ -709,8 +709,10 @@ test('AC-0008 は淺沼組・小牧市の本番設定', function () {
   assert.strictEqual(site.greeting.scrollLaps, 2);
   assert.strictEqual(site.contents.greeting.on, true);
   assert.ok(site.contentOrder.indexOf('greeting') > site.contentOrder.indexOf('clock'));
-  assert.strictEqual(site.contents['warning-hero'].on, true);
-  assert.ok(site.contentOrder.indexOf('warning-hero') > site.contentOrder.indexOf('warning'));
+  assert.strictEqual(site.contents.warning.on, false);
+  assert.strictEqual(site.contents['warning-hero'].on, false);
+  assert.ok(site.contentOrder.indexOf('warning') < 0);
+  assert.ok(site.contentOrder.indexOf('warning-hero') < 0);
   assert.strictEqual(site.contents.schedule.on, true);
   assert.strictEqual(site.schedule.enabled, true);
   assert.strictEqual(site.schedule.items[0].work, '足場組立');
@@ -804,7 +806,7 @@ test('AC-0009 は大島組・米岡橋梁下部工の4面本番設定', function
   assert.ok(site.boards.phases[0].images[1].src.indexOf('safety_harness.jpg') >= 0);
   assert.ok(site.boards.phases[0].images[2].src.indexOf('safety_opening.png') >= 0);
   assert.ok(site.boards.phases[0].images[3].src.indexOf('safety_lifeline.png') >= 0);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'greeting', 'clock', 'observation', 'rain-radar', 'wbgt', 'wbgt-i18n', 'forecast', 'progress', 'boards']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'greeting', 'clock', 'observation', 'rain-radar', 'wbgt', 'wbgt-i18n', 'forecast', 'progress', 'boards']);
   assert.strictEqual(site.presentation.heatLabel, 'ja');
   assert.deepStrictEqual(site.presentation.i18nLangs, ['jp']);
   assert.strictEqual(site.presentation.scrollHoldMs, 1000);
@@ -898,7 +900,7 @@ test('AC-0010 はフジケン長崎・諫早市永昌町の4面本番設定', fu
   assert.strictEqual(site.jma.warnCity, '4220400');
   assert.strictEqual(site.latitude, 32.8842);
   assert.strictEqual(site.longitude, 130.0431);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.heat.on, false);
   assert.strictEqual(site.contents.greeting.on, true);
@@ -914,7 +916,7 @@ test('AC-0010 はフジケン長崎・諫早市永昌町の4面本番設定', fu
   assert.strictEqual(site.logoScroll.laps, 2);
   assert.strictEqual(site.logoScroll.images[0].panelWidth, 873);
   assert.ok(site.logoScroll.images[0].src.indexOf('AC-0010/logo_banner.png') >= 0);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'forecast', 'greeting', 'wbgt-i18n', 'logo-scroll', 'wbgt']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'forecast', 'greeting', 'wbgt-i18n', 'logo-scroll', 'wbgt']);
   assert.ok(index.productionSites.indexOf('AC-0010') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0010') < 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: { rental: 'デジタルサイネージ' } });
@@ -951,7 +953,7 @@ test('AC-0011 は起産建設・博多区の4面本番設定', function () {
   assert.strictEqual(site.jma.warnArea, '400000');
   assert.strictEqual(site.jma.warnCity, '4013000');
   assert.strictEqual(site.jma.warnCityLabel, '博多区');
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents['warning-hero'].on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.disaster.on, true);
@@ -968,7 +970,7 @@ test('AC-0011 は起産建設・博多区の4面本番設定', function () {
   assert.strictEqual(site.presentation.wording, 'public');
   assert.ok(site.logo.src.indexOf('AC-0011/logo_mark.png') >= 0);
   assert.ok(site.logo.bannerSrc.indexOf('AC-0011/logo_banner.png') >= 0);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'forecast', 'wbgt-i18n', 'wbgt', 'news']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'forecast', 'wbgt-i18n', 'wbgt', 'news']);
   assert.ok(index.productionSites.indexOf('AC-0011') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0011') < 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
@@ -1006,7 +1008,7 @@ test('AC-0012 は株式会社ヒカリ・丸亀市の4面本番設定', function
   assert.strictEqual(site.jma.warnCityLabel, '丸亀市');
   assert.strictEqual(site.latitude, 34.2915);
   assert.strictEqual(site.longitude, 133.825);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents['warning-hero'].on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.disaster.on, true);
@@ -1026,7 +1028,7 @@ test('AC-0012 は株式会社ヒカリ・丸亀市の4面本番設定', function
   assert.strictEqual(site.presentation.wording, 'public');
   assert.ok(site.logo.src.indexOf('AC-0012/logo_stack.png') >= 0);
   assert.ok(site.logo.bannerSrc.indexOf('AC-0012/logo_banner.png') >= 0);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'forecast', 'wbgt-i18n', 'wbgt', 'news']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'forecast', 'wbgt-i18n', 'wbgt', 'news']);
   var news = require('../contents/news/index.js');
   var hikari = news.parsePage(
     '<div class="news-area"><dl><dt>2026.9.26</dt><dd class="category">お知らせ</dd><dd class="title">ケアーズ日誌を更新しました</dd></dl>' +
@@ -1074,8 +1076,8 @@ test('AC-0013 は宮川興業・見守り伝書鳩の4面本番設定', function
   assert.strictEqual(site.moe.gasUrl, '');
   assert.strictEqual(site.jma.amedasPoint, '');
   assert.strictEqual(site.jma.forecastArea, '340000');
-  assert.strictEqual(site.contents.warning.on, true);
-  assert.strictEqual(site.contents['warning-hero'].on, true);
+  assert.strictEqual(site.contents.warning.on, false);
+  assert.strictEqual(site.contents['warning-hero'].on, false);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.disaster.on, true);
@@ -1097,7 +1099,7 @@ test('AC-0013 は宮川興業・見守り伝書鳩の4面本番設定', function
   assert.ok(foundation.toLegacyBrand(site).logoSrc.indexOf('logo_mark.png') >= 0);
   assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('logo_banner.png') >= 0);
   assert.strictEqual(foundation.toLegacyBrand(site).hideFootMark, false);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'warning-hero', 'typhoon', 'clock', 'observation', 'rain-radar', 'forecast', 'wbgt-i18n', 'wbgt', 'news']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'forecast', 'wbgt-i18n', 'wbgt', 'news']);
   assert.ok(index.productionSites.indexOf('AC-0013') >= 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {}, moe: {}, jma: {} });
   assert.strictEqual(merged.densho.pointName, '山本8号');
@@ -1109,7 +1111,10 @@ test('AC-0013 は宮川興業・見守り伝書鳩の4面本番設定', function
   assert.strictEqual(fetches.indexOf('jma-amedas'), -1);
   assert.strictEqual(fetches.indexOf('moe-wbgt'), -1);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-nowc') >= 0);
   var miyagawaNews = news.parsePage('<li class="c-newslist__item"><dl><dt><span class="c-newslist__date"> 2026/9/01</span></dt><dd> 優良工事として表彰されました。 </dd></dl></li>', 2);
@@ -1188,14 +1193,14 @@ test('AC-0014 はレンタルのニッケン近江八幡の5面デモ', function
   assert.strictEqual(site.contents.forecast.on, true);
   assert.strictEqual(site.contents['wbgt-i18n'].on, true);
   assert.strictEqual(site.contents.wbgt.on, true);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.heat.on, true);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.rental, '無償');
   assert.ok(site.logo.src.indexOf('AC-0014/logo_mark.png') >= 0);
   assert.strictEqual(site.logo.panelFollow, 'bar');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0014/logo_banner.png') >= 0);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'forecast', 'wbgt-i18n', 'wbgt', 'heat']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'forecast', 'wbgt-i18n', 'wbgt', 'heat']);
   assert.ok(index.demoSites.indexOf('AC-0014') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0014') < 0);
   var merged = foundation.mergeJsonOntoLegacy(site, { site: {} });
@@ -1240,7 +1245,7 @@ test('AC-0015 は井原工業・四国中央市川之江の4面本番設定', fu
   assert.strictEqual(site.jma.warnArea, '380000');
   assert.strictEqual(site.jma.warnCity, '3821300');
   assert.strictEqual(site.jma.warnCityLabel, '四国中央市');
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.disaster.on, true);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
@@ -1258,7 +1263,7 @@ test('AC-0015 は井原工業・四国中央市川之江の4面本番設定', fu
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.logo.src, '');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0015/logo_banner.png') >= 0);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'news', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'news', 'wbgt-i18n']);
   var news = require('../contents/news/index.js');
   var ihara = news.parsePage(JSON.stringify([{
     document: {
@@ -1297,7 +1302,10 @@ test('AC-0015 は井原工業・四国中央市川之江の4面本番設定', fu
   assert.strictEqual(foundation.toLegacyBrand(site).logoSrc, '');
   assert.ok(foundation.toLegacyBrand(site).footBannerSrc.indexOf('logo_banner.png') >= 0);
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -1336,7 +1344,7 @@ test('AC-0016 はIHI瀧上・神戸市東灘区の4面本番設定', function ()
   assert.strictEqual(site.jma.warnCityLabel, '神戸市東灘区');
   assert.ok(site.logo.src.indexOf('AC-0016/logo_mark.png') >= 0);
   assert.strictEqual(site.logo.bannerSrc, '');
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.heat.on, true);
@@ -1351,7 +1359,7 @@ test('AC-0016 はIHI瀧上・神戸市東灘区の4面本番設定', function ()
   assert.ok(site.news.urls[0].indexOf('AC-0019/news.json') >= 0);
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n', 'heat', 'news']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n', 'heat', 'news']);
   assert.ok(index.productionSites.indexOf('AC-0016') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0016') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -1369,7 +1377,10 @@ test('AC-0016 はIHI瀧上・神戸市東灘区の4面本番設定', function ()
   assert.strictEqual(merged.faces, 4);
   assert.strictEqual(merged.profile, 'AC-512');
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -1410,7 +1421,7 @@ test('AC-0017 は株式会社ヒカリ・塩飽町の4面本番設定', function
   assert.strictEqual(site.logo.src, '');
   assert.strictEqual(site.logo.footSrc, '');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0017/logo_foot.png') >= 0);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.heat.on, false);
@@ -1421,7 +1432,7 @@ test('AC-0017 は株式会社ヒカリ・塩飽町の4面本番設定', function
   assert.strictEqual(site.contents['wbgt-i18n'].on, true);
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.presentation.observationTrailingLogo, false);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
   assert.ok(index.productionSites.indexOf('AC-0017') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0017') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -1439,7 +1450,10 @@ test('AC-0017 は株式会社ヒカリ・塩飽町の4面本番設定', function
   assert.strictEqual(merged.faces, 4);
   assert.strictEqual(merged.profile, 'AC-512');
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -1482,7 +1496,7 @@ test('AC-0018 は五洋建設・品川区平塚の4面本番設定', function ()
   assert.ok(site.logo.src.indexOf('AC-0018/logo_mark.png') >= 0);
   assert.strictEqual(site.logo.footSrc, '');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0018/logo_foot.png') >= 0);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.heat.on, false);
@@ -1496,7 +1510,7 @@ test('AC-0018 は五洋建設・品川区平塚の4面本番設定', function ()
   assert.strictEqual(site.clockFoot, '五洋・松本建設共同企業体／第二戸越幹線整備工事（ひらさん広場）');
   assert.strictEqual(site.greeting.enabled, false);
   assert.strictEqual(site.contents.greeting.on, false);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
   assert.ok(index.productionSites.indexOf('AC-0018') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0018') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -1517,7 +1531,10 @@ test('AC-0018 は五洋建設・品川区平塚の4面本番設定', function ()
   assert.strictEqual(merged.faces, 4);
   assert.strictEqual(merged.profile, 'AC-512');
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -1554,7 +1571,7 @@ test('AC-0019 は戸田建設・東近江市E3棟の4面本番設定', function 
   assert.strictEqual(site.jma.warnCity, '2521300');
   assert.strictEqual(site.jma.warnCityLabel, '東近江市');
   assert.strictEqual(site.footSource, 'データ提供：気象庁、環境省');
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.heat.on, false);
   assert.strictEqual(site.contents.news.on, true);
@@ -1573,7 +1590,7 @@ test('AC-0019 は戸田建設・東近江市E3棟の4面本番設定', function 
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.deepStrictEqual(site.contentOrder, [
-    'warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'logo-scroll', 'brand',
+'typhoon', 'clock', 'observation', 'rain-radar', 'logo-scroll', 'brand',
     'wbgt', 'logo-scroll', 'forecast', 'logo-scroll', 'wbgt-i18n', 'logo-scroll', 'brand', 'news'
   ]);
   assert.ok(index.productionSites.indexOf('AC-0019') >= 0);
@@ -1597,7 +1614,10 @@ test('AC-0019 は戸田建設・東近江市E3棟の4面本番設定', function 
   assert.ok(foundation.isContentOn(site, 'brand'));
   assert.strictEqual(foundation.isContentOn(site, 'heat'), false);
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -1661,7 +1681,7 @@ test('AC-0020 は森下組・奈良市の4面本番設定', function () {
   assert.ok(site.logo.src.indexOf('AC-0020/logo_mark.png') >= 0);
   assert.strictEqual(site.logo.footSrc, '');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0020/logo_foot.png') >= 0);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.heat.on, false);
@@ -1673,7 +1693,7 @@ test('AC-0020 は森下組・奈良市の4面本番設定', function () {
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.i18nTrailingLogo, true);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
   assert.ok(index.productionSites.indexOf('AC-0020') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0020') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -1693,7 +1713,10 @@ test('AC-0020 は森下組・奈良市の4面本番設定', function () {
   assert.strictEqual(merged.faces, 4);
   assert.strictEqual(merged.profile, 'AC-512');
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -1758,7 +1781,7 @@ test('AC-0021 は大鉄工業・奈良高架作業所の5面本番設定', funct
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.skipWbgtOffSeason, true);
   assert.strictEqual(site.presentation.skipHeatWhenWbgtDown, true);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents['rain-radar'].on, true);
   assert.strictEqual(site.contents['warning-hero'].on, false);
@@ -1770,7 +1793,7 @@ test('AC-0021 は大鉄工業・奈良高架作業所の5面本番設定', funct
   assert.strictEqual(site.contents.forecast.on, true);
   assert.strictEqual(site.contents['wbgt-i18n'].on, true);
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'wbgt', 'observation', 'rain-radar', 'forecast', 'wbgt', 'greeting', 'wbgt-i18n', 'wbgt', 'greeting', 'heat', 'boards']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'wbgt', 'observation', 'rain-radar', 'forecast', 'wbgt', 'greeting', 'wbgt-i18n', 'wbgt', 'greeting', 'heat', 'boards']);
   assert.ok(site.memo.indexOf('1周につき1本') >= 0);
   var page = require('fs').readFileSync(require('path').join(__dirname, '..', 'index.html'), 'utf8');
   var passStart = page.indexOf('function finishPromoPass_()');
@@ -1798,7 +1821,10 @@ test('AC-0021 は大鉄工業・奈良高架作業所の5面本番設定', funct
   assert.strictEqual(merged.clockFoot, '大鉄工業株式会社　土木支店　奈良高架作業所');
   assert.strictEqual(merged.presentation.forecastPlaceFoot, false);
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -1808,7 +1834,7 @@ test('AC-0021 は大鉄工業・奈良高架作業所の5面本番設定', funct
   assert.ok(foundation.validateSiteConfig(site).ok);
   assert.strictEqual(foundation.isContentOn(site, 'heat'), true);
   assert.strictEqual(foundation.isContentOn(site, 'greeting'), true);
-  assert.strictEqual(foundation.isContentOn(site, 'warning'), true);
+  assert.strictEqual(foundation.isContentOn(site, 'warning'), false);
 });
 
 test('AC-0022 は松鶴建設・墨田区の4面本番設定', function () {
@@ -1845,7 +1871,7 @@ test('AC-0022 は松鶴建設・墨田区の4面本番設定', function () {
   assert.strictEqual(site.logo.src, '');
   assert.strictEqual(site.logo.footSrc, '');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0022/logo_foot.png') >= 0);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.heat.on, false);
@@ -1856,7 +1882,7 @@ test('AC-0022 は松鶴建設・墨田区の4面本番設定', function () {
   assert.strictEqual(site.contents['wbgt-i18n'].on, true);
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.presentation.observationTrailingLogo, false);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
   assert.ok(index.productionSites.indexOf('AC-0022') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0022') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -1875,7 +1901,10 @@ test('AC-0022 は松鶴建設・墨田区の4面本番設定', function () {
   assert.strictEqual(merged.faces, 4);
   assert.strictEqual(merged.profile, 'AC-512');
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -1923,11 +1952,11 @@ test('AC-0023 は落合組・菊川市大石の4面本番設定', function () {
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.i18nTrailingLogo, true);
   assert.strictEqual(site.contents.heat.on, false);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.clock.on, true);
   assert.strictEqual(site.contents.wbgt.on, true);
   assert.strictEqual(site.contents.forecast.on, true);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
   assert.ok(index.productionSites.indexOf('AC-0023') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0023') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -1947,7 +1976,10 @@ test('AC-0023 は落合組・菊川市大石の4面本番設定', function () {
   assert.strictEqual(merged.faces, 4);
   assert.strictEqual(merged.profile, 'AC-512');
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
   assert.ok(fetches.indexOf('moe-wbgt') >= 0);
   assert.ok(fetches.indexOf('moe-heat') < 0);
@@ -2032,7 +2064,7 @@ test('AC-0025 は宇佐美工業・名古屋市堀川浚渫の4面本番設定',
   assert.ok(site.logo.src.indexOf('AC-0025/logo_mark.png') >= 0);
   assert.strictEqual(site.logo.footSrc, '');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0025/logo_foot.png') >= 0);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.heat.on, false);
@@ -2044,7 +2076,7 @@ test('AC-0025 は宇佐美工業・名古屋市堀川浚渫の4面本番設定',
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.i18nTrailingLogo, true);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
   assert.ok(index.productionSites.indexOf('AC-0025') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0025') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -2064,7 +2096,10 @@ test('AC-0025 は宇佐美工業・名古屋市堀川浚渫の4面本番設定',
   assert.strictEqual(merged.faces, 4);
   assert.strictEqual(merged.profile, 'AC-512');
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -2109,7 +2144,7 @@ test('AC-0026 は日立プラントサービス・東広島市八本松の5面�
   assert.ok(site.logo.src.indexOf('AC-0026/logo_mark.png') >= 0);
   assert.strictEqual(site.logo.footSrc, '');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0026/logo_foot.png') >= 0);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.heat.on, false);
@@ -2132,7 +2167,7 @@ test('AC-0026 は日立プラントサービス・東広島市八本松の5面�
   assert.strictEqual(site.boards.laps, 1);
   assert.strictEqual(site.boards.phases[0].laps, 1);
   assert.strictEqual(site.boards.phases[0].images.length, 4);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n', 'boards']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n', 'boards']);
   assert.ok(index.productionSites.indexOf('AC-0026') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0026') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -2152,7 +2187,10 @@ test('AC-0026 は日立プラントサービス・東広島市八本松の5面�
   assert.strictEqual(merged.faces, 5);
   assert.strictEqual(merged.profile, 'AC-640');
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -2198,7 +2236,7 @@ test('AC-0027 はカナモト仙台営業所の5面無償本番設定', function
   assert.ok(site.logo.endSrc.indexOf('AC-0027/logo_end.png') >= 0);
   assert.strictEqual(site.logo.footSrc, '');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0027/logo_foot.png') >= 0);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.heat.on, false);
@@ -2211,7 +2249,7 @@ test('AC-0027 はカナモト仙台営業所の5面無償本番設定', function
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.i18nTrailingLogo, true);
   assert.strictEqual(site.presentation.resume, false);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
   assert.ok(index.productionSites.indexOf('AC-0027') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0027') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -2233,7 +2271,10 @@ test('AC-0027 はカナモト仙台営業所の5面無償本番設定', function
   assert.strictEqual(merged.faces, 5);
   assert.strictEqual(merged.profile, 'AC-640');
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -2279,7 +2320,7 @@ test('AC-0028 はJGC・千代田町の5面本番設定', function () {
   assert.ok(site.logo.endSrc.indexOf('AC-0028/logo_end.png') >= 0);
   assert.strictEqual(site.logo.panelBg, '#e30518');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0028/logo_foot.png') >= 0);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.heat.on, false);
@@ -2291,7 +2332,7 @@ test('AC-0028 はJGC・千代田町の5面本番設定', function () {
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.i18nTrailingLogo, true);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
   assert.ok(index.productionSites.indexOf('AC-0028') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0028') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -2314,7 +2355,10 @@ test('AC-0028 はJGC・千代田町の5面本番設定', function () {
   assert.strictEqual(merged.faces, 5);
   assert.strictEqual(merged.profile, 'AC-640');
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -2359,7 +2403,7 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.ok(site.logo.src.indexOf('AC-0029/logo_mark.png') >= 0);
   assert.strictEqual(site.logo.panelBg, '#2ca8de');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0029/logo_foot.png') >= 0);
-  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.heat.on, false);
@@ -2379,7 +2423,7 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.strictEqual(site.presentation.logoRotate, false);
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.i18nTrailingLogo, true);
-  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n']);
   assert.ok(index.productionSites.indexOf('AC-0029') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0029') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -2400,7 +2444,10 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.strictEqual(merged.faces, 4);
   assert.strictEqual(merged.profile, 'AC-512');
   var fetches = foundation.neededFetches(site);
-  assert.ok(fetches.indexOf('jma-warning') >= 0);
+  assert.strictEqual(
+    fetches.indexOf('jma-warning') >= 0,
+    foundation.isContentOn(site, 'warning') || foundation.isContentOn(site, 'warning-hero') || foundation.isContentOn(site, 'disaster')
+  );
   assert.ok(fetches.indexOf('jma-typhoon') >= 0);
   assert.ok(fetches.indexOf('jma-amedas') >= 0);
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
@@ -2409,34 +2456,35 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
-test('注意報・警報・特別警報と台風は全案件と新規テンプレートでオン', function () {
+test('注意報・警報・危険警報・特別警報は全案件でオフ、台風は出す', function () {
   var index = require('../sites/index.json');
   var tpl = require('../sites/_template.json');
   index.sites.forEach(function (row) {
     var site = require('../sites/' + row.projectId + '.json');
+    assert.strictEqual(site.contents.warning.on, false, row.projectId + ' warning');
+    assert.strictEqual(site.contents['warning-hero'].on, false, row.projectId + ' warning-hero');
+    assert.ok(site.contentOrder.indexOf('warning') < 0, row.projectId + ' order warning');
+    assert.ok(site.contentOrder.indexOf('warning-hero') < 0, row.projectId + ' order warning-hero');
     if (row.projectId === 'AC-0024') {
-      assert.strictEqual(site.contents.warning.on, false, row.projectId + ' warning');
       assert.strictEqual(site.contents.typhoon.on, false, row.projectId + ' typhoon');
       assert.strictEqual(site.contents['rain-radar'].on, false, row.projectId + ' rain-radar');
       return;
     }
-    assert.strictEqual(site.contents.warning.on, true, row.projectId + ' warning');
     assert.strictEqual(site.contents.typhoon.on, true, row.projectId + ' typhoon');
     assert.strictEqual(site.contents['rain-radar'].on, true, row.projectId + ' rain-radar');
     assert.ok(!(site.presentation && site.presentation.rainRadarAlways), row.projectId + ' rain radar only when rain is in view');
     assert.ok(site.contentOrder.indexOf('rain-radar') >= 0, row.projectId + ' order rain-radar');
     if (site.presentation && site.presentation.sequence === 'contentOrder') {
-      assert.ok(site.contentOrder.indexOf('warning') >= 0, row.projectId + ' order warning');
       assert.ok(site.contentOrder.indexOf('typhoon') >= 0, row.projectId + ' order typhoon');
-      assert.ok(site.contentOrder.indexOf('warning') < site.contentOrder.indexOf('clock'), row.projectId + ' warning before clock');
     }
   });
-  assert.strictEqual(tpl.contents.warning.on, true);
+  assert.strictEqual(tpl.contents.warning.on, false);
+  assert.strictEqual(tpl.contents['warning-hero'].on, false);
   assert.strictEqual(tpl.contents.typhoon.on, true);
   assert.strictEqual(tpl.contents['rain-radar'].on, true);
+  assert.ok(tpl.contentOrder.indexOf('warning') < 0);
   assert.ok(tpl.contentOrder.indexOf('observation') < tpl.contentOrder.indexOf('rain-radar'));
-  assert.strictEqual(tpl.contentOrder[0], 'warning');
-  assert.strictEqual(tpl.contentOrder[1], 'typhoon');
+  assert.strictEqual(tpl.contentOrder[0], 'typhoon');
 });
 
 test('熱中症警戒アラートは明示した案件以外と新規テンプレートでオフ', function () {
