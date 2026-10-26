@@ -2,7 +2,7 @@
  * 雨雲レーダー。
  * 台風情報と同じく 128×128 を4面に並べ、各面は現場を中心にした同じレーダー。
  * 下地は県の外形だけ。線は海岸の輪郭と県境で、雨雲の上にも重ねる。琵琶湖など内水面は海の色にしない。
- * 国土は雨の青・黄・赤が沈まない灰色。県境はナウキャストに無い黒（白・青・黄・橙・赤・紫は雨の色）。
+ * 国土は雨の青・黄・赤が沈まない灰色。県境は白い細線。
  * targetTimes の時刻数字は協定世界時。
  */
 (function (global) {
@@ -20,7 +20,7 @@
   var RADAR_URL = 'https://www.jma.go.jp/bosai/jmatile/data/nowc/{basetime}/none/{validtime}/surf/hrpns/{z}/{x}/{y}.png';
   var OCEAN = [79, 143, 191];
   var LAND = [186, 191, 196];
-  var LINE = [0, 0, 0];
+  var LINE = [255, 255, 255];
 
   function locationOf(site) {
     var geo = (site && site.geo) || {};
@@ -313,7 +313,7 @@
         }
       });
     });
-    ctx.lineWidth = 1.8;
+    ctx.lineWidth = 1.2;
     ctx.strokeStyle = line;
     ctx.stroke();
   }
