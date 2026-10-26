@@ -231,24 +231,38 @@
         html.site-ac-0028 #sceneLogo .logo-face-img {
             background: #e30518 !important;
         }
-        html.site-ac-0029 .logo-stack {
+        html.site-ac-0029 .logo-stack,
+        html.site-ac-0030 .logo-stack {
             width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
         }
-        html.site-ac-0029 .logo-img {
+        html.site-ac-0029 .logo-img,
+        html.site-ac-0030 .logo-img {
             width: 128px; max-width: 128px; height: 128px; max-height: 128px;
         }
-        html.site-ac-0029 .logo-corp-img { display: none !important; }
+        html.site-ac-0029 .logo-corp-img,
+        html.site-ac-0030 .logo-corp-img { display: none !important; }
         html.site-ac-0029 .logo-panel,
+        html.site-ac-0030 .logo-panel,
         html.site-ac-0029 #scene2 .s2-logo-panel,
+        html.site-ac-0030 #scene2 .s2-logo-panel,
         html.site-ac-0029 #scene2 .s2-logo-panel .s2-body,
+        html.site-ac-0030 #scene2 .s2-logo-panel .s2-body,
         html.site-ac-0029 #scene2 .s2-logo-face-img,
+        html.site-ac-0030 #scene2 .s2-logo-face-img,
         html.site-ac-0029 #scene4 .fc-logo-panel,
+        html.site-ac-0030 #scene4 .fc-logo-panel,
         html.site-ac-0029 #scene4 .fc-logo-panel .fc-logo-face-img,
+        html.site-ac-0030 #scene4 .fc-logo-panel .fc-logo-face-img,
         html.site-ac-0029 #scene5 .d5-logo-panel,
+        html.site-ac-0030 #scene5 .d5-logo-panel,
         html.site-ac-0029 #scene5 .d5-logo-panel .d5-logo-face-img,
+        html.site-ac-0030 #scene5 .d5-logo-panel .d5-logo-face-img,
         html.site-ac-0029 #sceneLogo,
+        html.site-ac-0030 #sceneLogo,
         html.site-ac-0029 #sceneLogo .logo-face-panel,
-        html.site-ac-0029 #sceneLogo .logo-face-img {
+        html.site-ac-0030 #sceneLogo .logo-face-panel,
+        html.site-ac-0029 #sceneLogo .logo-face-img,
+        html.site-ac-0030 #sceneLogo .logo-face-img {
             background: #2ca8de !important;
         }
         /* AC-0005: 横長の社名は拡大すると256pxの下帯ではみ出す */
@@ -266,7 +280,8 @@
             max-width: 248px;
             transform: none;
         }
-        html.site-ac-0029 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
+        html.site-ac-0029 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner,
+        html.site-ac-0030 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
             height: 26px;
             max-width: 248px;
             transform: none;
@@ -3590,6 +3605,7 @@
         document.documentElement.classList.toggle('site-ac-0027', String(c.projectId || '') === 'AC-0027');
         document.documentElement.classList.toggle('site-ac-0028', String(c.projectId || '') === 'AC-0028');
         document.documentElement.classList.toggle('site-ac-0029', String(c.projectId || '') === 'AC-0029');
+        document.documentElement.classList.toggle('site-ac-0030', String(c.projectId || '') === 'AC-0030');
         document.documentElement.classList.toggle('site-dm-0004', String(c.projectId || '') === 'DM-0004');
         applyFaceLayout_();
         if (typeof compactScene4Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s4))) compactScene4Panels();
@@ -10800,13 +10816,13 @@
         return line + '　' + body;
     }
     function getS1WbgtMessageJp() {
-        if (wbgtOffSeason) return withClockFootLine_('');
         const rain = getRainAlertMessageJp();
         if (temperatureDisplay_()) {
             const tempMsg = temperatureFootMessageJp_();
             if (rain && tempMsg) return withClockFootLine_(rain + '　' + tempMsg);
             return withClockFootLine_(rain || tempMsg);
         }
+        if (wbgtOffSeason) return withClockFootLine_('');
         if (wbgtUnavailable) return withClockFootLine_(unknownMsg.jp);
         const lv = getS1WbgtLevelForDisplay_();
         if (lv < 0) return withClockFootLine_(rain || '');
@@ -10815,9 +10831,9 @@
         return withClockFootLine_(rain || wbgt);
     }
     function hasS1WbgtFootMessage_() {
-        if (wbgtOffSeason) return false;
         if (String(getS1FootBannerSrc_() || '').trim()) return true;
         if (getS1FootMarkSrc_()) return true;
+        if (wbgtOffSeason && !temperatureDisplay_()) return false;
         return !!String(getS1WbgtMessageJp() || '').trim();
     }
     /* 下帯: 文言が無いときの地点名 */
@@ -12267,7 +12283,7 @@
             return;
         }
         if (s1WbgtTrack && showWbgtFoot) {
-            if (!s1WbgtTrack.children.length) refreshS1WbgtFootBar_(true);
+            if (!s1WbgtTrack.children.length || !s1FootMsgReady_()) refreshS1WbgtFootBar_(true);
             if (s1FootPhrasePending_()) {
                 s1FootWaitMsg_ = true;
                 s1Flow_ = null;
