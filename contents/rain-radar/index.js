@@ -1,8 +1,8 @@
 /**
  * 雨雲レーダー。
  * 台風情報と同じく 128×128 を4面に並べ、各面は現場を中心にした同じレーダー。
- * 下地は県の外形だけ。線は海岸の輪郭と県境。琵琶湖など内水面は海の色にしない。
- * 国土は雨の青・黄・赤が沈まない灰色。
+ * 下地は県の外形だけ。線は海岸の輪郭と県境で、雨雲の上にも重ねる。琵琶湖など内水面は海の色にしない。
+ * 国土は雨の青・黄・赤が沈まない灰色。県境はナウキャストに無い黒（白・青・黄・橙・赤・紫は雨の色）。
  * targetTimes の時刻数字は協定世界時。
  */
 (function (global) {
@@ -20,7 +20,7 @@
   var RADAR_URL = 'https://www.jma.go.jp/bosai/jmatile/data/nowc/{basetime}/none/{validtime}/surf/hrpns/{z}/{x}/{y}.png';
   var OCEAN = [79, 143, 191];
   var LAND = [186, 191, 196];
-  var LINE = [92, 99, 107];
+  var LINE = [0, 0, 0];
 
   function locationOf(site) {
     var geo = (site && site.geo) || {};
@@ -268,8 +268,6 @@
     }
     var used = Object.create(null);
     ctx.beginPath();
-    ctx.strokeStyle = line;
-    ctx.lineWidth = 1;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
     Object.keys(adj).forEach(function (start) {
@@ -315,10 +313,30 @@
         }
       });
     });
+    ctx.lineWidth = 1.8;
+    ctx.strokeStyle = line;
     ctx.stroke();
   }
 
   var landCache = { key: '', canvas: null };
+  var borderCache = { key: '', canvas: null };
+
+  function borderCanvas(originX, originY) {
+    var key = originX + ',' + originY;
+    if (borderCache.key === key && borderCache.canvas) return borderCache.canvas;
+    if (typeof document === 'undefined') return null;
+    var canvas = document.createElement('canvas');
+    canvas.width = VIEW_W * DRAW_SCALE;
+    canvas.height = VIEW_H * DRAW_SCALE;
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(DRAW_SCALE, 0, 0, DRAW_SCALE, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    var prefs = typeof AlertCubePrefectures !== 'undefined' ? AlertCubePrefectures : [];
+    var line = 'rgb(' + LINE[0] + ',' + LINE[1] + ',' + LINE[2] + ')';
+    strokeBorders(ctx, prefs, originX, originY, line);
+    borderCache = { key: key, canvas: canvas };
+    return canvas;
+  }
 
   function landCanvas(originX, originY) {
     var key = originX + ',' + originY;
@@ -355,6 +373,8 @@
       drawPrefectures(ctx, plan.originX, plan.originY);
     }
     (radarImgs || []).forEach(function (img, i) { drawTile(ctx, img, plan.tiles[i]); });
+    var borders = borderCanvas(plan.originX, plan.originY);
+    if (borders) ctx.drawImage(borders, 0, 0, w, h);
     var cx = w / 2;
     var cy = h / 2;
     ctx.beginPath();
@@ -364,6 +384,7 @@
     ctx.lineWidth = 1.5;
     ctx.strokeStyle = '#d00000';
     ctx.stroke();
+    if (plan.footer === false) return;
     ctx.font = '700 8px "Noto Sans JP", sans-serif';
     ctx.textBaseline = 'middle';
     if (label) {
