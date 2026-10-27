@@ -54,20 +54,20 @@
         if (el.tagName === 'IMG') el.alt = name;
       });
     }
-    var logoFaces = document.querySelectorAll(
-      '.s2-logo-face-img, .fc-logo-face-img, .d5-logo-face-img, .logo-img, .logo-corp-img'
-    );
-    if (brand.logoSrc) {
-      logoFaces.forEach(function (el) {
-        if (el.getAttribute('src') !== brand.logoSrc) el.src = brand.logoSrc;
-      });
-    } else {
-      logoFaces.forEach(function (el) {
-        el.removeAttribute('src');
+    var endSrc = String(brand.contentLogoSrc || brand.logoSrc || '').trim();
+    function paintLogoSrc_(list, src) {
+      list.forEach(function (el) {
+        if (src) {
+          if (el.getAttribute('src') !== src) el.src = src;
+        } else {
+          el.removeAttribute('src');
+        }
       });
     }
+    paintLogoSrc_(document.querySelectorAll('.s2-logo-face-img, .fc-logo-face-img, .d5-logo-face-img'), endSrc);
+    paintLogoSrc_(document.querySelectorAll('.logo-img, .logo-corp-img'), brand.logoSrc || '');
     document.querySelectorAll('.fc-logo-panel, .d5-logo-panel, .s2-logo-panel').forEach(function (el) {
-      el.style.display = brand.logoSrc ? '' : 'none';
+      el.style.display = endSrc ? '' : 'none';
     });
     if (wide) {
       document.querySelectorAll('.logo-panel').forEach(function (el) {

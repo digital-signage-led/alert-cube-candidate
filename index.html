@@ -29,7 +29,7 @@
     <script src="./safety/retry.js?v=20260921-suminoe"></script>
     <script src="./safety/rollback.js?v=20260921-suminoe"></script>
     <script src="./scripts/alert-cube-core.js?v=20260929-i18n-off"></script>
-    <script src="./scripts/alert-cube-runtime.js?v=20261005-site-shell"></script>
+    <script src="./scripts/alert-cube-runtime.js?v=20261027-nikken-end"></script>
     <script>
     (function () {
         try {
@@ -8761,7 +8761,7 @@
         const cfg = window.SIGNAGE_CONFIG || {};
         const src = contentEndLogoSrc_();
         const alt = cfg.logoAlt || (window.AlertCubeRuntime && window.AlertCubeRuntime.customerName()) || '';
-        document.querySelectorAll('.s2-logo-face-img, .fc-logo-face-img, .d5-logo-face-img, .logo-face-img').forEach(function (face) {
+        document.querySelectorAll('.s2-logo-face-img, .fc-logo-face-img, .d5-logo-face-img').forEach(function (face) {
             if (src && face.getAttribute('src') !== src) face.src = src;
             face.alt = alt;
         });
