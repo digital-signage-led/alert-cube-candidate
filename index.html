@@ -8035,6 +8035,7 @@
         playSceneRainWarn(0);
     }
     let logoRotDeg = 0;
+    let logoSpinAt_ = 0;
     const LOGO_ROT_STEP_MS = 420;
 
     function stopLogoSpinInterval() {
@@ -8050,9 +8051,22 @@
         logoRotator.style.transition = `transform ${ms}ms ease-in-out`;
         logoRotator.style.transform = `rotate(${logoRotDeg}deg)`;
     }
-    /** 4面: ロゴ列なし */
+    /** 右端ロゴを、コンテンツの切り替わりで一周だけ回す */
+    function logoSpinSometimes_() {
+        const presentation = (siteCfg_() && siteCfg_().presentation) || {};
+        return presentation.logoRotate === 'sometimes';
+    }
     function stepLogo90(transitionMs, withFastSpin) {
-        resetLogoRotation();
+        if (!logoSpinSometimes_() || !logoRotator) {
+            resetLogoRotation();
+            return;
+        }
+        const now = Date.now();
+        if (now - logoSpinAt_ < 2500) return;
+        logoSpinAt_ = now;
+        logoRotDeg += 360;
+        logoRotator.style.transition = 'transform 900ms ease-in-out';
+        logoRotator.style.transform = 'rotate(' + logoRotDeg + 'deg)';
     }
     function resetLogoRotation() {
         logoRotDeg = 0;
