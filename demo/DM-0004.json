@@ -11,7 +11,7 @@
   "latitude": 34.637289,
   "longitude": 135.419886,
   "elevation": null,
-  "memo": "未確定のデモ。10月27日、インテックス大阪の展示会。レンタルのニッケン。請求しない。本番端末へ登録しない。5面640×128。右端ロゴ列はニッケンの円形マーク。時刻下の白帯はNIKKEN文字ロゴ。右端の円形マークは、コンテンツが替わるときに一周して正位置で止まる。気象観測・暑さ指数・4日間予報・多言語の末尾は、立っているキャラクター2体を1面。地点名「インテックス」。時刻・気象・予報の地色はNIKKENの文字色（上#A5CE20、中#8CB808）。気温色や期間外の灰色にはしない。暑さ指数の提供中は段階色を優先する。地図はインテックス大阪。WBGT・アメダスは大阪62078、補完は堺62091。予報は大阪府270000、気温の発表地点は大阪62078。警報は大阪府270000、大阪市2710000。気象観測・WBGT・4日予報は1周。警報と台風は発表中だけ2周。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
+  "memo": "未確定のデモ。10月27日、インテックス大阪の展示会。レンタルのニッケン。請求しない。本番端末へ登録しない。5面640×128。右端ロゴ列はニッケンの円形マーク。時刻下の白帯はNIKKEN文字ロゴ。地点名「インテックス」。時刻・気象・予報の地色はNIKKENの文字色（上#A5CE20、中#8CB808）。気温色や期間外の灰色にはしない。暑さ指数の提供中は段階色を優先する。地図はインテックス大阪。WBGT・アメダスは大阪62078、補完は堺62091。予報は大阪府270000、気温の発表地点は大阪62078。警報は大阪府270000、大阪市2710000。気象観測・WBGT・4日予報は1周。警報と台風は発表中だけ2周。告知ボードは挟まれ・巻き込まれ、重機接触、感電、転倒の4種で、各種1周。右端の円形マークは、コンテンツが替わるときに一周して正位置で止まる。気象観測・暑さ指数・4日間予報・多言語の末尾は、立っているキャラクター2体を1面。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
   "inundation": { "expectedDepthM": null },
   "evacuation": {
     "assembly": "",
@@ -111,17 +111,64 @@
     "background": "#ffffff",
     "phases": [
       {
-        "id": "nikken-icons",
+        "id": "caught-in",
+        "label": "挟まれ・巻き込まれ防止",
         "layout": "posters",
+        "play": "slide",
         "laps": 1,
         "width": 512,
         "images": [
-          { "src": "./assets/demo/DM-0004/icons.jpg?v=1", "alt": "ニッケン", "w": 512, "fit": "contain" }
+          { "src": "./assets/sites/AC-0000/safety/caught/01.png?v=2", "alt": "挟まれ巻き込まれ防止" },
+          { "src": "./assets/sites/AC-0000/safety/caught/02.png?v=2", "alt": "可動部に手を出さない" },
+          { "src": "./assets/sites/AC-0000/safety/caught/03.png?v=2", "alt": "点検前に機械を停止" },
+          { "src": "./assets/sites/AC-0000/safety/caught/04.png?v=2", "alt": "巻き込まれ服装確認" }
+        ]
+      },
+      {
+        "id": "machine-contact",
+        "label": "重機接触災害防止",
+        "layout": "posters",
+        "play": "slide",
+        "laps": 1,
+        "width": 512,
+        "images": [
+          { "src": "./assets/sites/AC-0000/machine_title.png?v=2", "alt": "重機接触災害防止" },
+          { "src": "./assets/sites/AC-0000/machine_signal.png?v=2", "alt": "合図を確認してから接近" },
+          { "src": "./assets/sites/AC-0000/machine_away.png?v=2", "alt": "重機に近づかない" },
+          { "src": "./assets/sites/AC-0000/machine_swing.png?v=2", "alt": "旋回範囲立入禁止" }
+        ]
+      },
+      {
+        "id": "electric-shock",
+        "label": "感電災害防止",
+        "layout": "posters",
+        "play": "slide",
+        "laps": 1,
+        "width": 512,
+        "images": [
+          { "src": "./assets/sites/AC-0000/safety/shock/01.png?v=2", "alt": "感電災害防止" },
+          { "src": "./assets/sites/AC-0000/safety/shock/02.png?v=2", "alt": "電線に触れない" },
+          { "src": "./assets/sites/AC-0000/safety/shock/03.png?v=2", "alt": "作業前に電源を切る" },
+          { "src": "./assets/sites/AC-0000/safety/shock/04.png?v=2", "alt": "傷んだ配線使用禁止" }
+        ]
+      },
+      {
+        "id": "trip-fall",
+        "label": "転倒災害防止",
+        "layout": "posters",
+        "play": "slide",
+        "laps": 1,
+        "width": 512,
+        "images": [
+          { "src": "./assets/sites/AC-0000/safety/trip/01.png?v=2", "alt": "転倒災害防止" },
+          { "src": "./assets/sites/AC-0000/safety/trip/02.png?v=2", "alt": "段差注意足元確認" },
+          { "src": "./assets/sites/AC-0000/safety/trip/03.png?v=1", "alt": "通路の整理整頓" },
+          { "src": "./assets/sites/AC-0000/safety/trip/04.png?v=1", "alt": "濡れた床すべり注意" }
         ]
       }
     ]
   },
-  "contentOrder": [ "typhoon", "clock", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": [ "typhoon", "clock", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n", "boards"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },
@@ -145,7 +192,7 @@
     "schedule": { "on": false },
     "greeting": { "on": false },
     "news": { "on": false },
-    "boards": { "on": false },
+    "boards": { "on": true },
     "logo-scroll": { "on": false },
     "hazard": { "on": false },
     "eew": { "on": false },
