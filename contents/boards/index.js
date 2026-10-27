@@ -183,10 +183,22 @@
     return images.filter(function (img) { return img && img.src; });
   }
 
+  function posterWidth(img) {
+    var w = Number(img && img.w);
+    if (!Number.isFinite(w) || w < 128) return 128;
+    return Math.round(w);
+  }
+
   function postersHtml(phase) {
     var html = '';
     posterSources(phase).forEach(function (img) {
-      html += '<div class="kotei-poster"><img src="' + escapeHtml(img.src) + '" alt="' + escapeHtml(img.alt || '') + '" decoding="sync"></div>';
+      var w = posterWidth(img);
+      var contain = img.fit === 'contain';
+      var box = 'width:' + w + 'px;height:128px;flex:0 0 ' + w + 'px;max-width:' + w + 'px;background:#ffffff;display:flex;align-items:center;justify-content:center;overflow:hidden';
+      var pic = contain
+        ? 'display:block;width:auto;height:128px;max-width:100%;object-fit:contain;background:#ffffff'
+        : '';
+      html += '<div class="kotei-poster" style="' + box + '"><img' + (pic ? ' style="' + pic + '"' : '') + ' src="' + escapeHtml(img.src) + '" alt="' + escapeHtml(img.alt || '') + '" decoding="sync"></div>';
     });
     return html;
   }
@@ -245,8 +257,11 @@
     if (Number.isFinite(stated) && stated > 0) return stated;
     if (phase.layout === 'cards') return Math.max(256, (phase.cards || []).length * 256);
     if (phase.layout === 'posters') {
-      var count = (phase.images || []).filter(function (img) { return img && img.src; }).length;
-      return Math.max(128, count * 128);
+      var sum = 0;
+      (phase.images || []).forEach(function (img) {
+        if (img && img.src) sum += posterWidth(img);
+      });
+      return Math.max(128, sum);
     }
     if (phase.layout === 'safety') {
       var copies = Number(phase.copies);
