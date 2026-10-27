@@ -1260,6 +1260,8 @@
         #sceneRainRadar.active { display: block; }
         #sceneRainRadar .rr-faces { width: 512px; height: 128px; display: flex; flex-direction: row; }
         #sceneRainRadar .rr-face { width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
+        .dm4-end-face { width: 128px; height: 128px; flex: 0 0 128px; background: #ffffff; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .dm4-end-face img { width: 128px; height: 128px; object-fit: contain; background: #ffffff; display: block; }
         #sceneRainRadar .rr-canvas { display: block; width: 128px; height: 128px; }
         .pr-shell { width: 512px; height: 128px; display: flex; flex-direction: column; }
         .pr-top, .pr-foot {
@@ -5963,7 +5965,7 @@
                 return;
             }
             const nextFn = (DEMO_SIGNAGE && !DEMO_ONLY) ? advanceDemoLevel : afterTyphoonScene_;
-            nextFn();
+            scrollDm0004EndFace_(document.getElementById('ty-faces'), nextFn);
         }
         function playStorm_() {
             if (!typhoonMapModels_.length || skips > typhoonMapModels_.length) {
@@ -8769,6 +8771,44 @@
     function hasContentLogo_() {
         return !!contentEndLogoSrc_();
     }
+    let dm4ScrollGen_ = 0;
+    function dm0004CharacterSrc_() {
+        const cfg = siteCfg_() || {};
+        if (String(cfg.projectId || '') !== 'DM-0004') return '';
+        const src = contentEndLogoSrc_();
+        if (!src || src === String(cfg.logoSrc || '').trim()) return '';
+        return src;
+    }
+    function clearDm0004EndFace_(root) {
+        dm4ScrollGen_ += 1;
+        if (!root) return;
+        root.querySelectorAll('.dm4-end-face').forEach(function (el) { el.remove(); });
+        root.style.transform = 'none';
+    }
+    function scrollDm0004EndFace_(root, done) {
+        const src = dm0004CharacterSrc_();
+        if (!src || !root) { done(); return; }
+        clearDm0004EndFace_(root);
+        const gen = dm4ScrollGen_;
+        const face = document.createElement('div');
+        face.className = 'dm4-end-face';
+        const img = document.createElement('img');
+        img.alt = '';
+        img.decoding = 'async';
+        img.src = src;
+        face.appendChild(img);
+        root.appendChild(face);
+        root.style.transform = 'translate3d(0,0,0)';
+        let moved = 0;
+        function step() {
+            if (gen !== dm4ScrollGen_) return;
+            moved = Math.min(128, moved + getScrollSpeedPx_());
+            root.style.transform = 'translate3d(' + scrollPx_(-moved) + 'px,0,0)';
+            if (moved >= 128) { done(); return; }
+            requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
     function compactScene4Panels() {
         if (!fcConveyor) return;
         const withLogo = hasContentLogo_();
@@ -11511,7 +11551,9 @@
                             return;
                         } else {
                             tyAnimId = null; tyFlow_ = null;
-                            runAfterSceneEndHold_(afterTyphoonScene_);
+                            runAfterSceneEndHold_(function () {
+                                scrollDm0004EndFace_(document.getElementById('ty-faces'), afterTyphoonScene_);
+                            });
                             return;
                         }
                     }
@@ -12272,6 +12314,7 @@
         });
     }
     function playScene1() {
+        clearDm0004EndFace_(document.getElementById('s1-stateA'));
         markPlaylistHeld_();
         const advanceToken = scene1AdvanceToken + 1;
         if (pendingSignageBgRefresh_) applyPendingSignageBgAtScene_();
@@ -12307,7 +12350,10 @@
                 scene1HoldTimerId = setTimeout(function () {
                     scene1HoldTimerId = null;
                     if (advanceToken !== scene1AdvanceToken + 1) return;
-                    finishScene1();
+                    scrollDm0004EndFace_(document.getElementById('s1-stateA'), function () {
+                        if (advanceToken !== scene1AdvanceToken + 1) return;
+                        finishScene1();
+                    });
                 }, contentDurationMs_('clock', SCENE1_CLOCK_HOLD_MS));
             });
         }
@@ -14478,13 +14524,20 @@
                         index += 1;
                         if (index >= plan.frames.length) {
                             if (DEMO_ONLY === 'rain-radar') {
-                                index = 0;
-                                show();
+                                scrollDm0004EndFace_(sceneRainRadar.querySelector('.rr-faces'), function () {
+                                    if (gen !== rainRadarGen_) return;
+                                    clearDm0004EndFace_(sceneRainRadar.querySelector('.rr-faces'));
+                                    index = 0;
+                                    show();
+                                });
                                 return;
                             }
                             runAfterSceneEndHold_(function () {
                                 if (gen !== rainRadarGen_) return;
-                                finishRainRadar_();
+                                scrollDm0004EndFace_(sceneRainRadar.querySelector('.rr-faces'), function () {
+                                    if (gen !== rainRadarGen_) return;
+                                    finishRainRadar_();
+                                });
                             });
                             return;
                         }
