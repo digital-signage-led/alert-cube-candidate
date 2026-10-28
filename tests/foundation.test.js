@@ -2424,7 +2424,18 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.i18nTrailingLogo, true);
   assert.strictEqual(site.presentation.hideWbgtAfterSeason, true);
-  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.strictEqual(site.greeting.enabled, true);
+  assert.strictEqual(site.greeting.mode, 'image');
+  assert.ok(site.greeting.image.indexOf('assets/greeting/neighborhood.jpg') >= 0);
+  assert.strictEqual(site.greeting.scrollLaps, 2);
+  assert.strictEqual(site.contents.greeting.on, true);
+  assert.strictEqual(site.schedule.enabled, true);
+  assert.strictEqual(site.schedule.items[0].work, '足場組立');
+  assert.strictEqual(site.schedule.items[1].work, '外装工事');
+  assert.strictEqual(site.schedule.items[2].work, '内装工事');
+  assert.strictEqual(site.schedule.items[3].work, '仕上げ');
+  assert.strictEqual(site.contents.schedule.on, true);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'greeting', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n', 'schedule']);
   assert.ok(index.productionSites.indexOf('AC-0029') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0029') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -2454,6 +2465,25 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.ok(fetches.indexOf('jma-forecast') >= 0);
   assert.ok(fetches.indexOf('moe-wbgt') >= 0);
   assert.ok(fetches.indexOf('moe-heat') < 0);
+  assert.ok(foundation.validateSiteConfig(site).ok);
+});
+
+test('AC-0030 は志摩機械・舞鶴市の5面本番設定', function () {
+  var site = require('../sites/AC-0030.json');
+  assert.strictEqual(site.projectId, 'AC-0030');
+  assert.strictEqual(site.faces, 5);
+  assert.strictEqual(site.greeting.enabled, true);
+  assert.strictEqual(site.greeting.mode, 'image');
+  assert.ok(site.greeting.image.indexOf('assets/greeting/neighborhood.jpg') >= 0);
+  assert.strictEqual(site.greeting.scrollLaps, 2);
+  assert.strictEqual(site.contents.greeting.on, true);
+  assert.strictEqual(site.schedule.enabled, true);
+  assert.strictEqual(site.schedule.items[0].work, '足場組立');
+  assert.strictEqual(site.schedule.items[1].work, '外装工事');
+  assert.strictEqual(site.schedule.items[2].work, '内装工事');
+  assert.strictEqual(site.schedule.items[3].work, '仕上げ');
+  assert.strictEqual(site.contents.schedule.on, true);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'greeting', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n', 'schedule']);
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
