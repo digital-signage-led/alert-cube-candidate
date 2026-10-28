@@ -2403,7 +2403,7 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.ok(site.logo.src.indexOf('AC-0029/logo_mark.png') >= 0);
   assert.strictEqual(site.logo.panelBg, '#2ca8de');
   assert.ok(site.logo.bannerSrc.indexOf('AC-0029/logo_foot.png') >= 0);
-  assert.strictEqual(site.contents.warning.on, false);
+  assert.strictEqual(site.contents.warning.on, true);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents['rain-nowcast'].on, true);
   assert.strictEqual(site.contents.heat.on, false);
@@ -2437,7 +2437,7 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.strictEqual(site.schedule.items[3].work, '仕上げ');
   assert.strictEqual(site.schedule.items[4].work, '検査');
   assert.strictEqual(site.contents.schedule.on, true);
-  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'greeting', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n', 'schedule']);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'greeting', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n', 'schedule']);
   assert.ok(index.productionSites.indexOf('AC-0029') >= 0);
   assert.ok(index.demoSites.indexOf('AC-0029') < 0);
   var brand = foundation.toLegacyBrand(site);
@@ -2487,7 +2487,7 @@ test('AC-0030 は志摩機械・舞鶴市の5面本番設定', function () {
   assert.strictEqual(site.schedule.items[3].work, '仕上げ');
   assert.strictEqual(site.schedule.items[4].work, '検査');
   assert.strictEqual(site.contents.schedule.on, true);
-  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'greeting', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n', 'schedule']);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'greeting', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n', 'schedule']);
   assert.ok(foundation.validateSiteConfig(site).ok);
 });
 
@@ -2496,10 +2496,17 @@ test('注意報・警報・危険警報・特別警報は全案件でオフ、�
   var tpl = require('../sites/_template.json');
   index.sites.forEach(function (row) {
     var site = require('../sites/' + row.projectId + '.json');
-    assert.strictEqual(site.contents.warning.on, false, row.projectId + ' warning');
-    assert.strictEqual(site.contents['warning-hero'].on, false, row.projectId + ' warning-hero');
-    assert.ok(site.contentOrder.indexOf('warning') < 0, row.projectId + ' order warning');
-    assert.ok(site.contentOrder.indexOf('warning-hero') < 0, row.projectId + ' order warning-hero');
+    if (row.projectId === 'AC-0029' || row.projectId === 'AC-0030') {
+      assert.strictEqual(site.contents.warning.on, true, row.projectId + ' warning');
+      assert.strictEqual(site.contents['warning-hero'].on, false, row.projectId + ' warning-hero');
+      assert.strictEqual(site.contentOrder[0], 'warning', row.projectId + ' order warning');
+      assert.ok(site.contentOrder.indexOf('warning-hero') < 0, row.projectId + ' order warning-hero');
+    } else {
+      assert.strictEqual(site.contents.warning.on, false, row.projectId + ' warning');
+      assert.strictEqual(site.contents['warning-hero'].on, false, row.projectId + ' warning-hero');
+      assert.ok(site.contentOrder.indexOf('warning') < 0, row.projectId + ' order warning');
+      assert.ok(site.contentOrder.indexOf('warning-hero') < 0, row.projectId + ' order warning-hero');
+    }
     if (row.projectId === 'AC-0024') {
       assert.strictEqual(site.contents.typhoon.on, false, row.projectId + ' typhoon');
       assert.strictEqual(site.contents['rain-radar'].on, false, row.projectId + ' rain-radar');
