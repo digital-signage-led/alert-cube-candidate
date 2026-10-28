@@ -21,7 +21,7 @@
     <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
-    <script src="./core/foundation.js?v=20261016-dm0002"></script>
+    <script src="./core/foundation.js?v=20261028-shima-cube"></script>
     <script src="./services/densho/index.js?v=20260929-densho-live"></script>
     <script src="./services/remote.js?v=20261016-dm0002"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
@@ -142,6 +142,20 @@
             margin: 0; padding: 0;
         }
         .canvas { width: 640px; height: 128px; position: relative; overflow: hidden; display: flex; flex-direction: row; flex-wrap: nowrap; gap: 0; transform-origin: top left; }
+        .ac-bridge {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: left center;
+            background: #000;
+            z-index: 80;
+            pointer-events: none;
+        }
+        .ac-bridge.is-on { display: block; }
         @media screen and (min-width: 641px) {
             .canvas { transform: scale(calc(100vw / 640)); }
         }
@@ -2821,6 +2835,7 @@
 </svg>
 
 <div class="canvas">
+    <video id="ac-bridge" class="ac-bridge" muted playsinline preload="auto"></video>
     <div class="content-area">
     <div class="scene" id="sceneAlert">
         <div class="ha-pair ha-warning" id="ha-pair">
@@ -8569,7 +8584,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261016-ac0005-end', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261028-shima-cube', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -11184,6 +11199,7 @@
         if (nextEl !== sceneSchedule) clearScheduleSceneChrome_();
         const current = getActiveScene();
         if (!nextEl) { runSceneCallback_(onComplete); return; }
+        bridgeAfter_ = true;
         if (current === nextEl) { runSceneCallback_(onComplete); return; }
         ALL_SCENES_.forEach(function (el) {
             if (el && el !== current && el !== nextEl) hideSceneEl(el);
@@ -13819,8 +13835,70 @@
         playlistIdx_ = openingPlaylistIndex_(ids);
         playContentById_(ids[playlistIdx_]);
     }
+    let bridgeAfter_ = false;
+    let bridgeToken_ = 0;
+    let bridgeTimerId_ = null;
+    let bridgeAt_ = 0;
+    function playBridgeThen_(done) {
+        const cfg = (siteCfg_() && siteCfg_().bridge) || null;
+        const src = cfg && String(cfg.src || '').trim();
+        const video = document.getElementById('ac-bridge');
+        const ms = Math.min(12000, Math.max(500, Number(cfg && cfg.ms) || 4000));
+        if (!src || !video || DEMO_ONLY) { done(); return; }
+        const token = ++bridgeToken_;
+        let finished = false;
+        function finish() {
+            if (finished || token !== bridgeToken_) return;
+            finished = true;
+            if (bridgeTimerId_) { clearTimeout(bridgeTimerId_); bridgeTimerId_ = null; }
+            try {
+                if (isFinite(video.currentTime)) bridgeAt_ = video.currentTime;
+                video.pause();
+            } catch (e) {}
+            video.classList.remove('is-on');
+            done();
+        }
+        if (video.getAttribute('data-src') !== src) {
+            video.setAttribute('data-src', src);
+            video.src = src;
+            bridgeAt_ = 0;
+        }
+        video.muted = true;
+        video.classList.add('is-on');
+        function begin() {
+            if (finished || token !== bridgeToken_) return;
+            const dur = Number(video.duration);
+            if (dur && bridgeAt_ > dur - 0.2) bridgeAt_ = 0;
+            function seek() {
+                const playing = video.play();
+                if (playing && playing.catch) playing.catch(function () { finish(); });
+                bridgeTimerId_ = setTimeout(finish, ms);
+            }
+            if (bridgeAt_ > 0.05) {
+                const onSeek = function () { video.removeEventListener('seeked', onSeek); seek(); };
+                video.addEventListener('seeked', onSeek);
+                try { video.currentTime = bridgeAt_; } catch (e) { seek(); }
+            } else seek();
+        }
+        if (video.readyState >= 1) begin();
+        else {
+            video.addEventListener('loadedmetadata', function onMeta() {
+                video.removeEventListener('loadedmetadata', onMeta);
+                begin();
+            });
+            video.addEventListener('error', function onErr() {
+                video.removeEventListener('error', onErr);
+                finish();
+            });
+            setTimeout(function () {
+                if (!finished && token === bridgeToken_ && video.readyState < 1) finish();
+            }, 1200);
+        }
+    }
     function advanceContentOrder_() {
         const ids = playlistIds_();
+        const showBridge = bridgeAfter_;
+        bridgeAfter_ = false;
         if (!ids.length) {
             transitionToScene(s1, playScene1);
             return;
@@ -13829,11 +13907,16 @@
         if (playlistBurst_ > ids.length + 1) {
             playlistBurst_ = 0;
             playlistIdx_ = 0;
-            playContentById_(ids[0]);
+            const go = function () { playContentById_(ids[0]); };
+            if (showBridge) playBridgeThen_(go);
+            else go();
             return;
         }
         playlistIdx_ = (playlistIdx_ + 1) % ids.length;
-        playContentById_(ids[playlistIdx_]);
+        const nextId = ids[playlistIdx_];
+        const goNext = function () { playContentById_(nextId); };
+        if (showBridge) playBridgeThen_(goNext);
+        else goNext();
     }
     function contentAreaEl_() {
         return document.querySelector('.content-area');

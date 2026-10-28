@@ -2428,6 +2428,8 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.strictEqual(site.greeting.mode, 'image');
   assert.ok(site.greeting.image.indexOf('assets/greeting/neighborhood.jpg') >= 0);
   assert.strictEqual(site.greeting.scrollLaps, 2);
+  assert.strictEqual(site.bridge.ms, 4000);
+  assert.ok(site.bridge.src.indexOf('assets/cube/cube.mp4') >= 0);
   assert.strictEqual(site.contents.greeting.on, true);
   assert.strictEqual(site.schedule.enabled, true);
   assert.strictEqual(site.schedule.advisoryChip, false);
@@ -2478,6 +2480,8 @@ test('AC-0030 は志摩機械・舞鶴市の5面本番設定', function () {
   assert.strictEqual(site.greeting.mode, 'image');
   assert.ok(site.greeting.image.indexOf('assets/greeting/neighborhood.jpg') >= 0);
   assert.strictEqual(site.greeting.scrollLaps, 2);
+  assert.strictEqual(site.bridge.ms, 4000);
+  assert.ok(site.bridge.src.indexOf('assets/cube/cube.mp4') >= 0);
   assert.strictEqual(site.contents.greeting.on, true);
   assert.strictEqual(site.schedule.enabled, true);
   assert.strictEqual(site.schedule.advisoryChip, false);

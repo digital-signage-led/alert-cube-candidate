@@ -318,6 +318,7 @@
       clockFoot: site.clockFoot || '',
       schedule: site.schedule || { enabled: false, weekStartsOn: 1, items: [] },
       greeting: site.greeting || { enabled: false },
+      bridge: site.bridge || null,
       presentation: site.presentation || {},
       contents: site.contents,
       contentOrder: site.contentOrder,
@@ -364,6 +365,7 @@
     if (json.geo) base.geo = Object.assign({}, base.geo || {}, json.geo);
     if (json.schedule) base.schedule = json.schedule;
     if (json.greeting) base.greeting = json.greeting;
+    if (json.bridge) base.bridge = json.bridge;
     if (json.presentation) base.presentation = Object.assign({}, base.presentation || {}, json.presentation);
     if (json.edamSsc) base.edamSsc = json.edamSsc;
     if (json.news) base.news = json.news;

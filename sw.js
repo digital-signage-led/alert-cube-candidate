@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20261028-shima-no-advisory';
+var CACHE_NAME = 'alert-cube-sites-20261028-shima-cube';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -19,7 +19,7 @@ var PRECACHE = [
   './contents/index.html',
   './data/jma-weather-icons.js?v=20260921-suminoe',
   './data/jma-regions.js?v=20260921-suminoe',
-  './core/foundation.js?v=20261016-dm0002',
+  './core/foundation.js?v=20261028-shima-cube',
   './services/densho/index.js?v=20260929-densho-live',
   './services/remote.js?v=20261016-dm0002',
   './services/typhoon/index.js?v=20260921-suminoe',
@@ -133,7 +133,8 @@ var PRECACHE = [
   './assets/sites/AC-0004/logo_foot.png?v=1',
   './assets/sites/AC-0004/news.json',
   './assets/sites/AC-0002/eneos_logo.gif?v=20260921-ac0002-user1',
-  './assets/sites/AC-0002/eneos_lockup.png?v=20260921-ac0002-user1'
+  './assets/sites/AC-0002/eneos_lockup.png?v=20260921-ac0002-user1',
+  './assets/cube/cube.mp4?v=1'
 ];
 
 self.addEventListener('install', function (event) {
