@@ -8584,7 +8584,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261028-shima-clock', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261028-shima-nocube', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
