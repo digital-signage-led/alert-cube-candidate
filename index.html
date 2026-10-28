@@ -4351,6 +4351,16 @@
         /* 暑さ指数の4面と多言語は気温に書き換えない。出せないあいだは再生で飛ばす。 */
     }
     function syncAnnualMode_() {
+        if (query.get('autumn') === 'red') {
+            annualMode_ = 'TEMPERATURE_AUTUMN';
+            wbgtOffSeason = true;
+            const preview = { bg: '#C4472A', bar: '#E06A42', ink: '#FFFFFF', colorType: 'AUTUMN', judgment: false, darkText: false };
+            if (window.SignageBg && window.SignageBg.setTemperatureColors) window.SignageBg.setTemperatureColors(preview);
+            paintTemperatureDom_();
+            queueOrRefreshS1FootBar_();
+            refreshSignageBgIfChanged_(true);
+            return annualMode_;
+        }
         if (!window.AlertCubeCore || !window.AlertCubeCore.resolveAnnualMode) return annualMode_;
         const parts = jstPartsNow_();
         const apiInService = hideWbgtAfterSeason_() ? false : moeService_;
@@ -4368,12 +4378,7 @@
         annualMode_ = next;
         wbgtOffSeason = String(next).indexOf('TEMPERATURE_') === 0;
         const season = window.AlertCubeCore.climateSeason(parts, annualSeasonCfg_());
-        let color = window.AlertCubeCore.getTemperatureDisplayColor(lastAmedasTempC_, season);
-        if (query.get('autumn') === 'red') {
-            annualMode_ = 'TEMPERATURE_AUTUMN';
-            wbgtOffSeason = true;
-            color = { bg: '#C4472A', bar: '#E06A42', ink: '#FFFFFF', colorType: 'AUTUMN', judgment: false, darkText: false };
-        }
+        const color = window.AlertCubeCore.getTemperatureDisplayColor(lastAmedasTempC_, season);
         if (color && window.SignageBg && window.SignageBg.setTemperatureColors) {
             window.SignageBg.setTemperatureColors(color);
         }
@@ -15020,6 +15025,7 @@
         }
         if (DEMO_SIGNAGE_ACTIVE) {
             bootDisplayHold_ = false;
+            if (query.get('autumn') === 'red') syncAnnualMode_();
             applySyncedUtcMs(Date.now(), 'demo-local');
             updateClock();
             startClockTicker();
