@@ -8584,7 +8584,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261028-shima-cube', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261028-shima-clock', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -13865,20 +13865,26 @@
         }
         video.muted = true;
         video.classList.add('is-on');
+        bridgeTimerId_ = setTimeout(finish, ms + 1500);
         function begin() {
             if (finished || token !== bridgeToken_) return;
             const dur = Number(video.duration);
             if (dur && bridgeAt_ > dur - 0.2) bridgeAt_ = 0;
-            function seek() {
+            function arm() {
+                if (finished || token !== bridgeToken_) return;
+                if (bridgeTimerId_) { clearTimeout(bridgeTimerId_); bridgeTimerId_ = null; }
                 const playing = video.play();
-                if (playing && playing.catch) playing.catch(function () { finish(); });
+                if (playing && playing.catch) playing.catch(function () {});
                 bridgeTimerId_ = setTimeout(finish, ms);
             }
             if (bridgeAt_ > 0.05) {
-                const onSeek = function () { video.removeEventListener('seeked', onSeek); seek(); };
+                const onSeek = function () { video.removeEventListener('seeked', onSeek); arm(); };
                 video.addEventListener('seeked', onSeek);
-                try { video.currentTime = bridgeAt_; } catch (e) { seek(); }
-            } else seek();
+                try { video.currentTime = bridgeAt_; } catch (e) { arm(); }
+                setTimeout(function () {
+                    if (!finished && token === bridgeToken_ && video.paused) arm();
+                }, 400);
+            } else arm();
         }
         if (video.readyState >= 1) begin();
         else {
