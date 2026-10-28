@@ -3174,19 +3174,15 @@
         return brand;
     }
 
+    /** 時刻・観測・予報の地。色を指定した案件は除く。上帯 #E06A42、本体 #C4472A。 */
+    var UNIFIED_BG = { bgColor: '#C4472A', barColor: '#E06A42' };
+
     /** displayMode: 'normal' | 'unavailable' | 'offseason' | 'temperature' */
     function colorsForDisplay(levelIdx, displayMode) {
-        if (displayMode !== 'unavailable') {
-            const outside = brandOutsideSeason_();
-            if (outside) return { bgColor: outside.bgColor, barColor: outside.barColor };
-        }
-        if (displayMode === 'temperature' && temperatureColors_) {
-            return { bgColor: temperatureColors_.bg, barColor: temperatureColors_.bar };
-        }
-        if (displayMode === 'offseason') return OFF_SEASON;
         if (displayMode === 'unavailable') return UNKNOWN;
-        if (levelIdx == null || levelIdx < 0) return colorsForLevel(0);
-        return colorsForLevel(levelIdx);
+        const outside = brandOutsideSeason_();
+        if (outside) return { bgColor: outside.bgColor, barColor: outside.barColor };
+        return UNIFIED_BG;
     }
 
     /** 注意(1)・警戒(2): 黄〜橙黄背景で文字を黒にする */
@@ -3195,13 +3191,9 @@
     }
 
     function isDarkTextForDisplay(levelIdx, displayMode) {
-        if (displayMode !== 'unavailable') {
-            const outside = brandOutsideSeason_();
-            if (outside) return outside.darkText;
-        }
-        if (displayMode === 'temperature' && temperatureColors_) return !!temperatureColors_.darkText;
-        if (displayMode === 'offseason' || displayMode === 'unavailable') return false;
-        return isDarkTextLevel(levelIdx);
+        const outside = brandOutsideSeason_();
+        if (outside) return outside.darkText;
+        return false;
     }
 
     function ensureBgLayer(el, kind) {
