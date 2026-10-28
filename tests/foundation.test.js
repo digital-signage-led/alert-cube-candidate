@@ -2430,6 +2430,7 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.strictEqual(site.greeting.scrollLaps, 2);
   assert.strictEqual(site.contents.greeting.on, true);
   assert.strictEqual(site.schedule.enabled, true);
+  assert.strictEqual(site.schedule.advisoryChip, false);
   assert.strictEqual(site.schedule.items[0].work, '足場組立');
   assert.strictEqual(site.schedule.items[1].work, '外装工事');
   assert.strictEqual(site.schedule.items[2].work, '内装工事');
@@ -2479,6 +2480,7 @@ test('AC-0030 は志摩機械・舞鶴市の5面本番設定', function () {
   assert.strictEqual(site.greeting.scrollLaps, 2);
   assert.strictEqual(site.contents.greeting.on, true);
   assert.strictEqual(site.schedule.enabled, true);
+  assert.strictEqual(site.schedule.advisoryChip, false);
   assert.strictEqual(site.schedule.items[0].work, '足場組立');
   assert.strictEqual(site.schedule.items[1].work, '外装工事');
   assert.strictEqual(site.schedule.items[2].work, '内装工事');

@@ -12708,6 +12708,8 @@
             }
         }
         if (!level || level === 'early') return null;
+        const scheduleCfg = (siteCfg_() && siteCfg_().schedule) || {};
+        if (level === 'advisory' && scheduleCfg.advisoryChip === false) return null;
         const chip = RAIN_WHITE_LEVEL_CHIP[level];
         if (!chip) return null;
         let label = chip.label;
