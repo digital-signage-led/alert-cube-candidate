@@ -2434,6 +2434,7 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.strictEqual(site.schedule.items[1].work, '外装工事');
   assert.strictEqual(site.schedule.items[2].work, '内装工事');
   assert.strictEqual(site.schedule.items[3].work, '仕上げ');
+  assert.strictEqual(site.schedule.items[4].work, '検査');
   assert.strictEqual(site.contents.schedule.on, true);
   assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'greeting', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n', 'schedule']);
   assert.ok(index.productionSites.indexOf('AC-0029') >= 0);
@@ -2482,6 +2483,7 @@ test('AC-0030 は志摩機械・舞鶴市の5面本番設定', function () {
   assert.strictEqual(site.schedule.items[1].work, '外装工事');
   assert.strictEqual(site.schedule.items[2].work, '内装工事');
   assert.strictEqual(site.schedule.items[3].work, '仕上げ');
+  assert.strictEqual(site.schedule.items[4].work, '検査');
   assert.strictEqual(site.contents.schedule.on, true);
   assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'greeting', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n', 'schedule']);
   assert.ok(foundation.validateSiteConfig(site).ok);
