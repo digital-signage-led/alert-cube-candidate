@@ -4368,7 +4368,12 @@
         annualMode_ = next;
         wbgtOffSeason = String(next).indexOf('TEMPERATURE_') === 0;
         const season = window.AlertCubeCore.climateSeason(parts, annualSeasonCfg_());
-        const color = window.AlertCubeCore.getTemperatureDisplayColor(lastAmedasTempC_, season);
+        let color = window.AlertCubeCore.getTemperatureDisplayColor(lastAmedasTempC_, season);
+        if (query.get('autumn') === 'red') {
+            annualMode_ = 'TEMPERATURE_AUTUMN';
+            wbgtOffSeason = true;
+            color = { bg: '#C4472A', bar: '#E06A42', ink: '#FFFFFF', colorType: 'AUTUMN', judgment: false, darkText: false };
+        }
         if (color && window.SignageBg && window.SignageBg.setTemperatureColors) {
             window.SignageBg.setTemperatureColors(color);
         }
