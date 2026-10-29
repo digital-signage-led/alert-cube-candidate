@@ -65,7 +65,18 @@
       });
     }
     paintLogoSrc_(document.querySelectorAll('.s2-logo-face-img, .fc-logo-face-img, .d5-logo-face-img'), endSrc);
-    paintLogoSrc_(document.querySelectorAll('.logo-img, .logo-corp-img'), brand.logoSrc || '');
+    paintLogoSrc_(document.querySelectorAll('.logo-img'), brand.logoSrc || '');
+    var corpSrc = String(brand.logoCorpSrc || '').trim();
+    if (!corpSrc || corpSrc === String(brand.logoSrc || '').trim()) corpSrc = '';
+    document.querySelectorAll('.logo-corp-img').forEach(function (el) {
+      if (!corpSrc) {
+        el.removeAttribute('src');
+        el.style.setProperty('display', 'none', 'important');
+        return;
+      }
+      el.style.removeProperty('display');
+      if (el.getAttribute('src') !== corpSrc) el.src = corpSrc;
+    });
     document.querySelectorAll('.fc-logo-panel, .d5-logo-panel, .s2-logo-panel').forEach(function (el) {
       el.style.display = endSrc ? '' : 'none';
     });

@@ -29,7 +29,7 @@
     <script src="./safety/retry.js?v=20260921-suminoe"></script>
     <script src="./safety/rollback.js?v=20260921-suminoe"></script>
     <script src="./scripts/alert-cube-core.js?v=20260929-i18n-off"></script>
-    <script src="./scripts/alert-cube-runtime.js?v=20261027-nikken-end"></script>
+    <script src="./scripts/alert-cube-runtime.js?v=20261029-ac0031-logo"></script>
     <script>
     (function () {
         try {
@@ -259,7 +259,14 @@
             width: 128px; max-width: 128px; height: 128px; max-height: 128px;
         }
         html.site-ac-0029 .logo-corp-img,
-        html.site-ac-0030 .logo-corp-img { display: none !important; }
+        html.site-ac-0030 .logo-corp-img,
+        html.site-ac-0031 .logo-corp-img { display: none !important; }
+        html.site-ac-0031 .logo-stack {
+            width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
+        }
+        html.site-ac-0031 .logo-img {
+            width: 120px; max-width: 120px; height: 120px; max-height: 120px;
+        }
         html.site-ac-0029 .logo-panel,
         html.site-ac-0030 .logo-panel,
         html.site-ac-0029 #scene2 .s2-logo-panel,
@@ -3618,6 +3625,7 @@
         document.documentElement.classList.toggle('site-ac-0028', String(c.projectId || '') === 'AC-0028');
         document.documentElement.classList.toggle('site-ac-0029', String(c.projectId || '') === 'AC-0029');
         document.documentElement.classList.toggle('site-ac-0030', String(c.projectId || '') === 'AC-0030');
+        document.documentElement.classList.toggle('site-ac-0031', String(c.projectId || '') === 'AC-0031');
         document.documentElement.classList.toggle('site-dm-0004', String(c.projectId || '') === 'DM-0004');
         document.documentElement.classList.toggle('site-dm-0005', String(c.projectId || '') === 'DM-0005');
         applyFaceLayout_();
