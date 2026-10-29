@@ -256,6 +256,7 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.ok(index.productionSites.indexOf('AC-0027') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0028') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0029') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0031') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
   assert.ok(Array.isArray(index.demoSites));
   index.demoSites.forEach(function (id) {
