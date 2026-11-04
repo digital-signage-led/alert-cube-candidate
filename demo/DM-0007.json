@@ -11,7 +11,7 @@
   "latitude": 35.535023,
   "longitude": 135.195496,
   "elevation": null,
-  "memo": "未確定のデモ。鴻池組、京都府宮津市。請求しない。本番端末へ登録しない。4面512×128。コンテンツ末尾はKONOIKEの文字とマーク。時刻下の白帯はKONOIKEの文字。標語「まじめに、まっすぐ」は128px面に入らないので出さない。地点名「宮津市」。地図は宮津市役所（柳縄手）付近。現場の番地は未指定。WBGT・アメダスは宮津61076（気温・降水・風・湿度。気圧は舞鶴61111で補完）。予報は京都府260000、詳細は北部260020、気温の発表地点は舞鶴61111。警報は京都府260000、宮津市2620500。気象観測・WBGT・4日予報は1周。注意報・警報は発表中だけ2周。台風は発表中だけ2周。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
+  "memo": "未確定のデモ。鴻池組、京都府宮津市。請求しない。本番端末へ登録しない。4面512×128。コンテンツの並びは志摩機械と同じ。コンテンツ末尾はKONOIKEの文字とマーク。時刻下の白帯はKONOIKEの文字。標語「まじめに、まっすぐ」は128px面に入らないので出さない。地点名「宮津市」。地図は宮津市役所（柳縄手）付近。現場の番地は未指定。WBGT・アメダスは宮津61076（気温・降水・風・湿度。気圧は舞鶴61111で補完）。予報は京都府260000、詳細は北部260020、気温の発表地点は舞鶴61111。警報は京都府260000、宮津市2620500。近隣挨拶は共通画像を2周。工程表は月曜から足場組立、外装工事、内装工事、仕上げ、検査。気象観測・WBGT・4日予報・多言語は1周。注意報・警報は発表中だけ2周。台風は発表中だけ2周。10月22日を過ぎたら暑さ指数と多言語は出さない。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
   "inundation": { "expectedDepthM": null },
   "evacuation": {
     "assembly": "",
@@ -62,11 +62,22 @@
   },
   "season": { "override": null },
   "updateSettings": { "refreshMs": 60000 },
-  "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "schedule": {
+    "enabled": true,
+    "weekStartsOn": 1,
+    "items": [
+      { "work": "足場組立", "sub": "" },
+      { "work": "外装工事", "sub": "" },
+      { "work": "内装工事", "sub": "" },
+      { "work": "仕上げ", "sub": "" },
+      { "work": "検査", "sub": "" }
+    ]
+  },
   "greeting": {
-    "enabled": false,
+    "enabled": true,
     "mode": "image",
     "image": "./assets/greeting/neighborhood.jpg?v=1",
+    "scrollLaps": 2,
     "title": "近隣の皆様へ",
     "lines": [],
     "foot": ""
@@ -81,7 +92,10 @@
     "i18nLaps": 1,
     "warningLaps": 2,
     "typhoonLaps": 2,
-    "observationTrailingLogo": true
+    "logoRotate": false,
+    "observationTrailingLogo": true,
+    "i18nTrailingLogo": true,
+    "hideWbgtAfterSeason": true
   },
   "news": {
     "badge": "新着情報",
@@ -92,9 +106,10 @@
     "urls": [],
     "cacheKey": ""
   },
-  "contentOrder": [ "warning", "typhoon", "clock", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": [ "warning", "typhoon", "clock", "greeting", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n", "schedule"],
   "contents": {
     "clock": { "on": true },
+    "observation": { "on": true },
     "weather": { "on": true },
     "temperature": { "on": true },
     "rain": { "on": true },
@@ -111,10 +126,10 @@
     "typhoon": { "on": true },
     "rain-radar": { "on": true },
     "lightning": { "on": true },
-    "disaster": { "on": true },
+    "disaster": { "on": false },
     "heat": { "on": false },
-    "schedule": { "on": false },
-    "greeting": { "on": false },
+    "schedule": { "on": true },
+    "greeting": { "on": true },
     "news": { "on": false },
     "boards": { "on": false },
     "logo-scroll": { "on": false },
