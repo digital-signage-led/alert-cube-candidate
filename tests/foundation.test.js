@@ -2742,6 +2742,10 @@ test('未確定案件: ニッケン白浜町は DM-0011', function () {
   assert.strictEqual(site.contents['warning-hero'].on, false);
   assert.strictEqual(site.presentation.warningLaps, 2);
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
+  assert.strictEqual(site.presentation.ambient, 'brand');
+  assert.strictEqual(site.presentation.brand.top, '#A5CE20');
+  assert.strictEqual(site.presentation.brand.body, '#8CB808');
+  assert.strictEqual(site.presentation.brand.darkText, true);
   assert.ok(site.logo.src.indexOf('assets/demo/DM-0011/logo_mark.png') >= 0);
   assert.ok(fs.existsSync(path.join(root, 'assets', 'demo', 'DM-0011', 'logo_mark.png')));
   assert.ok(fs.existsSync(path.join(root, 'assets', 'demo', 'DM-0011', 'logo_foot.png')));
