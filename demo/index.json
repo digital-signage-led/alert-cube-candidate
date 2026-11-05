@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "series": "DM",
   "firstId": "DM-0001",
-  "nextId": "DM-0012",
+  "nextId": "DM-0013",
   "notes": "未確定で、まだ請求できない現場。番号は DM-0001 から。DM-0000 は作らない。表示する中身は本番と同じ共通コンテンツで、大本は AC-0000。現場が決まったら sites/ の次の AC 番号を発行してそちらで出す。DM 番号は AC に付け替えない。本番端末へ登録しない。",
   "sites": [
     { "projectId": "DM-0001", "status": "demo", "customer": "デジタルサイネージ", "siteName": "住之江区" },
@@ -13,6 +13,7 @@
     { "projectId": "DM-0006", "status": "demo", "customer": "デジタルサイネージ", "siteName": "千葉県北東部" },
     { "projectId": "DM-0007", "status": "demo", "customer": "鴻池組", "siteName": "宮津市" },
     { "projectId": "DM-0009", "status": "demo", "customer": "デジタルサイネージ", "siteName": "美原区" },
-    { "projectId": "DM-0011", "status": "demo", "customer": "株式会社レンタルのニッケン", "siteName": "白浜町" }
+    { "projectId": "DM-0011", "status": "demo", "customer": "株式会社レンタルのニッケン", "siteName": "白浜町" },
+    { "projectId": "DM-0012", "status": "demo", "customer": "株式会社レンタルのニッケン", "siteName": "美原区" }
   ]
 }
