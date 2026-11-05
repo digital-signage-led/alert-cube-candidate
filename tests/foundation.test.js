@@ -2714,6 +2714,38 @@ test('1周は開始位置に戻る距離', function () {
   assert.ok(page.indexOf("src + src + logo") >= 0);
 });
 
+
+test('未確定案件: ニッケン白浜町は DM-0011', function () {
+  var fs = require('fs');
+  var path = require('path');
+  var root = path.join(__dirname, '..');
+  var catalog = JSON.parse(fs.readFileSync(path.join(root, 'demo', 'index.json'), 'utf8'));
+  var template = JSON.parse(fs.readFileSync(path.join(root, 'demo', '_template.json'), 'utf8'));
+  var site = JSON.parse(fs.readFileSync(path.join(root, 'demo', 'DM-0011.json'), 'utf8'));
+  assert.strictEqual(catalog.nextId, 'DM-0012');
+  assert.strictEqual(template.projectId, 'DM-0012');
+  assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0011' && row.siteName === '白浜町'; }));
+  assert.strictEqual(site.projectId, 'DM-0011');
+  assert.strictEqual(site.status, 'demo');
+  assert.strictEqual(site.customer, '株式会社レンタルのニッケン');
+  assert.strictEqual(site.siteName, '白浜町');
+  assert.strictEqual(site.faces, 5);
+  assert.strictEqual(site.layout, 'AC-640');
+  assert.strictEqual(site.jma.amedasPoint, '65288');
+  assert.strictEqual(site.jma.amedasSupplementPoint, '65356');
+  assert.strictEqual(site.jma.forecastDetail, '300020');
+  assert.strictEqual(site.jma.forecastPoint, '65356');
+  assert.strictEqual(site.jma.warnArea, '300000');
+  assert.strictEqual(site.jma.warnCity, '3040100');
+  assert.strictEqual(site.jma.warnCityLabel, '白浜町');
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.contents['warning-hero'].on, false);
+  assert.strictEqual(site.presentation.warningLaps, 2);
+  assert.strictEqual(site.presentation.observationTrailingLogo, true);
+  assert.ok(site.logo.src.indexOf('assets/demo/DM-0011/logo_mark.png') >= 0);
+  assert.ok(fs.existsSync(path.join(root, 'assets', 'demo', 'DM-0011', 'logo_mark.png')));
+  assert.ok(fs.existsSync(path.join(root, 'assets', 'demo', 'DM-0011', 'logo_foot.png')));
+});
 console.log('');
 console.log(passed + ' passed, ' + failed + ' failed');
 if (failed) process.exit(1);

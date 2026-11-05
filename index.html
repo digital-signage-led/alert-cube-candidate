@@ -4444,7 +4444,7 @@
     function syncWbgtDependentAlerts_() {
         if (wbgtNormalDisplay_()) return;
         if (!heatAlertForced) applyHeatAlertLevel_('none');
-        if (!rainWarnForced && !whiteModeForced_()) applyRainWarnLevel_('none', null);
+        if (!rainWarnForced && !whiteModeForced_() && !contentOn_('warning')) applyRainWarnLevel_('none', null);
     }
     function getNowMs() {
         const ms = getSyncedUtcMs();
@@ -7182,7 +7182,7 @@
     }
     async function updateRainWarnFromGas_() {
         if (WBGT_ONLY || NO_JMA_WARN) return;
-        if (!wbgtNormalDisplay_() && !rainWarnForced && !whiteModeForced_()) {
+        if (!wbgtNormalDisplay_() && !rainWarnForced && !whiteModeForced_() && !contentOn_('warning')) {
             applyRainWarnLevel_('none', null);
             return;
         }
