@@ -195,12 +195,14 @@
         html.site-ac-0014 .logo-stack,
         html.site-dm-0004 .logo-stack,
         html.site-dm-0005 .logo-stack,
-        html.site-dm-0011 .logo-stack {
+        html.site-dm-0011 .logo-stack,
+        html.site-dm-0012 .logo-stack {
             width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
         }
         html.site-ac-0014 .logo-img,
         html.site-dm-0004 .logo-img,
-        html.site-dm-0011 .logo-img {
+        html.site-dm-0011 .logo-img,
+        html.site-dm-0012 .logo-img {
             width: 120px; max-width: 120px; height: 120px; max-height: 120px;
         }
         html.site-dm-0005 .logo-img {
@@ -208,13 +210,17 @@
         }
         html.site-dm-0011 #scene2 .s2-logo-face-img,
         html.site-dm-0011 #scene4 .fc-logo-panel .fc-logo-face-img,
-        html.site-dm-0011 #scene5 .d5-logo-panel .d5-logo-face-img {
+        html.site-dm-0011 #scene5 .d5-logo-panel .d5-logo-face-img,
+        html.site-dm-0012 #scene2 .s2-logo-face-img,
+        html.site-dm-0012 #scene4 .fc-logo-panel .fc-logo-face-img,
+        html.site-dm-0012 #scene5 .d5-logo-panel .d5-logo-face-img {
             width: 120px; height: 120px; max-width: 120px; max-height: 120px;
         }
         html.site-ac-0014 .logo-corp-img,
         html.site-dm-0004 .logo-corp-img,
         html.site-dm-0005 .logo-corp-img,
-        html.site-dm-0011 .logo-corp-img { display: none !important; }
+        html.site-dm-0011 .logo-corp-img,
+        html.site-dm-0012 .logo-corp-img { display: none !important; }
         html.site-ac-0016 .s1-wbgt-logo-wrap { width: 78px; height: 20px; }
         html.site-ac-0016 .s1-wbgt-logo { height: 18px; max-width: 78px; }
         html.site-ac-0021 .logo-stack {
@@ -3637,6 +3643,7 @@
         document.documentElement.classList.toggle('site-dm-0004', String(c.projectId || '') === 'DM-0004');
         document.documentElement.classList.toggle('site-dm-0005', String(c.projectId || '') === 'DM-0005');
         document.documentElement.classList.toggle('site-dm-0011', String(c.projectId || '') === 'DM-0011');
+        document.documentElement.classList.toggle('site-dm-0012', String(c.projectId || '') === 'DM-0012');
         applyFaceLayout_();
         if (typeof compactScene4Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s4))) compactScene4Panels();
         if (typeof compactScene5Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s5))) compactScene5Panels();
