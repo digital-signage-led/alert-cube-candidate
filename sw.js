@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20261029-ac0031-logo';
+var CACHE_NAME = 'alert-cube-sites-20261109-ac0033';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -137,7 +137,10 @@ var PRECACHE = [
   './assets/sites/AC-0002/eneos_lockup.png?v=20260921-ac0002-user1',
   './sites/AC-0031.json',
   './assets/sites/AC-0031/logo_mark.png?v=1',
-  './assets/sites/AC-0031/logo_foot.png?v=1'
+  './assets/sites/AC-0031/logo_foot.png?v=1',
+  './sites/AC-0033.json',
+  './assets/sites/AC-0033/logo_mark.png?v=1',
+  './assets/sites/AC-0033/logo_foot.png?v=1'
 ];
 
 self.addEventListener('install', function (event) {
