@@ -381,6 +381,35 @@
     };
   }
 
+  /**
+   * 環境省の予報CSVが、いまの時刻をまだカバーしているか。
+   * 最終の対象時刻を過ぎていれば提供は終わっている。時刻が読めないファイルは従来どおり出す。
+   * 対象時刻は日本時間の YYYYMMDDHH。24時は翌日0時。
+   */
+  function yohouLatestValidMs_(text) {
+    var latest = null;
+    String(text || '').split(/[,\r\n]+/).forEach(function (cell) {
+      var s = String(cell || '').trim();
+      if (!/^\d{10}$/.test(s)) return;
+      var y = Number(s.slice(0, 4));
+      var mo = Number(s.slice(4, 6));
+      var d = Number(s.slice(6, 8));
+      var h = Number(s.slice(8, 10));
+      if (mo < 1 || mo > 12 || d < 1 || d > 31 || h > 24) return;
+      var extra = h === 24 ? 1 : 0;
+      var hour = h === 24 ? 0 : h;
+      var ms = Date.UTC(y, mo - 1, d + extra, hour) - 9 * 60 * 60 * 1000;
+      if (latest == null || ms > latest) latest = ms;
+    });
+    return latest;
+  }
+
+  function yohouForecastOpen(text, nowMs) {
+    var latest = yohouLatestValidMs_(text);
+    if (latest == null || nowMs == null || !isFinite(nowMs)) return true;
+    return latest >= nowMs;
+  }
+
   function typhoonShouldDisplay(info, site) {
     if (!info || info.fetchOk === false) return false;
     if (!info.exists) return false;
@@ -414,6 +443,7 @@
     capturePlayback: capturePlayback,
     fetchStatus: fetchStatus,
     mergeDisasterWatch: mergeDisasterWatch,
+    yohouForecastOpen: yohouForecastOpen,
     typhoonShouldDisplay: typhoonShouldDisplay
   };
 

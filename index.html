@@ -28,7 +28,7 @@
     <script src="./safety/fallback.js?v=20260921-suminoe"></script>
     <script src="./safety/retry.js?v=20260921-suminoe"></script>
     <script src="./safety/rollback.js?v=20260921-suminoe"></script>
-    <script src="./scripts/alert-cube-core.js?v=20260929-i18n-off"></script>
+    <script src="./scripts/alert-cube-core.js?v=20261110-wbgt-open"></script>
     <script src="./scripts/alert-cube-runtime.js?v=20261029-ac0031-logo"></script>
     <script>
     (function () {
@@ -9620,8 +9620,19 @@
             };
         }
         if (!res.ok) throw new Error('yohou HTTP ' + res.status);
-        const parsed = parseYohouCsvText_(await res.text(), point);
+        const text = await res.text();
+        const parsed = parseYohouCsvText_(text, point);
         if (!parsed) throw new Error('yohou parse empty');
+        if (window.AlertCubeCore && window.AlertCubeCore.yohouForecastOpen && !window.AlertCubeCore.yohouForecastOpen(text, getNowMs())) {
+            console.log('[WBGT] 予報の対象時刻を過ぎた（WBGT非表示）', parsed.updatedAt || '');
+            return {
+                source: 'off-season',
+                inService: false,
+                point: point,
+                pointName: (siteCfg_().moe && siteCfg_().moe.pointName) || '',
+                updatedAt: parsed.updatedAt || ''
+            };
+        }
         return parsed;
     }
     async function fetchWbgtSurveyDirect_(pointCode) {

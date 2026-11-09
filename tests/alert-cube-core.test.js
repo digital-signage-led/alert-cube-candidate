@@ -227,6 +227,15 @@ test('年間気温: 異常値は色を返さない', function () {
   assert.strictEqual(core.getTemperatureDisplayColor('undefined', 'AUTUMN'), null);
 });
 
+test('暑さ指数: 対象時刻を過ぎた予報は出さない', function () {
+  var now = Date.UTC(2026, 10, 9, 15, 24, 0);
+  var stale = ',,2026102203,2026102424\n67437,2026/10/22 00:25,140,140\n';
+  assert.strictEqual(core.yohouForecastOpen(stale, now), false);
+  var live = ',,2026111000,2026111200\n67437,2026/11/10 00:25,180,190\n';
+  assert.strictEqual(core.yohouForecastOpen(live, now), true);
+  assert.strictEqual(core.yohouForecastOpen('no times here', now), true);
+});
+
 test('年間モード: 取得失敗は期間終了にしない', function () {
   var mode = core.resolveAnnualMode({
     apiInService: null,
