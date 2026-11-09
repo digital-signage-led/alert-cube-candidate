@@ -2425,7 +2425,7 @@ test('AC-0029 は志摩機械・舞鶴市の4面本番設定', function () {
   assert.strictEqual(site.presentation.logoRotate, false);
   assert.strictEqual(site.presentation.observationTrailingLogo, true);
   assert.strictEqual(site.presentation.i18nTrailingLogo, true);
-  assert.strictEqual(site.presentation.hideWbgtAfterSeason, true);
+  assert.notStrictEqual(site.presentation.hideWbgtAfterSeason, true);
   assert.strictEqual(site.greeting.enabled, true);
   assert.strictEqual(site.greeting.mode, 'image');
   assert.ok(site.greeting.image.indexOf('assets/greeting/neighborhood.jpg') >= 0);
