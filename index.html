@@ -15,14 +15,14 @@
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
     <script src="./contents/rain-radar/index.js?v=20261026-radar-white"></script>
-    <script src="./contents/ssc/index.js?v=20261012-ac0024-ssc-url"></script>
+    <script src="./contents/ssc/index.js?v=20261110-densho-vib"></script>
     <script src="./contents/eew/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
     <script src="./core/foundation.js?v=20261028-shima-cube"></script>
-    <script src="./services/densho/index.js?v=20260929-densho-live"></script>
+    <script src="./services/densho/index.js?v=20261110-densho-vib"></script>
     <script src="./services/remote.js?v=20261016-dm0002"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
     <script src="./safety/fallback.js?v=20260921-suminoe"></script>
@@ -14248,10 +14248,14 @@
         syncSscPendingDom_();
         buildSscMetaTrack_();
     }
+    function denshoSscUrl_() {
+        const d = siteCfg_().densho || {};
+        return String(d.signageUrl || '').trim();
+    }
     function buildSscMetaTrack_() {
         if (!sscMetaTrack || !window.EdamSsc) return;
-        const ready = resolveEdamSscId_() > 0;
-        const sscCfg = edamSscCfg_();
+        const ready = !!denshoSscUrl_() || resolveEdamSscId_() > 0;
+        const sscCfg = lastSscMetaCfg_ || edamSscCfg_();
         const metaCfg = String(sscCfg.siteName || '').trim()
             ? sscCfg
             : Object.assign({}, sscCfg, { siteName: getSiteLocationLabel_() });
@@ -14286,6 +14290,81 @@
             applyScrollX_(el, x);
         });
     }
+    function denshoSscUrls_() {
+        const d = siteCfg_().densho || {};
+        const urls = [];
+        [d.signageUrl, d.vibrationUrl].forEach(function (raw) {
+            const url = String(raw || '').trim();
+            if (url && urls.indexOf(url) < 0) urls.push(url);
+        });
+        return urls;
+    }
+    async function fetchDenshoJson_(apiUrl) {
+        const urls = denshoFetchUrls_(apiUrl);
+        let lastErr = null;
+        for (let i = 0; i < urls.length; i++) {
+            try {
+                const res = await fetch(urls[i], {
+                    cache: 'no-store',
+                    headers: { Accept: 'application/json' }
+                });
+                if (!res.ok) throw new Error('Densho SSC HTTP ' + res.status);
+                return window.AlertCubeDensho.unwrapPayload(await res.json());
+            } catch (err) {
+                lastErr = err;
+            }
+        }
+        throw lastErr || new Error('見守り伝書鳩の取得に失敗');
+    }
+    async function fetchDenshoSsc_() {
+        const apiUrls = denshoSscUrls_();
+        if (!apiUrls.length || !window.AlertCubeDensho || !window.AlertCubeDensho.parseSignage) {
+            if (window.EdamSsc) applySscValuesToDom_(window.EdamSsc.pendingValues());
+            return null;
+        }
+        const parts = [];
+        let lastErr = null;
+        for (let i = 0; i < apiUrls.length; i++) {
+            try {
+                const json = await fetchDenshoJson_(apiUrls[i]);
+                parts.push(window.AlertCubeDensho.parseSignage(json));
+            } catch (err) {
+                lastErr = err;
+            }
+        }
+        if (!parts.length) {
+            console.warn('[SSC] 見守り伝書鳩失敗:', lastErr && lastErr.message ? lastErr.message : lastErr);
+            if (!lastSscValues_ || (lastSscValues_.noise == null && lastSscValues_.vibration == null)) {
+                applySscValuesToDom_(window.EdamSsc ? window.EdamSsc.pendingValues() : { noise: null, vibration: null, pending: true });
+            }
+            return null;
+        }
+        const parsed = window.AlertCubeDensho.mergeSignage
+            ? window.AlertCubeDensho.mergeSignage(parts)
+            : parts[0];
+        lastSscMetaCfg_ = {
+            siteName: parsed.termName || '',
+            sensorLabel: parsed.sensorLabel || '騒音計',
+            noiseMetric: parsed.noiseMetric || '',
+            vibMetric: parsed.vibMetric || '',
+            source: 'みまわり伝書鳩'
+        };
+        const vals = {
+            noise: parsed.noise,
+            vibration: parsed.vibration,
+            time: parsed.time,
+            pending: parsed.noise == null && parsed.vibration == null
+        };
+        applySscValuesToDom_(vals);
+        console.log('[SSC] 見守り伝書鳩', parsed.termName || '',
+            parsed.noise != null ? parsed.noise + 'dB' : '',
+            parsed.vibration != null ? parsed.vibration + 'dB' : '');
+        return vals;
+    }
+    function fetchSscNow_() {
+        if (denshoSscUrl_()) return fetchDenshoSsc_();
+        return fetchEdamSsc_();
+    }
     function fetchEdamSsc_() {
         const id = resolveEdamSscId_();
         if (!id || !window.EdamSsc) {
@@ -14313,8 +14392,19 @@
         if (sscFetchTimerId_ != null) clearInterval(sscFetchTimerId_);
         sscFetchTimerId_ = null;
         if (!contentOn_('ssc') && DEMO_ONLY !== 'ssc') return;
-        const id = resolveEdamSscId_();
+        if (denshoSscUrl_() && !lastSscMetaCfg_) {
+            lastSscMetaCfg_ = { siteName: '', sensorLabel: '騒音計', source: 'みまわり伝書鳩' };
+        }
         if (window.EdamSsc) applySscValuesToDom_(lastSscValues_ || window.EdamSsc.pendingValues());
+        if (denshoSscUrl_()) {
+            fetchDenshoSsc_();
+            const sec = Number((siteCfg_().densho || {}).dataIntervalSec);
+            const fallback = (Number.isFinite(sec) && sec >= 15 ? sec : 60) * 1000;
+            const ms = Math.max(15000, parseInt(query.get('sscRefresh') || String(fallback), 10) || fallback);
+            sscFetchTimerId_ = setInterval(function () { fetchDenshoSsc_(); }, ms);
+            return;
+        }
+        const id = resolveEdamSscId_();
         if (!id) {
             console.info('[SSC] LoID/URL 未設定 — 「取得中」表示。SignageConfig.edamSsc.idNum（または ?sscId=）設定後に取得開始');
             return;
@@ -14328,6 +14418,7 @@
     let sscMetaTextPx = 0;
     let sscMetaTextShift = 0;
     let lastSscValues_ = null;
+    let lastSscMetaCfg_ = null;
     function mountSscTrailingLogo_() {
         if (!sscConveyor || sscConveyor.getAttribute('data-ssc-mounted')) return;
         sscConveyor.setAttribute('data-ssc-mounted', '1');
@@ -14352,7 +14443,7 @@
         applyPendingSignageBgAtScene_();
         mountSscTrailingLogo_();
         buildSscMetaTrack_();
-        fetchEdamSsc_();
+        fetchSscNow_();
         if (sceneSscAnimId) { cancelAnimationFrame(sceneSscAnimId); sceneSscAnimId = null; }
         const kids = sscConveyor ? sscConveyor.children.length : 0;
         const setWidth = Math.max(128, Math.floor(kids / 2) * 128);

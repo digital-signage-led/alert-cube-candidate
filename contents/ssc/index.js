@@ -89,8 +89,11 @@
     var pending = !!vals.pending || (vals.noise == null && vals.vibration == null);
     var t = pending ? (ready ? PENDING : (PENDING + '（URL設定待ち）')) : (vals.time || '--');
     var n = vals.noise != null ? (vals.noise + 'dB') : PENDING;
+    if (vals.noise != null && cfg.noiseMetric) n = cfg.noiseMetric + ' ' + n;
     var v = vals.vibration != null ? (vals.vibration + 'dB') : PENDING;
-    return (site ? site + '／' : '') + sensor + '／騒音 ' + n + '／振動 ' + v + '／' + t + '／出典：環境クラウドサービス';
+    if (vals.vibration != null && cfg.vibMetric) v = cfg.vibMetric + ' ' + v;
+    var source = cfg.source || '環境クラウドサービス';
+    return (site ? site + '／' : '') + sensor + '／騒音 ' + n + '／振動 ' + v + '／' + t + '／出典：' + source;
   }
 
   function fetchWithTimeout(url, ms) {
