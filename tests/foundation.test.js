@@ -2751,7 +2751,7 @@ test('未確定案件: ニッケン白浜町は DM-0011', function () {
   assert.ok(fs.existsSync(path.join(root, 'assets', 'demo', 'DM-0011', 'logo_mark.png')));
   assert.ok(fs.existsSync(path.join(root, 'assets', 'demo', 'DM-0011', 'logo_foot.png')));
 });
-test('AC-0033 は山陽工業・竹屋町の4面本番設定', function () {
+test('AC-0033 は山陽工業・西広島バイパスの4面本番設定', function () {
   var site = require('../sites/AC-0033.json');
   var index = require('../sites/index.json');
   var fs = require('fs');
@@ -2760,13 +2760,13 @@ test('AC-0033 は山陽工業・竹屋町の4面本番設定', function () {
   assert.strictEqual(site.status, 'active');
   assert.strictEqual(site.customer, '山陽工業株式会社');
   assert.strictEqual(site.rental, '仙台銘板');
-  assert.strictEqual(site.siteName, '広島市');
-  assert.strictEqual(site.location, '〒730-0048 広島県広島市中区竹屋町４');
+  assert.strictEqual(site.siteName, '西広島バイパス');
+  assert.strictEqual(site.location, '〒730-0053 広島県広島市中区東千田町1丁目（西広島バイパス国泰寺高架橋第1下部工事）');
   assert.strictEqual(site.faces, 4);
   assert.strictEqual(site.resolution, '512x128');
   assert.strictEqual(site.layout, 'AC-512');
-  assert.strictEqual(site.latitude, 34.3867);
-  assert.strictEqual(site.longitude, 132.4589);
+  assert.strictEqual(site.latitude, 34.380526);
+  assert.strictEqual(site.longitude, 132.458469);
   assert.strictEqual(site.moe.point, '67437');
   assert.strictEqual(site.jma.forecastDetail, '340010');
   assert.strictEqual(site.jma.warnCity, '3410100');
