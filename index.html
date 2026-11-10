@@ -11,7 +11,7 @@
     <script src="./contents/modules.js?v=20260929-eew1"></script>
     <script src="./contents/news/index.js?v=20261006-news-30d"></script>
     <script src="./contents/boards/index.js?v=20261027-nikken-icons"></script>
-    <script src="./contents/logo-scroll/index.js?v=20260923-ac0004"></script>
+    <script src="./contents/logo-scroll/index.js?v=20261110-meibird"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
     <script src="./contents/rain-radar/index.js?v=20261026-radar-white"></script>
@@ -205,6 +205,21 @@
         html.site-dm-0011 .logo-img,
         html.site-dm-0012 .logo-img {
             width: 120px; max-width: 120px; height: 120px; max-height: 120px;
+        }
+        html.site-dm-0013 .logo-stack,
+        html.site-dm-0014 .logo-stack {
+            width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
+        }
+        html.site-dm-0013 .logo-img,
+        html.site-dm-0014 .logo-img {
+            width: 128px; max-width: 128px; height: 128px; max-height: 128px;
+            object-fit: cover;
+        }
+        html.site-dm-0013 .logo-corp-img,
+        html.site-dm-0014 .logo-corp-img { display: none !important; }
+        html.site-dm-0013 .logo-panel,
+        html.site-dm-0014 .logo-panel {
+            background: #EE7A01 !important;
         }
         html.site-dm-0005 .logo-img,
         html.site-dm-0009 .logo-img {
@@ -1206,6 +1221,38 @@
             display: block; width: 100%; height: 128px; max-height: 128px;
             object-fit: contain; background: #ffffff;
         }
+        #sceneLogo .logo-char { position: relative; }
+        #sceneLogo .logo-char .logo-face-img,
+        #sceneLogo .logo-caption .logo-face-img { background: transparent; }
+        #sceneLogo .logo-char .logo-face-img {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+        }
+        #sceneLogo .logo-wing {
+            transform-origin: center 80%;
+            animation: meibirdWing 1s ease-in-out 0.5s infinite alternate;
+        }
+        #sceneLogo .logo-wing.wing-meidory {
+            animation-name: meidoryWing;
+            animation-duration: 1.2s;
+            animation-delay: 0.6s;
+        }
+        @keyframes meibirdWing {
+            from { transform: rotate(1deg); }
+            to { transform: rotate(-6deg); }
+        }
+        @keyframes meidoryWing {
+            from { transform: rotate(1deg); }
+            to { transform: rotate(8deg); }
+        }
+        #sceneLogo .logo-caption {
+            display: flex; align-items: center; justify-content: flex-start;
+            padding: 0 8px; box-sizing: border-box;
+        }
+        #sceneLogo .logo-caption p {
+            margin: 0; font-weight: 900; font-size: 36px; line-height: 1.15;
+            letter-spacing: 0.02em; color: #111111;
+        }
+        #sceneLogo .logo-cap-line { display: block; white-space: nowrap; }
         .content-area.news-canvas { background: #0B4F9C !important; }
         .content-area.news-canvas > .scene-strip-bg { display: none !important; }
         .content-area.kotei-canvas { background: #071428 !important; }
@@ -3667,6 +3714,8 @@
         document.documentElement.classList.toggle('site-dm-0009', String(c.projectId || '') === 'DM-0009');
         document.documentElement.classList.toggle('site-dm-0011', String(c.projectId || '') === 'DM-0011');
         document.documentElement.classList.toggle('site-dm-0012', String(c.projectId || '') === 'DM-0012');
+        document.documentElement.classList.toggle('site-dm-0013', String(c.projectId || '') === 'DM-0013');
+        document.documentElement.classList.toggle('site-dm-0014', String(c.projectId || '') === 'DM-0014');
         applyFaceLayout_();
         if (typeof compactScene4Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s4))) compactScene4Panels();
         if (typeof compactScene5Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s5))) compactScene5Panels();

@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "projectId": "DM-0013",
+  "status": "demo",
+  "customer": "株式会社仙台銘板",
+  "rental": "仙台銘板",
+  "label": "仙台銘板",
+  "projectName": "建設フェア四国 2026 in 高松",
+  "siteName": "坂出市",
+  "location": "〒762-0012 香川県坂出市林田町字東下所155番地1",
+  "latitude": 34.327994,
+  "longitude": 133.890668,
+  "elevation": null,
+  "memo": "未確定のデモ。株式会社仙台銘板。建設フェア四国 2026 in 高松。請求しない。本番端末へ登録しない。4面512×128。5面は DM-0014。窓口はデジタルサイネージ。担当は川嵜。送り先は香川営業所、千葉宛て、TEL 0877-57-3055。到着希望は2026-11-16、返却予定は2026-11-30。右端固定ロゴなし。気象観測・WBGT・4日間予報・多言語の末尾は橙地のキャラクター。時刻・気象・予報の地色もロゴと同じ #EE7A01。騒音と振動を2周出す。地点番号が未設定のあいだ値は取得中。時刻下の白帯は三色マークと株式会社仙台銘板。挨拶は「株式会社仙台銘板ブースへようこそ！」。地点名「坂出市」。地図は香川営業所。WBGT・アメダスは多度津72111（気温・降水・風・湿度。気圧は高松72086で補完）。予報は香川県370000、気温の発表地点は高松72086。警報は香川県370000、坂出市3720300。熱中症アラートは出さない。時刻・気象観測・雨雲レーダー・暑さ指数・4日間予報・多言語・挨拶は1周。末尾はメイバードとメイドリィを黄地で1周流す。翼は公式ページと同じ揺れ。注意報・警報と台風は発表中だけ2周。展示会の見本なので、暑さ指数は期間外でも夏の5段階を見本の値で出す。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
+  "inundation": { "expectedDepthM": null },
+  "evacuation": {
+    "assembly": "",
+    "shelter": "",
+    "shelterName": "",
+    "distanceM": null
+  },
+  "hazard": {
+    "minIntensity": "5弱",
+    "earthquakeVisibleMinutes": 30,
+    "faceMs": 4000
+  },
+  "resolution": "512x128",
+  "layout": "AC-512",
+  "faces": 4,
+  "timeZone": "Asia/Tokyo",
+  "footSource": "出典：気象庁・環境省・環境クラウドサービス（騒音振動）",
+  "releasePin": null,
+  "logo": {
+    "src": "./assets/demo/DM-0013/logo_512.jpg?v=1",
+    "wideSrc": "",
+    "corpSrc": "",
+    "footSrc": "",
+    "panelBg": "#EE7A01",
+    "bannerSrc": "./assets/demo/DM-0013/logo_foot.png?v=2"
+  },
+  "moe": {
+    "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
+    "point": "72111",
+    "fallbackPoint": "72086",
+    "pointName": "多度津",
+    "alertArea": "香川県",
+    "region": "09",
+    "prefecture": "72"
+  },
+  "jma": {
+    "amedasPoint": "72111",
+    "amedasSupplementPoint": "72086",
+    "forecastArea": "370000",
+    "forecastDetail": "370000",
+    "forecastPoint": "72086",
+    "forecastLabel": "坂出市",
+    "warnArea": "370000",
+    "warnCity": "3720300",
+    "warnCityLabel": "坂出市"
+  },
+  "edamSsc": {
+    "apiHost": "https://www2.edam.ne.jp",
+    "apiPath": "/Json/SSCNumData",
+    "idNum": null,
+    "loId": null,
+    "publicId": "",
+    "sensorLabel": "騒音振動計",
+    "siteName": "坂出市",
+    "pageUrl": "",
+    "corsProxy": "off",
+    "refreshMs": 10000,
+    "laps": 2
+  },
+  "wbgt": {
+    "seasonStart": { "month": 4, "day": 22 },
+    "seasonEnd": { "month": 10, "day": 22 }
+  },
+  "season": { "override": null },
+  "updateSettings": { "refreshMs": 60000 },
+  "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "greeting": {
+    "enabled": true,
+    "title": "株式会社仙台銘板",
+    "lines": ["株式会社仙台銘板ブースへようこそ！"],
+    "leadLogo": "./assets/demo/meibird/logo_lockup.png",
+    "foot": "",
+    "scrollLaps": 1
+  },
+  "logoScroll": {
+    "laps": 1,
+    "background": "#FFE631",
+    "images": [
+      {
+        "src": "./assets/demo/meibird/meibird.svg",
+        "wing": "./assets/demo/meibird/meibird-wing.svg",
+        "motion": "meibird",
+        "alt": "メイバード",
+        "panelWidth": 104
+      },
+      {
+        "src": "./assets/demo/meibird/meidory.svg",
+        "wing": "./assets/demo/meibird/meidory-wing.svg",
+        "motion": "meidory",
+        "alt": "メイドリィ",
+        "panelWidth": 104
+      }
+    ],
+    "caption": {
+      "width": 420,
+      "lines": [
+        [
+          { "text": "今日", "color": "#EF7A00" },
+          { "text": "もふたりで、", "color": "#111111" }
+        ],
+        [
+          { "text": "安全", "color": "#5DAD3D" },
+          { "text": "と", "color": "#111111" },
+          { "text": "笑顔", "color": "#0269B8" },
+          { "text": "を。", "color": "#111111" }
+        ]
+      ]
+    }
+  },
+  "presentation": {
+    "sequence": "contentOrder",
+    "observationMode": "scroll",
+    "clockLaps": 1,
+    "observationLaps": 1,
+    "wbgtLaps": 1,
+    "forecastLaps": 1,
+    "i18nLaps": 1,
+    "warningLaps": 2,
+    "typhoonLaps": 2,
+    "observationTrailingLogo": true,
+    "i18nTrailingLogo": true,
+    "wbgtDemoAllLevels": true,
+    "sscLaps": 2,
+    "ambient": "brand",
+    "brand": {
+      "top": "#EE7A01",
+      "body": "#EE7A01",
+      "darkText": true
+    }
+  },
+  "news": {
+    "badge": "新着情報",
+    "laps": 1,
+    "speed": 1,
+    "maxItems": 2,
+    "pageUrl": "",
+    "urls": [],
+    "cacheKey": ""
+  },
+  "contentOrder": [ "warning", "typhoon", "clock", "greeting", "observation", "ssc", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n", "logo-scroll"],
+  "contents": {
+    "clock": { "on": true },
+    "observation": { "on": true },
+    "weather": { "on": true },
+    "temperature": { "on": true },
+    "rain": { "on": true },
+    "wind": { "on": true },
+    "humidity": { "on": true },
+    "pressure": { "on": true },
+    "temp-range": { "on": true },
+    "wbgt": { "on": true },
+    "wbgt-i18n": { "on": true },
+    "forecast": { "on": true },
+    "ssc": { "on": true },
+    "warning": { "on": true },
+    "warning-hero": { "on": false },
+    "rain-nowcast": { "on": true },
+    "typhoon": { "on": true },
+    "rain-radar": { "on": true },
+    "lightning": { "on": true },
+    "disaster": { "on": true },
+    "heat": { "on": false },
+    "schedule": { "on": false },
+    "greeting": { "on": true },
+    "news": { "on": false },
+    "boards": { "on": false },
+    "logo-scroll": { "on": true },
+    "hazard": { "on": false },
+    "eew": { "on": false },
+    "uv": { "on": false },
+    "illuminance": { "on": false },
+    "cumtemp": { "on": false },
+    "rain-1h": { "on": false },
+    "rain-24h": { "on": false },
+    "pollen": { "on": false },
+    "pm25": { "on": false }
+  }
+}

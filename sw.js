@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20261110-wbgt-hide';
+var CACHE_NAME = 'alert-cube-sites-20261110-meiban';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -10,7 +10,7 @@ var PRECACHE = [
   './contents/modules.js?v=20260929-eew1',
   './contents/news/index.js?v=20260929-ac0019-news',
   './contents/boards/index.js?v=20261005-ac0009-slide',
-  './contents/logo-scroll/index.js?v=20260923-ac0004',
+  './contents/logo-scroll/index.js?v=20261110-meibird',
   './contents/progress/index.js?v=20261005-progress-logo',
   './contents/eew/evaluate.js?v=20260929-eew1',
   './contents/hazard/evaluate.js?v=20260929-eew1',

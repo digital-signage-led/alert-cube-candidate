@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "projectId": "DM-0013",
+  "projectId": "DM-0015",
   "status": "demo",
   "customer": "",
   "rental": "",
@@ -69,6 +69,7 @@
     "foot": ""
   },
   "presentation": {
+    "warningLaps": 2,
     "observationMode": "scroll",
     "observationLaps": 2,
     "observationTrailingLogo": true,
@@ -90,7 +91,7 @@
     "urls": [],
     "cacheKey": ""
   },
-  "contentOrder": [ "typhoon", "clock", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": [ "warning", "typhoon", "clock", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },
@@ -103,7 +104,7 @@
     "wbgt": { "on": true },
     "wbgt-i18n": { "on": true },
     "forecast": { "on": true },
-    "warning": { "on": false },
+    "warning": { "on": true },
     "warning-hero": { "on": false },
     "rain-nowcast": { "on": true },
     "typhoon": { "on": true },
