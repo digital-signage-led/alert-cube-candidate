@@ -9339,9 +9339,14 @@
                 try {
                     const wbgtSlots = await fetchWbgtData_();
                     timings['WBGT(GAS)'] = Math.round(performance.now() - sWbgt);
-                    if (wbgtSlots === 'offseason') {
-                        applyWbgtOffSeason_();
-                        moeOk = true;
+                    if (wbgtSlots === 'offseason' || !hasFull4Slots(wbgtSlots)) {
+                        if (wbgtSlots !== 'offseason' && hasFull4Slots(lastGoodWbgtSlots_)) {
+                            wbgtFetchOk_ = false;
+                            moeOk = false;
+                        } else {
+                            applyWbgtOffSeason_();
+                            moeOk = true;
+                        }
                     } else {
                         moeService_ = true;
                         wbgtFetchOk_ = true;
@@ -12572,9 +12577,8 @@
         gotoSceneAfterScene4_();
     }
     function playScene4() {
-        applyDisplayRefreshAtSceneEntry_(s4);
         clearScene4Timers();
-        if (skipWbgtOffSeason_()) {
+        if (skipWbgtOffSeason_() || !(hasFull4Slots(lastGoodWbgtSlots_) || hasFull4Slots(lastWbgtSlots) || (DEMO_SIGNAGE_ACTIVE && currentWbgtLevel >= 0))) {
             if (DEMO_ONLY === 's4') {
                 hideSceneEl(s4);
                 return;
@@ -12582,6 +12586,7 @@
             finishScene4();
             return;
         }
+        applyDisplayRefreshAtSceneEntry_(s4);
         if (window.AlertCubeContent && !window.AlertCubeContent.isOn('wbgt')) {
             finishScene4();
             return;
@@ -14252,7 +14257,7 @@
             case 'clock': transitionToScene(s1, playScene1); break;
             case 'observation': transitionToScene(s2, playScene2); break;
             case 'wbgt':
-                if (skipWbgtOffSeason_()) { advanceContentOrder_(); break; }
+                if (skipWbgtOffSeason_() || !(hasFull4Slots(lastGoodWbgtSlots_) || hasFull4Slots(lastWbgtSlots))) { advanceContentOrder_(); break; }
                 transitionToScene(s4, playScene4);
                 break;
             case 'forecast': transitionToScene(s5, playScene5); break;
@@ -14261,7 +14266,7 @@
                 transitionToScene(sceneSsc, playSceneSsc);
                 break;
             case 'wbgt-i18n':
-                if (!wbgtMultilingualOn_() || temperatureDisplay_() || wbgtOffSeason) { advanceContentOrder_(); break; }
+                if (!wbgtMultilingualOn_() || temperatureDisplay_() || wbgtOffSeason || !(hasFull4Slots(lastGoodWbgtSlots_) || hasFull4Slots(lastWbgtSlots))) { advanceContentOrder_(); break; }
                 transitionToScene(s3, playScene3);
                 break;
             case 'schedule': transitionToScene(sceneSchedule, playSceneSchedule); break;
