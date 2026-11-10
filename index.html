@@ -1819,6 +1819,23 @@
         }
         #sceneGreeting.col-bg-dark-text .ng-title,
         #sceneGreeting.col-bg-dark-text .ng-line { color: #000000; }
+        #sceneGreeting.greeting-lead,
+        #sceneGreeting.greeting-lead .ng-lead { background: #ffffff !important; }
+        #sceneGreeting.greeting-lead .ng-shell { display: none; }
+        #sceneGreeting .ng-lead { display: none; height: 128px; align-items: center; overflow: hidden; }
+        #sceneGreeting.greeting-lead .ng-lead { display: flex; }
+        #sceneGreeting .ng-lead-logo {
+            height: 128px; width: auto; flex: 0 0 auto; display: block;
+            object-fit: contain; background: #ffffff;
+        }
+        #sceneGreeting .ng-lead-view {
+            flex: 1 1 auto; min-width: 0; height: 128px; overflow: hidden;
+            display: flex; align-items: center;
+        }
+        #sceneGreeting .ng-lead-line {
+            font-family: "Noto Sans JP", sans-serif; font-weight: 800; font-size: 32px;
+            line-height: 1.15; color: #111111; white-space: nowrap; padding-left: 8px;
+        }
         #sceneGreeting.greeting-promo { background: var(--signage-bg, #3181BD); }
         #sceneGreeting.greeting-promo .promo-shell { width: 512px; height: 128px; }
         #sceneGreeting.greeting-promo .promo-top,
@@ -13696,7 +13713,68 @@
         if (!Number.isFinite(n) || n < 1) return 1;
         return Math.min(8, Math.floor(n));
     }
+    function playGreetingLead_() {
+        const cfg = greetingCfg_();
+        const src = String(cfg.leadLogo || '').trim();
+        const lines = Array.isArray(cfg.lines) ? cfg.lines : [];
+        const phrase = lines[0] != null ? String(lines[0]).trim() : '';
+        clearGreetingHoldTimer_();
+        if (!sceneGreeting || !src || !phrase) {
+            finishGreetingScene_();
+            return;
+        }
+        markPlaylistHeld_();
+        applyDisplayRefreshAtSceneEntry_(sceneGreeting);
+        sceneGreeting.classList.add('greeting-lead');
+        sceneGreeting.classList.remove('greeting-promo', 'greeting-fill', 'greeting-image', 'greeting-copy');
+        let row = sceneGreeting.querySelector('.ng-lead');
+        if (!row) {
+            row = document.createElement('div');
+            row.className = 'ng-lead';
+            sceneGreeting.appendChild(row);
+        }
+        row.innerHTML = '<img class="ng-lead-logo" src="' + escapeS1Html(src) + '" alt="株式会社仙台銘板">' +
+            '<div class="ng-lead-view"><div class="ng-lead-line">' + escapeS1Html(phrase) + '</div></div>';
+        applyPendingSignageBgAtScene_();
+        const img = row.querySelector('.ng-lead-logo');
+        const line = row.querySelector('.ng-lead-line');
+        const view = row.querySelector('.ng-lead-view');
+        function begin_() {
+            if (!sceneGreeting.classList.contains('greeting-lead') || !line || !view) return;
+            const overflow = line.scrollWidth - view.clientWidth;
+            if (overflow <= 2) {
+                sceneGreetingHoldTimerId = setTimeout(finishGreetingScene_, SCENE_GREETING_HOLD_MS);
+                return;
+            }
+            const total = overflow + 16;
+            let moved = 0;
+            applyScrollX_(line, 0);
+            function step() {
+                moved += getScrollSpeedPx_();
+                if (moved >= total) {
+                    sceneGreetingAnimId = null;
+                    applyScrollX_(line, -total);
+                    sceneGreetingHoldTimerId = setTimeout(finishGreetingScene_, 1200);
+                    return;
+                }
+                applyScrollX_(line, -moved);
+                sceneGreetingAnimId = requestAnimationFrame(step);
+            }
+            runSceneScrollAfterHold_(function () {
+                sceneGreetingAnimId = requestAnimationFrame(step);
+            });
+        }
+        if (img && img.complete) begin_();
+        else if (img) {
+            img.addEventListener('load', begin_);
+            img.addEventListener('error', begin_);
+        } else begin_();
+    }
     function playSceneGreeting() {
+        if (String(greetingCfg_().leadLogo || '').trim()) {
+            playGreetingLead_();
+            return;
+        }
         if (greetingCfg_().mode === 'image') {
             playGreetingPoster_();
             return;
