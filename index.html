@@ -3204,6 +3204,10 @@
     /** displayMode: 'normal' | 'unavailable' | 'offseason' | 'temperature' */
     function colorsForDisplay(levelIdx, displayMode) {
         if (displayMode === 'unavailable') return UNKNOWN;
+        const branded = brandAmbient_();
+        if (branded && displayMode !== 'normal') {
+            return { bgColor: branded.bgColor, barColor: branded.barColor };
+        }
         const outside = brandOutsideSeason_();
         if (outside) return { bgColor: outside.bgColor, barColor: outside.barColor };
         return UNIFIED_BG;
@@ -3215,6 +3219,8 @@
     }
 
     function isDarkTextForDisplay(levelIdx, displayMode) {
+        const branded = brandAmbient_();
+        if (branded && displayMode !== 'normal') return branded.darkText === true;
         const outside = brandOutsideSeason_();
         if (outside) return outside.darkText;
         return false;
@@ -3413,6 +3419,19 @@
     }
 
     function refreshScene5(levelIdx, displayMode) {
+        const branded = brandAmbient_();
+        if (branded) {
+            document.querySelectorAll('#scene5 .d5-panel:not(.d5-logo-panel)').forEach(function (panel) {
+                applyStrip(panel, -1, 'temperature');
+                panel.classList.toggle('col-bg-dark-text', branded.darkText === true);
+            });
+            document.querySelectorAll('#scene5 .d5-logo-panel').forEach(function (panel) {
+                panel.querySelectorAll('.col-bg-layer').forEach(function (el) { el.remove(); });
+                panel.classList.remove('col-bg-host', 'col-bg-dark-text', 'wbgt-off-season', 'wbgt-unavailable');
+                panel.style.backgroundColor = branded.bgColor;
+            });
+            return;
+        }
         const yearRound = displayMode === 'temperature' || displayMode === 'offseason' || displayMode === 'unavailable';
         const dark = isDarkTextForDisplay(levelIdx, displayMode);
         const forecastLv = (!yearRound && !dark) ? 0 : levelIdx;
