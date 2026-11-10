@@ -621,11 +621,12 @@ test('AC-0006 は錦建設広島市中区の通常版', function () {
   assert.strictEqual(site.jma.forecastArea, '340000');
   assert.strictEqual(site.jma.warnCity, '3410100');
   assert.strictEqual(site.presentation.sequence, 'contentOrder');
-  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'news', 'wbgt-i18n']);
+  assert.deepStrictEqual(site.contentOrder, ['typhoon', 'clock', 'observation', 'rain-radar', 'wbgt', 'forecast', 'wbgt-i18n']);
   assert.strictEqual(site.contents.warning.on, false);
   assert.strictEqual(site.contents.typhoon.on, true);
   assert.strictEqual(site.contents.disaster.on, true);
-  assert.strictEqual(site.contents.news.on, true);
+  assert.strictEqual(site.contents.news.on, false);
+  assert.ok(site.contentOrder.indexOf('news') < 0);
   var news = require('../contents/news/index.js');
   assert.strictEqual(site.news.pageUrl, 'https://str-nishiki.co.jp/');
   assert.strictEqual(site.news.maxItems, 2);
