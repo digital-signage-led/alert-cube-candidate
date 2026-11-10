@@ -9793,13 +9793,39 @@
         if (!Number.isFinite(dt.getTime())) throw new Error('JMA latest_time parse');
         return dt;
     }
+    /* 気温・気圧・最高最低など、画面に出す値があるか。品質欠測の null は無いものとする */
+    function amedasSlotHasMeasurement_(obs) {
+        if (!obs || typeof obs !== 'object') return false;
+        const keys = [
+            'temp', 'humidity', 'precipitation10m', 'precipitation1h', 'wind', 'windDirection',
+            'pressure', 'normalPressure', 'maxTemp', 'minTemp', 'gust', 'sun1h'
+        ];
+        return keys.some(function (k) { return amedasFieldValue(obs[k]) != null; });
+    }
+    function slotTimeFromKey_(key) {
+        const s = String(key || '');
+        if (!/^\d{14}$/.test(s)) return null;
+        const iso = s.slice(0, 4) + '-' + s.slice(4, 6) + '-' + s.slice(6, 8)
+            + 'T' + s.slice(8, 10) + ':' + s.slice(10, 12) + ':' + s.slice(12, 14) + '+09:00';
+        const dt = new Date(iso);
+        return Number.isFinite(dt.getTime()) ? dt : null;
+    }
     function pickPointBlockObs_(data, exactKey) {
-        if (data.temp) return data;
+        if (data.temp) {
+            if (!amedasSlotHasMeasurement_(data)) throw new Error('地点JSONが欠測');
+            return data;
+        }
         const keys = Object.keys(data).filter(k => /^\d{14}$/.test(k)).sort();
         if (!keys.length) throw new Error('point JSON形式不明');
-        if (data[exactKey]) return data[exactKey];
-        const candidates = keys.filter(k => k <= exactKey);
-        const key = candidates.length ? candidates[candidates.length - 1] : keys[keys.length - 1];
+        const candidates = exactKey ? keys.filter(k => k <= exactKey) : keys;
+        const pool = candidates.length ? candidates : keys;
+        for (let i = pool.length - 1; i >= 0; i--) {
+            if (!amedasSlotHasMeasurement_(data[pool[i]])) continue;
+            data[pool[i]].__slotKey = pool[i];
+            return data[pool[i]];
+        }
+        const key = pool[pool.length - 1];
+        if (data[key]) data[key].__slotKey = key;
         return data[key];
     }
     /* map JSON は更新が速いが気圧・最高/最低・瞬間風速などが無い地点がある */
@@ -9819,6 +9845,8 @@
         AMEDAS_POINT_SUPPLEMENT_KEYS.forEach(function (k) {
             if (amedasFieldValue(out[k]) == null && extra[k] != null) out[k] = extra[k];
         });
+        if (!amedasSlotHasMeasurement_(base) && extra.__slotKey) out.__slotKey = extra.__slotKey;
+        else if (base.__slotKey) out.__slotKey = base.__slotKey;
         return out;
     }
     async function fetchJmaAmedasPointSupplement_(pointCode, ymd, hhmm, exactKey, blockH) {
@@ -9889,6 +9917,15 @@
         }
         return out;
     }
+    function observationInstant_(obs, latest) {
+        const slotAt = slotTimeFromKey_(obs && obs.__slotKey);
+        if (slotAt && (!latest || slotAt.getTime() <= latest.getTime())) return slotAt;
+        return latest;
+    }
+    function stripSlotKey_(obs) {
+        if (obs && obs.__slotKey) delete obs.__slotKey;
+        return obs;
+    }
     async function fetchJmaAmedasObservation_() {
         const latest = await fetchJmaLatestTime_();
         if (getNowMs() - latest.getTime() > AMEDAS_MAX_AGE_MS) {
@@ -9918,14 +9955,15 @@
                 if (entry.kind === 'map') {
                     let obs = data[JMA_AMEDAS_POINT];
                     if (!obs) throw new Error('mapに地点なし');
+                    if (!amedasSlotHasMeasurement_(obs)) throw new Error('mapが欠測 ' + JMA_AMEDAS_POINT);
                     obs = await enrichAmedasObs_(obs, ymd, hhmm, exactKey, blockH);
-                    return { latest, obs };
+                    return { latest: observationInstant_(obs, latest), obs: stripSlotKey_(obs) };
                 }
                 const obs = await enrichAmedasObs_(
                     pickPointBlockObs_(data, entry.exactKey || exactKey),
                     ymd, hhmm, exactKey, blockH
                 );
-                return { latest, obs };
+                return { latest: observationInstant_(obs, latest), obs: stripSlotKey_(obs) };
             } catch (e) { lastErr = e; }
         }
         throw lastErr || new Error('JMA amedas failed');
