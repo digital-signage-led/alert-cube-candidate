@@ -209,6 +209,32 @@
     });
   }
 
+  /* 4面は同じ時刻を繰り返さない。4件ずつタイルにし、最後も4枚が埋まる位置から出す。 */
+  function pageStarts(count) {
+    var n = Math.max(0, Math.floor(Number(count) || 0));
+    if (!n) return [];
+    if (n <= FACES) return [0];
+    var starts = [];
+    var i = 0;
+    while (i + FACES < n) {
+      starts.push(i);
+      i += FACES;
+    }
+    starts.push(n - FACES);
+    return starts;
+  }
+
+  function tilesHtml(slots, start, day, got) {
+    var html = '';
+    var i;
+    var count = Math.min(FACES, slots.length - start);
+    for (i = 0; i < count; i++) {
+      var slot = slots[start + i];
+      html += panel(slotTop(slot, day), slotBody(slot), got, precText(slot));
+    }
+    return html;
+  }
+
   function paintFaces(track, html) {
     if (!track) return;
     track.innerHTML = html;
@@ -224,10 +250,11 @@
     var html = '';
     var i;
     var slots = returnedSlots(model);
-    var face = slots.length
-      ? panel(slotTop(slots[0], slots[0].dateLabel), slotBody(slots[0]), fetchLabel(model), precText(slots[0]))
-      : missFace();
-    for (i = 0; i < FACES; i++) html += face;
+    if (!slots.length) {
+      for (i = 0; i < FACES; i++) html += missFace();
+    } else {
+      html = tilesHtml(slots, 0, slots[0].dateLabel, fetchLabel(model));
+    }
     paintFaces(track, html);
   }
 
@@ -254,35 +281,31 @@
       frameTimer = setTimeout(finish, FRAME_MS * FACES);
       return;
     }
-    var index = 0;
+    var starts = pageStarts(slots.length);
+    var page = 0;
     var lapsLeft = Math.max(1, Math.floor(Number(o.laps) || 1));
     var day = slots[0].dateLabel;
     var got = fetchLabel(model);
     function show() {
       if (token !== playing) return;
-      var slot = slots[index];
-      var face = panel(slotTop(slot, day), slotBody(slot), got, precText(slot));
-      var html = '';
-      var i;
-      for (i = 0; i < FACES; i++) html += face;
-      paintFaces(track, html);
+      paintFaces(track, tilesHtml(slots, starts[page], day, got));
       if (o.onLayout) o.onLayout();
       frameTimer = setTimeout(function () {
         frameTimer = 0;
         if (token !== playing) return;
-        index += 1;
-        if (index < slots.length) {
+        page += 1;
+        if (page < starts.length) {
           show();
           return;
         }
         lapsLeft -= 1;
         if (lapsLeft > 0) {
-          index = 0;
+          page = 0;
           show();
           return;
         }
         finish();
-      }, FRAME_MS);
+      }, FRAME_MS * 2);
     }
     show();
   }
@@ -295,6 +318,7 @@
     current: current,
     FACES: FACES,
     FRAME_MS: FRAME_MS,
+    pageStarts: pageStarts,
     render: render,
     play: play,
     stop: stop,
