@@ -81,8 +81,8 @@
         "id": "term",
         "layout": "cards",
         "cards": [
-          { "theme": "dark", "era": "令和8年", "highlight": "10月から12月", "title": "ポンプ棟躯体構築", "sub": "（地下部）" },
-          { "theme": "light", "era": "令和8年", "highlight": "10月から12月", "title": "ポンプ棟躯体構築", "sub": "（地下部）" }
+          { "theme": "dark", "era": "令和8年", "highlight": "11月から令和9年1月", "title": "ポンプ棟躯体構築", "sub": "（地下部）" },
+          { "theme": "light", "era": "令和8年", "highlight": "11月から令和9年1月", "title": "ポンプ棟躯体構築", "sub": "（地下部）" }
         ]
       },
       {
@@ -93,7 +93,7 @@
         "card": {
           "theme": "dark",
           "badge": "１週間の重要工程",
-          "date": "令和８年１０月３０日",
+          "date": "令和８年１１月２７日",
           "line": "コンクリート打設",
           "lineSize": "sm",
           "icon": false
@@ -108,7 +108,7 @@
         "card": {
           "theme": "dark",
           "badge": "今週の安全ミッション",
-          "line": "段差の確認！！",
+          "line": "開口部養生の徹底！！",
           "lineSize": "one",
           "icon": false
         },

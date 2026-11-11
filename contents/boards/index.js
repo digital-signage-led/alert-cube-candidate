@@ -87,9 +87,11 @@
   function cardHtml(card) {
     var theme = card && card.theme === 'light' ? 'light' : 'dark';
     var c = card || {};
+    var periodText = String(c.era || '') + String(c.highlight || '');
+    var periodSize = periodText.length > 12 ? ' style="font-size:18px"' : '';
     return '<div class="kotei-card kotei-card-' + theme + '">' +
-      '<div class="kotei-term-period"><span class="kotei-reiwa">' + escapeHtml(c.era || '') +
-      '</span><span class="kotei-term-hl">' + escapeHtml(c.highlight || '') + '</span></div>' +
+      '<div class="kotei-term-period"><span class="kotei-reiwa"' + periodSize + '>' + escapeHtml(c.era || '') +
+      '</span><span class="kotei-term-hl"' + periodSize + '>' + escapeHtml(c.highlight || '') + '</span></div>' +
       lineHtml(c.title, 'kotei-term-title') +
       lineHtml(c.sub, 'kotei-term-sub') +
       '</div>';
@@ -153,19 +155,34 @@
     return 'kotei-safety-line';
   }
 
+  function safetyLineFont(card) {
+    var size = card && card.lineSize;
+    var text = String(card && card.line || '');
+    if (size === 'head') return '18px';
+    if (size === 'term') return '16px';
+    if (size === 'sm') return text.length > 8 ? '24px' : '28px';
+    if (size === 'one' || size === 'long') return text.length > 8 ? '20px' : '30px';
+    return text.length > 8 ? '24px' : '34px';
+  }
+
   function safetyCardHtml(card) {
     var c = card || {};
     var light = c.theme === 'light' ? ' kotei-col-light' : '';
-    var date = c.date ? '<div class="kotei-safety-date">' + escapeHtml(c.date) + '</div>' : '';
-    var line = c.line ? '<div class="' + safetyLineClass(c) + '">' + escapeHtml(c.line) + '</div>' : '';
+    var date = c.date
+      ? '<div class="kotei-safety-date" style="font-size:22px;text-align:center">' + escapeHtml(c.date) + '</div>'
+      : '';
+    var line = c.line
+      ? '<div class="' + safetyLineClass(c) + '" style="font-size:' + safetyLineFont(c) + ';text-align:center">' + escapeHtml(c.line) + '</div>'
+      : '';
     var icon = (c.icon === false || c.icon === 'none')
       ? ''
       : '<div class="kotei-safety-icon">' + iconHtml(c.icon) + '</div>';
-    return '<div class="kotei-col kotei-col-safety' + light + '"><div class="kotei-safety-panel">' +
-      '<div class="kotei-safety-badge">' + escapeHtml(c.badge || '') + '</div>' +
-      '<div class="kotei-safety-hero">' +
+    return '<div class="kotei-col kotei-col-safety' + light + '" style="padding:0 16px">' +
+      '<div class="kotei-safety-panel" style="align-items:center">' +
+      '<div class="kotei-safety-badge" style="align-self:center">' + escapeHtml(c.badge || '') + '</div>' +
+      '<div class="kotei-safety-hero" style="justify-content:center;width:100%">' +
       icon +
-      '<div class="kotei-safety-hero-text">' + date + line + '</div>' +
+      '<div class="kotei-safety-hero-text" style="align-items:center">' + date + line + '</div>' +
       '</div></div></div>';
   }
 

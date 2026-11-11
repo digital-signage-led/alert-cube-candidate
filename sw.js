@@ -1,5 +1,5 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20261111-wxtech';
+var CACHE_NAME = 'alert-cube-sites-20261111-sato-boards';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -9,7 +9,7 @@ var PRECACHE = [
   './contents/registry.js?v=20261111-wxtech-public',
   './contents/modules.js?v=20261111-wxtech-public',
   './contents/news/index.js?v=20260929-ac0019-news',
-  './contents/boards/index.js?v=20261005-ac0009-slide',
+  './contents/boards/index.js?v=20261111-sato-boards',
   './contents/logo-scroll/index.js?v=20261110-meibird',
   './contents/progress/index.js?v=20261005-progress-logo',
   './contents/eew/evaluate.js?v=20260929-eew1',
