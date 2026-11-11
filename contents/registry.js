@@ -23,6 +23,10 @@
     { id: 'wbgt-i18n', label: '多言語WBGT', scene: 'scene3', fetch: ['moe-wbgt'], existing: true, lifecycle: 'active', seasonal: 'summer' },
     { id: 'forecast', label: '4日予報', scene: 'scene5', fetch: ['jma-forecast'], existing: true, lifecycle: 'active' },
     {
+      id: 'short-forecast', label: '短時間予報', scene: 'sceneShort', fetch: ['wxtech-kakuho'],
+      existing: true, defaultOn: false, lifecycle: 'active'
+    },
+    {
       id: 'ssc', label: '騒音・振動', scene: 'sceneSsc', fetch: [],
       existing: true, defaultOn: false, lifecycle: 'active',
       end: 'animation', resolution: '512x128',

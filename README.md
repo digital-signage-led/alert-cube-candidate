@@ -8,6 +8,11 @@
 npx --yes serve -l 3200
 ```
 
+短時間予報（DM-0008）は APIキーをブラウザに置かない。このPCでは `node scripts/wxtech-preview.js` で中継を出す。公開ページは、GitHub が10分ごとに置いたスナップショットを読む。スナップショットは45分で期限切れになる。
+
+- http://127.0.0.1:3200/?site=DM-0008
+- キーは `.env` の `WXTECH_API_KEY`。公開側は同じ名前の GitHub secret。取得間隔 `WXTECH_REFRESH_MS` の初期値は暫定
+
 - http://127.0.0.1:3200/ （本番 AC-0001）
 - http://127.0.0.1:3200/?site=AC-0001
 - http://127.0.0.1:3200/?site=AC-0002 （ENEOS磯子 V2.0）
@@ -146,5 +151,6 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0029: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0029
 - AC-0033: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0033 （山陽工業 西広島バイパス。4面）
 - DM-0004: https://digital-signage-led.github.io/alert-cube-candidate/?site=DM-0004 （インテックス大阪 展示会。レンタルのニッケン。5面。本番端末へ登録しない）
+- DM-0008: https://digital-signage-led.github.io/alert-cube-candidate/?site=DM-0008 （短時間予報。本番端末へ登録しない）
 - AC-0000: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0000
 - コンテンツ一覧: https://digital-signage-led.github.io/alert-cube-candidate/contents/

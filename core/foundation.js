@@ -324,6 +324,7 @@
       contentOrder: site.contentOrder,
       edamSsc: site.edamSsc || null,
       news: site.news || null,
+      wxtech: site.wxtech || null,
       boards: site.boards || null,
       progress: site.progress || null,
       logoScroll: site.logoScroll || null,
@@ -369,6 +370,7 @@
     if (json.presentation) base.presentation = Object.assign({}, base.presentation || {}, json.presentation);
     if (json.edamSsc) base.edamSsc = json.edamSsc;
     if (json.news) base.news = json.news;
+    if (json.wxtech) base.wxtech = json.wxtech;
     if (json.boards) base.boards = json.boards;
     if (json.progress) base.progress = json.progress;
     if (json.logoScroll) base.logoScroll = json.logoScroll;
