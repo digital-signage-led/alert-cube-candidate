@@ -11,7 +11,7 @@
   "latitude": 34.516922,
   "longitude": 135.57814,
   "elevation": null,
-  "memo": "未確定のデモ。展示会。デジタルサイネージ。請求しない。本番端末へ登録しない。5面640×128。会場は堺市美原区木材通3-1-8。右端固定と、気象観測・WBGT・4日間予報の末尾は球体と DIGITAL SIGNAGE のロックアップ。時刻下の白帯は DIGITAL SIGNAGE のワードマーク。地点名「美原区」。地図はその住所。WBGT・アメダスは堺62091（気温・降水・風・湿度。気圧は大阪62078で補完）。予報は大阪府270000、気温の発表地点は大阪62078。警報は大阪府270000、堺市2714000。気象観測・WBGT・4日予報・多言語は1周。注意報・警報は発表中だけ2周。台風は発表中だけ2周。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
+  "memo": "未確定のデモ。展示会。デジタルサイネージ。請求しない。本番端末へ登録しない。5面640×128。会場は堺市美原区木材通3-1-8。右端固定と、気象観測・WBGT・4日間予報の末尾は球体と DIGITAL SIGNAGE のロックアップ。時刻下の白帯は DIGITAL SIGNAGE のワードマーク。地点名「美原区」。地図はその住所。WBGT・アメダスは堺62091（気温・降水・風・湿度。気圧は大阪62078で補完）。予報は大阪府270000、気温の発表地点は大阪62078。警報は大阪府270000、堺市2714000。近隣挨拶は共通画像を2周。気象観測・WBGT・4日予報・多言語は1周。注意報・警報は発表中だけ2周。台風は発表中だけ2周。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
   "inundation": { "expectedDepthM": null },
   "evacuation": {
     "assembly": "",
@@ -66,9 +66,10 @@
   "updateSettings": { "refreshMs": 60000 },
   "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
   "greeting": {
-    "enabled": false,
+    "enabled": true,
     "mode": "image",
     "image": "./assets/greeting/neighborhood.jpg?v=1",
+    "scrollLaps": 2,
     "title": "近隣の皆様へ",
     "lines": [],
     "foot": ""
@@ -95,7 +96,7 @@
     "urls": [],
     "cacheKey": ""
   },
-  "contentOrder": [ "warning", "typhoon", "clock", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n"],
+  "contentOrder": [ "warning", "typhoon", "clock", "greeting", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },
@@ -117,7 +118,7 @@
     "disaster": { "on": true },
     "heat": { "on": false },
     "schedule": { "on": false },
-    "greeting": { "on": false },
+    "greeting": { "on": true },
     "news": { "on": false },
     "boards": { "on": false },
     "logo-scroll": { "on": false },
