@@ -57,7 +57,14 @@
     "observationMode": "scroll",
     "observationLaps": 2,
     "observationTrailingLogo": true,
-    "observationStamp": "now"
+    "observationStamp": "now",
+    "ambient": "brand",
+    "brandAlways": true,
+    "brand": {
+      "top": "#A69CC9",
+      "body": "#8476B4",
+      "darkText": false
+    }
   },
   "news": {
     "badge": "新着情報",

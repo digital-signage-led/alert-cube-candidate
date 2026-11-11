@@ -3272,6 +3272,13 @@
         return { bgColor: body, barColor: top, darkText: brand.darkText === true };
     }
 
+    /** イメージカラーを、暑さ指数の提供中も地色に残す */
+    function brandAlways_() {
+        const site = global.SignageConfig || {};
+        const pres = site.presentation || {};
+        return pres.brandAlways === true;
+    }
+
     /** イメージカラーの案件は、カレンダーの提供期間外なら段階色より先にその色を塗る */
     function brandOutsideSeason_() {
         const brand = brandAmbient_();
@@ -3303,7 +3310,7 @@
     function colorsForDisplay(levelIdx, displayMode) {
         if (displayMode === 'unavailable') return UNKNOWN;
         const branded = brandAmbient_();
-        if (branded && displayMode !== 'normal') {
+        if (branded && (displayMode !== 'normal' || brandAlways_())) {
             return { bgColor: branded.bgColor, barColor: branded.barColor };
         }
         const outside = brandOutsideSeason_();
@@ -3318,7 +3325,7 @@
 
     function isDarkTextForDisplay(levelIdx, displayMode) {
         const branded = brandAmbient_();
-        if (branded && displayMode !== 'normal') return branded.darkText === true;
+        if (branded && (displayMode !== 'normal' || brandAlways_())) return branded.darkText === true;
         const outside = brandOutsideSeason_();
         if (outside) return outside.darkText;
         return false;
