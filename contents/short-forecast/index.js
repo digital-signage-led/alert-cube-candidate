@@ -192,7 +192,9 @@
 
   function slotBody(slot) {
     var file = iconFile(slot);
-    if (!file) return '';
+    if (!file) {
+      return '<div class="d5-weather-row short-miss-row"><span class="short-miss">取得不可</span></div>';
+    }
     var src = 'https://www.jma.go.jp/bosai/forecast/img/' + file + '.svg';
     return '<div class="d5-weather-row"><span class="weather-icon-cell is-ready"><img class="weather-svg weather-icon-img" alt="" decoding="async" style="visibility:visible" src="' + src + '"></span></div>';
   }
