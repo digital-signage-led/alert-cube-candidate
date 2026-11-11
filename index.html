@@ -1306,7 +1306,7 @@
             height: var(--led-foot-bar-h); flex: 0 0 auto;
         }
         #sceneSsc .ssc-meta-line {
-            width: 512px; flex: 0 0 512px; height: var(--led-foot-bar-h);
+            width: 256px; flex: 0 0 256px; height: var(--led-foot-bar-h);
             overflow: hidden; position: relative;
         }
         #sceneSsc .ssc-meta-line-track {
@@ -14277,19 +14277,19 @@
         const line = window.EdamSsc.metaLine(metaCfg, lastSscValues_ || window.EdamSsc.pendingValues(), ready);
         const withLogo = !!(sceneSsc && sceneSsc.classList.contains('ssc-with-logo'));
         const span = '<span class="s2-meta-panel-txt">' + window.EdamSsc.escapeHtml(line) + '</span>';
+        const lineHtml = '<div class="ssc-meta-line"><div class="ssc-meta-line-track">' + span + '</div></div>';
         const logo = withLogo ? '<div class="ssc-meta-logo" aria-hidden="true"></div>' : '';
-        const set = '<div class="s2-meta-set ssc-meta-set"><div class="ssc-meta-line"><div class="ssc-meta-line-track">'
-            + span + '</div></div>' + logo + '</div>';
+        const set = '<div class="s2-meta-set ssc-meta-set">' + lineHtml + lineHtml + logo + '</div>';
         sscMetaTrack.innerHTML = set + set;
         const setW = withLogo ? 640 : 512;
         sscMetaTrack.querySelectorAll('.ssc-meta-set').forEach(function (el) {
             el.style.width = setW + 'px';
         });
-        const track = sscMetaTrack.querySelector('.ssc-meta-line-track');
-        const textW = track ? track.scrollWidth : 0;
+        const sample = sscMetaTrack.querySelector('.s2-meta-panel-txt');
+        const textW = sample ? sample.offsetWidth : 0;
         sscMetaTextPx = 0;
         sscMetaTextShift = 0;
-        if (textW > 512) {
+        if (textW > 256) {
             sscMetaTrack.querySelectorAll('.ssc-meta-line-track').forEach(function (el) {
                 el.insertAdjacentHTML('beforeend', span);
             });
