@@ -1,6 +1,7 @@
 /**
  * 短時間予報。気象庁の4日間予報・観測・WBGTは置き換えない。
- * 通信失敗、欠測、期限切れのときは直前の予報を残さない。
+ * 通信が失敗しても、直前に出せた予報が残っていればそれを出す。
+ * 出せる時刻が無いときは「取得できません」を面に出し、空にはしない。
  */
 (function (global) {
   'use strict';
@@ -39,8 +40,12 @@
     return { lat: lat, lon: lon };
   }
 
+  function hasSlots(model) {
+    return !!(model && model.ok && model.slots && model.slots.length);
+  }
+
   function fail(reason) {
-    view = { ok: false, reason: reason || 'unavailable', slots: [] };
+    if (!hasSlots(view)) view = { ok: false, reason: reason || 'unavailable', slots: [] };
     settled = true;
     var list = waiters.splice(0, waiters.length);
     list.forEach(function (fn) { fn(view); });
@@ -48,7 +53,14 @@
 
   function accept(payload) {
     var api = wx();
-    view = api ? api.normalize(payload, Date.now()) : { ok: false, reason: 'unavailable', slots: [] };
+    var next = api ? api.normalize(payload, Date.now()) : { ok: false, reason: 'unavailable', slots: [] };
+    if (!hasSlots(next) && hasSlots(view)) {
+      settled = true;
+      var kept = waiters.splice(0, waiters.length);
+      kept.forEach(function (fn) { fn(view); });
+      return;
+    }
+    view = next;
     if (view && payload && Number(payload.refreshMs) >= 60000) view.refreshMs = Number(payload.refreshMs);
     settled = true;
     var list = waiters.splice(0, waiters.length);
@@ -204,16 +216,18 @@
     track.style.transform = 'none';
   }
 
+  function missFace() {
+    return panel('予報', '<div class="d5-weather-row short-miss-row"><span class="short-miss">取得できません</span></div>', '', '');
+  }
+
   function render(track, model) {
     var html = '';
     var i;
     var slots = returnedSlots(model);
-    if (slots.length) {
-      var day = slots[0].dateLabel;
-      var slot = slots[0];
-      var face = panel(slotTop(slot, day), slotBody(slot), fetchLabel(model), precText(slot));
-      for (i = 0; i < FACES; i++) html += face;
-    }
+    var face = slots.length
+      ? panel(slotTop(slots[0], slots[0].dateLabel), slotBody(slots[0]), fetchLabel(model), precText(slots[0]))
+      : missFace();
+    for (i = 0; i < FACES; i++) html += face;
     paintFaces(track, html);
   }
 

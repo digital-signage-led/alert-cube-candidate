@@ -60,7 +60,6 @@
     if (!payload || payload.ok === false) return unavailable('unavailable');
     if (Array.isArray(payload.errors) && payload.errors.length) return unavailable('unavailable');
     var freshUntil = payload.freshUntil ? Date.parse(payload.freshUntil) : NaN;
-    if (Number.isFinite(freshUntil) && freshUntil < now) return unavailable('stale');
     var fetchedAt = payload.fetchedAt ? Date.parse(payload.fetchedAt) : NaN;
     if (!Number.isFinite(fetchedAt)) return unavailable('unavailable');
     var block = payload.wxdata && payload.wxdata[0];

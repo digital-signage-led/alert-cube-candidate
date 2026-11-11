@@ -8,7 +8,7 @@
 npx --yes serve -l 3200
 ```
 
-短時間予報（DM-0008）は APIキーをブラウザに置かない。このPCでは `node scripts/wxtech-preview.js` で中継を出す。公開ページは、GitHub が10分ごとに置いたスナップショットを読む。スナップショットは45分で期限切れになる。
+短時間予報（DM-0008）は APIキーをブラウザに置かない。このPCでは `node scripts/wxtech-preview.js` で中継を出す。公開ページは、GitHub が10分ごとに置いたスナップショットを読む。ファイルの時刻が過ぎても、先の予報が残っていれば出す。出せる時刻が無くなったときは「取得できません」を面に出す。
 
 - http://127.0.0.1:3200/?site=DM-0008
 - キーは `.env` の `WXTECH_API_KEY`。公開側は同じ名前の GitHub secret。取得間隔 `WXTECH_REFRESH_MS` の初期値は暫定

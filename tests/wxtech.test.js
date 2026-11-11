@@ -47,8 +47,14 @@ assert.strictEqual(failed.slots.length, 0);
 var stale = wx.normalize(Object.assign(payload([row(11 * 60 + 30, 100, 0)]), {
   freshUntil: '2026-11-04T11:20:00+09:00'
 }), NOW);
-assert.strictEqual(stale.ok, false);
-assert.strictEqual(stale.reason, 'stale');
+assert.strictEqual(stale.ok, true);
+assert.strictEqual(stale.slots.length, 1);
+assert.strictEqual(stale.slots[0].timeLabel, '11:30');
+
+var expired = wx.normalize(payload([row(10 * 60, 100, 0)]), NOW);
+assert.strictEqual(expired.ok, false);
+assert.strictEqual(expired.reason, 'expired');
+assert.strictEqual(expired.slots.length, 0);
 
 var unknown = wx.normalize(payload([row(11 * 60 + 30, 999, -9999)]), NOW);
 assert.strictEqual(unknown.slots[0].wxOk, false);
@@ -76,7 +82,8 @@ assert.strictEqual(page.indexOf('WXTECH_API_KEY'), -1);
 assert.strictEqual(client.indexOf('X-API-Key'), -1);
 assert.strictEqual(client.indexOf('WXTECH_API_KEY'), -1);
 assert.ok(client.indexOf('wxtech.snapshot') >= 0);
-assert.ok(page.indexOf('20261111-wxtech-public') >= 0);
+assert.ok(page.indexOf('20261111-wxtech-hold') >= 0);
+assert.ok(client.indexOf('取得できません') >= 0);
 assert.ok(relay.indexOf('process.env.WXTECH_API_KEY') >= 0);
 assert.strictEqual(relay.indexOf('tpf.weathernews.jp'), -1);
 assert.ok(workflow.indexOf('secrets.WXTECH_API_KEY') >= 0);
