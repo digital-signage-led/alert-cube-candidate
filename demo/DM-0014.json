@@ -128,6 +128,7 @@
     "i18nTrailingLogo": true,
     "wbgtDemoAllLevels": false,
     "sscLaps": 2,
+    "sscFoot": "source",
     "ambient": "brand",
     "brand": {
       "top": "#FF8A3D",

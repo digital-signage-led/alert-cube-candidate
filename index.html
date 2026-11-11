@@ -1312,6 +1312,10 @@
             width: 256px; flex: 0 0 256px; height: var(--led-foot-bar-h);
             overflow: hidden; position: relative;
         }
+        #sceneSsc .ssc-meta-line.ssc-meta-source-line {
+            width: 512px; flex: 0 0 512px;
+            display: flex; align-items: center; justify-content: center;
+        }
         #sceneSsc .ssc-meta-line-track {
             display: flex; flex-direction: row; flex-wrap: nowrap;
             width: max-content; height: 100%; will-change: transform;
@@ -1326,6 +1330,10 @@
             padding: 0 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
             font-size: var(--led-foot-font); font-weight: 700; color: #1a1a1a;
             font-family: "Noto Sans JP", sans-serif;
+        }
+        #ssc-meta-track .ssc-meta-line .s2-meta-panel-txt.ssc-meta-source {
+            width: auto; max-width: 496px; flex: 0 1 auto;
+            text-align: center; text-overflow: clip;
         }
         #sceneNews { width: 512px; height: 128px; overflow: hidden; background: #0B4F9C; }
         .news-scroll-wrap {
@@ -1852,7 +1860,7 @@
         #sceneGreeting .ng-lead-line {
             font-family: "Noto Sans JP", sans-serif; font-weight: 800; font-size: 48px;
             line-height: 1; color: #111111; white-space: nowrap;
-            padding-left: 16px; padding-right: 64px;
+            padding-left: 16px; padding-right: 16px;
         }
         #sceneGreeting.greeting-promo { background: var(--signage-bg, #3181BD); }
         #sceneGreeting.greeting-promo .promo-shell { width: 512px; height: 128px; }
@@ -13774,7 +13782,8 @@
             sceneGreeting.appendChild(row);
         }
         row.innerHTML = '<div class="ng-lead-track"><img class="ng-lead-logo" src="' + escapeS1Html(src) + '" alt="">' +
-            '<div class="ng-lead-line">' + escapeS1Html(phrase) + '</div></div>';
+            '<div class="ng-lead-line">' + escapeS1Html(phrase) + '</div>' +
+            '<img class="ng-lead-logo" src="' + escapeS1Html(src) + '" alt=""></div>';
         applyPendingSignageBgAtScene_();
         const pres = (siteCfg_() && siteCfg_().presentation) || {};
         const brandBody = pres.ambient === 'brand' ? solidCssColor_((pres.brand || {}).body) : '';
@@ -13787,11 +13796,13 @@
         function startScroll_() {
             if (!sceneGreeting.classList.contains('greeting-lead') || !track) return;
             const setW = track.offsetWidth;
+            const viewW = row.clientWidth || sceneGreeting.clientWidth || 512;
             if (!(setW > 0)) {
                 finishGreetingScene_();
                 return;
             }
-            const distance = setW * greetingImageLaps_();
+            /* 末尾の同じロゴが右端に着いたら止める。文字のあとを白のまま抜けさせない */
+            const distance = Math.max(0, setW - viewW);
             let moved = 0;
             applyScrollX_(track, 0);
             function step() {
@@ -14306,12 +14317,21 @@
         const metaCfg = String(sscCfg.siteName || '').trim()
             ? sscCfg
             : Object.assign({}, sscCfg, { siteName: getSiteLocationLabel_() });
-        const line = window.EdamSsc.metaLine(metaCfg, lastSscValues_ || window.EdamSsc.pendingValues(), ready);
+        const pres = (siteCfg_() && siteCfg_().presentation) || {};
+        const sourceOnly = pres.sscFoot === 'source';
+        const line = sourceOnly
+            ? getFootSourceText_()
+            : window.EdamSsc.metaLine(metaCfg, lastSscValues_ || window.EdamSsc.pendingValues(), ready);
         const withLogo = !!(sceneSsc && sceneSsc.classList.contains('ssc-with-logo'));
-        const span = '<span class="s2-meta-panel-txt">' + window.EdamSsc.escapeHtml(line) + '</span>';
-        const lineHtml = '<div class="ssc-meta-line"><div class="ssc-meta-line-track">' + span + '</div></div>';
+        const span = '<span class="s2-meta-panel-txt' + (sourceOnly ? ' ssc-meta-source' : '') + '">' +
+            window.EdamSsc.escapeHtml(line) + '</span>';
+        const lineHtml = sourceOnly
+            ? '<div class="ssc-meta-line ssc-meta-source-line">' + span + '</div>'
+            : '<div class="ssc-meta-line"><div class="ssc-meta-line-track">' + span + '</div></div>';
         const logo = withLogo ? '<div class="ssc-meta-logo" aria-hidden="true"></div>' : '';
-        const set = '<div class="s2-meta-set ssc-meta-set">' + lineHtml + lineHtml + logo + '</div>';
+        const set = sourceOnly
+            ? '<div class="s2-meta-set ssc-meta-set">' + lineHtml + logo + '</div>'
+            : '<div class="s2-meta-set ssc-meta-set">' + lineHtml + lineHtml + logo + '</div>';
         sscMetaTrack.innerHTML = set + set;
         const setW = withLogo ? 640 : 512;
         sscMetaTrack.querySelectorAll('.ssc-meta-set').forEach(function (el) {
