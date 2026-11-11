@@ -1,13 +1,13 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先 */
-var CACHE_NAME = 'alert-cube-sites-20261110-meiban';
+var CACHE_NAME = 'alert-cube-sites-20261111-wxtech';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
   './safety/fallback.js?v=20260921-suminoe',
   './safety/retry.js?v=20260921-suminoe',
   './safety/rollback.js?v=20260921-suminoe',
-  './contents/registry.js?v=20260929-eew1',
-  './contents/modules.js?v=20260929-eew1',
+  './contents/registry.js?v=20261111-wxtech-public',
+  './contents/modules.js?v=20261111-wxtech-public',
   './contents/news/index.js?v=20260929-ac0019-news',
   './contents/boards/index.js?v=20261005-ac0009-slide',
   './contents/logo-scroll/index.js?v=20261110-meibird',
@@ -19,7 +19,7 @@ var PRECACHE = [
   './contents/index.html',
   './data/jma-weather-icons.js?v=20260921-suminoe',
   './data/jma-regions.js?v=20260921-suminoe',
-  './core/foundation.js?v=20261028-shima-cube',
+  './core/foundation.js?v=20261111-wxtech-public',
   './services/densho/index.js?v=20261110-densho-vib',
   './services/remote.js?v=20261016-dm0002',
   './services/typhoon/index.js?v=20260921-suminoe',

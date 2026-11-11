@@ -7,8 +7,8 @@
     <meta charset="UTF-8">
     <script src="./config/site-config.js?v=20260921-suminoe"></script>
     <script src="./safety/version.js?v=20260921-suminoe"></script>
-    <script src="./contents/registry.js?v=20260929-eew1"></script>
-    <script src="./contents/modules.js?v=20260929-eew1"></script>
+    <script src="./contents/registry.js?v=20261111-wxtech-public"></script>
+    <script src="./contents/modules.js?v=20261111-wxtech-public"></script>
     <script src="./contents/news/index.js?v=20261006-news-30d"></script>
     <script src="./contents/boards/index.js?v=20261027-nikken-icons"></script>
     <script src="./contents/logo-scroll/index.js?v=20261110-meibird"></script>
@@ -20,8 +20,11 @@
     <script src="./contents/hazard/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
+    <script src="./data/wxtech-icons.js?v=20261111-wxtech-public"></script>
+    <script src="./services/wxtech/index.js?v=20261111-wxtech-public"></script>
+    <script src="./contents/short-forecast/index.js?v=20261111-wxtech-public"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
-    <script src="./core/foundation.js?v=20261028-shima-cube"></script>
+    <script src="./core/foundation.js?v=20261111-wxtech-public"></script>
     <script src="./services/densho/index.js?v=20261110-densho-vib"></script>
     <script src="./services/remote.js?v=20261016-dm0002"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
@@ -1630,6 +1633,10 @@
             border-color: #ebebeb;
         }
         #scene5 { overflow: hidden; }
+        #sceneShort { width: 512px; height: 128px; overflow: hidden; }
+        #sceneShort .d5-track { width: 512px; transform: none; }
+        #sceneShort .short-foot { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 6px; box-sizing: border-box; }
+        #sceneShort .short-got { color: #5a5a5a; font-size: 12px; font-weight: 700; font-family: "Noto Sans JP", sans-serif; line-height: 1; }
 
         /* ---------- 工程表（sceneSchedule）: 1日=128px・週ごと文言・横スクロール ---------- */
         #sceneSchedule {
@@ -3100,6 +3107,10 @@
         </div>
     </div>
 
+    <div class="scene forecast-scene daily-scene" id="sceneShort">
+        <div class="d5-track" id="short-conveyor"></div>
+    </div>
+
     <div class="scene" id="sceneSsc">
         <div class="ssc-scroll-wrap">
             <div class="ssc-track" id="ssc-conveyor">
@@ -3529,6 +3540,17 @@
         });
     }
 
+    function refreshSceneShort(levelIdx, displayMode) {
+        document.querySelectorAll('#sceneShort .d5-panel:not(.d5-logo-panel)').forEach(function (panel) {
+            applyStrip(panel, levelIdx, displayMode);
+        });
+        document.querySelectorAll('#sceneShort .d5-logo-panel').forEach(function (panel) {
+            panel.querySelectorAll('.col-bg-layer').forEach(function (el) { el.remove(); });
+            panel.classList.remove('col-bg-host', 'col-bg-dark-text', 'wbgt-off-season', 'wbgt-unavailable');
+            panel.style.backgroundColor = '#ffffff';
+        });
+    }
+
     function refreshSchedule(levelIdx, displayMode) {
         const root = document.getElementById('sceneSchedule');
         if (!root) return;
@@ -3678,6 +3700,7 @@
         refreshScene2,
         refreshForecast,
         refreshScene5,
+        refreshSceneShort,
         refreshSchedule,
         refreshGreeting,
         refreshTicker,
@@ -3756,6 +3779,7 @@
         }
         refineOnlyParam_();
         if (typeof startSscRefreshLoop_ === 'function') startSscRefreshLoop_();
+        if (window.AlertCubeShortForecast) window.AlertCubeShortForecast.start();
         if (typeof paintStoredForecast_ === 'function') paintStoredForecast_();
     }
     function refineOnlyParam_() {
@@ -3920,6 +3944,7 @@
         if (v === 'boards' || v === 'kotei') return 'boards';
         if (v === 'progress') return 'progress';
         if (v === 'rain-radar' || v === 'radar') return 'rain-radar';
+        if (v === 'short-forecast' || v === 'short') return 'short-forecast';
         if (v === 'logo') return 'logo';
         if (v === 'ssc' || v === 'noise' || v === 'vib') return 'ssc';
         const map = { '1': 's1', '2': 's2', '3': 's4', '4': 's5', '5': 's3', s1: 's1', s2: 's2', s3: 's3', s4: 's4', s5: 's5' };
@@ -3929,7 +3954,7 @@
         s1: 'シーン1', s2: 'シーン2', s4: 'シーン3', s5: 'シーン4', s3: 'シーン5',
         schedule: '工程表', greeting: '近隣挨拶',
         news: 'ニュース', boards: '告知ボード', logo: 'スクローリングロゴ', progress: '工事進捗',
-        'rain-radar': '雨雲レーダー', ssc: 'シーン3 騒音・振動',
+        'rain-radar': '雨雲レーダー', 'short-forecast': '短時間予報', ssc: 'シーン3 騒音・振動',
         alert: '熱中症アラート', rainwarn: '大雨警報', typhoon: '防災情報・台風'
     };
     let DEMO_ONLY = normalizeOnlyParam_(query.get('only'));
@@ -4743,6 +4768,7 @@
         SignageBg.refreshScene1(shared.lv, shared.mode);
         SignageBg.refreshScene2(shared.lv, shared.mode);
         SignageBg.refreshScene5(shared.lv, shared.mode);
+        if (typeof SignageBg.refreshSceneShort === 'function') SignageBg.refreshSceneShort(shared.lv, shared.mode);
         if (typeof SignageBg.refreshSchedule === 'function') SignageBg.refreshSchedule(lv, mode);
         if (typeof SignageBg.refreshGreeting === 'function') SignageBg.refreshGreeting(lv, mode);
         applyD5TodayFrame_();
@@ -4935,6 +4961,8 @@
     const fcLvTrack = document.getElementById('fc-lv-track');
     const s5 = document.getElementById('scene5');
     const d5Conveyor = document.getElementById('d5-conveyor');
+    const sceneShort = document.getElementById('sceneShort');
+    const shortConveyor = document.getElementById('short-conveyor');
     const sceneLogo = document.getElementById('sceneLogo');
     const logoFaceTrack = document.getElementById('logo-face-track');
     const sceneNews = document.getElementById('sceneNews');
@@ -4954,7 +4982,7 @@
     const sscConveyor = document.getElementById('ssc-conveyor');
     const sscMetaTrack = document.getElementById('ssc-meta-track');
     const logoRotator = document.getElementById('logo-rotator');
-    const ALL_SCENES_ = [s1, s2, s3, s4, s5, sceneSsc, sceneLogo, sceneNews, sceneBoards, sceneProgress, sceneRainRadar, sceneSchedule, sceneGreeting, sceneAlert, sceneRainWarn, sceneWarn, sceneTyphoon];
+    const ALL_SCENES_ = [s1, s2, s3, s4, s5, sceneShort, sceneSsc, sceneLogo, sceneNews, sceneBoards, sceneProgress, sceneRainRadar, sceneSchedule, sceneGreeting, sceneAlert, sceneRainWarn, sceneWarn, sceneTyphoon];
 
     /** ロゴパネル: 現在の WBGT 段階色に同期 */
     function applySignageLogoPanel_() {
@@ -8478,6 +8506,7 @@
         clearScene2TypeTimer_();
         clearScene4Timers();
         if (scene5AnimId) { cancelAnimationFrame(scene5AnimId); scene5AnimId = null; }
+        if (window.AlertCubeShortForecast) window.AlertCubeShortForecast.stop();
         if (sceneLogoAnimId) { cancelAnimationFrame(sceneLogoAnimId); sceneLogoAnimId = null; }
         if (sceneNewsAnimId) { cancelAnimationFrame(sceneNewsAnimId); sceneNewsAnimId = null; }
         if (sceneBoardsAnimId) { cancelAnimationFrame(sceneBoardsAnimId); sceneBoardsAnimId = null; }
@@ -8713,7 +8742,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261028-shima-nocube', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261111-wxtech', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -11353,7 +11382,7 @@
     }
     function sceneDisplayMode(el) {
         if (!el) return 'block';
-        if (el.id === 'scene2' || el.id === 'scene4' || el.id === 'scene5' || el.id === 'sceneSsc' || el.id === 'sceneLogo' || el.id === 'sceneNews' || el.id === 'sceneBoards' || el.id === 'sceneProgress' || el.id === 'sceneRainRadar' || el.id === 'sceneSchedule' || el.id === 'sceneGreeting' || el.id === 'sceneAlert' || el.id === 'sceneRainWarn' || el.id === 'sceneWarn' || el.id === 'sceneTyphoon') return 'block';
+        if (el.id === 'scene2' || el.id === 'scene4' || el.id === 'scene5' || el.id === 'sceneShort' || el.id === 'sceneSsc' || el.id === 'sceneLogo' || el.id === 'sceneNews' || el.id === 'sceneBoards' || el.id === 'sceneProgress' || el.id === 'sceneRainRadar' || el.id === 'sceneSchedule' || el.id === 'sceneGreeting' || el.id === 'sceneAlert' || el.id === 'sceneRainWarn' || el.id === 'sceneWarn' || el.id === 'sceneTyphoon') return 'block';
         if (el.id === 'scene1' || el.id === 'scene3') return 'block';
         return 'flex';
     }
@@ -14494,6 +14523,47 @@
             sceneSscAnimId = requestAnimationFrame(tick);
         });
     }
+    let shortForecastGen_ = 0;
+    function startShortForecastOrSkip_() {
+        if ((!contentOn_('short-forecast') && DEMO_ONLY !== 'short-forecast') || !sceneShort || !window.AlertCubeShortForecast) {
+            if (useContentOrder_() && !DEMO_ONLY) advanceContentOrder_();
+            return;
+        }
+        if (DEMO_ONLY === 'short-forecast') showOnlyScene_(sceneShort, playSceneShort);
+        else transitionToScene(sceneShort, playSceneShort);
+    }
+    function playSceneShort() {
+        const api = window.AlertCubeShortForecast;
+        shortForecastGen_ += 1;
+        const gen = shortForecastGen_;
+        if (!sceneShort || !api || (!contentOn_('short-forecast') && DEMO_ONLY !== 'short-forecast')) {
+            if (useContentOrder_() && !DEMO_ONLY) advanceContentOrder_();
+            return;
+        }
+        markPlaylistHeld_();
+        api.whenReady(function () {
+            runSceneScrollAfterHold_(function () {
+                if (gen !== shortForecastGen_) return;
+                api.play({
+                track: shortConveyor,
+                laps: presentationLaps_('shortForecastLaps', 1),
+                speed: getScrollSpeedPx_(),
+                logoSrc: '',
+                onLayout: function () {
+                    if (window.SignageBg && typeof SignageBg.refreshSceneShort === 'function') SignageBg.refreshSceneShort(0, 'normal');
+                },
+                onDone: function () {
+                    if (gen !== shortForecastGen_) return;
+                    if (demoOnlyLoop_('short-forecast', playSceneShort)) return;
+                    runAfterSceneEndHold_(function () {
+                        if (gen !== shortForecastGen_) return;
+                        playlistHandoff_();
+                    });
+                }
+                });
+            });
+        }, 8000);
+    }
     function playContentById_(id) {
         rememberPlaylistId_(id);
         if (id !== 'news') {
@@ -14515,6 +14585,7 @@
                 transitionToScene(s4, playScene4);
                 break;
             case 'forecast': transitionToScene(s5, playScene5); break;
+            case 'short-forecast': startShortForecastOrSkip_(); break;
             case 'ssc':
                 if (!contentOn_('ssc') || !sceneSsc) { advanceContentOrder_(); break; }
                 transitionToScene(sceneSsc, playSceneSsc);

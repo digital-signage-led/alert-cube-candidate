@@ -319,7 +319,7 @@ test('AC-0000 は内部テスト・全共通Contents ON、未実装はOFF', func
   registry.CONTENTS.forEach(function (c) {
     var item = site.contents[c.id];
     assert.ok(item, 'missing contents.' + c.id);
-    if (c.id === 'heat' || c.id === 'warning' || c.id === 'warning-hero') {
+    if (c.id === 'heat' || c.id === 'warning' || c.id === 'warning-hero' || c.id === 'short-forecast') {
       assert.strictEqual(item.on, false, c.id + ' stays off');
       assert.strictEqual(foundation.isContentOn(site, c.id), false, c.id + ' isContentOn');
       return;

@@ -1,0 +1,27 @@
+name: Update WxTech short forecast
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch WxTech short forecast
+        env:
+          WXTECH_API_KEY: ${{ secrets.WXTECH_API_KEY }}
+        run: node scripts/wxtech-snapshot.js
+      - name: Publish snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/demo/DM-0008/wxtech-latest.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Update WxTech short forecast"
+          git push

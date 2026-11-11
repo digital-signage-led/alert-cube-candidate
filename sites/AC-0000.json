@@ -164,6 +164,7 @@
     "wbgt": { "on": true },
     "wbgt-i18n": { "on": false },
     "forecast": { "on": true },
+    "short-forecast": { "on": false },
     "ssc": { "on": true },
     "warning": { "on": false },
     "warning-hero": { "on": false },
