@@ -1321,9 +1321,9 @@
             background: #ffffff;
         }
         #ssc-meta-track .ssc-meta-line .s2-meta-panel-txt {
-            display: inline-flex; align-items: center; height: var(--led-foot-bar-h);
-            width: auto; max-width: none; flex: 0 0 auto;
-            padding: 0 32px 0 16px; white-space: nowrap;
+            display: block; height: var(--led-foot-bar-h); line-height: var(--led-foot-bar-h);
+            width: 256px; max-width: 256px; flex: 0 0 256px; box-sizing: border-box;
+            padding: 0 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
             font-size: var(--led-foot-font); font-weight: 700; color: #1a1a1a;
             font-family: "Noto Sans JP", sans-serif;
         }
@@ -14317,25 +14317,10 @@
         sscMetaTrack.querySelectorAll('.ssc-meta-set').forEach(function (el) {
             el.style.width = setW + 'px';
         });
-        const sample = sscMetaTrack.querySelector('.s2-meta-panel-txt');
-        const textW = sample ? sample.offsetWidth : 0;
-        sscMetaTextPx = 0;
-        sscMetaTextShift = 0;
-        if (textW > 256) {
-            sscMetaTrack.querySelectorAll('.ssc-meta-line-track').forEach(function (el) {
-                el.insertAdjacentHTML('beforeend', span);
-            });
-            sscMetaTextPx = textW;
-        }
-        sscMetaLapPx = setW;
-    }
-    function scrollSscMetaLine_(speed) {
-        if (!(sscMetaTextPx > 0) || !sscMetaTrack) return;
-        sscMetaTextShift = (sscMetaTextShift + speed) % sscMetaTextPx;
-        const x = wrapScrollX_(-sscMetaTextShift, sscMetaTextPx);
         sscMetaTrack.querySelectorAll('.ssc-meta-line-track').forEach(function (el) {
-            applyScrollX_(el, x);
+            applyScrollX_(el, 0);
         });
+        sscMetaLapPx = setW;
     }
     function denshoSscUrls_() {
         const d = siteCfg_().densho || {};
@@ -14515,7 +14500,6 @@
             moved = Math.min(totalPx, moved + speed);
             applyScrollX_(sscConveyor, wrapScrollX_(-moved, setWidth));
             applyScrollX_(sscMetaTrack, wrapScrollX_(-moved, setWidth));
-            scrollSscMetaLine_(speed);
             if (moved >= totalPx) {
                 finishSsc_();
                 return;
