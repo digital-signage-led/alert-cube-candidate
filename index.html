@@ -1837,8 +1837,6 @@
         }
         #sceneGreeting.col-bg-dark-text .ng-title,
         #sceneGreeting.col-bg-dark-text .ng-line { color: #000000; }
-        #sceneGreeting.greeting-lead,
-        #sceneGreeting.greeting-lead .ng-lead { background: #ffffff !important; }
         #sceneGreeting.greeting-lead .ng-shell { display: none; }
         #sceneGreeting .ng-lead { display: none; height: 128px; align-items: center; overflow: hidden; }
         #sceneGreeting.greeting-lead .ng-lead { display: flex; }
@@ -1848,7 +1846,8 @@
         }
         #sceneGreeting .ng-lead-logo {
             width: 256px; height: 128px; flex: 0 0 256px; display: block;
-            object-fit: contain; object-position: center center; background: #ffffff;
+            object-fit: contain; object-position: center center; background: transparent;
+            mix-blend-mode: multiply;
         }
         #sceneGreeting .ng-lead-line {
             font-family: "Noto Sans JP", sans-serif; font-weight: 800; font-size: 48px;
@@ -13777,10 +13776,14 @@
         row.innerHTML = '<div class="ng-lead-track"><img class="ng-lead-logo" src="' + escapeS1Html(src) + '" alt="">' +
             '<div class="ng-lead-line">' + escapeS1Html(phrase) + '</div></div>';
         applyPendingSignageBgAtScene_();
-        sceneGreeting.style.background = '#ffffff';
-        row.style.background = '#ffffff';
+        const pres = (siteCfg_() && siteCfg_().presentation) || {};
+        const brandBody = pres.ambient === 'brand' ? solidCssColor_((pres.brand || {}).body) : '';
+        const leadBg = brandBody || '#ffffff';
+        sceneGreeting.style.background = leadBg;
+        row.style.background = leadBg;
         const img = row.querySelector('.ng-lead-logo');
         const track = row.querySelector('.ng-lead-track');
+        if (track) track.style.background = leadBg;
         function startScroll_() {
             if (!sceneGreeting.classList.contains('greeting-lead') || !track) return;
             const setW = track.offsetWidth;
