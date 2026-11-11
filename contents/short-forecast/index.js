@@ -192,9 +192,7 @@
 
   function slotBody(slot) {
     var file = iconFile(slot);
-    if (!file) {
-      return '<div class="d5-weather-row short-miss-row"><span class="short-miss">取得不可</span></div>';
-    }
+    if (!file) return '';
     var src = 'https://www.jma.go.jp/bosai/forecast/img/' + file + '.svg';
     return '<div class="d5-weather-row"><span class="weather-icon-cell is-ready"><img class="weather-svg weather-icon-img" alt="" decoding="async" style="visibility:visible" src="' + src + '"></span></div>';
   }
@@ -203,11 +201,11 @@
     return slot && slot.precOk ? slot.precLabel : '';
   }
 
-  /* 天気か降水量が返った時刻だけ。欠測の項目は空欄にし、取れない時刻は面にしない。 */
+  /* 天気が返った時刻だけ。降水量だけの時刻は面にしない。 */
   function returnedSlots(model) {
     if (!model || !model.ok || !model.slots) return [];
     return model.slots.filter(function (slot) {
-      return !!(iconFile(slot) || slot.precOk);
+      return !!iconFile(slot);
     });
   }
 
