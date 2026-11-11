@@ -219,6 +219,17 @@
         }
         html.site-dm-0013 .logo-corp-img,
         html.site-dm-0014 .logo-corp-img { display: none !important; }
+        html.site-dm-0013 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner,
+        html.site-dm-0014 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
+            height: 28px;
+            width: auto;
+            max-width: 248px;
+            max-height: 28px;
+            mix-blend-mode: multiply;
+            transform: none;
+            object-fit: contain;
+            object-position: center center;
+        }
         html.site-dm-0013 .logo-panel,
         html.site-dm-0014 .logo-panel {
             background: #EA5503 !important;
@@ -1824,17 +1835,18 @@
         #sceneGreeting.greeting-lead .ng-shell { display: none; }
         #sceneGreeting .ng-lead { display: none; height: 128px; align-items: center; overflow: hidden; }
         #sceneGreeting.greeting-lead .ng-lead { display: flex; }
-        #sceneGreeting .ng-lead-logo {
-            height: 128px; width: auto; flex: 0 0 auto; display: block;
-            object-fit: contain; background: #ffffff;
+        #sceneGreeting .ng-lead-track {
+            display: flex; align-items: center; height: 128px; flex: 0 0 auto;
+            will-change: transform;
         }
-        #sceneGreeting .ng-lead-view {
-            flex: 1 1 auto; min-width: 0; height: 128px; overflow: hidden;
-            display: flex; align-items: center;
+        #sceneGreeting .ng-lead-logo {
+            width: 256px; height: 128px; flex: 0 0 256px; display: block;
+            object-fit: contain; object-position: center center; background: #ffffff;
         }
         #sceneGreeting .ng-lead-line {
-            font-family: "Noto Sans JP", sans-serif; font-weight: 800; font-size: 32px;
-            line-height: 1.15; color: #111111; white-space: nowrap; padding-left: 8px;
+            font-family: "Noto Sans JP", sans-serif; font-weight: 800; font-size: 48px;
+            line-height: 1; color: #111111; white-space: nowrap;
+            padding-left: 16px; padding-right: 64px;
         }
         #sceneGreeting.greeting-promo { background: var(--signage-bg, #3181BD); }
         #sceneGreeting.greeting-promo .promo-shell { width: 512px; height: 128px; }
@@ -13733,42 +13745,45 @@
             row.className = 'ng-lead';
             sceneGreeting.appendChild(row);
         }
-        row.innerHTML = '<img class="ng-lead-logo" src="' + escapeS1Html(src) + '" alt="株式会社仙台銘板">' +
-            '<div class="ng-lead-view"><div class="ng-lead-line">' + escapeS1Html(phrase) + '</div></div>';
+        row.innerHTML = '<div class="ng-lead-track"><img class="ng-lead-logo" src="' + escapeS1Html(src) + '" alt="">' +
+            '<div class="ng-lead-line">' + escapeS1Html(phrase) + '</div></div>';
         applyPendingSignageBgAtScene_();
+        sceneGreeting.style.background = '#ffffff';
+        row.style.background = '#ffffff';
         const img = row.querySelector('.ng-lead-logo');
-        const line = row.querySelector('.ng-lead-line');
-        const view = row.querySelector('.ng-lead-view');
-        function begin_() {
-            if (!sceneGreeting.classList.contains('greeting-lead') || !line || !view) return;
-            const overflow = line.scrollWidth - view.clientWidth;
-            if (overflow <= 2) {
-                sceneGreetingHoldTimerId = setTimeout(finishGreetingScene_, SCENE_GREETING_HOLD_MS);
+        const track = row.querySelector('.ng-lead-track');
+        function startScroll_() {
+            if (!sceneGreeting.classList.contains('greeting-lead') || !track) return;
+            const setW = track.offsetWidth;
+            if (!(setW > 0)) {
+                finishGreetingScene_();
                 return;
             }
-            const total = overflow + 16;
+            const distance = setW * greetingImageLaps_();
             let moved = 0;
-            applyScrollX_(line, 0);
+            applyScrollX_(track, 0);
             function step() {
+                if (!sceneGreeting.classList.contains('greeting-lead')) return;
                 moved += getScrollSpeedPx_();
-                if (moved >= total) {
+                if (moved >= distance) {
                     sceneGreetingAnimId = null;
-                    applyScrollX_(line, -total);
-                    sceneGreetingHoldTimerId = setTimeout(finishGreetingScene_, 1200);
+                    applyScrollX_(track, -distance);
+                    sceneGreetingHoldTimerId = setTimeout(finishGreetingScene_, 400);
                     return;
                 }
-                applyScrollX_(line, -moved);
+                applyScrollX_(track, -moved);
                 sceneGreetingAnimId = requestAnimationFrame(step);
             }
             runSceneScrollAfterHold_(function () {
+                if (!sceneGreeting.classList.contains('greeting-lead')) return;
                 sceneGreetingAnimId = requestAnimationFrame(step);
             });
         }
-        if (img && img.complete) begin_();
+        if (img && img.complete) startScroll_();
         else if (img) {
-            img.addEventListener('load', begin_);
-            img.addEventListener('error', begin_);
-        } else begin_();
+            img.addEventListener('load', startScroll_);
+            img.addEventListener('error', startScroll_);
+        } else startScroll_();
     }
     function playSceneGreeting() {
         if (String(greetingCfg_().leadLogo || '').trim()) {
