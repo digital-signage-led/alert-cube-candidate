@@ -11,7 +11,7 @@
   "latitude": 34.605184,
   "longitude": 135.470949,
   "elevation": null,
-  "memo": "ニュースだけを見るテスト。未確定で請求しない。本番端末へ登録しない。順は警報・台風（発表中のみ）、ニュース。ニュースはデジタルサイネージ公式を1周、2件。取得できないときは確認用の見出しを出す。時刻・気象・雨雲レーダー・暑さ指数・4日間予報・多言語は出さない。注意報・警報と台風は発表中だけ2周。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
+  "memo": "ニュースだけを見るテスト。未確定で請求しない。本番端末へ登録しない。順は警報・台風（発表中のみ）、ニュース。ニュースはNHK主要ニュースRSSを1周、2件。取得できないときは出さない。時刻・気象・雨雲レーダー・暑さ指数・4日間予報・多言語は出さない。注意報・警報と台風は発表中だけ2周。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
   "inundation": { "expectedDepthM": null },
   "evacuation": {
     "assembly": "",
@@ -78,16 +78,11 @@
     "typhoonLaps": 2
   },
   "news": {
-    "badge": "新着情報",
+    "badge": "NHKニュース",
     "laps": 1,
     "speed": 1,
     "maxItems": 2,
-    "pageUrl": "https://www.digital-led.net/infomation/",
-    "freshDays": 0,
-    "items": [
-      { "date": "2026年11月12日", "title": "ニュース確認（1件目）" },
-      { "date": "2026年11月05日", "title": "ニュース確認（2件目）" }
-    ],
+    "pageUrl": "https://news.web.nhk/n-data/conf/na/rss/cat0.xml",
     "urls": [],
     "cacheKey": "DM-0015-news"
   },
