@@ -16,8 +16,8 @@
     { "projectId": "DM-0009", "status": "demo", "customer": "デジタルサイネージ", "siteName": "美原区" },
     { "projectId": "DM-0011", "status": "demo", "customer": "株式会社レンタルのニッケン", "siteName": "白浜町" },
     { "projectId": "DM-0012", "status": "demo", "customer": "株式会社レンタルのニッケン", "siteName": "美原区" },
-    { "projectId": "DM-0013", "status": "demo", "customer": "株式会社仙台銘板", "siteName": "坂出市" },
-    { "projectId": "DM-0014", "status": "demo", "customer": "株式会社仙台銘板", "siteName": "坂出市" },
+    { "projectId": "DM-0013", "status": "demo", "customer": "株式会社仙台銘板", "siteName": "高松市" },
+    { "projectId": "DM-0014", "status": "demo", "customer": "株式会社仙台銘板", "siteName": "高松市" },
     { "projectId": "DM-0015", "status": "demo", "customer": "デジタルサイネージ", "siteName": "住之江区" }
   ]
 }
