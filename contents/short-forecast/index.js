@@ -208,9 +208,10 @@
   }
 
   var FACE_PX = 128;
-  var SCROLL_PX = 0.75;
+  var HOLD_MS = 2000;
+  var SLIDE_MS = 500;
 
-  /* 時刻は左へ流す。一段で止めない。速さは速くする前の 0.75px。 */
+  /* 1面分だけ左へ送って止まる。流し続けない。 */
   function pageStarts(count) {
     var n = Math.max(0, Math.floor(Number(count) || 0));
     var starts = [];
@@ -290,29 +291,31 @@
     var laps = Math.max(1, Math.floor(Number(o.laps) || 1));
     var day = slots[0].dateLabel;
     var got = fetchLabel(model);
-    var distance = slots.length * laps * FACE_PX;
-    var speed = Number(o.speed);
-    if (!isFinite(speed) || speed <= 0) speed = SCROLL_PX;
-    var moved = 0;
-    paintStrip(track, stripHtml(slots, day, got, laps), distance + FACES * FACE_PX);
+    var steps = slots.length * laps;
+    var step = 0;
+    paintStrip(track, stripHtml(slots, day, got, laps), (steps + FACES) * FACE_PX);
     if (o.onLayout) o.onLayout();
-    function frame() {
-      if (typeof requestAnimationFrame === 'function') return requestAnimationFrame(tick);
-      return setTimeout(tick, 16);
-    }
-    function tick() {
+    function show() {
       if (token !== playing) return;
-      moved = Math.min(distance, moved + speed);
-      track.style.transition = 'none';
-      track.style.transform = 'translate3d(' + (-moved) + 'px,0,0)';
-      if (moved >= distance) {
-        anim = 0;
-        finish();
-        return;
+      if (step === 0) {
+        track.style.transition = 'none';
+        track.style.transform = 'translate3d(0,0,0)';
+      } else {
+        track.style.transition = 'transform ' + SLIDE_MS + 'ms ease-in-out';
+        track.style.transform = 'translate3d(' + (-step * FACE_PX) + 'px,0,0)';
       }
-      anim = frame();
+      frameTimer = setTimeout(function () {
+        frameTimer = 0;
+        if (token !== playing) return;
+        step += 1;
+        if (step < steps) {
+          show();
+          return;
+        }
+        finish();
+      }, step === 0 ? HOLD_MS : HOLD_MS + SLIDE_MS);
     }
-    anim = frame();
+    show();
   }
 
   var api = {
