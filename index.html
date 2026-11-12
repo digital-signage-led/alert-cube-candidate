@@ -9,7 +9,7 @@
     <script src="./safety/version.js?v=20260921-suminoe"></script>
     <script src="./contents/registry.js?v=20261111-wxtech-public"></script>
     <script src="./contents/modules.js?v=20261111-wxtech-public"></script>
-    <script src="./contents/news/index.js?v=20261006-news-30d"></script>
+    <script src="./contents/news/index.js?v=20261112-topics"></script>
     <script src="./contents/boards/index.js?v=20261111-sato-boards"></script>
     <script src="./contents/logo-scroll/index.js?v=20261110-meibird"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
@@ -1363,6 +1363,12 @@
         .news-item { flex-shrink: 0; display: flex; flex-direction: row; align-items: center; gap: 16px; white-space: nowrap; }
         .news-date { font-size: 40px; font-weight: 800; color: #8AD0F0; font-variant-numeric: tabular-nums; white-space: nowrap; }
         .news-title { font-size: 48px; font-weight: 800; color: #F0F8FF; white-space: nowrap; }
+        .news-topic { gap: 28px; }
+        .news-topic-cat { font-size: 40px; font-weight: 800; white-space: nowrap; color: #FFE14A; }
+        .news-topic-cat[data-cat="海外"] { color: #9FD6FF; }
+        .news-topic-cat[data-cat="建設"] { color: #B6F27A; }
+        .news-topic-source { font-size: 32px; font-weight: 700; color: #C8E8F5; white-space: nowrap; }
+        .news-topic-photo { display: block; width: 96px; height: 96px; object-fit: contain; flex: 0 0 auto; }
         #sceneBoards { width: 512px; height: 128px; overflow: hidden; background: #ffffff; }
         #sceneProgress { width: 512px; height: 128px; overflow: hidden; background: #ffffff; }
         #sceneRainRadar { width: 512px; height: 128px; overflow: hidden; background: #4f8fbf; }
@@ -12718,15 +12724,57 @@
         }
         showScene2Type_();
     }
+    let wbgtCycleLap_ = 0;
+    let wbgtCyclePainted_ = -1;
+    let wbgtCycleShowing_ = false;
+    function wbgtDemoCycle_() {
+        const p = (siteCfg_() && siteCfg_().presentation) || {};
+        return p.wbgtDemoCycle === true;
+    }
+    function wbgtSceneLaps_() {
+        if (wbgtDemoCycle_()) return DEMO_LEVEL_ORDER.length;
+        return presentationLaps_('wbgtLaps', SCENE4_LAPS);
+    }
+    function applyWbgtCycleChrome_(levelIdx) {
+        if (!window.SignageBg || typeof SignageBg.colorsForLevel !== 'function') return;
+        const lv = Math.max(0, Math.min(4, levelIdx | 0));
+        const colors = SignageBg.colorsForLevel(lv);
+        const content = document.querySelector('.content-area');
+        if (!content || !colors) return;
+        const dark = typeof SignageBg.isDarkTextLevel === 'function' && SignageBg.isDarkTextLevel(lv);
+        content.classList.toggle('col-bg-dark-text', !!dark);
+        content.classList.remove('wbgt-off-season', 'wbgt-unavailable');
+        content.style.backgroundColor = colors.bgColor;
+        content.style.setProperty('--signage-bg', colors.bgColor);
+        content.style.setProperty('--signage-bar', colors.barColor);
+        const wrap = content.querySelector('.scene-strip-bg');
+        if (!wrap) return;
+        const top = wrap.querySelector('.col-bg-top');
+        const body = wrap.querySelector('.col-bg-body');
+        const foot = wrap.querySelector('.col-bg-foot');
+        if (top) top.style.backgroundColor = colors.barColor;
+        if (body) body.style.backgroundColor = colors.bgColor;
+        if (foot) foot.style.backgroundColor = '#fff9f0';
+    }
+    function releaseWbgtCycle_() {
+        if (!wbgtDemoCycle_()) return;
+        wbgtCycleShowing_ = false;
+        wbgtCyclePainted_ = -1;
+        wbgtCycleLap_ = 0;
+        currentWbgtLevel = 0;
+        lastWbgtSlots = mockSlotsForDemoLevel(0);
+    }
     function finishScene4() {
         clearScene4Timers();
+        releaseWbgtCycle_();
         if (demoOnlyLoop_('s4', playScene4)) return;
         if (playlistHandoff_()) return;
         gotoSceneAfterScene4_();
     }
     function playScene4() {
         clearScene4Timers();
-        if (skipWbgtOffSeason_() || !(hasFull4Slots(lastGoodWbgtSlots_) || hasFull4Slots(lastWbgtSlots) || (DEMO_SIGNAGE_ACTIVE && currentWbgtLevel >= 0))) {
+        const sample = wbgtDemoCycle_();
+        if (!sample && (skipWbgtOffSeason_() || !(hasFull4Slots(lastGoodWbgtSlots_) || hasFull4Slots(lastWbgtSlots) || (DEMO_SIGNAGE_ACTIVE && currentWbgtLevel >= 0)))) {
             if (DEMO_ONLY === 's4') {
                 hideSceneEl(s4);
                 return;
@@ -12740,14 +12788,21 @@
             return;
         }
         markPlaylistHeld_();
-        if (!lastWbgtSlots && DEMO_SIGNAGE_ACTIVE && currentWbgtLevel >= 0) {
+        if (sample) {
+            wbgtCycleShowing_ = true;
+            wbgtCycleLap_ = 0;
+            wbgtCyclePainted_ = 0;
+            currentWbgtLevel = 0;
+            updateForecastSlots(mockSlotsForDemoLevel(0));
+        } else if (!lastWbgtSlots && DEMO_SIGNAGE_ACTIVE && currentWbgtLevel >= 0) {
             updateForecastSlots(mockSlotsForDemoLevel(currentWbgtLevel));
-        } else {
+        } else if (!sample) {
             syncWbgtSlotsToDomIfReady_();
         }
         compactScene4Panels();
         buildFcLvTrack(false);
         applyPendingSignageBgAtScene_();
+        if (sample) applyWbgtCycleChrome_(0);
         fitFcBarLabelFontSize_();
         fitFcWbgtFontSize();
         stepLogo90(420, true);
@@ -12755,7 +12810,7 @@
             scheduleDemoStep_(finishScene4);
             return;
         }
-        const wbgtTimes = presentationLaps_('wbgtLaps', SCENE4_LAPS);
+        const wbgtTimes = wbgtSceneLaps_();
         const wbgtSet = Math.max(128, scene4SetWidth);
         const totalPx = fullPassScrollPx_(wbgtSet, wbgtTimes);
         let totalScrolled = 0;
@@ -12766,6 +12821,17 @@
             totalScrolled = Math.min(totalPx, totalScrolled + speed);
             applyScrollX_(fcConveyor, -totalScrolled);
             applyScrollX_(fcLvTrack, -totalScrolled);
+            if (sample) {
+                const lap = Math.min(DEMO_LEVEL_ORDER.length - 1, Math.floor(totalScrolled / wbgtSet));
+                if (lap !== wbgtCycleLap_) {
+                    wbgtCycleLap_ = lap;
+                    wbgtCyclePainted_ = lap;
+                    updateForecastSlots(mockSlotsForDemoLevel(lap));
+                    applyWbgtCycleChrome_(lap);
+                    fitFcBarLabelFontSize_();
+                    fitFcWbgtFontSize();
+                }
+            }
             if (totalScrolled >= totalPx) {
                 scene4AnimId = null;
                 stopLogoSpinInterval();
@@ -14659,8 +14725,21 @@
             default: advanceContentOrder_(); break;
         }
     }
+    function topicsPreviewOn_() {
+        const host = String(location.hostname || '');
+        if (host !== '127.0.0.1' && host !== 'localhost') return false;
+        return query.get('topicsPreview') === '1';
+    }
     function newsCfg_() {
-        return (siteCfg_() && siteCfg_().news) || {};
+        const src = (siteCfg_() && siteCfg_().news) || {};
+        const cfg = {};
+        Object.keys(src).forEach(function (key) {
+            if (key !== 'allowPreview') cfg[key] = src[key];
+        });
+        if (cfg.topics && (cfg.preview === true || topicsPreviewOn_())) {
+            cfg.allowPreview = true;
+        }
+        return cfg;
     }
     function fetchNewsText_(url, timeoutMs) {
         return new Promise(function (resolve, reject) {
@@ -14685,14 +14764,24 @@
     }
     function loadNewsJson_(cfg) {
         const api = window.AlertCubeNews;
-        const urls = Array.isArray(cfg.urls) ? cfg.urls.filter(Boolean) : [];
+        const jobs = (Array.isArray(cfg.urls) ? cfg.urls.filter(Boolean) : []).map(function (url) {
+            return { url: String(url), preview: false };
+        });
+        if (cfg.topics && cfg.allowPreview && cfg.previewUrl) {
+            jobs.push({ url: String(cfg.previewUrl), preview: true });
+        }
         return new Promise(function (resolve) {
             let i = 0;
             function next() {
-                if (i >= urls.length) { resolve([]); return; }
-                fetchNewsText_(urls[i++], 8000)
+                if (i >= jobs.length) { resolve([]); return; }
+                const job = jobs[i++];
+                fetchNewsText_(job.url, 8000)
                     .then(function (text) {
-                        const items = api.normalizeItems(JSON.parse(text), cfg.maxItems);
+                        const data = JSON.parse(text);
+                        const useCfg = job.preview ? Object.assign({}, cfg, { allowPreview: true, freshHours: 0 }) : cfg;
+                        const items = cfg.topics
+                            ? api.publishableTopics(data, useCfg, Date.now())
+                            : api.normalizeItems(data, cfg.maxItems);
                         if (!items.length) { next(); return; }
                         resolve(items);
                     })
@@ -14733,7 +14822,9 @@
     function loadNewsItems_(cfg) {
         const api = window.AlertCubeNews;
         if (!api) return Promise.resolve([]);
-        const inline = api.normalizeItems(cfg, cfg.maxItems);
+        const inline = cfg.topics
+            ? api.publishableTopics({ items: Array.isArray(cfg.items) ? cfg.items : [] }, cfg, Date.now())
+            : api.normalizeItems(cfg, cfg.maxItems);
         const cached = api.itemsOf(cfg);
         const pageUrl = cfg.pageUrl ? String(cfg.pageUrl).trim() : '';
         const refreshMs = Number(cfg.refreshMs);
@@ -14770,8 +14861,10 @@
     let newsReadyRows_ = null;
     function newsRowsNow_(items) {
         const api = window.AlertCubeNews;
+        const cfg = newsCfg_();
+        if (cfg.topics) return items || [];
         if (!api || !api.recentItems) return [];
-        return api.recentItems(items || [], Date.now());
+        return api.recentItems(items || [], Date.now(), cfg.freshDays);
     }
     function startNewsOrSkip_() {
         if (!contentOn_('news') || !sceneNews || !window.AlertCubeNews) {
@@ -14822,7 +14915,8 @@
                 const built = window.AlertCubeNews.buildTrackHtml(rows, {
                     logoSrc: (window.SIGNAGE_CONFIG && window.SIGNAGE_CONFIG.logoSrc) || '',
                     badge: cfg.badge != null ? cfg.badge : '',
-                    itemLogo: !!cfg.itemLogo
+                    itemLogo: !!cfg.itemLogo,
+                    faceSafe: !!cfg.topics
                 });
                 newsTrack.innerHTML = built.html;
                 applyScrollX_(newsTrack, 0);

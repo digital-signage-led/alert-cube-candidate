@@ -1,0 +1,67 @@
+{
+  "feedStatus": "wikipedia-portal-2026-11-11",
+  "license": "CC BY-SA 4.0",
+  "sourcePage": "https://ja.wikipedia.org/wiki/Portal:最近の出来事",
+  "items": [
+    {
+      "id": "wiki-20261111-saikosai",
+      "category": "domestic",
+      "title": "最高裁判所大法廷は、2025年の参議院通常選挙の一票の格差が最大3.13倍だったことについて、違憲状態であったとする判決を言い渡した。",
+      "sourceName": "ウィキペディア CC BY-SA 4.0",
+      "sourceUrl": "https://ja.wikipedia.org/wiki/Portal:最近の出来事",
+      "publishedAt": "2026-11-11T12:00:00+09:00",
+      "verified": true,
+      "licenseStatus": "cc-by-sa-4.0"
+    },
+    {
+      "id": "wiki-20261110-zeityo",
+      "category": "domestic",
+      "title": "小渕優子と古川禎久が、自由民主党税制調査会の副会長を辞任。",
+      "sourceName": "ウィキペディア CC BY-SA 4.0",
+      "sourceUrl": "https://ja.wikipedia.org/wiki/Portal:最近の出来事",
+      "publishedAt": "2026-11-10T12:00:00+09:00",
+      "verified": true,
+      "licenseStatus": "cc-by-sa-4.0"
+    },
+    {
+      "id": "wiki-20261108-quake",
+      "category": "domestic",
+      "title": "静岡県西部を震源とするマグニチュード5.7の地震が発生。愛知県知多市で震度5強。",
+      "sourceName": "ウィキペディア CC BY-SA 4.0",
+      "sourceUrl": "https://ja.wikipedia.org/wiki/Portal:最近の出来事",
+      "publishedAt": "2026-11-08T12:00:00+09:00",
+      "verified": true,
+      "licenseStatus": "cc-by-sa-4.0"
+    },
+    {
+      "id": "wiki-20261105-shodo",
+      "category": "domestic",
+      "title": "ユネスコの評価機関が、日本の書道の無形文化遺産への登録を勧告。",
+      "sourceName": "ウィキペディア CC BY-SA 4.0",
+      "sourceUrl": "https://ja.wikipedia.org/wiki/Portal:最近の出来事",
+      "publishedAt": "2026-11-05T12:00:00+09:00",
+      "verified": true,
+      "licenseStatus": "cc-by-sa-4.0"
+    },
+    {
+      "id": "wiki-20261107-wiles",
+      "category": "overseas",
+      "title": "アメリカ合衆国の大統領首席補佐官のスージー・サマーオール・ワイルズが退任。後任はスティーブン・ミラー。",
+      "sourceName": "ウィキペディア CC BY-SA 4.0",
+      "sourceUrl": "https://ja.wikipedia.org/wiki/Portal:最近の出来事",
+      "publishedAt": "2026-11-07T12:00:00+09:00",
+      "verified": true,
+      "licenseStatus": "cc-by-sa-4.0"
+    },
+    {
+      "id": "wiki-20261106-paraguay",
+      "category": "overseas",
+      "title": "パラグアイの大統領のサンティアゴ・ペニャが辞意を表明。",
+      "sourceName": "ウィキペディア CC BY-SA 4.0",
+      "sourceUrl": "https://ja.wikipedia.org/wiki/Portal:最近の出来事",
+      "publishedAt": "2026-11-06T12:00:00+09:00",
+      "verified": true,
+      "licenseStatus": "cc-by-sa-4.0"
+    }
+  ]
+}

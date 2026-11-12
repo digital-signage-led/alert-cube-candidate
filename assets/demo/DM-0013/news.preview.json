@@ -1,0 +1,37 @@
+{
+  "feedStatus": "localhost-preview",
+  "items": [
+    {
+      "id": "preview-domestic",
+      "category": "domestic",
+      "title": "検証用の国内見出しです",
+      "sourceName": "検証",
+      "sourceUrl": "https://example.org/domestic",
+      "publishedAt": "2026-11-11T09:00:00+09:00",
+      "verified": true,
+      "licenseStatus": "preview"
+    },
+    {
+      "id": "preview-overseas",
+      "category": "overseas",
+      "title": "検証用の海外見出しです",
+      "sourceName": "検証",
+      "sourceUrl": "https://example.org/overseas",
+      "publishedAt": "2026-11-11T08:00:00+09:00",
+      "verified": true,
+      "licenseStatus": "preview"
+    },
+    {
+      "id": "preview-construction",
+      "category": "construction",
+      "title": "検証用の建設見出しです",
+      "sourceName": "検証",
+      "sourceUrl": "https://example.org/construction",
+      "publishedAt": "2026-11-11T07:00:00+09:00",
+      "verified": true,
+      "licenseStatus": "preview",
+      "imageUrl": "https://example.org/unlicensed.jpg",
+      "imageLicense": "unverified"
+    }
+  ]
+}
