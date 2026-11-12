@@ -294,10 +294,67 @@
     return items;
   }
 
+  var RFC822_MONTH = {
+    jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06',
+    jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12'
+  };
+
+  function rfc822NewsDate(raw) {
+    var m = String(raw || '').match(/(\d{1,2})\s+([A-Za-z]{3})\s+(20\d{2})/);
+    if (!m) return '';
+    var month = RFC822_MONTH[m[2].toLowerCase()];
+    if (!month) return '';
+    return m[3] + '年' + month + '月' + ('0' + m[1]).slice(-2) + '日';
+  }
+
+  function unwrapCdata(s) {
+    return String(s || '').replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
+  }
+
+  /** NHKニュースRSS。見出しと発表日だけを残す。 */
+  function parseRssItems(xml) {
+    if (!/<rss[\s>]/i.test(xml) || !/<item[\s>]/i.test(xml)) return [];
+    var items = [];
+    var seen = {};
+    var re = /<item\b[^>]*>([\s\S]*?)<\/item>/gi;
+    var m;
+    while ((m = re.exec(xml))) {
+      var block = m[1];
+      var title = block.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+      var pub = block.match(/<pubDate[^>]*>([\s\S]*?)<\/pubDate>/i);
+      if (!title || !pub) continue;
+      var name = cleanTitle(decodeText(unwrapCdata(title[1])));
+      var date = rfc822NewsDate(unwrapCdata(pub[1]));
+      if (!name || !date || seen[name]) continue;
+      seen[name] = true;
+      items.push({ date: date, title: name });
+    }
+    return items;
+  }
+
+  /** ブラウザからRSSを直接読めないとき、中継が返す見出しとRFC822日付。 */
+  function parseJinaRss(md) {
+    if (!/### \[[^\]]+\]\(https?:/i.test(md)) return [];
+    if (!/\d{1,2}\s+[A-Za-z]{3}\s+20\d{2}\s+\d{2}:\d{2}:\d{2}/.test(md)) return [];
+    var items = [];
+    var seen = {};
+    var re = /### \[([^\]]+)\]\(https?:[^)]+\)[\s\S]*?(\d{1,2}\s+[A-Za-z]{3}\s+20\d{2}\s+\d{2}:\d{2}:\d{2})/g;
+    var m;
+    while ((m = re.exec(md))) {
+      var title = cleanTitle(decodeText(m[1]));
+      var date = rfc822NewsDate(m[2]);
+      if (!title || !date || seen[title]) continue;
+      seen[title] = true;
+      items.push({ date: date, title: title });
+    }
+    return items;
+  }
+
   function parsePage(text, maxItems) {
     var raw = String(text || '').trim();
     var items = [];
-    if (raw.charAt(0) === '[' || raw.charAt(0) === '{') items = parseJsonNews(raw);
+    if (/<rss[\s>]/i.test(raw)) items = parseRssItems(raw);
+    if (!items.length && (raw.charAt(0) === '[' || raw.charAt(0) === '{')) items = parseJsonNews(raw);
     if (!items.length && raw.charAt(0) === '[') items = parseStudioCms(raw);
     if (!items.length && /data-field=["']title["']/i.test(raw)) items = parseHtmlNews(raw);
     if (!items.length && /news__item_content/i.test(raw)) items = parseHtmlList(raw);
@@ -308,6 +365,7 @@
     if (!items.length) items = parseMarkdownNews(raw);
     if (!items.length) items = parseDatedLinks(raw);
     if (!items.length) items = parseJapaneseDateLead(raw);
+    if (!items.length) items = parseJinaRss(raw);
     return normalizeItems({ items: items }, maxItems);
   }
 

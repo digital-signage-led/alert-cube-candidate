@@ -9,7 +9,7 @@
     <script src="./safety/version.js?v=20260921-suminoe"></script>
     <script src="./contents/registry.js?v=20261111-wxtech-public"></script>
     <script src="./contents/modules.js?v=20261111-wxtech-public"></script>
-    <script src="./contents/news/index.js?v=20261112-topics"></script>
+    <script src="./contents/news/index.js?v=20261112-nhk-rss"></script>
     <script src="./contents/boards/index.js?v=20261111-sato-boards"></script>
     <script src="./contents/logo-scroll/index.js?v=20261110-meibird"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
@@ -22,7 +22,7 @@
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/wxtech-icons.js?v=20261111-wxtech-public"></script>
     <script src="./services/wxtech/index.js?v=20261112-wxtech-hold"></script>
-    <script src="./contents/short-forecast/index.js?v=20261112-wxtech-first"></script>
+    <script src="./contents/short-forecast/index.js?v=20261112-wxtech-nogot"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
     <script src="./core/foundation.js?v=20261111-wxtech-public"></script>
     <script src="./services/densho/index.js?v=20261110-densho-vib"></script>
@@ -1655,8 +1655,7 @@
         html.ac-dm0008 #sceneShort { display: block; background: #C4472A; }
         html.ac-dm0008 .content-area { background: #C4472A; }
         #sceneShort .d5-track { width: 512px; transform: none; }
-        #sceneShort .short-foot { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 6px; box-sizing: border-box; }
-        #sceneShort .short-got { color: #5a5a5a; font-size: 12px; font-weight: 700; font-family: "Noto Sans JP", sans-serif; line-height: 1; }
+        #sceneShort .short-foot { display: flex; align-items: center; justify-content: flex-end; width: 100%; padding: 0 6px; box-sizing: border-box; }
         #sceneShort .short-miss-row { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
         #sceneShort .short-miss { color: #ebebeb; font-size: 15px; font-weight: 700; font-family: "Noto Sans JP", sans-serif; line-height: 1.15; text-align: center; }
 
@@ -3169,11 +3168,10 @@
             var future = weather.filter(function (row) { return Date.parse(row.date) + 5 * 60 * 1000 > now; });
             var use = (future.length ? future : weather).slice(0, 4);
             if (!use.length || track.getAttribute('data-owned') === '1') return;
-            var got = json.fetchedAt ? hm(json.fetchedAt) : '';
             var html = '';
             use.forEach(function (row) {
                 var prec = row.prec == null || row.prec === -9999 ? '' : (Math.round(Number(row.prec) * 10) / 10) + 'mm';
-                html += '<div class="d5-panel s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">' + hm(row.date) + '</span></div><div class="s2-body d5-body"><div class="d5-weather-row"><span class="weather-icon-cell is-ready"><img class="weather-svg weather-icon-img" alt="" decoding="async" style="visibility:visible" src="https://www.jma.go.jp/bosai/forecast/img/' + files[row.wx] + '.svg"></span></div></div><div class="s2-foot short-foot"><span class="short-got">' + (got ? '取得' + got : '') + '</span><span class="d5-foot-txt short-prec">' + prec + '</span></div></div>';
+                html += '<div class="d5-panel s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">' + hm(row.date) + '</span></div><div class="s2-body d5-body"><div class="d5-weather-row"><span class="weather-icon-cell is-ready"><img class="weather-svg weather-icon-img" alt="" decoding="async" style="visibility:visible" src="https://www.jma.go.jp/bosai/forecast/img/' + files[row.wx] + '.svg"></span></div></div><div class="s2-foot short-foot"><span class="d5-foot-txt short-prec">' + prec + '</span></div></div>';
             });
             track.innerHTML = html;
             track.style.width = '512px';
@@ -14708,11 +14706,12 @@
         }
         markPlaylistHeld_();
         api.whenReady(function () {
-            if (gen !== shortForecastGen_) return;
-            api.play({
+            runSceneScrollAfterHold_(function () {
+                if (gen !== shortForecastGen_) return;
+                api.play({
                 track: shortConveyor,
                 laps: presentationLaps_('shortForecastLaps', 1),
-                speed: 3,
+                speed: getScrollSpeedPx_(),
                 logoSrc: '',
                 onLayout: function () {
                     if (window.SignageBg && typeof SignageBg.refreshSceneShort === 'function') SignageBg.refreshSceneShort(0, 'normal');
@@ -14726,6 +14725,7 @@
                     });
                 }
                 });
+            });
         }, 8000);
     }
     function playContentById_(id) {

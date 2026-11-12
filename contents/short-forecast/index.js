@@ -161,26 +161,17 @@
     });
   }
 
-  function panel(top, body, got, prec) {
+  function panel(top, body, prec) {
     return '<div class="d5-panel s2-strip">' +
       '<div class="s2-top-bar"><span class="s2-bar-label">' + esc(top) + '</span></div>' +
       '<div class="s2-body d5-body">' + body + '</div>' +
-      '<div class="s2-foot short-foot"><span class="short-got">' + esc(got) + '</span><span class="d5-foot-txt short-prec">' + esc(prec) + '</span></div>' +
+      '<div class="s2-foot short-foot"><span class="d5-foot-txt short-prec">' + esc(prec) + '</span></div>' +
       '</div>';
   }
 
   function slotTop(slot, dayLabel) {
     if (slot.dateLabel === dayLabel) return slot.timeLabel;
     return slot.dateLabel + ' ' + slot.timeLabel;
-  }
-
-  function fetchLabel(model) {
-    if (!model || !model.fetchedTimeLabel) return '';
-    var day = model.slots && model.slots[0] && model.slots[0].dateLabel;
-    if (model.fetchedDateLabel && day && model.fetchedDateLabel !== day) {
-      return '取得' + model.fetchedDateLabel + ' ' + model.fetchedTimeLabel;
-    }
-    return '取得' + model.fetchedTimeLabel;
   }
 
   function iconFile(slot) {
@@ -208,9 +199,10 @@
   }
 
   var FACE_PX = 128;
-  var SCROLL_PX = 3;
+  var HOLD_MS = 2000;
+  var SLIDE_MS = 500;
 
-  /* 時刻は左へ流す。一段で止めない。 */
+  /* 1面分だけ左へ送って止まる。流し続けない。 */
   function pageStarts(count) {
     var n = Math.max(0, Math.floor(Number(count) || 0));
     var starts = [];
@@ -219,19 +211,19 @@
     return starts;
   }
 
-  function onePanel(slot, day, got) {
-    return panel(slotTop(slot, day), slotBody(slot), got, precText(slot));
+  function onePanel(slot, day) {
+    return panel(slotTop(slot, day), slotBody(slot), precText(slot));
   }
 
-  function stripHtml(slots, day, got, laps) {
+  function stripHtml(slots, day, laps) {
     var html = '';
     var copies = Math.max(1, Math.floor(Number(laps) || 1));
     var c;
     var i;
     for (c = 0; c < copies; c++) {
-      for (i = 0; i < slots.length; i++) html += onePanel(slots[i], day, got);
+      for (i = 0; i < slots.length; i++) html += onePanel(slots[i], day);
     }
-    for (i = 0; i < FACES; i++) html += onePanel(slots[i % slots.length], day, got);
+    for (i = 0; i < FACES; i++) html += onePanel(slots[i % slots.length], day);
     return html;
   }
 
@@ -245,7 +237,7 @@
   }
 
   function missFace() {
-    return panel('予報', '<div class="d5-weather-row short-miss-row"><span class="short-miss">取得できません</span></div>', '', '');
+    return panel('予報', '<div class="d5-weather-row short-miss-row"><span class="short-miss">取得できません</span></div>', '');
   }
 
   function render(track, model) {
@@ -255,7 +247,7 @@
     if (!slots.length) {
       for (i = 0; i < FACES; i++) html += missFace();
     } else {
-      html = stripHtml(slots, slots[0].dateLabel, fetchLabel(model), 1);
+      html = stripHtml(slots, slots[0].dateLabel, 1);
     }
     paintStrip(track, html, (slots.length ? slots.length + FACES : FACES) * FACE_PX);
   }
@@ -289,30 +281,31 @@
     }
     var laps = Math.max(1, Math.floor(Number(o.laps) || 1));
     var day = slots[0].dateLabel;
-    var got = fetchLabel(model);
-    var distance = slots.length * laps * FACE_PX;
-    var speed = Number(o.speed);
-    if (!isFinite(speed) || speed <= 0) speed = SCROLL_PX;
-    var moved = 0;
-    paintStrip(track, stripHtml(slots, day, got, laps), distance + FACES * FACE_PX);
+    var steps = slots.length * laps;
+    var step = 0;
+    paintStrip(track, stripHtml(slots, day, laps), (steps + FACES) * FACE_PX);
     if (o.onLayout) o.onLayout();
-    function frame() {
-      if (typeof requestAnimationFrame === 'function') return requestAnimationFrame(tick);
-      return setTimeout(tick, 16);
-    }
-    function tick() {
+    function show() {
       if (token !== playing) return;
-      moved = Math.min(distance, moved + speed);
-      track.style.transition = 'none';
-      track.style.transform = 'translate3d(' + (-moved) + 'px,0,0)';
-      if (moved >= distance) {
-        anim = 0;
-        finish();
-        return;
+      if (step === 0) {
+        track.style.transition = 'none';
+        track.style.transform = 'translate3d(0,0,0)';
+      } else {
+        track.style.transition = 'transform ' + SLIDE_MS + 'ms ease-in-out';
+        track.style.transform = 'translate3d(' + (-step * FACE_PX) + 'px,0,0)';
       }
-      anim = frame();
+      frameTimer = setTimeout(function () {
+        frameTimer = 0;
+        if (token !== playing) return;
+        step += 1;
+        if (step < steps) {
+          show();
+          return;
+        }
+        finish();
+      }, step === 0 ? HOLD_MS : HOLD_MS + SLIDE_MS);
     }
-    anim = frame();
+    show();
   }
 
   var api = {
