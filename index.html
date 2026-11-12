@@ -241,6 +241,116 @@
         html.site-dm-0014 .logo-panel {
             background: #EA5503 !important;
         }
+        .dm14-face4, .dm14-face5-canvas, .dm14-card-union { display: none; }
+        html.site-dm-0014 .logo-panel .logo-rotator { display: none !important; }
+        html.site-dm-0014 .dm14-face5-canvas {
+            display: block;
+            width: 128px;
+            height: 128px;
+            image-rendering: auto;
+        }
+        html.site-dm-0014 .content-area > .scene { width: 384px; }
+        html.site-dm-0014 .dm14-face4 {
+            display: block;
+            position: absolute;
+            left: 384px;
+            top: 0;
+            width: 128px;
+            height: 128px;
+            z-index: 40;
+            background: #fff6c8;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        html.site-dm-0014 .dm14-face4-canvas {
+            display: block;
+            width: 128px;
+            height: 128px;
+            image-rendering: auto;
+        }
+        html.site-dm-0014 .dm14-card-union {
+            display: block;
+            position: absolute;
+            left: 384px;
+            top: 0;
+            width: 256px;
+            height: 128px;
+            z-index: 50;
+            pointer-events: none;
+        }
+        html.site-dm-0014 .dm14-card-join { display: none; }
+        html.site-dm-0014 .dm14-card {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 128px;
+            height: 128px;
+            border-radius: 0;
+            background: rgba(255,255,255,0.7);
+            overflow: hidden;
+            z-index: 1;
+            clip-path: inset(0 8px 8px 8px round 0 8px 8px 8px);
+        }
+        html.site-dm-0014 #dm14-card-x {
+            left: 128px;
+            clip-path: inset(8px 0 8px 8px round 8px 0 0 8px);
+        }
+        html.site-dm-0014 .dm14-card-track {
+            display: flex;
+            flex-direction: column;
+            will-change: transform;
+        }
+        /* 帯ごと回す。頭（上）が左で境目側、底は右。rotate(90deg) に戻さない */
+        html.site-dm-0014 .dm14-card-rotor {
+            position: absolute;
+            left: 0;
+            top: 0;
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+        html.site-dm-0014 .dm14-card-track-x {
+            display: flex;
+            flex-direction: column;
+            width: 128px;
+        }
+        html.site-dm-0014 .dm14-card-cell {
+            width: 128px;
+            height: 128px;
+            flex: 0 0 128px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        html.site-dm-0014 .dm14-card .s2-panel,
+        html.site-dm-0014 .dm14-card .s2-panel-data {
+            width: 112px;
+            height: 96px;
+            justify-content: center;
+        }
+        html.site-dm-0014 .dm14-card .weather-icon-cell,
+        html.site-dm-0014 .dm14-card .weather-svg {
+            width: 58px;
+            height: 58px;
+            max-width: 58px;
+            max-height: 58px;
+        }
+        html.site-dm-0014 .dm14-card-char {
+            width: 104px;
+            height: 104px;
+            object-fit: contain;
+            display: block;
+            border-radius: 8px;
+        }
+        html.site-dm-0014 .dm14-card .s2-bar-label,
+        html.site-dm-0014 .dm14-card .s2-num,
+        html.site-dm-0014 .dm14-card .s2-unit {
+            color: #1a1a1a;
+        }
+        html.site-dm-0014 #scene2 .s2-logo-panel,
+        html.site-dm-0014 #scene4 .fc-logo-panel,
+        html.site-dm-0014 .daily-scene .d5-logo-panel,
+        html.site-dm-0014 #sceneSsc .ssc-logo-panel { display: none !important; }
         html.site-dm-0005 .logo-img,
         html.site-dm-0009 .logo-img {
             width: 128px; max-width: 128px; height: 128px; max-height: 128px;
@@ -3299,12 +3409,26 @@
             <div class="t3-guid-bar s2-meta-bar"><div class="t3-guid-track s2-meta-track" id="t3-guid-track"></div></div>
         </div>
     </div>
+        <div class="dm14-face4" id="dm14-face4" aria-hidden="true">
+            <canvas class="dm14-face4-canvas" id="dm14-face4-canvas" width="128" height="128"></canvas>
+        </div>
     </div>
     <div class="logo-panel">
+        <canvas class="dm14-face5-canvas" id="dm14-face5-canvas" width="128" height="128"></canvas>
         <div class="logo-rotator" id="logo-rotator">
             <div class="logo-stack">
                 <img class="logo-img" id="signage-logo" src="" alt="" decoding="sync" fetchpriority="high">
                 <img class="logo-corp-img" src="" alt="" decoding="sync">
+            </div>
+        </div>
+    </div>
+    <div class="dm14-card-union" id="dm14-card-union" aria-hidden="true">
+        <div class="dm14-card" id="dm14-card">
+            <div class="dm14-card-track" id="dm14-card-track"></div>
+        </div>
+        <div class="dm14-card" id="dm14-card-x">
+            <div class="dm14-card-rotor" id="dm14-card-rotor">
+                <div class="dm14-card-track-x" id="dm14-card-track-x"></div>
             </div>
         </div>
     </div>
@@ -8344,9 +8468,134 @@
     }
     function resetLogoRotation() {
         logoRotDeg = 0;
-        if (!logoRotator) return;
-        logoRotator.style.transition = 'none';
-        logoRotator.style.transform = 'rotate(0deg)';
+        if (logoRotator) {
+            logoRotator.style.transition = 'none';
+            logoRotator.style.transform = 'rotate(0deg)';
+        }
+        startDm14CornerScroll_();
+    }
+    /** 向きは変えない。512のカード右辺を過ぎた内容が、384のカード上辺から下へ続く。壁紙は固定。 */
+    function startDm14Card_() {
+        const track = document.getElementById('dm14-card-track');
+        const trackX = document.getElementById('dm14-card-track-x');
+        const rotor = document.getElementById('dm14-card-rotor');
+        if (!track || !trackX || !rotor || startDm14Card_.on) return;
+        startDm14Card_.on = true;
+        const cell = function (inner) {
+            return '<div class="dm14-card-cell">' + inner + '</div>';
+        };
+        const brand = window.SIGNAGE_CONFIG || {};
+        const charSrc = String(brand.logoSrc || '').trim() || './assets/demo/DM-0014/logo_512.jpg?v=1';
+        const logo = cell('<img class="dm14-card-char" src="' + charSrc + '" alt="">');
+        const noise = cell(
+            '<div class="s2-panel-data s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">騒音</span></div>' +
+            '<div class="s2-body"><div class="s2-val"><span class="s2-num dm14-noise">--</span><span class="s2-unit">dB</span></div></div></div>'
+        );
+        const vib = cell(
+            '<div class="s2-panel-data s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">振動</span></div>' +
+            '<div class="s2-body"><div class="s2-val"><span class="s2-num dm14-vib">--</span><span class="s2-unit">dB</span></div></div></div>'
+        );
+        const cells = [logo, cell(scene2PanelHtml_('weather')), noise, vib];
+        const set = cells.join('');
+        track.innerHTML = set + set + set;
+        trackX.innerHTML = set + set + set;
+        const cellH = 128;
+        const setH = (track.children.length / 3) * cellH;
+        const cards = [track, trackX];
+        let seam = setH * 2;
+        function sync() {
+            const srcImg = document.querySelector('#scene2 [data-s2="weather"] img.weather-icon-img');
+            const srcCell = document.querySelector('#scene2 [data-s2="weather"] .weather-icon-cell');
+            if (srcImg) {
+                cards.forEach(function (root) {
+                    root.querySelectorAll('[data-s2="weather"]').forEach(function (panel) {
+                        const img = panel.querySelector('img.weather-icon-img');
+                        const iconCell = panel.querySelector('.weather-icon-cell');
+                        const src = srcImg.getAttribute('src') || '';
+                        if (img && img.getAttribute('src') !== src) {
+                            if (src) img.setAttribute('src', src);
+                            img.style.visibility = srcImg.style.visibility || '';
+                        }
+                        if (iconCell && srcCell) iconCell.classList.toggle('is-ready', srcCell.classList.contains('is-ready'));
+                    });
+                });
+            }
+            const ssc = (typeof lastSscValues_ !== 'undefined' && lastSscValues_) || null;
+            const nText = ssc && ssc.noise != null ? String(ssc.noise) : '--';
+            const vText = ssc && ssc.vibration != null ? String(ssc.vibration) : '--';
+            cards.forEach(function (root) {
+                root.querySelectorAll('.dm14-noise').forEach(function (el) {
+                    if (el.textContent !== nText) el.textContent = nText;
+                });
+                root.querySelectorAll('.dm14-vib').forEach(function (el) {
+                    if (el.textContent !== vText) el.textContent = vText;
+                });
+            });
+        }
+        function frame() {
+            sync();
+            seam -= getScrollSpeedPx_();
+            if (seam < setH) seam += setH;
+            const s = Math.round(seam * 100) / 100;
+            track.style.transform = 'translate3d(0,' + (-(s + 128)) + 'px,0)';
+            rotor.style.transform = 'translate3d(' + (-s) + 'px,128px,0) rotate(-90deg)';
+            requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+    }
+    /** 壁紙は縦。512が上、384が下（足）。背景は動かさない。 */
+    function startDm14CornerScroll_() {
+        if (startDm14CornerScroll_.on) return;
+        const canvas4 = document.getElementById('dm14-face4-canvas');
+        const canvas5 = document.getElementById('dm14-face5-canvas');
+        if (!canvas4 || !canvas5) return;
+        const site = typeof siteCfg_ === 'function' ? siteCfg_() : null;
+        if (!site || site.projectId !== 'DM-0014') return;
+        startDm14CornerScroll_.on = true;
+        startDm14Card_();
+        const img = new Image();
+        img.onload = function () {
+            const sw = img.naturalWidth;
+            const sh = img.naturalHeight;
+            const srcH = sw;
+            const feetY = 808;
+            const srcBottom = Math.min(sh, feetY);
+            const period = 86;
+            const viewH = srcH * 2;
+            const sheet = document.createElement('canvas');
+            sheet.width = sw;
+            sheet.height = viewH;
+            const sx = sheet.getContext('2d');
+            let y = srcBottom - viewH;
+            let dest = 0;
+            while (dest < viewH && y < sh) {
+                let sy;
+                let slice;
+                if (y < 0) {
+                    const mod = ((y % period) + period) % period;
+                    slice = Math.min(viewH - dest, period - mod, -y);
+                    sy = mod;
+                } else {
+                    slice = Math.min(viewH - dest, sh - y);
+                    sy = y;
+                }
+                if (slice <= 0) break;
+                sx.drawImage(img, 0, sy, sw, slice, 0, dest, sw, slice);
+                y += slice;
+                dest += slice;
+            }
+            function paintFace(canvas, srcY) {
+                canvas.width = sw;
+                canvas.height = sw;
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(sheet, 0, srcY, sw, srcH, 0, 0, sw, sw);
+            }
+            paintFace(canvas5, 0);
+            paintFace(canvas4, srcH);
+        };
+        img.src = './assets/demo/DM-0014/wall.jpg?v=1';
     }
     function beginLogoSceneScroll(panelWidthPx) {
         // スクロール追従回転は行わない
