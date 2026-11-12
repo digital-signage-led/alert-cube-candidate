@@ -104,7 +104,7 @@ assert.strictEqual(client.indexOf('WXTECH_API_KEY'), -1);
 assert.ok(client.indexOf('wxtech.snapshot') >= 0);
 assert.ok(client.indexOf('取得できません') >= 0);
 assert.ok(page.indexOf('ac-dm0008') >= 0);
-assert.ok(page.indexOf('20261112-wxtech-nogot') >= 0);
+assert.ok(page.indexOf('20261112-wxtech-pace') >= 0);
 assert.strictEqual(client.indexOf("return '取得'"), -1);
 assert.strictEqual(page.indexOf('short-got'), -1);
 assert.strictEqual(client.indexOf('">取得不可<'), -1);
