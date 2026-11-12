@@ -1,8 +1,8 @@
 /**
  * 雨雲レーダー。
- * 台風情報と同じく 128×128 を4面に並べ、各面は現場を中心にした同じレーダー。
- * 下地は県の外形だけ。線は海岸の輪郭と県境で、雨雲の上にも重ねる。琵琶湖など内水面は海の色にしない。
- * 国土は雨の青・黄・赤が沈まない灰色。県境は白い細線。
+ * 4面をつなげて、現場を中心にした1枚の地図にする。
+ * 下地は地理院の淡色地図。雨雲は気象庁の降水ナウキャストで、雨の色だけを上に載せる。
+ * 地理院が取れないときは、県の外形を下地にする。
  * targetTimes の時刻数字は協定世界時。
  */
 (function (global) {
@@ -18,6 +18,7 @@
   var MAX_AGE_MS = 30 * 60 * 1000;
   var TIMES_URL = 'https://www.jma.go.jp/bosai/jmatile/data/nowc/targetTimes_N2.json';
   var RADAR_URL = 'https://www.jma.go.jp/bosai/jmatile/data/nowc/{basetime}/none/{validtime}/surf/hrpns/{z}/{x}/{y}.png';
+  var GSI_URL = 'https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png';
   var OCEAN = [79, 143, 191];
   var LAND = [186, 191, 196];
   var LINE = [255, 255, 255];
@@ -114,6 +115,17 @@
       .replace('{z}', tile.z)
       .replace('{x}', tile.x)
       .replace('{y}', tile.y);
+  }
+
+  function gsiUrl(tile) {
+    return GSI_URL
+      .replace('{z}', tile.z)
+      .replace('{x}', tile.x)
+      .replace('{y}', tile.y);
+  }
+
+  function stripWidth() {
+    return VIEW_W * FACES;
   }
 
   function shellHtml() {
@@ -355,27 +367,31 @@
     return canvas;
   }
 
-  function paint(canvas, plan, radarImgs, label) {
+  function paint(canvas, plan, radarImgs, label, slice, gsiImgs) {
     if (!canvas || !plan) return;
     var ctx = canvas.getContext('2d');
     var scale = canvas.width / VIEW_W || 1;
-    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    var part = slice || 0;
+    var strip = stripWidth();
+    var h = VIEW_H;
+    ctx.setTransform(scale, 0, 0, scale, -part * VIEW_W * scale, 0);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    var w = VIEW_W;
-    var h = VIEW_H;
-    ctx.clearRect(0, 0, w, h);
-    var land = landCanvas(plan.originX, plan.originY);
-    if (land) ctx.drawImage(land, 0, 0, w, h);
-    else {
+    ctx.clearRect(0, 0, strip, h);
+    var mapOk = gsiImgs && gsiImgs.some(Boolean);
+    if (mapOk) {
+      ctx.fillStyle = '#e4e8ee';
+      ctx.fillRect(0, 0, strip, h);
+      gsiImgs.forEach(function (img, i) { drawTile(ctx, img, plan.tiles[i]); });
+    } else {
       ctx.fillStyle = 'rgb(' + OCEAN[0] + ',' + OCEAN[1] + ',' + OCEAN[2] + ')';
-      ctx.fillRect(0, 0, w, h);
+      ctx.fillRect(0, 0, strip, h);
       drawPrefectures(ctx, plan.originX, plan.originY);
     }
     (radarImgs || []).forEach(function (img, i) { drawTile(ctx, img, plan.tiles[i]); });
-    var borders = borderCanvas(plan.originX, plan.originY);
-    if (borders) ctx.drawImage(borders, 0, 0, w, h);
-    var cx = w / 2;
+    var prefs = typeof AlertCubePrefectures !== 'undefined' ? AlertCubePrefectures : [];
+    strokeBorders(ctx, prefs, plan.originX, plan.originY, mapOk ? '#1a1a1a' : 'rgb(' + LINE[0] + ',' + LINE[1] + ',' + LINE[2] + ')');
+    var cx = strip / 2;
     var cy = h / 2;
     ctx.beginPath();
     ctx.arc(cx, cy, 3, 0, Math.PI * 2);
@@ -397,9 +413,9 @@
     var credit = '気象庁・地理院';
     var cw = ctx.measureText(credit).width;
     ctx.fillStyle = 'rgba(14,42,74,0.72)';
-    ctx.fillRect(w - cw - 4, h - 11, cw + 4, 11);
+    ctx.fillRect(strip - cw - 4, h - 11, cw + 4, 11);
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(credit, w - cw - 2, h - 5.5);
+    ctx.fillText(credit, strip - cw - 2, h - 5.5);
   }
 
   function drawMessage(canvases, text) {
@@ -421,7 +437,7 @@
   function basemap(site) {
     var loc = locationOf(site);
     if (!loc) return null;
-    var view = tilesForView(loc.lat, loc.lon, ZOOM, VIEW_W, VIEW_H);
+    var view = tilesForView(loc.lat, loc.lon, ZOOM, stripWidth(), VIEW_H);
     return {
       tiles: view.tiles,
       originX: view.originX,
@@ -433,7 +449,7 @@
   function prepare(site, nowMs) {
     var loc = locationOf(site);
     if (!loc || typeof fetch !== 'function') return Promise.resolve(null);
-    var view = tilesForView(loc.lat, loc.lon, ZOOM, VIEW_W, VIEW_H);
+    var view = tilesForView(loc.lat, loc.lon, ZOOM, stripWidth(), VIEW_H);
     var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 8000);
     return fetch(TIMES_URL, ctrl ? { cache: 'no-store', signal: ctrl.signal } : { cache: 'no-store' }).then(function (res) {
@@ -521,12 +537,25 @@
     }));
   }
 
+  function loadMap(plan) {
+    if (!plan) return Promise.resolve([]);
+    if (plan.map) return Promise.resolve(plan.map);
+    return Promise.all(plan.tiles.map(function (tile) {
+      return loadImage(gsiUrl(tile));
+    })).then(function (imgs) {
+      plan.map = imgs;
+      return imgs;
+    });
+  }
+
   function drawFrame(canvases, plan, index) {
     if (!plan) return Promise.resolve();
     var frame = plan.frames && plan.frames[index];
-    return loadFrame(plan, frame).then(function (imgs) {
-      canvasList(canvases).forEach(function (canvas) {
-        paint(canvas, plan, imgs, frame && frame.label);
+    return Promise.all([loadFrame(plan, frame), loadMap(plan)]).then(function (parts) {
+      var imgs = parts[0];
+      var map = parts[1];
+      canvasList(canvases).forEach(function (canvas, i) {
+        paint(canvas, plan, imgs, frame && frame.label, i, map);
       });
     });
   }
@@ -546,6 +575,7 @@
     countRainPixels: countRainPixels,
     viewHasRain: viewHasRain,
     radarUrl: radarUrl,
+    gsiUrl: gsiUrl,
     shellHtml: shellHtml,
     basemap: basemap,
     prepare: prepare,
