@@ -1265,12 +1265,12 @@
             to { transform: rotate(8deg); }
         }
         #sceneLogo .logo-caption {
-            display: flex; align-items: center; justify-content: flex-start;
-            padding: 0 8px; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0; box-sizing: border-box; text-align: center;
         }
         #sceneLogo .logo-caption p {
-            margin: 0; font-weight: 900; font-size: 36px; line-height: 1.15;
-            letter-spacing: 0.02em; color: #111111;
+            margin: 0; font-weight: 900; font-size: 30px; line-height: 1.15;
+            letter-spacing: 0; color: #111111; text-align: center;
         }
         #sceneLogo .logo-cap-line { display: block; white-space: nowrap; }
         .content-area.news-canvas { background: #0B4F9C !important; }
@@ -11896,7 +11896,25 @@
         }
         return !wbgtOffSeason;
     }
+    function wbgtDemoI18nOn_() {
+        return wbgtDemoCycle_() && (temperatureDisplay_() || wbgtOffSeason);
+    }
+    function wbgtDemoI18nLevel_() {
+        const live = getS1WbgtLevelForDisplay_();
+        return live >= 0 ? live : 0;
+    }
     function getT3Messages_() {
+        if (wbgtDemoI18nOn_()) {
+            const lv = wbgtDemoI18nLevel_();
+            const m = wbgtPhrase_(lv);
+            const all = t3LangKeys_().map(function (key) {
+                const parts = splitT3Message_(m[key]);
+                parts.lang = key;
+                return parts;
+            });
+            if (DEMO_T3_LANG_IDX >= 0 && DEMO_T3_LANG_IDX < all.length) return [all[DEMO_T3_LANG_IDX]];
+            return all;
+        }
         if (!wbgtMultilingualOn_() || temperatureDisplay_()) return [];
         if (wbgtOffSeason) return [];
         if (wbgtUnavailable) {
@@ -11959,12 +11977,12 @@
         return heatAlertActive.length > 0;
     }
     function getT3GuideTierForDisplay_() {
-        if (temperatureDisplay_()) return null;
+        if (temperatureDisplay_() && !wbgtDemoI18nOn_()) return null;
         if (isHeatAlertPublishedForGuide_()) {
             if (heatAlertActive.includes('special')) return T3_WBGT_GUIDE_TIERS[0];
             if (heatAlertActive.includes('warning')) return T3_WBGT_GUIDE_TIERS[1];
         }
-        const lv = getS1WbgtLevelForDisplay_();
+        const lv = wbgtDemoI18nOn_() ? wbgtDemoI18nLevel_() : getS1WbgtLevelForDisplay_();
         if (lv < 0) return null;
         const tierIdx = T3_GUIDE_TIER_BY_LEVEL[lv];
         return tierIdx != null ? T3_WBGT_GUIDE_TIERS[tierIdx] : null;
@@ -12047,6 +12065,7 @@
         });
     }
     function getScene3WbgtLevel_() {
+        if (wbgtDemoI18nOn_()) return wbgtDemoI18nLevel_();
         if (wbgtOffSeason || wbgtUnavailable) return -1;
         return getS1WbgtLevelForDisplay_();
     }
@@ -12054,6 +12073,16 @@
     function paintScene3StageColors_() {
         const pair = document.getElementById('t3-pair');
         const mode = getSignageDisplayMode_();
+        if (wbgtDemoI18nOn_() && typeof SignageBg !== 'undefined') {
+            const lv = wbgtDemoI18nLevel_();
+            const stage = ((siteCfg_() && siteCfg_().presentation) || {}).i18nStageColor === true;
+            if (typeof SignageBg.refreshTicker === 'function') SignageBg.refreshTicker(lv, 'normal');
+            const colors = stage && SignageBg.colorsForLevel
+                ? SignageBg.colorsForLevel(lv)
+                : (SignageBg.colorsForDisplay ? SignageBg.colorsForDisplay(lv, 'normal') : null);
+            if (pair && colors && colors.bgColor) pair.style.backgroundColor = colors.bgColor;
+            return;
+        }
         if (mode !== 'normal' || typeof SignageBg === 'undefined') {
             if (pair) pair.style.backgroundColor = '';
             return;
@@ -12080,7 +12109,7 @@
         paintScene3StageColors_();
         const alertTop = getT3HeatAlertTopForDisplay_();
         if (!alertTop) {
-            const lvLabel = temperatureDisplay_() ? '気温' : ((wbgtUnavailable || lv < 0) ? '--' : levelNames[lv]);
+            const lvLabel = (temperatureDisplay_() && !wbgtDemoI18nOn_()) ? '気温' : ((wbgtUnavailable || lv < 0) ? '--' : levelNames[lv]);
             document.querySelectorAll('#scene3 .t3-lv-static').forEach(function (n) { n.textContent = lvLabel; });
         }
         buildT3GuideTrack();
@@ -12455,7 +12484,7 @@
             t3Shell.style.transform = 'none';
             t3Shell.classList.remove('is-end-logo');
         }
-        if (!wbgtMultilingualOn_() || temperatureDisplay_() || wbgtOffSeason) {
+        if (!wbgtMultilingualOn_() || ((temperatureDisplay_() || wbgtOffSeason) && !wbgtDemoCycle_())) {
             gotoAfterScene3_();
             return;
         }
