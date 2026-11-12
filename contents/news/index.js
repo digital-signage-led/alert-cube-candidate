@@ -327,9 +327,9 @@
       var date = rfc822NewsDate(unwrapCdata(pub[1]));
       if (!name || !date || seen[name]) continue;
       seen[name] = true;
-      items.push({ date: date, title: name });
+      items.push({ date: date, title: name, ms: Date.parse(unwrapCdata(pub[1])) || 0 });
     }
-    return items;
+    return newestNews_(items);
   }
 
   /** ブラウザからRSSを直接読めないとき、中継が返す見出しとRFC822日付。 */
@@ -345,9 +345,16 @@
       var date = rfc822NewsDate(m[2]);
       if (!title || !date || seen[title]) continue;
       seen[title] = true;
-      items.push({ date: date, title: title });
+      items.push({ date: date, title: title, ms: Date.parse(m[2] + ' +0900') || 0 });
     }
-    return items;
+    return newestNews_(items);
+  }
+
+  function newestNews_(items) {
+    items.sort(function (a, b) { return (b.ms || 0) - (a.ms || 0); });
+    var rows = [];
+    for (var i = 0; i < items.length; i++) rows.push({ date: items[i].date, title: items[i].title });
+    return rows;
   }
 
   function parsePage(text, maxItems) {

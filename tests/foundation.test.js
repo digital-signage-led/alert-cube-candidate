@@ -2796,13 +2796,14 @@ console.log('');
 console.log(passed + ' passed, ' + failed + ' failed');
 if (failed) process.exit(1);
 
-test('DM-0015 は言い換えた見出しだけを出す', function () {
+test('DM-0015 はNHKの新しい見出しを取る', function () {
   var site = require('../demo/DM-0015.json');
   var news = require('../contents/news/index.js');
-  assert.strictEqual(site.news.pageUrl, '');
-  assert.strictEqual(site.news.badge, '話題');
-  assert.strictEqual(site.news.items.length, 2);
-  assert.ok(site.news.items[0].title.indexOf('NHK') < 0);
+  assert.strictEqual(site.news.pageUrl, 'https://www.nhk.or.jp/rss/news/cat0.xml');
+  assert.strictEqual(site.news.badge, 'NHKニュース');
+  assert.strictEqual(site.news.items.length, 0);
   var parsed = news.parsePage('<rss version="2.0"><channel><item><title>確認見出し</title><pubDate>Thu, 12 Nov 2026 13:28:41 +0900</pubDate></item></channel></rss>', 2);
   assert.deepStrictEqual(parsed, [{ date: '2026年11月12日', title: '確認見出し' }]);
+  var newest = news.parsePage('<rss version="2.0"><channel><item><title>古い</title><pubDate>Thu, 12 Nov 2026 10:00:00 +0900</pubDate></item><item><title>新しい</title><pubDate>Thu, 12 Nov 2026 18:00:00 +0900</pubDate></item></channel></rss>', 1);
+  assert.deepStrictEqual(newest, [{ date: '2026年11月12日', title: '新しい' }]);
 });
