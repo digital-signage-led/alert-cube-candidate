@@ -393,7 +393,7 @@
     var h = VIEW_H;
     ctx.setTransform(scale, 0, 0, scale, -part * VIEW_W * scale, 0);
     ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
+    try { ctx.imageSmoothingQuality = 'high'; } catch (e) { /* 未対応のブラウザは既定のまま */ }
     ctx.clearRect(0, 0, strip, h);
     var mapOk = gsiImgs && gsiImgs.some(Boolean);
     if (mapOk) {
@@ -500,8 +500,9 @@
     return Promise.all(plan.tiles.map(function (tile) {
       return loadImageCors(radarUrl(frame, tile));
     })).then(function (imgs) {
+      var strip = stripWidth();
       var canvas = document.createElement('canvas');
-      canvas.width = VIEW_W;
+      canvas.width = strip;
       canvas.height = VIEW_H;
       var ctx = canvas.getContext('2d');
       var i;
@@ -510,11 +511,11 @@
       }
       var data;
       try {
-        data = ctx.getImageData(0, 0, VIEW_W, VIEW_H).data;
+        data = ctx.getImageData(0, 0, strip, VIEW_H).data;
       } catch (e) {
         return false;
       }
-      return countRainPixels(data, VIEW_W, VIEW_H, 2) > 0;
+      return countRainPixels(data, strip, VIEW_H, 4) > 0;
     });
   }
 
