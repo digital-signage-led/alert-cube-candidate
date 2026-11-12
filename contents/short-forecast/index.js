@@ -13,6 +13,7 @@
   var waiters = [];
   var timer = 0;
   var frameTimer = 0;
+  var anim = 0;
   var playing = 0;
 
   function wx() { return global.AlertCubeWxTech; }
@@ -201,10 +202,9 @@
   }
 
   var FACE_PX = 128;
-  var STEP_MS = 3000;
-  var SLIDE_MS = 450;
+  var SCROLL_PX = 0.75;
 
-  /* 1面ずつ左へ送る。4面が同時に別時刻で止まらない。 */
+  /* 時刻は左へ流す。一段で止めない。 */
   function pageStarts(count) {
     var n = Math.max(0, Math.floor(Number(count) || 0));
     var starts = [];
@@ -225,7 +225,7 @@
     for (c = 0; c < copies; c++) {
       for (i = 0; i < slots.length; i++) html += onePanel(slots[i], day, got);
     }
-    for (i = 0; i < FACES - 1; i++) html += onePanel(slots[i % slots.length], day, got);
+    for (i = 0; i < FACES; i++) html += onePanel(slots[i % slots.length], day, got);
     return html;
   }
 
@@ -250,13 +250,17 @@
     } else {
       html = stripHtml(slots, slots[0].dateLabel, fetchLabel(model), 1);
     }
-    paintStrip(track, html, Math.max(FACES, slots.length + FACES - 1) * FACE_PX);
+    paintStrip(track, html, (slots.length ? slots.length + FACES : FACES) * FACE_PX);
   }
 
   function stop() {
     playing += 1;
     if (frameTimer) clearTimeout(frameTimer);
     frameTimer = 0;
+    if (anim) {
+      if (typeof cancelAnimationFrame === 'function') cancelAnimationFrame(anim);
+      anim = 0;
+    }
   }
 
   function play(opts) {
@@ -279,26 +283,29 @@
     var laps = Math.max(1, Math.floor(Number(o.laps) || 1));
     var day = slots[0].dateLabel;
     var got = fetchLabel(model);
-    var steps = slots.length * laps;
-    var step = 0;
-    paintStrip(track, stripHtml(slots, day, got, laps), (steps + FACES - 1) * FACE_PX);
+    var distance = slots.length * laps * FACE_PX;
+    var speed = Number(o.speed);
+    if (!isFinite(speed) || speed <= 0) speed = SCROLL_PX;
+    var moved = 0;
+    paintStrip(track, stripHtml(slots, day, got, laps), distance + FACES * FACE_PX);
     if (o.onLayout) o.onLayout();
-    function show() {
-      if (token !== playing) return;
-      track.style.transition = step === 0 ? 'none' : 'transform ' + SLIDE_MS + 'ms linear';
-      track.style.transform = 'translate3d(' + (-step * FACE_PX) + 'px,0,0)';
-      frameTimer = setTimeout(function () {
-        frameTimer = 0;
-        if (token !== playing) return;
-        step += 1;
-        if (step < steps) {
-          show();
-          return;
-        }
-        finish();
-      }, step === 0 ? STEP_MS : STEP_MS + SLIDE_MS);
+    function frame() {
+      if (typeof requestAnimationFrame === 'function') return requestAnimationFrame(tick);
+      return setTimeout(tick, 16);
     }
-    show();
+    function tick() {
+      if (token !== playing) return;
+      moved = Math.min(distance, moved + speed);
+      track.style.transition = 'none';
+      track.style.transform = 'translate3d(' + (-moved) + 'px,0,0)';
+      if (moved >= distance) {
+        anim = 0;
+        finish();
+        return;
+      }
+      anim = frame();
+    }
+    anim = frame();
   }
 
   var api = {
