@@ -19,6 +19,12 @@
   function wx() { return global.AlertCubeWxTech; }
   /* 430・600は気象庁のファイルに無い。不明コードを晴れ(100)へ落とさない。 */
   var JMA_FILE = { 100: '100', 200: '200', 300: '300', 400: '400', 430: '303', 600: '101' };
+  if (typeof Image !== 'undefined') {
+    ['100', '101', '200', '300', '303', '400'].forEach(function (file) {
+      var img = new Image();
+      img.src = 'https://www.jma.go.jp/bosai/forecast/img/' + file + '.svg';
+    });
+  }
 
   function siteOf() {
     return global.SignageConfig || global.SIGNAGE_CONFIG || {};
@@ -202,7 +208,7 @@
   }
 
   var FACE_PX = 128;
-  var SCROLL_PX = 0.75;
+  var SCROLL_PX = 3;
 
   /* 時刻は左へ流す。一段で止めない。 */
   function pageStarts(count) {

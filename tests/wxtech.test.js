@@ -103,7 +103,7 @@ assert.strictEqual(client.indexOf('X-API-Key'), -1);
 assert.strictEqual(client.indexOf('WXTECH_API_KEY'), -1);
 assert.ok(client.indexOf('wxtech.snapshot') >= 0);
 assert.ok(client.indexOf('取得できません') >= 0);
-assert.ok(page.indexOf('20261112-wxtech-smooth') >= 0);
+assert.ok(page.indexOf('20261112-wxtech-fast') >= 0);
 assert.strictEqual(client.indexOf('">取得不可<'), -1);
 
 var short = require('../contents/short-forecast/index.js');

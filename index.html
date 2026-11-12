@@ -22,7 +22,7 @@
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/wxtech-icons.js?v=20261111-wxtech-public"></script>
     <script src="./services/wxtech/index.js?v=20261112-wxtech-hold"></script>
-    <script src="./contents/short-forecast/index.js?v=20261112-wxtech-smooth"></script>
+    <script src="./contents/short-forecast/index.js?v=20261112-wxtech-fast"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
     <script src="./core/foundation.js?v=20261111-wxtech-public"></script>
     <script src="./services/densho/index.js?v=20261110-densho-vib"></script>
@@ -14628,12 +14628,11 @@
         }
         markPlaylistHeld_();
         api.whenReady(function () {
-            runSceneScrollAfterHold_(function () {
-                if (gen !== shortForecastGen_) return;
-                api.play({
+            if (gen !== shortForecastGen_) return;
+            api.play({
                 track: shortConveyor,
                 laps: presentationLaps_('shortForecastLaps', 1),
-                speed: getScrollSpeedPx_(),
+                speed: 3,
                 logoSrc: '',
                 onLayout: function () {
                     if (window.SignageBg && typeof SignageBg.refreshSceneShort === 'function') SignageBg.refreshSceneShort(0, 'normal');
@@ -14647,7 +14646,6 @@
                     });
                 }
                 });
-            });
         }, 8000);
     }
     function playContentById_(id) {
