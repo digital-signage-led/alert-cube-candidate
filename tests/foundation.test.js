@@ -2730,8 +2730,9 @@ test('未確定案件: ニッケン白浜町は DM-0011', function () {
   var catalog = JSON.parse(fs.readFileSync(path.join(root, 'demo', 'index.json'), 'utf8'));
   var template = JSON.parse(fs.readFileSync(path.join(root, 'demo', '_template.json'), 'utf8'));
   var site = JSON.parse(fs.readFileSync(path.join(root, 'demo', 'DM-0011.json'), 'utf8'));
-  assert.strictEqual(catalog.nextId, 'DM-0015');
-  assert.strictEqual(template.projectId, 'DM-0015');
+  assert.strictEqual(catalog.nextId, 'DM-0016');
+  assert.strictEqual(template.projectId, 'DM-0016');
+  assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0015' && row.siteName === '住之江区'; }));
   assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0013' && row.customer === '株式会社仙台銘板'; }));
   assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0014' && row.customer === '株式会社仙台銘板'; }));
   assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0011' && row.siteName === '白浜町'; }));
