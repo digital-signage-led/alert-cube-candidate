@@ -4505,6 +4505,7 @@
         return -1;
     }
     function syncWbgtLevelFromSlots(slots) {
+        if (wbgtCycleShowing_) return;
         const row = slots && slots[0];
         if (!row || wbgtOffSeason) {
             currentWbgtLevel = -1;
@@ -4855,12 +4856,14 @@
             SignageBg.refreshScene1(lv, mode);
             if (typeof SignageBg.repaintStripHosts_ === 'function') SignageBg.repaintStripHosts_(lv, mode);
             paintScene3StageColors_();
+            if (wbgtCycleShowing_) applyWbgtCycleChrome_(wbgtCycleLap_);
             return;
         }
         if (mode === 'unavailable') {
             SignageBg.refreshScene1(-1, mode);
             if (typeof SignageBg.repaintStripHosts_ === 'function') SignageBg.repaintStripHosts_(-1, mode);
             paintScene3StageColors_();
+            if (wbgtCycleShowing_) applyWbgtCycleChrome_(wbgtCycleLap_);
             return;
         }
         SignageBg.refreshScene1(shared.lv, shared.mode);
@@ -4888,6 +4891,7 @@
         lastSignageBgMode_ = mode;
         lastAmbientColorKey_ = ambientColorKey_();
         pendingSignageBgRefresh_ = false;
+        if (wbgtCycleShowing_) applyWbgtCycleChrome_(wbgtCycleLap_);
     }
     function refreshSignageBgIfChanged_(force) {
         const rawMode = getSignageDisplayMode_();
@@ -9008,7 +9012,7 @@
         return false;
     }
     function updateForecastSlots(slots) {
-        if (temperatureDisplay_()) {
+        if (temperatureDisplay_() && !wbgtDemoCycle_()) {
             refreshSignageBgIfChanged_();
             return;
         }
@@ -9067,7 +9071,7 @@
             el.style.display = withLogo ? '' : 'none';
         });
         const per = withLogo ? SCENE4_PANEL_COUNT : SCENE4_DATA_COUNT;
-        const copies = scrollCopyCount_(presentationLaps_('wbgtLaps', SCENE4_LAPS));
+        const copies = scrollCopyCount_(wbgtSceneLaps_());
         repeatTrackSets_(fcConveyor, per, copies);
         scene4SetWidth = per * 128;
         fcConveyor.style.width = (scene4SetWidth * copies) + 'px';
@@ -11393,7 +11397,7 @@
         const text = getFcLvText();
         if (clearTimers) clearScene4Timers();
         lastFcLvText_ = text;
-        const copies = scrollCopyCount_(presentationLaps_('wbgtLaps', SCENE4_LAPS));
+        const copies = scrollCopyCount_(wbgtSceneLaps_());
         let lvHtml = '';
         for (let c = 0; c < copies; c++) lvHtml += buildFcLvSetHtml(text);
         fcLvTrack.innerHTML = lvHtml;
@@ -14771,6 +14775,7 @@
             case 'clock': transitionToScene(s1, playScene1); break;
             case 'observation': transitionToScene(s2, playScene2); break;
             case 'wbgt':
+                if (wbgtDemoCycle_()) { transitionToScene(s4, playScene4); break; }
                 if (skipWbgtOffSeason_() || !(hasFull4Slots(lastGoodWbgtSlots_) || hasFull4Slots(lastWbgtSlots))) { advanceContentOrder_(); break; }
                 transitionToScene(s4, playScene4);
                 break;
@@ -14781,6 +14786,7 @@
                 transitionToScene(sceneSsc, playSceneSsc);
                 break;
             case 'wbgt-i18n':
+                if (wbgtDemoCycle_()) { transitionToScene(s3, playScene3); break; }
                 if (!wbgtMultilingualOn_() || temperatureDisplay_() || wbgtOffSeason || !(hasFull4Slots(lastGoodWbgtSlots_) || hasFull4Slots(lastWbgtSlots))) { advanceContentOrder_(); break; }
                 transitionToScene(s3, playScene3);
                 break;
