@@ -1339,40 +1339,56 @@
             width: auto; max-width: 496px; flex: 0 1 auto;
             text-align: center; text-overflow: clip;
         }
-        #sceneNews { width: 512px; height: 128px; overflow: hidden; background: #0B4F9C; }
+        #sceneNews {
+            width: 512px; height: 128px; overflow: hidden; background: #0B4F9C;
+            display: flex; flex-direction: column;
+        }
+        .news-top {
+            width: 512px; height: 32px; flex: 0 0 32px; display: flex; flex-direction: row;
+            background: #ffffff; overflow: hidden;
+        }
+        .news-top-cell {
+            width: 128px; flex: 0 0 128px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            box-sizing: border-box; overflow: hidden;
+        }
+        .news-top-label {
+            font-family: "Noto Sans JP", sans-serif; font-size: 18px; font-weight: 800;
+            letter-spacing: 0.12em; color: #0B4F9C; line-height: 32px; white-space: nowrap;
+        }
         .news-scroll-wrap {
-            width: 512px; height: 128px; overflow: hidden; position: relative;
+            width: 512px; height: 96px; flex: 1 1 auto; overflow: hidden; position: relative;
             background: linear-gradient(180deg, #1A6FC0 0%, #0A3D7A 100%);
         }
         .news-track {
-            display: flex; flex-direction: row; height: 128px; align-items: center; will-change: transform;
+            display: flex; flex-direction: row; height: 96px; align-items: center; will-change: transform;
         }
         .news-unit {
-            height: 128px; flex-shrink: 0; display: flex; flex-direction: row; align-items: center;
+            height: 96px; flex-shrink: 0; display: flex; flex-direction: row; align-items: center;
             gap: 20px; padding: 0 28px; box-sizing: border-box; white-space: nowrap;
         }
-        .news-badge { flex-shrink: 0; display: flex; flex-direction: row; align-items: center; gap: 12px; height: 128px; }
+        .news-badge { flex-shrink: 0; display: flex; flex-direction: row; align-items: center; gap: 12px; height: 96px; }
         .news-badge-logo-plate {
             display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
-            box-sizing: border-box; height: 104px; padding: 14px 10px;
+            box-sizing: border-box; height: 72px; padding: 8px 8px;
             background: #ffffff; border-radius: 8px;
         }
         .news-badge-logo {
-            display: block; width: auto; height: 76px; max-width: 84px; max-height: 76px;
+            display: block; width: auto; height: 56px; max-width: 84px; max-height: 56px;
             object-fit: contain; object-position: center center;
             background: #ffffff;
         }
         .news-badge-label { font-size: 28px; font-weight: 800; letter-spacing: 0.06em; color: #C8E8F5; white-space: nowrap; }
         .news-sep { flex-shrink: 0; font-size: 22px; font-weight: 800; color: #57B8ED; }
         .news-item { flex-shrink: 0; display: flex; flex-direction: row; align-items: center; gap: 16px; white-space: nowrap; }
-        .news-date { font-size: 40px; font-weight: 800; color: #8AD0F0; font-variant-numeric: tabular-nums; white-space: nowrap; }
-        .news-title { font-size: 48px; font-weight: 800; color: #F0F8FF; white-space: nowrap; }
+        .news-date { font-size: 28px; font-weight: 800; color: #8AD0F0; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .news-title { font-size: 36px; font-weight: 800; color: #F0F8FF; white-space: nowrap; }
         .news-topic { gap: 28px; }
         .news-topic-cat { font-size: 40px; font-weight: 800; white-space: nowrap; color: #FFE14A; }
         .news-topic-cat[data-cat="海外"] { color: #9FD6FF; }
         .news-topic-cat[data-cat="建設"] { color: #B6F27A; }
         .news-topic-source { font-size: 32px; font-weight: 700; color: #C8E8F5; white-space: nowrap; }
-        .news-topic-photo { display: block; width: 96px; height: 96px; object-fit: contain; flex: 0 0 auto; }
+        .news-topic-photo { display: block; width: 72px; height: 72px; object-fit: contain; flex: 0 0 auto; }
         #sceneBoards { width: 512px; height: 128px; overflow: hidden; background: #ffffff; }
         #sceneProgress { width: 512px; height: 128px; overflow: hidden; background: #ffffff; }
         #sceneRainRadar { width: 512px; height: 128px; overflow: hidden; background: #4f8fbf; }
@@ -3197,6 +3213,12 @@
     </div>
 
     <div class="scene" id="sceneNews">
+        <div class="news-top" aria-hidden="true">
+            <div class="news-top-cell"><span class="news-top-label">ニュース</span></div>
+            <div class="news-top-cell"><span class="news-top-label">ニュース</span></div>
+            <div class="news-top-cell"><span class="news-top-label">ニュース</span></div>
+            <div class="news-top-cell"><span class="news-top-label">ニュース</span></div>
+        </div>
         <div class="news-scroll-wrap">
             <div class="news-track" id="news-track"></div>
         </div>
