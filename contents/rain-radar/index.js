@@ -367,6 +367,23 @@
     return canvas;
   }
 
+  function fillLand(ctx, originX, originY) {
+    var prefs = typeof AlertCubePrefectures !== 'undefined' ? AlertCubePrefectures : [];
+    var land = 'rgb(' + LAND[0] + ',' + LAND[1] + ',' + LAND[2] + ')';
+    var pi;
+    var ri;
+    var rings;
+    ctx.fillStyle = land;
+    for (pi = 0; pi < prefs.length; pi++) {
+      rings = landRings(prefs[pi]);
+      for (ri = 0; ri < rings.length; ri++) {
+        ctx.beginPath();
+        traceRing(ctx, rings[ri], originX, originY);
+        ctx.fill();
+      }
+    }
+  }
+
   function paint(canvas, plan, radarImgs, label, slice, gsiImgs) {
     if (!canvas || !plan) return;
     var ctx = canvas.getContext('2d');
@@ -386,11 +403,9 @@
     } else {
       ctx.fillStyle = 'rgb(' + OCEAN[0] + ',' + OCEAN[1] + ',' + OCEAN[2] + ')';
       ctx.fillRect(0, 0, strip, h);
-      drawPrefectures(ctx, plan.originX, plan.originY);
+      fillLand(ctx, plan.originX, plan.originY);
     }
     (radarImgs || []).forEach(function (img, i) { drawTile(ctx, img, plan.tiles[i]); });
-    var prefs = typeof AlertCubePrefectures !== 'undefined' ? AlertCubePrefectures : [];
-    strokeBorders(ctx, prefs, plan.originX, plan.originY, mapOk ? '#1a1a1a' : 'rgb(' + LINE[0] + ',' + LINE[1] + ',' + LINE[2] + ')');
     var cx = strip / 2;
     var cy = h / 2;
     ctx.beginPath();
@@ -551,11 +566,14 @@
   function drawFrame(canvases, plan, index) {
     if (!plan) return Promise.resolve();
     var frame = plan.frames && plan.frames[index];
+    var list = canvasList(canvases);
+    var label = frame && frame.label;
+    list.forEach(function (canvas, i) {
+      paint(canvas, plan, [], label, i, plan.map || null);
+    });
     return Promise.all([loadFrame(plan, frame), loadMap(plan)]).then(function (parts) {
-      var imgs = parts[0];
-      var map = parts[1];
-      canvasList(canvases).forEach(function (canvas, i) {
-        paint(canvas, plan, imgs, frame && frame.label, i, map);
+      list.forEach(function (canvas, i) {
+        paint(canvas, plan, parts[0], label, i, parts[1]);
       });
     });
   }
