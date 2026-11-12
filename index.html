@@ -22,7 +22,7 @@
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/wxtech-icons.js?v=20261111-wxtech-public"></script>
     <script src="./services/wxtech/index.js?v=20261112-wxtech-hold"></script>
-    <script src="./contents/short-forecast/index.js?v=20261112-wxtech-fast"></script>
+    <script src="./contents/short-forecast/index.js?v=20261112-wxtech-first"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
     <script src="./core/foundation.js?v=20261111-wxtech-public"></script>
     <script src="./services/densho/index.js?v=20261110-densho-vib"></script>
@@ -92,6 +92,10 @@
     }
     document.documentElement.classList.toggle('layout-512', !wide);
     document.documentElement.classList.toggle('layout-640', wide);
+    if (String(q.get('site') || '').toUpperCase() === 'DM-0008') {
+        document.documentElement.classList.add('ac-dm0008');
+        document.documentElement.classList.add('ac-ready');
+    }
     function addBody_() {
         if (!document.body) return;
         document.body.classList.toggle('layout-512', !wide);
@@ -1648,6 +1652,8 @@
         }
         #scene5 { overflow: hidden; }
         #sceneShort { width: 512px; height: 128px; overflow: hidden; }
+        html.ac-dm0008 #sceneShort { display: block; background: #C4472A; }
+        html.ac-dm0008 .content-area { background: #C4472A; }
         #sceneShort .d5-track { width: 512px; transform: none; }
         #sceneShort .short-foot { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 6px; box-sizing: border-box; }
         #sceneShort .short-got { color: #5a5a5a; font-size: 12px; font-weight: 700; font-family: "Noto Sans JP", sans-serif; line-height: 1; }
@@ -3129,6 +3135,51 @@
     <div class="scene forecast-scene daily-scene" id="sceneShort">
         <div class="d5-track" id="short-conveyor"></div>
     </div>
+    <script>
+    (function () {
+        if (!document.documentElement.classList.contains('ac-dm0008')) return;
+        var track = document.getElementById('short-conveyor');
+        var scene = document.getElementById('sceneShort');
+        if (!track || !scene) return;
+        scene.classList.add('active');
+        var files = { 100: '100', 200: '200', 300: '300', 400: '400', 430: '303', 600: '101' };
+        function hm(iso) {
+            var parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(iso));
+            var h = '00';
+            var m = '00';
+            parts.forEach(function (p) {
+                if (p.type === 'hour') h = p.value === '24' ? '00' : p.value;
+                if (p.type === 'minute') m = p.value;
+            });
+            return h + ':' + m;
+        }
+        fetch('./assets/demo/DM-0008/wxtech-latest.json', { cache: 'default' }).then(function (res) {
+            if (!res.ok) throw new Error('snapshot');
+            return res.json();
+        }).then(function (json) {
+            if (track.getAttribute('data-owned') === '1') return;
+            var rows = json && json.wxdata && json.wxdata[0] && json.wxdata[0].data || [];
+            var now = Date.now();
+            var weather = [];
+            rows.forEach(function (row) {
+                if (!row || !files[row.wx]) return;
+                if (!isFinite(Date.parse(row.date))) return;
+                weather.push(row);
+            });
+            var future = weather.filter(function (row) { return Date.parse(row.date) + 5 * 60 * 1000 > now; });
+            var use = (future.length ? future : weather).slice(0, 4);
+            if (!use.length || track.getAttribute('data-owned') === '1') return;
+            var got = json.fetchedAt ? hm(json.fetchedAt) : '';
+            var html = '';
+            use.forEach(function (row) {
+                var prec = row.prec == null || row.prec === -9999 ? '' : (Math.round(Number(row.prec) * 10) / 10) + 'mm';
+                html += '<div class="d5-panel s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">' + hm(row.date) + '</span></div><div class="s2-body d5-body"><div class="d5-weather-row"><span class="weather-icon-cell is-ready"><img class="weather-svg weather-icon-img" alt="" decoding="async" style="visibility:visible" src="https://www.jma.go.jp/bosai/forecast/img/' + files[row.wx] + '.svg"></span></div></div><div class="s2-foot short-foot"><span class="short-got">' + (got ? '取得' + got : '') + '</span><span class="d5-foot-txt short-prec">' + prec + '</span></div></div>';
+            });
+            track.innerHTML = html;
+            track.style.width = '512px';
+        }).catch(function () {});
+    })();
+    </script>
 
     <div class="scene" id="sceneSsc">
         <div class="ssc-scroll-wrap">

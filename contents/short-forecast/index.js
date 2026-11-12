@@ -237,6 +237,7 @@
 
   function paintStrip(track, html, width) {
     if (!track) return;
+    track.setAttribute('data-owned', '1');
     track.innerHTML = html;
     track.style.width = width + 'px';
     track.style.transition = 'none';
