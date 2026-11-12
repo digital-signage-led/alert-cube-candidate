@@ -176,11 +176,11 @@
             background: #1a1a1a;
         }
         body.browser-preview .canvas {
-            transform: scale(min(calc(100vw / 640), calc(100vh / 128))) !important;
+            transform: scale(min(100vw / 640px, 100vh / 128px)) !important;
             transform-origin: top left;
         }
         body.browser-preview.layout-512 .canvas {
-            transform: scale(min(calc(100vw / 512), calc(100vh / 128))) !important;
+            transform: scale(min(100vw / 512px, 100vh / 128px)) !important;
         }
         /* 4面（512×128）: ロゴ列なし */
         body.layout-512 .logo-panel { display: none !important; }
@@ -197,7 +197,7 @@
         }
         body.layout-640.native-640 .canvas { transform: none !important; }
         body.browser-preview.layout-640 .canvas {
-            transform: scale(min(calc(100vw / 640), calc(100vh / 128))) !important;
+            transform: scale(min(100vw / 640px, 100vh / 128px)) !important;
         }
         html.site-ac-0014 .logo-stack,
         html.site-dm-0004 .logo-stack,
@@ -14927,6 +14927,10 @@
         if (cached.length) {
             job.catch(function () {});
             return Promise.resolve(cached);
+        }
+        if (inline.length) {
+            job.catch(function () {});
+            return Promise.resolve(api.remember(cfg, inline));
         }
         return job;
     }
