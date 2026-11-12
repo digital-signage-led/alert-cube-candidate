@@ -2796,12 +2796,13 @@ console.log('');
 console.log(passed + ' passed, ' + failed + ' failed');
 if (failed) process.exit(1);
 
-test('DM-0015 はNHK主要ニュースを読む', function () {
+test('DM-0015 は言い換えた見出しだけを出す', function () {
   var site = require('../demo/DM-0015.json');
   var news = require('../contents/news/index.js');
-  assert.strictEqual(site.news.pageUrl, 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml');
-  assert.strictEqual(site.news.badge, 'NHKニュース');
+  assert.strictEqual(site.news.pageUrl, '');
+  assert.strictEqual(site.news.badge, '話題');
   assert.strictEqual(site.news.items.length, 2);
+  assert.ok(site.news.items[0].title.indexOf('NHK') < 0);
   var parsed = news.parsePage('<rss version="2.0"><channel><item><title>確認見出し</title><pubDate>Thu, 12 Nov 2026 13:28:41 +0900</pubDate></item></channel></rss>', 2);
   assert.deepStrictEqual(parsed, [{ date: '2026年11月12日', title: '確認見出し' }]);
 });

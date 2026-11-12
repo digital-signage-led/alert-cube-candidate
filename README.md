@@ -152,6 +152,6 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0033: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0033 （山陽工業 西広島バイパス。4面）
 - DM-0004: https://digital-signage-led.github.io/alert-cube-candidate/?site=DM-0004 （インテックス大阪 展示会。レンタルのニッケン。5面。本番端末へ登録しない）
 - DM-0008: https://digital-signage-led.github.io/alert-cube-candidate/?site=DM-0008 （短時間予報。本番端末へ登録しない）
-- DM-0015: https://digital-signage-led.github.io/alert-cube-candidate/?site=DM-0015&layout512=1&native640=0 （NHKニュースだけ。パソコンでは画面いっぱいに拡大。本番端末へ登録しない）
+- DM-0015: https://digital-signage-led.github.io/alert-cube-candidate/?site=DM-0015&layout512=1&native640=0 （言い換えた見出しだけ。パソコンでは画面いっぱいに拡大。本番端末へ登録しない）
 - AC-0000: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0000
 - コンテンツ一覧: https://digital-signage-led.github.io/alert-cube-candidate/contents/
