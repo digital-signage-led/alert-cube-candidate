@@ -103,15 +103,13 @@ assert.strictEqual(client.indexOf('X-API-Key'), -1);
 assert.strictEqual(client.indexOf('WXTECH_API_KEY'), -1);
 assert.ok(client.indexOf('wxtech.snapshot') >= 0);
 assert.ok(client.indexOf('取得できません') >= 0);
-assert.ok(page.indexOf('20261112-wxtech-hold') >= 0);
+assert.ok(page.indexOf('20261112-wxtech-step') >= 0);
 assert.strictEqual(client.indexOf('">取得不可<'), -1);
 
 var short = require('../contents/short-forecast/index.js');
 assert.deepStrictEqual(short.pageStarts(0), []);
-assert.deepStrictEqual(short.pageStarts(3), [0]);
-assert.deepStrictEqual(short.pageStarts(8), [0, 4]);
-assert.deepStrictEqual(short.pageStarts(23), [0, 4, 8, 12, 16, 19]);
-assert.deepStrictEqual(short.pageStarts(24), [0, 4, 8, 12, 16, 20]);
+assert.deepStrictEqual(short.pageStarts(3), [0, 1, 2]);
+assert.deepStrictEqual(short.pageStarts(8), [0, 1, 2, 3, 4, 5, 6, 7]);
 assert.ok(relay.indexOf('process.env.WXTECH_API_KEY') >= 0);
 assert.strictEqual(relay.indexOf('tpf.weathernews.jp'), -1);
 assert.ok(workflow.indexOf('secrets.WXTECH_API_KEY') >= 0);

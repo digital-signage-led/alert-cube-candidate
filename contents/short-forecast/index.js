@@ -200,37 +200,41 @@
     });
   }
 
-  /* 4面は同じ時刻を繰り返さない。4件ずつタイルにし、最後も4枚が埋まる位置から出す。 */
+  var FACE_PX = 128;
+  var STEP_MS = 3000;
+  var SLIDE_MS = 450;
+
+  /* 1面ずつ左へ送る。4面が同時に別時刻で止まらない。 */
   function pageStarts(count) {
     var n = Math.max(0, Math.floor(Number(count) || 0));
-    if (!n) return [];
-    if (n <= FACES) return [0];
     var starts = [];
-    var i = 0;
-    while (i + FACES < n) {
-      starts.push(i);
-      i += FACES;
-    }
-    starts.push(n - FACES);
+    var i;
+    for (i = 0; i < n; i++) starts.push(i);
     return starts;
   }
 
-  function tilesHtml(slots, start, day, got) {
+  function onePanel(slot, day, got) {
+    return panel(slotTop(slot, day), slotBody(slot), got, precText(slot));
+  }
+
+  function stripHtml(slots, day, got, laps) {
     var html = '';
+    var copies = Math.max(1, Math.floor(Number(laps) || 1));
+    var c;
     var i;
-    var count = Math.min(FACES, slots.length - start);
-    for (i = 0; i < count; i++) {
-      var slot = slots[start + i];
-      html += panel(slotTop(slot, day), slotBody(slot), got, precText(slot));
+    for (c = 0; c < copies; c++) {
+      for (i = 0; i < slots.length; i++) html += onePanel(slots[i], day, got);
     }
+    for (i = 0; i < FACES - 1; i++) html += onePanel(slots[i % slots.length], day, got);
     return html;
   }
 
-  function paintFaces(track, html) {
+  function paintStrip(track, html, width) {
     if (!track) return;
     track.innerHTML = html;
-    track.style.width = '512px';
-    track.style.transform = 'none';
+    track.style.width = width + 'px';
+    track.style.transition = 'none';
+    track.style.transform = 'translate3d(0,0,0)';
   }
 
   function missFace() {
@@ -244,9 +248,9 @@
     if (!slots.length) {
       for (i = 0; i < FACES; i++) html += missFace();
     } else {
-      html = tilesHtml(slots, 0, slots[0].dateLabel, fetchLabel(model));
+      html = stripHtml(slots, slots[0].dateLabel, fetchLabel(model), 1);
     }
-    paintFaces(track, html);
+    paintStrip(track, html, Math.max(FACES, slots.length + FACES - 1) * FACE_PX);
   }
 
   function stop() {
@@ -272,31 +276,27 @@
       frameTimer = setTimeout(finish, FRAME_MS * FACES);
       return;
     }
-    var starts = pageStarts(slots.length);
-    var page = 0;
-    var lapsLeft = Math.max(1, Math.floor(Number(o.laps) || 1));
+    var laps = Math.max(1, Math.floor(Number(o.laps) || 1));
     var day = slots[0].dateLabel;
     var got = fetchLabel(model);
+    var steps = slots.length * laps;
+    var step = 0;
+    paintStrip(track, stripHtml(slots, day, got, laps), (steps + FACES - 1) * FACE_PX);
+    if (o.onLayout) o.onLayout();
     function show() {
       if (token !== playing) return;
-      paintFaces(track, tilesHtml(slots, starts[page], day, got));
-      if (o.onLayout) o.onLayout();
+      track.style.transition = step === 0 ? 'none' : 'transform ' + SLIDE_MS + 'ms linear';
+      track.style.transform = 'translate3d(' + (-step * FACE_PX) + 'px,0,0)';
       frameTimer = setTimeout(function () {
         frameTimer = 0;
         if (token !== playing) return;
-        page += 1;
-        if (page < starts.length) {
-          show();
-          return;
-        }
-        lapsLeft -= 1;
-        if (lapsLeft > 0) {
-          page = 0;
+        step += 1;
+        if (step < steps) {
           show();
           return;
         }
         finish();
-      }, FRAME_MS * 2);
+      }, step === 0 ? STEP_MS : STEP_MS + SLIDE_MS);
     }
     show();
   }
