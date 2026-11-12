@@ -161,26 +161,17 @@
     });
   }
 
-  function panel(top, body, got, prec) {
+  function panel(top, body, prec) {
     return '<div class="d5-panel s2-strip">' +
       '<div class="s2-top-bar"><span class="s2-bar-label">' + esc(top) + '</span></div>' +
       '<div class="s2-body d5-body">' + body + '</div>' +
-      '<div class="s2-foot short-foot"><span class="short-got">' + esc(got) + '</span><span class="d5-foot-txt short-prec">' + esc(prec) + '</span></div>' +
+      '<div class="s2-foot short-foot"><span class="d5-foot-txt short-prec">' + esc(prec) + '</span></div>' +
       '</div>';
   }
 
   function slotTop(slot, dayLabel) {
     if (slot.dateLabel === dayLabel) return slot.timeLabel;
     return slot.dateLabel + ' ' + slot.timeLabel;
-  }
-
-  function fetchLabel(model) {
-    if (!model || !model.fetchedTimeLabel) return '';
-    var day = model.slots && model.slots[0] && model.slots[0].dateLabel;
-    if (model.fetchedDateLabel && day && model.fetchedDateLabel !== day) {
-      return '取得' + model.fetchedDateLabel + ' ' + model.fetchedTimeLabel;
-    }
-    return '取得' + model.fetchedTimeLabel;
   }
 
   function iconFile(slot) {
@@ -220,19 +211,19 @@
     return starts;
   }
 
-  function onePanel(slot, day, got) {
-    return panel(slotTop(slot, day), slotBody(slot), got, precText(slot));
+  function onePanel(slot, day) {
+    return panel(slotTop(slot, day), slotBody(slot), precText(slot));
   }
 
-  function stripHtml(slots, day, got, laps) {
+  function stripHtml(slots, day, laps) {
     var html = '';
     var copies = Math.max(1, Math.floor(Number(laps) || 1));
     var c;
     var i;
     for (c = 0; c < copies; c++) {
-      for (i = 0; i < slots.length; i++) html += onePanel(slots[i], day, got);
+      for (i = 0; i < slots.length; i++) html += onePanel(slots[i], day);
     }
-    for (i = 0; i < FACES; i++) html += onePanel(slots[i % slots.length], day, got);
+    for (i = 0; i < FACES; i++) html += onePanel(slots[i % slots.length], day);
     return html;
   }
 
@@ -246,7 +237,7 @@
   }
 
   function missFace() {
-    return panel('予報', '<div class="d5-weather-row short-miss-row"><span class="short-miss">取得できません</span></div>', '', '');
+    return panel('予報', '<div class="d5-weather-row short-miss-row"><span class="short-miss">取得できません</span></div>', '');
   }
 
   function render(track, model) {
@@ -256,7 +247,7 @@
     if (!slots.length) {
       for (i = 0; i < FACES; i++) html += missFace();
     } else {
-      html = stripHtml(slots, slots[0].dateLabel, fetchLabel(model), 1);
+      html = stripHtml(slots, slots[0].dateLabel, 1);
     }
     paintStrip(track, html, (slots.length ? slots.length + FACES : FACES) * FACE_PX);
   }
@@ -290,10 +281,9 @@
     }
     var laps = Math.max(1, Math.floor(Number(o.laps) || 1));
     var day = slots[0].dateLabel;
-    var got = fetchLabel(model);
     var steps = slots.length * laps;
     var step = 0;
-    paintStrip(track, stripHtml(slots, day, got, laps), (steps + FACES) * FACE_PX);
+    paintStrip(track, stripHtml(slots, day, laps), (steps + FACES) * FACE_PX);
     if (o.onLayout) o.onLayout();
     function show() {
       if (token !== playing) return;
