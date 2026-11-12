@@ -2801,6 +2801,7 @@ test('DM-0015 はNHKの新しい見出しを取る', function () {
   var news = require('../contents/news/index.js');
   assert.strictEqual(site.news.pageUrl, 'https://www.nhk.or.jp/rss/news/cat0.xml');
   assert.strictEqual(site.news.badge, '');
+  assert.strictEqual(site.news.refreshMs, 60000);
   assert.strictEqual(site.news.items.length, 0);
   var parsed = news.parsePage('<rss version="2.0"><channel><item><title>確認見出し</title><pubDate>Thu, 12 Nov 2026 13:28:41 +0900</pubDate></item></channel></rss>', 2);
   assert.deepStrictEqual(parsed, [{ date: '2026年11月12日', title: '確認見出し' }]);
