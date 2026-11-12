@@ -286,14 +286,12 @@
             width: 128px;
             height: 128px;
             border-radius: 0;
-            background: rgba(255,255,255,0.7);
+            background: transparent;
             overflow: hidden;
             z-index: 1;
-            clip-path: inset(0 8px 8px 8px round 0 8px 8px 8px);
         }
         html.site-dm-0014 #dm14-card-x {
             left: 128px;
-            clip-path: inset(8px 0 8px 8px round 8px 0 0 8px);
         }
         html.site-dm-0014 .dm14-card-track {
             display: flex;
@@ -328,12 +326,25 @@
             height: 96px;
             justify-content: center;
         }
-        html.site-dm-0014 .dm14-card .weather-icon-cell,
+        html.site-dm-0014 .dm14-card .weather-icon-cell {
+            width: 58px;
+            height: 58px;
+            max-width: 58px;
+            max-height: 58px;
+            overflow: visible;
+        }
         html.site-dm-0014 .dm14-card .weather-svg {
             width: 58px;
             height: 58px;
             max-width: 58px;
             max-height: 58px;
+        }
+        html.site-dm-0014 .dm14-card .weather-icon-cell::before {
+            width: 54px;
+            height: 54px;
+        }
+        html.site-dm-0014 .dm14-card .weather-icon-cell.is-ready img.weather-icon-img {
+            visibility: visible !important;
         }
         html.site-dm-0014 .dm14-card-char {
             width: 104px;
@@ -8532,15 +8543,19 @@
                 });
             });
         }
+        function place() {
+            const s = Math.round(seam * 100) / 100;
+            track.style.transform = 'translate3d(0,' + (-(s + 128)) + 'px,0)';
+            rotor.style.transform = 'translate3d(' + (-s) + 'px,128px,0) rotate(-90deg)';
+        }
         function frame() {
             sync();
             seam -= getScrollSpeedPx_();
             if (seam < setH) seam += setH;
-            const s = Math.round(seam * 100) / 100;
-            track.style.transform = 'translate3d(0,' + (-(s + 128)) + 'px,0)';
-            rotor.style.transform = 'translate3d(' + (-s) + 'px,128px,0) rotate(-90deg)';
+            place();
             requestAnimationFrame(frame);
         }
+        place();
         requestAnimationFrame(frame);
     }
     /** 壁紙は縦。512が上、384が下（足）。背景は動かさない。 */
@@ -8552,6 +8567,7 @@
         const site = typeof siteCfg_ === 'function' ? siteCfg_() : null;
         if (!site || site.projectId !== 'DM-0014') return;
         startDm14CornerScroll_.on = true;
+        if (typeof markDisplayReady_ === 'function') markDisplayReady_();
         startDm14Card_();
         const img = new Image();
         img.onload = function () {
