@@ -51,6 +51,8 @@
     list.forEach(function (fn) { fn(view); });
   }
 
+  var source = null;
+
   function accept(payload) {
     var api = wx();
     var next = api ? api.normalize(payload, Date.now()) : { ok: false, reason: 'unavailable', slots: [] };
@@ -60,6 +62,7 @@
       kept.forEach(function (fn) { fn(view); });
       return;
     }
+    source = payload;
     view = next;
     if (view && payload && Number(payload.refreshMs) >= 60000) view.refreshMs = Number(payload.refreshMs);
     settled = true;
@@ -69,21 +72,9 @@
 
   function current(nowMs) {
     var api = wx();
-    if (!view || !view.ok || !api) return { ok: false, reason: (view && view.reason) || 'unavailable', slots: [] };
-    return api.normalize({
-      ok: true,
-      fetchedAt: view.fetchedAt,
-      freshUntil: view.freshUntil,
-      wxdata: [{
-        data: view.slots.map(function (slot) {
-          return {
-            date: new Date(slot.ms).toISOString(),
-            wx: slot.wxOk ? slot.wx : -9999,
-            prec: slot.precOk ? slot.prec : -9999
-          };
-        })
-      }]
-    }, nowMs || Date.now());
+    if (source && api) return api.normalize(source, nowMs || Date.now());
+    if (!view || !view.ok) return { ok: false, reason: (view && view.reason) || 'unavailable', slots: [] };
+    return view;
   }
 
   /* このPCの中継は /api。公開ページは10分ごとのスナップショット。キーはどちらにも出さない。 */

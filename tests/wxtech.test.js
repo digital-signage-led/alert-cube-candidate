@@ -51,7 +51,27 @@ assert.strictEqual(stale.ok, true);
 assert.strictEqual(stale.slots.length, 1);
 assert.strictEqual(stale.slots[0].timeLabel, '11:30');
 
-var expired = wx.normalize(payload([row(10 * 60, 100, 0)]), NOW);
+var held = wx.normalize(payload([row(10 * 60, 100, 0)]), NOW);
+assert.strictEqual(held.ok, true);
+assert.strictEqual(held.reason, 'held');
+assert.strictEqual(held.slots.length, 1);
+assert.strictEqual(held.slots[0].timeLabel, '10:00');
+
+var heldLast = wx.normalize(payload([
+  row(10 * 60, 100, 0),
+  row(10 * 60 + 5, 200, 0),
+  row(10 * 60 + 10, 200, 0),
+  row(10 * 60 + 15, 600, 0),
+  row(10 * 60 + 20, 100, 0),
+  row(10 * 60 + 30, -9999, 0)
+]), NOW);
+assert.strictEqual(heldLast.reason, 'held');
+assert.strictEqual(heldLast.slots.length, 4);
+assert.strictEqual(heldLast.slots[0].timeLabel, '10:05');
+assert.strictEqual(heldLast.slots[3].timeLabel, '10:20');
+assert.strictEqual(heldLast.slots[3].wxOk, true);
+
+var expired = wx.normalize(payload([row(4 * 60, 100, 0)]), NOW);
 assert.strictEqual(expired.ok, false);
 assert.strictEqual(expired.reason, 'expired');
 assert.strictEqual(expired.slots.length, 0);
@@ -83,7 +103,7 @@ assert.strictEqual(client.indexOf('X-API-Key'), -1);
 assert.strictEqual(client.indexOf('WXTECH_API_KEY'), -1);
 assert.ok(client.indexOf('wxtech.snapshot') >= 0);
 assert.ok(client.indexOf('取得できません') >= 0);
-assert.ok(page.indexOf('20261111-wxtech-wxonly') >= 0);
+assert.ok(page.indexOf('20261112-wxtech-hold') >= 0);
 assert.strictEqual(client.indexOf('">取得不可<'), -1);
 
 var short = require('../contents/short-forecast/index.js');

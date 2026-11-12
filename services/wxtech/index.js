@@ -93,17 +93,31 @@
       var step = nextStep > 0 ? nextStep : (prevStep > 0 ? prevStep : 5 * 60 * 1000);
       return now < row.ms + step;
     });
-    if (!visible.length) return unavailable('expired');
+    var weatherVisible = visible.filter(function (row) { return row.wxOk; });
+    var slots = visible;
+    var reason = '';
+    /* 公開ファイルの更新が遅れても、直近の天気は出しておく。6時間を過ぎた予報は出さない。 */
+    if (!weatherVisible.length) {
+      var pastWeather = parsed.filter(function (row) { return row.wxOk; });
+      var lastWeather = pastWeather.length ? pastWeather[pastWeather.length - 1] : null;
+      if (lastWeather && now - lastWeather.ms <= 6 * 60 * 60 * 1000) {
+        slots = pastWeather.slice(-4);
+        reason = 'held';
+      } else if (!visible.length) {
+        return unavailable('expired');
+      }
+    }
+    if (!slots.length) return unavailable('expired');
     var fetched = jstLabels(fetchedAt);
     return {
       ok: true,
-      reason: '',
+      reason: reason,
       fetchedAt: new Date(fetchedAt).toISOString(),
       freshUntil: Number.isFinite(freshUntil) ? new Date(freshUntil).toISOString() : '',
       fetchedDateLabel: fetched.dateLabel,
       fetchedTimeLabel: fetched.timeLabel,
       refreshBasis: 'provisional',
-      slots: visible
+      slots: slots
     };
   }
 
