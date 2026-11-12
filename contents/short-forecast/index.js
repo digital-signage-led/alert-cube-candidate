@@ -187,7 +187,8 @@
   }
 
   function precText(slot) {
-    return slot && slot.precOk ? slot.precLabel : '';
+    if (!slot || !slot.precOk) return '';
+    return '降水量 ' + slot.precLabel;
   }
 
   /* 天気が返った時刻だけ。降水量だけの時刻は面にしない。 */
