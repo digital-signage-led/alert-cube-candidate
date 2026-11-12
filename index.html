@@ -8970,15 +8970,20 @@
         if (slots) updateForecastSlots(slots);
     }
     function scene4WbgtDomNeedsRefresh_(slots) {
-        const sample = document.querySelector('#scene4 .fc-val-live');
-        if (!sample || !slots || !hasFull4Slots(slots)) return true;
-        const num = sample.querySelector('.fc-wbgt-num');
+        const nodes = document.querySelectorAll('#scene4 .fc-track .fc-panel:not(.fc-logo-panel) .fc-val-live');
+        if (!nodes.length || !slots || !hasFull4Slots(slots)) return true;
         const expected = Number(slots[0].wbgt).toFixed(1);
-        if (!num) {
-            const raw = (sample.textContent || '').trim();
-            return raw === '--' || raw === '' || raw !== expected;
+        for (let i = 0; i < nodes.length; i++) {
+            const sample = nodes[i];
+            const num = sample.querySelector('.fc-wbgt-num');
+            if (!num) {
+                const raw = (sample.textContent || '').trim();
+                if (raw === '--' || raw === '' || raw !== expected) return true;
+            } else if (num.textContent !== expected) {
+                return true;
+            }
         }
-        return num.textContent !== expected;
+        return false;
     }
     function updateForecastSlots(slots) {
         if (temperatureDisplay_()) {
@@ -8994,7 +8999,8 @@
             if (panel.classList.contains('fc-logo-panel') || panel.getAttribute('data-fc') === 'logo') return;
             const rawSlot = Number(panel.getAttribute('data-fc-slot'));
             const slotIdx = Number.isFinite(rawSlot) ? rawSlot : 0;
-            const slot = arr[slotIdx] || arr[0];
+            /* 流す面は現在値だけ。予報の +3h/+6h/+9h は出さない */
+            const slot = arr[0] || {};
             const isUnknown = slot.wbgt == null;
             const wbgtHtml = isUnknown ? '--' : formatFcWbgtHtml(slot.wbgt);
             panel.className = 'fc-panel fc-slot-' + (slotIdx % 2);
@@ -14034,12 +14040,9 @@
 
     function mockSlotsForDemoLevel(levelIdx) {
         const w = DEMO_WBGT_BY_LEVEL[levelIdx];
-        return [
-            { wbgt: w, levelIdx, hour: '現在' },
-            { wbgt: w + 0.5, levelIdx, hour: '21時' },
-            { wbgt: w, levelIdx, hour: '0時' },
-            { wbgt: w - 0.5, levelIdx, hour: '3時' }
-        ];
+        return [0, 1, 2, 3].map(function () {
+            return { wbgt: w, levelIdx, hour: '現在' };
+        });
     }
     function applyDemoWeatherStatic() {
         applyRainPreviewFromParam_();
