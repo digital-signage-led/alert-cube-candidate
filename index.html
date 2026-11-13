@@ -780,6 +780,7 @@
         .scene1-state { display: none; width: 512px; height: var(--led-col-main-h); flex-direction: row; flex-shrink: 0; }
         .scene1-state.active { display: flex; }
         .panel-clock .s1-foot { display: none; }
+        html.site-dm-0014 #scene4 .fc-lv-bar { width: 384px; }
         .s1-wbgt-bar, .fc-lv-bar, .s2-meta-bar {
             position: absolute; left: 0; bottom: 0; width: 512px; height: var(--led-foot-bar-h);
             background: var(--led-foot-bar-bg); overflow: hidden; z-index: 12; box-sizing: border-box;
@@ -11739,10 +11740,17 @@
         }
         return `<span class="fc-lv-msg">${buildEvenCharSpans(text, 'fc-lv-ch')}</span>`;
     }
+    function face3Foot_() {
+        return Number(((siteCfg_() && siteCfg_().presentation) || {}).scrollFaces) === 3;
+    }
     function buildFcLvSetHtml(text) {
         const msg = '<span class="fc-lv-msg-full">' + escapeS1Html(text) + '</span>';
-        const src = '<div class="fc-lv-slot fc-lv-slot-src">' + msg + '</div>';
         const logo = hasContentLogo_() ? '<div class="fc-lv-slot fc-lv-slot-logo" aria-hidden="true"></div>' : '';
+        if (face3Foot_()) {
+            const src = '<div class="fc-lv-slot fc-lv-slot-src" style="width:384px;max-width:384px;flex:0 0 384px">' + msg + '</div>';
+            return '<div class="fc-lv-set fc-lv-set-sync">' + src + '</div>';
+        }
+        const src = '<div class="fc-lv-slot fc-lv-slot-src">' + msg + '</div>';
         return '<div class="fc-lv-set fc-lv-set-sync">' + src + src + logo + '</div>';
     }
     /** 出典は省略記号にせず、256px列の中に先頭から末尾まで収める */
@@ -13291,7 +13299,7 @@
             const speed = getScrollSpeedPx_();
             totalScrolled = Math.min(totalPx, totalScrolled + speed);
             applyScrollX_(fcConveyor, -totalScrolled);
-            applyScrollX_(fcLvTrack, -totalScrolled);
+            if (!face3Foot_()) applyScrollX_(fcLvTrack, -totalScrolled);
             if (sample) {
                 const lap = Math.min(DEMO_LEVEL_ORDER.length - 1, Math.floor(totalScrolled / wbgtSet));
                 if (lap !== wbgtCycleLap_) {
