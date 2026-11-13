@@ -298,7 +298,7 @@
             flex-direction: column;
             will-change: transform;
         }
-        /* 帯の移動は -90 のまま。512の中身だけ 180 で頭が右、底が左。384の中身も 180 */
+        /* 帯の移動は -90 のまま。512は右から左。中身は頭が左、底が右。384の中身だけ 180 */
         html.site-dm-0014 .dm14-card-rotor {
             position: absolute;
             left: 0;
@@ -306,8 +306,7 @@
             transform-origin: 0 0;
             will-change: transform;
         }
-        html.site-dm-0014 #dm14-card > .dm14-card-track > .dm14-card-cell,
-        html.site-dm-0014 #dm14-card-track-x > .dm14-card-cell {
+        html.site-dm-0014 #dm14-card > .dm14-card-track > .dm14-card-cell {
             transform: rotate(180deg);
         }
         html.site-dm-0014 .dm14-card-track-x {
@@ -8510,7 +8509,7 @@
         }
         startDm14CornerScroll_();
     }
-    /** 384は下から上。中身だけ 180。512は左から右。中身も 180 で頭が右、底が左。 */
+    /** 384は下から上。中身だけ 180。512は右から左。頭が左、底が右。 */
     function startDm14Card_() {
         const track = document.getElementById('dm14-card-track');
         const trackX = document.getElementById('dm14-card-track-x');
@@ -8568,7 +8567,7 @@
         function place() {
             const s = Math.round(seam * 100) / 100;
             track.style.transform = 'translate3d(0,' + (-(s + 128)) + 'px,0)';
-            rotor.style.transform = 'translate3d(' + (s - setH * 3) + 'px,128px,0) rotate(-90deg)';
+            rotor.style.transform = 'translate3d(' + (-s) + 'px,128px,0) rotate(-90deg)';
         }
         function frame() {
             sync();
@@ -8580,7 +8579,7 @@
         place();
         requestAnimationFrame(frame);
     }
-    /** 壁紙は縦。背景の下は512の128。下を左の辺に付け、頭は右。384の上側は正立。背景は動かさない。 */
+    /** 壁紙は縦。背景の下は512の128。下を右の辺に付け、頭は左。384の上側は正立。背景は動かさない。 */
     function startDm14CornerScroll_() {
         if (startDm14CornerScroll_.on) return;
         const canvas4 = document.getElementById('dm14-face4-canvas');
@@ -8630,18 +8629,18 @@
                 ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(sheet, 0, srcY, sw, srcH, 0, 0, sw, sw);
             }
-            /* 512: 背景の下。下の辺が面の左辺、頭は右。流れの位置は変えない */
-            function paintFaceBottomOnLeft(canvas, srcY) {
+            /* 512: 背景の下。下の辺が面の右辺、頭は左。流れの位置は変えない */
+            function paintFaceBottomOnRight(canvas, srcY) {
                 canvas.width = sw;
                 canvas.height = sw;
                 const ctx = canvas.getContext('2d');
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
-                ctx.setTransform(0, 1, -1, 0, sw, 0);
+                ctx.setTransform(0, -1, 1, 0, 0, sw);
                 ctx.drawImage(sheet, 0, srcY, sw, srcH, 0, 0, sw, sw);
             }
             paintFace(canvas4, 0);
-            paintFaceBottomOnLeft(canvas5, srcH);
+            paintFaceBottomOnRight(canvas5, srcH);
         };
         img.src = './assets/demo/DM-0014/wall.jpg?v=1';
     }
