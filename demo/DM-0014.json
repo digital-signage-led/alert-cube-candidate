@@ -132,6 +132,8 @@
     "typhoonLaps": 2,
     "observationTrailingLogo": true,
     "i18nTrailingLogo": true,
+    "scrollHoldMs": 0,
+    "endHoldMs": 0,
     "wbgtDemoCycle": true,
     "brandAlways": true,
     "i18nStageColor": true,

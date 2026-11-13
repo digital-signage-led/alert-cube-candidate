@@ -1466,7 +1466,12 @@
             width: 128px; height: 128px; max-width: 128px; max-height: 128px;
             object-fit: contain; object-position: center center; background: #ffffff;
         }
+        #sceneSsc .ssc-panel .col-bg-layer { height: var(--led-col-main-h); }
+        #sceneSsc .ssc-panel .col-bg-foot { display: none; }
         #sceneSsc .ssc-bar-label { color: #7CFF6B; }
+        html.site-dm-0014 #sceneSsc .ssc-bar-label,
+        html.site-dm-0014 #sceneSsc .ssc-unit,
+        html.site-dm-0014 #sceneSsc .ssc-num { color: #1a1a1a; }
         #sceneSsc .ssc-unit { color: #ebebeb; }
         #sceneSsc .ssc-num.ssc-pending {
             font-size: 22px; font-weight: 800; font-variant-numeric: normal;
@@ -3770,8 +3775,8 @@
     }
 
     function refreshScene2(levelIdx, displayMode) {
-        document.querySelectorAll('#scene2 .s2-panel, #scene2 .s2-panel-data').forEach(panel => {
-            if (panel.classList.contains('s2-logo-panel') || panel.getAttribute('data-s2') === 'logo') {
+        document.querySelectorAll('#scene2 .s2-panel, #scene2 .s2-panel-data, #sceneSsc .ssc-panel').forEach(panel => {
+            if (panel.classList.contains('s2-logo-panel') || panel.classList.contains('ssc-logo-panel') || panel.getAttribute('data-s2') === 'logo' || panel.getAttribute('data-ssc') === 'logo') {
                 panel.querySelectorAll('.col-bg-layer').forEach(function (el) { el.remove(); });
                 panel.classList.remove('col-bg-host', 'col-bg-dark-text', 'wbgt-off-season', 'wbgt-unavailable');
                 panel.style.backgroundColor = '#ffffff';
@@ -5059,6 +5064,7 @@
         }
         if (mode === 'offseason') {
             SignageBg.refreshScene1(lv, mode);
+            SignageBg.refreshScene2(lv, mode);
             if (typeof SignageBg.repaintStripHosts_ === 'function') SignageBg.repaintStripHosts_(lv, mode);
             paintScene3StageColors_();
             if (wbgtCycleShowing_) applyWbgtCycleChrome_(wbgtCycleLap_);
@@ -5066,6 +5072,7 @@
         }
         if (mode === 'unavailable') {
             SignageBg.refreshScene1(-1, mode);
+            SignageBg.refreshScene2(-1, mode);
             if (typeof SignageBg.repaintStripHosts_ === 'function') SignageBg.repaintStripHosts_(-1, mode);
             paintScene3StageColors_();
             if (wbgtCycleShowing_) applyWbgtCycleChrome_(wbgtCycleLap_);
