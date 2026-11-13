@@ -299,7 +299,7 @@
             flex-direction: column;
             will-change: transform;
         }
-        /* 帯の移動は -90 のまま。512の中身は頭が左、底が右。384の中身だけ 180 */
+        /* 帯の移動は -90 のまま。512の中身は頭が左、底が右。流れは左から右。384の中身だけ 180 */
         html.site-dm-0014 .dm14-card-rotor {
             position: absolute;
             left: 0;
@@ -8510,7 +8510,7 @@
         }
         startDm14CornerScroll_();
     }
-    /** 384は下から上。中身だけ 180。512は右から左。頭が左、底が右。 */
+    /** 384は下から上。中身だけ 180。512は左から右。384の上を出た項目が左から入る。 */
     function startDm14Card_() {
         const track = document.getElementById('dm14-card-track');
         const trackX = document.getElementById('dm14-card-track-x');
@@ -8529,9 +8529,9 @@
             '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-vib">--</span><span class="s2-unit">dB</span></div></div></div>'
         );
         const cells = [cell(scene2PanelHtml_('weather')), noise, vib];
-        const set = cells.join('');
-        track.innerHTML = set + set + set;
-        trackX.innerHTML = set + set + set;
+        const seq = cells.concat(cells, cells);
+        track.innerHTML = seq.join('');
+        trackX.innerHTML = seq.slice().reverse().join('');
         const cellH = 128;
         const setH = (track.children.length / 3) * cellH;
         const cards = [track, trackX];
@@ -8568,7 +8568,7 @@
         function place() {
             const s = Math.round(seam * 100) / 100;
             track.style.transform = 'translate3d(0,' + (-(s + 128)) + 'px,0)';
-            rotor.style.transform = 'translate3d(' + (setH * 3 - s) + 'px,128px,0) rotate(-90deg)';
+            rotor.style.transform = 'translate3d(' + (s - setH * 3 + cellH) + 'px,128px,0) rotate(-90deg)';
         }
         function frame() {
             sync();
@@ -8580,7 +8580,7 @@
         place();
         requestAnimationFrame(frame);
     }
-    /** 壁紙は縦。背景の下は512の128。下を右の辺に付け、頭は左。384の上側は正立。背景は動かさない。 */
+    /** 壁紙は縦。背景の下は512の128。下を左の辺に付け、頭は右。384の上側は正立。背景は動かさない。 */
     function startDm14CornerScroll_() {
         if (startDm14CornerScroll_.on) return;
         const canvas4 = document.getElementById('dm14-face4-canvas');
@@ -8630,14 +8630,14 @@
                 ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(sheet, 0, srcY, sw, srcH, 0, 0, sw, sw);
             }
-            /* 512: 背景の下。下の辺が面の右辺、頭は左。流れの位置は変えない */
+            /* 512: 背景の下。下の辺が面の左辺、頭は右 */
             function paintFaceBottomOnRight(canvas, srcY) {
                 canvas.width = sw;
                 canvas.height = sw;
                 const ctx = canvas.getContext('2d');
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
-                ctx.setTransform(0, -1, 1, 0, 0, sw);
+                ctx.setTransform(0, 1, -1, 0, sw, 0);
                 ctx.drawImage(sheet, 0, srcY, sw, srcH, 0, 0, sw, sw);
             }
             paintFace(canvas4, 0);
