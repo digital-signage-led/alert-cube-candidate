@@ -3,8 +3,8 @@
  * WBGT期間判定・背景色・再生位置・防災状態を一元管理する。
  * 現場名・ロゴ・観測点は持たない（site-config 側）。
  *
- * WBGT色は環境省「熱中症予防情報サイト」の5段階配色を
- * 参考画像からWeb用に設定したもの。公式HEX公開は確認できていない。
+ * WBGT色は環境省「熱中症予防情報サイト」の公開カラーコード。
+ * https://www.wbgt.env.go.jp/faq2.php （A9-6）と css/color_theme.css
  */
 (function (global) {
   'use strict';
@@ -12,13 +12,14 @@
   var WBGT_MODE = 'WBGT_MODE';
   var TEMPERATURE_MODE = 'TEMPERATURE_MODE';
 
-  /** 環境省5段階（参考画像ベース。公式HEXとしては未確認） */
+  /** 環境省5段階。中央の背景と文字は公式HEX。上バーは白を約28%混ぜた薄い同系色。
+   *  警戒の黄（#FAF500）はすでに白に近く、同じ混ぜ方だと上段と中段が区別できない。上バーだけ金にする。 */
   var WBGT_BANDS = [
-    { min: 31, id: 'danger', name: '危険', colorName: '赤', bg: '#ED1A3D', bar: '#F24A64', ink: '#ffffff', guide: '運動は原則中止' },
-    { min: 28, id: 'severe', name: '厳重警戒', colorName: '橙', bg: '#F39800', bar: '#FFB133', ink: '#ffffff', guide: '激しい運動は中止' },
-    { min: 25, id: 'warning', name: '警戒', colorName: '黄', bg: '#FFEE00', bar: '#FFF44D', ink: '#1a1a1a', guide: '積極的に休息' },
-    { min: 21, id: 'caution', name: '注意', colorName: '水色', bg: '#67C1EA', bar: '#85D0F0', ink: '#ffffff', guide: '積極的に水分補給' },
-    { min: -99, id: 'almostSafe', name: 'ほぼ安全', colorName: '青', bg: '#3181BD', bar: '#4A96CC', ink: '#ffffff', guide: '適宜水分補給' }
+    { min: 31, id: 'danger', name: '危険', colorName: '赤', bg: '#FF2800', bar: '#FF6447', ink: '#ffffff', guide: '運動は原則中止' },
+    { min: 28, id: 'severe', name: '厳重警戒', colorName: '橙', bg: '#FF9600', bar: '#FFB347', ink: '#000000', guide: '激しい運動は中止' },
+    { min: 25, id: 'warning', name: '警戒', colorName: '黄', bg: '#FAF500', bar: '#E6D200', ink: '#000000', guide: '積極的に休息' },
+    { min: 21, id: 'caution', name: '注意', colorName: '水色', bg: '#A0D2FF', bar: '#BBDFFF', ink: '#000000', guide: '積極的に水分補給' },
+    { min: -99, id: 'almostSafe', name: 'ほぼ安全', colorName: '青', bg: '#218CFF', bar: '#5FACFF', ink: '#ffffff', guide: '適宜水分補給' }
   ];
 
   /** WBGT期間外の独自9段階 */
@@ -85,7 +86,7 @@
   }
 
   function colorsFromBand_(band) {
-    if (!band) return { bgColor: '#3181BD', barColor: '#4A96CC', ink: '#ffffff' };
+    if (!band) return { bgColor: '#218CFF', barColor: '#5FACFF', ink: '#ffffff' };
     return { bgColor: band.bg, barColor: band.bar, ink: band.ink };
   }
 

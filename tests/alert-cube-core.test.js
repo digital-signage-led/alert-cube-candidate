@@ -24,7 +24,7 @@ test('WBGT 20 → ほぼ安全・青', function () {
   var b = core.wbgtBand(20);
   assert.strictEqual(b.name, 'ほぼ安全');
   assert.strictEqual(b.colorName, '青');
-  assert.strictEqual(b.bg, '#3181BD');
+  assert.strictEqual(b.bg, '#218CFF');
   assert.strictEqual(core.wbgtLevelIndex(20), 0);
 });
 
@@ -32,7 +32,7 @@ test('WBGT 23 → 注意・水色', function () {
   var b = core.wbgtBand(23);
   assert.strictEqual(b.name, '注意');
   assert.strictEqual(b.colorName, '水色');
-  assert.strictEqual(b.bg, '#67C1EA');
+  assert.strictEqual(b.bg, '#A0D2FF');
   assert.strictEqual(core.wbgtLevelIndex(23), 1);
 });
 
@@ -40,7 +40,7 @@ test('WBGT 26 → 警戒・黄', function () {
   var b = core.wbgtBand(26);
   assert.strictEqual(b.name, '警戒');
   assert.strictEqual(b.colorName, '黄');
-  assert.strictEqual(b.bg, '#FFEE00');
+  assert.strictEqual(b.bg, '#FAF500');
   assert.strictEqual(core.wbgtLevelIndex(26), 2);
 });
 
@@ -48,7 +48,7 @@ test('WBGT 29 → 厳重警戒・橙', function () {
   var b = core.wbgtBand(29);
   assert.strictEqual(b.name, '厳重警戒');
   assert.strictEqual(b.colorName, '橙');
-  assert.strictEqual(b.bg, '#F39800');
+  assert.strictEqual(b.bg, '#FF9600');
   assert.strictEqual(core.wbgtLevelIndex(29), 3);
 });
 
@@ -56,7 +56,7 @@ test('WBGT 32 → 危険・赤', function () {
   var b = core.wbgtBand(32);
   assert.strictEqual(b.name, '危険');
   assert.strictEqual(b.colorName, '赤');
-  assert.strictEqual(b.bg, '#ED1A3D');
+  assert.strictEqual(b.bg, '#FF2800');
   assert.strictEqual(core.wbgtLevelIndex(32), 4);
 });
 
@@ -128,7 +128,7 @@ test('WBGT取得失敗 → モード維持（気温へ落とさない）', funct
 test('WBGT期間中は気温で背景判定しない', function () {
   var bg = core.resolveBackground({ seasonMode: core.WBGT_MODE, wbgt: 23, temperature: 3 });
   assert.strictEqual(bg.source, 'wbgt');
-  assert.strictEqual(bg.colors.bgColor, '#67C1EA');
+  assert.strictEqual(bg.colors.bgColor, '#A0D2FF');
 });
 
 test('WBGT期間外はWBGT値で背景判定しない', function () {
@@ -190,13 +190,13 @@ test('年間気温: 15℃以上は既存WBGT色で、判定名は付けない', 
   function bg(temp) { return core.getTemperatureDisplayColor(temp, 'AUTUMN').bg; }
   assert.strictEqual(bg(20.9), core.wbgtBand(20.9).bg);
   assert.strictEqual(bg(21.0), core.wbgtBand(21.0).bg);
-  assert.strictEqual(bg(32), '#ED1A3D');
-  assert.strictEqual(bg(29), '#F39800');
-  assert.strictEqual(bg(26), '#FFEE00');
-  assert.strictEqual(bg(23), '#67C1EA');
-  assert.strictEqual(bg(18), '#3181BD');
+  assert.strictEqual(bg(32), '#FF2800');
+  assert.strictEqual(bg(29), '#FF9600');
+  assert.strictEqual(bg(26), '#FAF500');
+  assert.strictEqual(bg(23), '#A0D2FF');
+  assert.strictEqual(bg(18), '#218CFF');
   assert.strictEqual(core.getTemperatureDisplayColor(29, 'AUTUMN').judgment, false);
-  assert.strictEqual(core.wbgtBand(32).bg, '#ED1A3D');
+  assert.strictEqual(core.wbgtBand(32).bg, '#FF2800');
 });
 
 test('年間気温: 10〜15℃未満は季節色', function () {

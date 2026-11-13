@@ -1081,12 +1081,12 @@
         html.solid-observation #scene2 .col-bg-body { background-color: var(--solid-observation-body) !important; }
         html.solid-forecast #scene5 .col-bg-top { background-color: var(--solid-forecast-top) !important; }
         html.solid-forecast #scene5 .col-bg-body { background-color: var(--solid-forecast-body) !important; }
-        html.solid-clock #scene3 .t3-pair { background-color: var(--signage-bg, #3181BD); }
+        html.solid-clock #scene3 .t3-pair { background-color: var(--signage-bg, #218CFF); }
         html.solid-clock #scene4 .fc-panel:not(.fc-logo-panel) .fc-top-bar {
-            background-color: var(--signage-bar, #4A96CC) !important;
+            background-color: var(--signage-bar, #5FACFF) !important;
         }
         html.solid-clock #scene4 .fc-panel:not(.fc-logo-panel) .fc-body {
-            background-color: var(--signage-bg, #3181BD) !important;
+            background-color: var(--signage-bg, #218CFF) !important;
         }
         html.solid-greeting #sceneGreeting.greeting-promo .promo-top { background: var(--solid-greeting-top) !important; }
         html.solid-greeting #sceneGreeting.greeting-promo .promo-body {
@@ -2033,7 +2033,7 @@
             line-height: 1; color: #111111; white-space: nowrap;
             padding-left: 16px; padding-right: 16px;
         }
-        #sceneGreeting.greeting-promo { background: var(--signage-bg, #3181BD); }
+        #sceneGreeting.greeting-promo { background: var(--signage-bg, #218CFF); }
         #sceneGreeting.greeting-promo .promo-shell { width: 512px; height: 128px; }
         #sceneGreeting.greeting-promo .promo-top,
         #sceneGreeting.greeting-promo .promo-body,
@@ -2073,11 +2073,11 @@
         #sceneGreeting.promo-em-on-danger .promo-em { color: #fff9f0; }
         #sceneGreeting .promo-i18n {
             width: 512px; height: 128px; display: flex; flex-direction: column;
-            background: var(--signage-bg, #3181BD);
+            background: var(--signage-bg, #218CFF);
         }
         #sceneGreeting .promo-i18n-row {
             height: 42px; flex: 1 1 42px; display: flex; align-items: center; overflow: hidden;
-            background: var(--signage-bg, #3181BD);
+            background: var(--signage-bg, #218CFF);
         }
         #sceneGreeting .promo-i18n-row + .promo-i18n-row { box-shadow: inset 0 1px 0 rgba(0,0,0,0.18); }
         #sceneGreeting .promo-i18n-tag {
@@ -3478,11 +3478,11 @@
     const LED_FOOT_BAR_BG = '#fff9f0';
 
     const LEVELS = [
-        { min: 31, levelIdx: 4, bgColor: '#ED1A3D', barColor: '#F24A64' },  /* 危険 赤 */
-        { min: 28, levelIdx: 3, bgColor: '#F39800', barColor: '#FFB133' },  /* 厳重警戒 橙 */
-        { min: 25, levelIdx: 2, bgColor: '#FFEE00', barColor: '#FFF44D' },  /* 警戒 黄 */
-        { min: 21, levelIdx: 1, bgColor: '#67C1EA', barColor: '#85D0F0' },  /* 注意 水色 */
-        { min: -99, levelIdx: 0, bgColor: '#3181BD', barColor: '#4A96CC' } /* ほぼ安全 青 */
+        { min: 31, levelIdx: 4, bgColor: '#FF2800', barColor: '#FF6447' },  /* 危険 赤 */
+        { min: 28, levelIdx: 3, bgColor: '#FF9600', barColor: '#FFB347' },  /* 厳重警戒 橙 */
+        { min: 25, levelIdx: 2, bgColor: '#FAF500', barColor: '#E6D200' },  /* 警戒 黄。上バーは金（白混ぜだと中段と同じ） */
+        { min: 21, levelIdx: 1, bgColor: '#A0D2FF', barColor: '#BBDFFF' },  /* 注意 水色 */
+        { min: -99, levelIdx: 0, bgColor: '#218CFF', barColor: '#5FACFF' } /* ほぼ安全 青 */
     ];
 
     const KIND = { STRIP: 'strip', WBGT: 'wbgt', FORECAST: 'forecast' };

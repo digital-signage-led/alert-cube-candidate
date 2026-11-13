@@ -34,11 +34,11 @@ test('既存コア: 気温9段階は維持', function () {
 });
 
 test('既存コア: WBGT本番色は維持（プロンプト色へ置換しない）', function () {
-  assert.strictEqual(core.wbgtBand(20).bg, '#3181BD');
-  assert.strictEqual(core.wbgtBand(23).bg, '#67C1EA');
-  assert.strictEqual(core.wbgtBand(26).bg, '#FFEE00');
-  assert.strictEqual(core.wbgtBand(29).bg, '#F39800');
-  assert.strictEqual(core.wbgtBand(32).bg, '#ED1A3D');
+  assert.strictEqual(core.wbgtBand(20).bg, '#218CFF');
+  assert.strictEqual(core.wbgtBand(23).bg, '#A0D2FF');
+  assert.strictEqual(core.wbgtBand(26).bg, '#FAF500');
+  assert.strictEqual(core.wbgtBand(29).bg, '#FF9600');
+  assert.strictEqual(core.wbgtBand(32).bg, '#FF2800');
 });
 
 test('天気コード: 気象庁公式アイコンへ解決', function () {
