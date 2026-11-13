@@ -629,6 +629,16 @@
         #scene4 .fc-panel:not(.fc-logo-panel) .col-bg-layer {
             display: none !important;
         }
+        /* 見本の暑さ指数は段階を横に並べ、流れのまま次の色へ入る */
+        html.wbgt-demo-cycle #scene4 .fc-panel:not(.fc-logo-panel) .col-bg-layer {
+            display: flex !important;
+            height: var(--led-col-main-h);
+        }
+        html.wbgt-demo-cycle #scene4 .fc-panel:not(.fc-logo-panel) .col-bg-foot { display: none; }
+        html.wbgt-demo-cycle #scene4 .fc-panel:not(.col-bg-dark-text):not(.fc-logo-panel) .fc-bar-label,
+        html.wbgt-demo-cycle #scene4 .fc-panel:not(.col-bg-dark-text):not(.fc-logo-panel) .fc-body .fc-wbgt { color: #ebebeb; }
+        html.wbgt-demo-cycle #scene4 .fc-panel.col-bg-dark-text .fc-bar-label,
+        html.wbgt-demo-cycle #scene4 .fc-panel.col-bg-dark-text .fc-body .fc-wbgt { color: #000; }
         /* 気象観測の横スクロールは4面を超える。各面の上帯を面といっしょに置く。 */
         #scene2.scene2-scroll-mode .s2-panel:not(.s2-logo-panel) .col-bg-layer,
         #scene2.scene2-scroll-mode .s2-panel-data:not(.s2-logo-panel) .col-bg-layer {
@@ -3717,7 +3727,23 @@
         refreshLogoPanel(levelIdx, displayMode);
     }
 
+    function wbgtDemoCycleCfg_() {
+        const pres = (global.SignageConfig && global.SignageConfig.presentation) || {};
+        return pres.wbgtDemoCycle === true;
+    }
+    function applyCycleStrip_(panel) {
+        const rawSlot = Number(panel.getAttribute('data-fc-slot'));
+        const lv = Number.isInteger(rawSlot) ? Math.max(0, Math.min(4, rawSlot)) : 0;
+        ensureBgLayer(panel, KIND.STRIP);
+        applyColorsToLayer(panel.querySelector('.col-bg-layer'), colorsForLevel(lv), KIND.STRIP);
+        panel.classList.toggle('col-bg-dark-text', isDarkTextLevel(lv));
+        panel.classList.remove('wbgt-off-season', 'wbgt-unavailable');
+    }
     function repaintWbgtStrips_(levelIdx, displayMode) {
+        if (wbgtDemoCycleCfg_()) {
+            document.querySelectorAll('#scene4 .fc-panel:not(.fc-logo-panel)').forEach(applyCycleStrip_);
+            return;
+        }
         const colors = colorsForDisplay(levelIdx, displayMode);
         const dark = isDarkTextForDisplay(levelIdx, displayMode);
         document.querySelectorAll('#scene4 .col-bg-layer').forEach(function (layer) {
@@ -3736,6 +3762,7 @@
                 applyColorsToT3UnitLayer(layer, colors);
                 return;
             }
+            if (wbgtDemoCycleCfg_() && layerInScene_(layer, 'scene4')) return;
             applyColorsToLayer(layer, colors, KIND.STRIP);
         });
         applyT3TopBar(document.querySelector('#scene3 .t3-scene-top-bar'), levelIdx, displayMode);
@@ -3772,6 +3799,10 @@
                 panel.querySelectorAll('.col-bg-layer').forEach(function (el) { el.remove(); });
                 panel.classList.remove('col-bg-host', 'col-bg-dark-text', 'wbgt-off-season', 'wbgt-unavailable');
                 panel.style.backgroundColor = '#ffffff';
+                return;
+            }
+            if (wbgtDemoCycleCfg_()) {
+                applyCycleStrip_(panel);
                 return;
             }
             applyStrip(panel, levelIdx, mode);
@@ -4041,6 +4072,7 @@
         document.documentElement.classList.toggle('site-dm-0012', String(c.projectId || '') === 'DM-0012');
         document.documentElement.classList.toggle('site-dm-0013', String(c.projectId || '') === 'DM-0013');
         document.documentElement.classList.toggle('site-dm-0014', String(c.projectId || '') === 'DM-0014');
+        document.documentElement.classList.toggle('wbgt-demo-cycle', !!((c.presentation || {}).wbgtDemoCycle));
         applyFaceLayout_();
         if (typeof compactScene4Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s4))) compactScene4Panels();
         if (typeof compactScene5Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s5))) compactScene5Panels();
@@ -9322,6 +9354,7 @@
         return false;
     }
     function updateForecastSlots(slots) {
+        if (wbgtDemoCycle_() && document.querySelector('#scene4 .fc-panel[data-fc-slot="1"]')) return;
         if (temperatureDisplay_() && !wbgtDemoCycle_()) {
             refreshSignageBgIfChanged_();
             return;
@@ -9373,6 +9406,25 @@
     }
     function hasContentLogo_() {
         return !!contentEndLogoSrc_();
+    }
+    /** 見本は段階を先に横へ並べる。切替のたびに止めて塗り直さない */
+    function paintWbgtCycleSets_() {
+        if (!fcConveyor || !wbgtDemoCycle_()) return;
+        const per = SCENE4_DATA_COUNT;
+        const panels = fcConveyor.querySelectorAll('.fc-panel:not(.fc-logo-panel)');
+        panels.forEach(function (panel, i) {
+            const level = Math.min(DEMO_LEVEL_ORDER.length - 1, Math.floor(i / per));
+            const w = DEMO_WBGT_BY_LEVEL[level];
+            panel.setAttribute('data-fc-slot', String(level));
+            panel.querySelectorAll('.fc-val-live').forEach(function (el) {
+                el.innerHTML = formatFcWbgtHtml(w);
+            });
+        });
+        if (window.SignageBg && typeof SignageBg.refreshForecast === 'function') {
+            SignageBg.refreshForecast(DEMO_LEVEL_ORDER.map(function (lv) {
+                return { wbgt: DEMO_WBGT_BY_LEVEL[lv], levelIdx: lv, hour: '現在' };
+            }), 'wbgt-demo');
+        }
     }
     function compactScene4Panels() {
         if (!fcConveyor) return;
@@ -12881,9 +12933,7 @@
             }
             if (lapsNow > t3Flow_.laps) {
                 t3Flow_.laps = lapsNow;
-                if (t3Flow_.laps >= presentationLaps_('i18nLaps', T3_LAPS_BEFORE_SWITCH)) {
-                    t3Flow_.laps = 0;
-                    moved = 0;
+                if (lapsNow >= presentationLaps_('i18nLaps', T3_LAPS_BEFORE_SWITCH) && lapsNow % presentationLaps_('i18nLaps', T3_LAPS_BEFORE_SWITCH) === 0) {
                     t3Flow_.langIdx += 1;
                     if (t3Flow_.langIdx >= t3Messages_.length) {
                         if (demoOnlyLoop_('s3', playScene3)) return;
@@ -12893,15 +12943,7 @@
                         showT3EndLogoThen_(gotoAfterScene3_);
                         return;
                     }
-                    tickerAnimId = null;
-                    holdThenNextContent_(function () {
-                        t3Flow_.x = 0;
-                        setT3Lang_(t3Flow_.langIdx);
-                        applyT3TrackX_(tracks, 0);
-                    }, function () {
-                        tickerAnimId = requestAnimationFrame(step);
-                    });
-                    return;
+                    setT3Lang_(t3Flow_.langIdx);
                 }
             }
             tickerAnimId = requestAnimationFrame(step);
@@ -13221,6 +13263,7 @@
             syncWbgtSlotsToDomIfReady_();
         }
         compactScene4Panels();
+        if (sample) paintWbgtCycleSets_();
         buildFcLvTrack(false);
         applyPendingSignageBgAtScene_();
         if (sample) applyWbgtCycleChrome_(0);
@@ -13247,23 +13290,24 @@
                 if (lap !== wbgtCycleLap_) {
                     wbgtCycleLap_ = lap;
                     wbgtCyclePainted_ = lap;
-                    updateForecastSlots(mockSlotsForDemoLevel(lap));
-                    applyWbgtCycleChrome_(lap);
-                    fitFcBarLabelFontSize_();
-                    fitFcWbgtFontSize();
                 }
             }
             if (totalScrolled >= totalPx) {
                 scene4AnimId = null;
                 stopLogoSpinInterval();
-                runAfterSceneEndHold_(finishScene4);
+                if (sample) finishScene4();
+                else runAfterSceneEndHold_(finishScene4);
                 return;
             }
             scene4AnimId = requestAnimationFrame(animateScene4_);
         }
-        runSceneScrollAfterHold_(function () {
+        if (sample) {
             scene4AnimId = requestAnimationFrame(animateScene4_);
-        });
+        } else {
+            runSceneScrollAfterHold_(function () {
+                scene4AnimId = requestAnimationFrame(animateScene4_);
+            });
+        }
     }
     function playScene5() {
         if (window.AlertCubeContent && !window.AlertCubeContent.isOn('forecast')) {
