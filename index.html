@@ -67,7 +67,8 @@
         }
     }
     var localDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-    var wide = String(q.get('site') || '').toUpperCase() === 'AC-0014' || q.get('layout') === '640';
+    var siteId = String(q.get('site') || '').toUpperCase();
+    var wide = siteId === 'AC-0014' || siteId === 'AC-0021' || siteId === 'AC-0026' || siteId === 'AC-0027' || siteId === 'AC-0028' || siteId === 'AC-0030' || siteId === 'DM-0014' || q.get('layout') === '640';
     if (wide) q.delete('layout512');
     else if (!q.has('layout512')) q.set('layout512', '1');
     var forceNative = localDev
@@ -4227,7 +4228,7 @@
         if (loadedId && (!qSite || loadedId === qSite)) {
             return c.profile === 'AC-640' || c.layout === 'AC-640' || Number(c.faces) >= 5;
         }
-        return qSite === 'AC-0014' || qSite === 'AC-0021' || query.get('layout') === '640';
+        return qSite === 'AC-0014' || qSite === 'AC-0021' || qSite === 'AC-0026' || qSite === 'AC-0027' || qSite === 'AC-0028' || qSite === 'AC-0030' || qSite === 'DM-0014' || query.get('layout') === '640';
     }
     function applyFaceLayout_() {
         const wide = faceLayoutWide_();
