@@ -298,13 +298,16 @@
             flex-direction: column;
             will-change: transform;
         }
-        /* 帯ごと回す。頭（上）が左で境目側、底は右。rotate(90deg) に戻さない */
+        /* 帯の移動は -90 のまま。512の中身は頭が左、底が右。384の中身だけ 180 */
         html.site-dm-0014 .dm14-card-rotor {
             position: absolute;
             left: 0;
             top: 0;
             transform-origin: 0 0;
             will-change: transform;
+        }
+        html.site-dm-0014 #dm14-card > .dm14-card-track > .dm14-card-cell {
+            transform: rotate(180deg);
         }
         html.site-dm-0014 .dm14-card-track-x {
             display: flex;
@@ -345,6 +348,23 @@
         }
         html.site-dm-0014 .dm14-card .weather-icon-cell.is-ready img.weather-icon-img {
             visibility: visible !important;
+        }
+        html.site-dm-0014 .dm14-card .dm14-num-card {
+            display: inline-flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 1px;
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 6px 8px 7px;
+            box-sizing: border-box;
+            max-width: 104px;
+        }
+        html.site-dm-0014 .dm14-card .dm14-num-card .s2-num {
+            font-size: 28px;
+        }
+        html.site-dm-0014 .dm14-card .dm14-num-card .s2-unit {
+            font-size: 13px;
         }
         html.site-dm-0014 .dm14-card-char {
             width: 104px;
@@ -8485,7 +8505,7 @@
         }
         startDm14CornerScroll_();
     }
-    /** 向きは変えない。512のカード右辺を過ぎた内容が、384のカード上辺から下へ続く。壁紙は固定。 */
+    /** 384は下から上。中身だけ 180。512は左から右。頭が左、底が右。 */
     function startDm14Card_() {
         const track = document.getElementById('dm14-card-track');
         const trackX = document.getElementById('dm14-card-track-x');
@@ -8495,18 +8515,15 @@
         const cell = function (inner) {
             return '<div class="dm14-card-cell">' + inner + '</div>';
         };
-        const brand = window.SIGNAGE_CONFIG || {};
-        const charSrc = String(brand.logoSrc || '').trim() || './assets/demo/DM-0014/logo_512.jpg?v=1';
-        const logo = cell('<img class="dm14-card-char" src="' + charSrc + '" alt="">');
         const noise = cell(
             '<div class="s2-panel-data s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">騒音</span></div>' +
-            '<div class="s2-body"><div class="s2-val"><span class="s2-num dm14-noise">--</span><span class="s2-unit">dB</span></div></div></div>'
+            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-noise">--</span><span class="s2-unit">dB</span></div></div></div>'
         );
         const vib = cell(
             '<div class="s2-panel-data s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">振動</span></div>' +
-            '<div class="s2-body"><div class="s2-val"><span class="s2-num dm14-vib">--</span><span class="s2-unit">dB</span></div></div></div>'
+            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-vib">--</span><span class="s2-unit">dB</span></div></div></div>'
         );
-        const cells = [logo, cell(scene2PanelHtml_('weather')), noise, vib];
+        const cells = [cell(scene2PanelHtml_('weather')), noise, vib];
         const set = cells.join('');
         track.innerHTML = set + set + set;
         trackX.innerHTML = set + set + set;
@@ -8546,19 +8563,19 @@
         function place() {
             const s = Math.round(seam * 100) / 100;
             track.style.transform = 'translate3d(0,' + (-(s + 128)) + 'px,0)';
-            rotor.style.transform = 'translate3d(' + (-s) + 'px,128px,0) rotate(-90deg)';
+            rotor.style.transform = 'translate3d(' + (s - setH * 3) + 'px,128px,0) rotate(-90deg)';
         }
         function frame() {
             sync();
-            seam -= getScrollSpeedPx_();
-            if (seam < setH) seam += setH;
+            seam += getScrollSpeedPx_();
+            if (seam >= setH * 2) seam -= setH;
             place();
             requestAnimationFrame(frame);
         }
         place();
         requestAnimationFrame(frame);
     }
-    /** 壁紙は縦。512が上、384が下（足）。背景は動かさない。 */
+    /** 壁紙は縦。背景の下は512の128。下を右の辺に付け、頭は左。384の上側は正立。背景は動かさない。 */
     function startDm14CornerScroll_() {
         if (startDm14CornerScroll_.on) return;
         const canvas4 = document.getElementById('dm14-face4-canvas');
@@ -8608,8 +8625,18 @@
                 ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(sheet, 0, srcY, sw, srcH, 0, 0, sw, sw);
             }
-            paintFace(canvas5, 0);
-            paintFace(canvas4, srcH);
+            /* 512: 背景の下。下の辺が面の右辺、頭は左。流れの位置は変えない */
+            function paintFaceBottomOnRight(canvas, srcY) {
+                canvas.width = sw;
+                canvas.height = sw;
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.setTransform(0, -1, 1, 0, 0, sw);
+                ctx.drawImage(sheet, 0, srcY, sw, srcH, 0, 0, sw, sw);
+            }
+            paintFace(canvas4, 0);
+            paintFaceBottomOnRight(canvas5, srcH);
         };
         img.src = './assets/demo/DM-0014/wall.jpg?v=1';
     }
