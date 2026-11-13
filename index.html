@@ -299,7 +299,7 @@
             flex-direction: column;
             will-change: transform;
         }
-        /* 帯の移動は -90 のまま。512の中身は頭が左、底が右。流れは左から右。384の中身だけ 180 */
+        /* 帯の移動は -90 のまま。512の中身は 180 で頭が右、底が左。流れは右から左。384の中身も 180 */
         html.site-dm-0014 .dm14-card-rotor {
             position: absolute;
             left: 0;
@@ -307,7 +307,8 @@
             transform-origin: 0 0;
             will-change: transform;
         }
-        html.site-dm-0014 #dm14-card > .dm14-card-track > .dm14-card-cell {
+        html.site-dm-0014 #dm14-card > .dm14-card-track > .dm14-card-cell,
+        html.site-dm-0014 #dm14-card-track-x > .dm14-card-cell {
             transform: rotate(180deg);
         }
         html.site-dm-0014 .dm14-card-track-x {
@@ -8510,7 +8511,7 @@
         }
         startDm14CornerScroll_();
     }
-    /** 384は下から上。中身だけ 180。512は左から右。384の上を出た項目が左から入る。 */
+    /** 384は下から上。512は右から左。中身はどちらも 180。384の上を出た項目が右から入る。 */
     function startDm14Card_() {
         const track = document.getElementById('dm14-card-track');
         const trackX = document.getElementById('dm14-card-track-x');
@@ -8531,7 +8532,7 @@
         const cells = [cell(scene2PanelHtml_('weather')), noise, vib];
         const seq = cells.concat(cells, cells);
         track.innerHTML = seq.join('');
-        trackX.innerHTML = seq.slice().reverse().join('');
+        trackX.innerHTML = seq.join('');
         const cellH = 128;
         const setH = (track.children.length / 3) * cellH;
         const cards = [track, trackX];
@@ -8568,7 +8569,7 @@
         function place() {
             const s = Math.round(seam * 100) / 100;
             track.style.transform = 'translate3d(0,' + (-(s + 128)) + 'px,0)';
-            rotor.style.transform = 'translate3d(' + (s - setH * 3 + cellH) + 'px,128px,0) rotate(-90deg)';
+            rotor.style.transform = 'translate3d(' + (-s) + 'px,128px,0) rotate(-90deg)';
         }
         function frame() {
             sync();
