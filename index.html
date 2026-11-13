@@ -365,10 +365,12 @@
         html.site-dm-0014 .dm14-card .dm14-num-card .s2-num {
             font-size: 28px;
             -webkit-text-stroke: 0;
+            text-shadow: none;
         }
         html.site-dm-0014 .dm14-card .dm14-num-card .s2-unit {
             font-size: 13px;
             -webkit-text-stroke: 0;
+            text-shadow: none;
         }
         html.site-dm-0014 .dm14-card-char {
             width: 104px;
@@ -377,12 +379,22 @@
             display: block;
             border-radius: 8px;
         }
+        /* 白縁は影。線にするとサイネージが縁を文字の上に塗る */
         html.site-dm-0014 .dm14-card .s2-bar-label,
         html.site-dm-0014 .dm14-card .s2-num,
-        html.site-dm-0014 .dm14-card .s2-unit {
+        html.site-dm-0014 .dm14-card .s2-dir-text,
+        html.site-dm-0014 .dm14-card .s2-unit,
+        html.site-dm-0014 .dm14-card .clock-hm,
+        html.site-dm-0014 .dm14-card .s2-tmax-sep,
+        html.site-dm-0014 .dm14-card .s2-tmax-unit {
             color: #1a1a1a;
-            -webkit-text-stroke: 3px #ffffff;
-            paint-order: stroke fill;
+            -webkit-text-stroke: 0;
+            paint-order: normal;
+            text-shadow:
+                -3px 0 0 #fff, 3px 0 0 #fff, 0 -3px 0 #fff, 0 3px 0 #fff,
+                -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff, 3px 3px 0 #fff,
+                -2px -3px 0 #fff, 2px -3px 0 #fff, -2px 3px 0 #fff, 2px 3px 0 #fff,
+                -3px -2px 0 #fff, 3px -2px 0 #fff, -3px 2px 0 #fff, 3px 2px 0 #fff;
         }
         html.site-dm-0014 #scene2 .s2-logo-panel,
         html.site-dm-0014 #scene4 .fc-logo-panel,
