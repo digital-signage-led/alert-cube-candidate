@@ -8661,16 +8661,13 @@
         const cell = function (inner) {
             return '<div class="dm14-card-cell">' + inner + '</div>';
         };
-        const held = function (inner) {
-            return '<div class="dm14-card-cell" style="visibility:hidden">' + inner + '</div>';
-        };
-        const noise = held(
+        const noise = cell(
             '<div class="s2-panel-data s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">騒音</span></div>' +
-            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-noise"></span><span class="s2-unit">dB</span></div></div></div>'
+            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-noise">----</span><span class="s2-unit">dB</span></div></div></div>'
         );
-        const vib = held(
+        const vib = cell(
             '<div class="s2-panel-data s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">振動</span></div>' +
-            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-vib"></span><span class="s2-unit">dB</span></div></div></div>'
+            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-vib">----</span><span class="s2-unit">dB</span></div></div></div>'
         );
         const cells = [cell(scene2PanelHtml_('weather')), noise, vib];
         const seq = cells.concat(cells, cells);
@@ -8698,20 +8695,14 @@
                 });
             }
             const ssc = (typeof lastSscValues_ !== 'undefined' && lastSscValues_) || null;
-            const nOn = !!(ssc && ssc.noise != null);
-            const vOn = !!(ssc && ssc.vibration != null);
-            const nText = nOn ? String(ssc.noise) : '';
-            const vText = vOn ? String(ssc.vibration) : '';
+            const nText = ssc && ssc.noise != null ? String(ssc.noise) : '----';
+            const vText = ssc && ssc.vibration != null ? String(ssc.vibration) : '----';
             cards.forEach(function (root) {
                 root.querySelectorAll('.dm14-noise').forEach(function (el) {
                     if (el.textContent !== nText) el.textContent = nText;
-                    const slot = el.closest('.dm14-card-cell');
-                    if (slot) slot.style.visibility = nOn ? 'visible' : 'hidden';
                 });
                 root.querySelectorAll('.dm14-vib').forEach(function (el) {
                     if (el.textContent !== vText) el.textContent = vText;
-                    const slot = el.closest('.dm14-card-cell');
-                    if (slot) slot.style.visibility = vOn ? 'visible' : 'hidden';
                 });
             });
         }
