@@ -1520,8 +1520,11 @@
             line-height: 1.05;
             letter-spacing: 0.2px;
         }
-        html.site-dm-0013 #sceneSsc .ssc-panel .ssc-num { color: #000; font-size: 44px; }
-        html.site-dm-0013 #sceneSsc .ssc-panel .ssc-unit { color: #000; font-size: 20px; }
+        /* 42.9 dB は 44px だと128px面の端に乗る */
+        html.site-dm-0013 #sceneSsc .ssc-panel .ssc-num { color: #000; font-size: 32px; }
+        html.site-dm-0013 #sceneSsc .ssc-panel .ssc-unit { color: #000; font-size: 14px; }
+        #sceneSsc .s2-body { padding: 0 10px; }
+        #sceneSsc .s2-val { max-width: 104px; }
         #sceneSsc .ssc-unit { color: #ebebeb; }
         #sceneSsc .ssc-num.ssc-pending {
             font-size: 22px; font-weight: 800; font-variant-numeric: normal;
@@ -14953,7 +14956,34 @@
         document.querySelectorAll('.ssc-noise-val').forEach(function (el) { el.textContent = nText; });
         document.querySelectorAll('.ssc-vib-val').forEach(function (el) { el.textContent = vText; });
         syncSscPendingDom_();
+        fitSscNumbers_();
         if (sceneDomOpen_(sceneSsc)) buildSscMetaTrack_();
+    }
+    /** 騒音・振動の数値と dB を、128px面の内側に収める */
+    function fitSscNumbers_() {
+        document.querySelectorAll('#sceneSsc .s2-val').forEach(function (wrap) {
+            const num = wrap.querySelector('.ssc-num');
+            const unit = wrap.querySelector('.ssc-unit');
+            if (!num || num.classList.contains('ssc-pending')) return;
+            const prevMax = wrap.style.maxWidth;
+            const prevOv = wrap.style.overflow;
+            wrap.style.maxWidth = 'none';
+            wrap.style.overflow = 'visible';
+            fitNumUnitInBox_(wrap, num, unit, {
+                maxW: 100,
+                maxH: 52,
+                minSz: 22,
+                maxSz: 32,
+                unitMin: 12,
+                unitRatio: 0.42
+            });
+            wrap.style.maxWidth = prevMax;
+            wrap.style.overflow = prevOv;
+        });
+        if (document.fonts && document.fonts.ready && !fitSscNumbers_.armed) {
+            fitSscNumbers_.armed = true;
+            document.fonts.ready.then(function () { fitSscNumbers_(); });
+        }
     }
     function denshoSscUrl_() {
         const d = siteCfg_().densho || {};
