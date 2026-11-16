@@ -2763,14 +2763,17 @@ test('未確定案件: ニッケン白浜町は DM-0011', function () {
   assert.strictEqual(meiban5.logoScroll.caption.lines.map(function (line) {
     return line.map(function (part) { return part.text; }).join('');
   }).join(''), 'ご迷惑をおかけしてまことに申し訳ありません安全第一で作業中ですご協力をお願いします');
-  assert.strictEqual(meiban.logoScroll.caption.place, 'between');
-  assert.strictEqual(meiban5.logoScroll.caption.place, 'between');
+  assert.strictEqual(meiban.logoScroll.caption.place, 'split');
+  assert.strictEqual(meiban5.logoScroll.caption.place, 'split');
+  assert.deepStrictEqual(meiban.logoScroll.caption.widths, [784, 752]);
+  assert.deepStrictEqual(meiban5.logoScroll.caption.widths, [868, 832]);
   var logoApi = require('../contents/logo-scroll/index.js');
-  var betweenHtml = logoApi.buildTrackHtml(meiban.logoScroll).html;
-  var birdAt = betweenHtml.indexOf('meibird.svg');
-  var capAt = betweenHtml.indexOf('logo-caption');
-  var doryAt = betweenHtml.indexOf('meidory.svg');
-  assert.ok(birdAt >= 0 && capAt > birdAt && doryAt > capAt);
+  var splitHtml = logoApi.buildTrackHtml(meiban.logoScroll).html;
+  var birdAt = splitHtml.indexOf('meibird.svg');
+  var line1 = splitHtml.indexOf('ご迷惑をおかけして');
+  var doryAt = splitHtml.indexOf('meidory.svg');
+  var line2 = splitHtml.indexOf('安全第一');
+  assert.ok(birdAt >= 0 && line1 > birdAt && doryAt > line1 && line2 > doryAt);
   assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0011' && row.siteName === '白浜町'; }));
   assert.strictEqual(site.projectId, 'DM-0011');
   assert.strictEqual(site.status, 'demo');

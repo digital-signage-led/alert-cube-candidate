@@ -106,8 +106,9 @@
       }
     ],
     "caption": {
-      "place": "between",
-      "width": 480,
+      "place": "split",
+      "width": 868,
+      "widths": [868, 832],
       "lines": [
         [
           { "text": "ご迷惑をおかけしてまことに申し訳ありません", "color": "#111111" }

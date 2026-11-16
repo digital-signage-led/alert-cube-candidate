@@ -62,20 +62,42 @@
       '</div>';
   }
 
-  function captionHtml(cfg, bg) {
+  function captionLines(cfg) {
     var cap = cfg && cfg.caption;
     var lines = cap && Array.isArray(cap.lines) ? cap.lines : [];
-    if (!lines.length) return { html: '', width: 0 };
-    var w = Number(cap.width);
+    return lines.filter(function (line) {
+      return Array.isArray(line) && line.some(function (part) {
+        return part && part.text != null && part.text !== '';
+      });
+    });
+  }
+
+  function captionWidthAt(cap, index) {
+    var listed = cap && Array.isArray(cap.widths) ? Number(cap.widths[index]) : NaN;
+    var w = Number.isFinite(listed) && listed > 0 ? listed : Number(cap && cap.width);
     if (!Number.isFinite(w) || w <= 0) w = 400;
+    return w;
+  }
+
+  function lineBody(line) {
+    var parts = Array.isArray(line) ? line : [];
+    return parts.map(function (part) {
+      if (!part || part.text == null || part.text === '') return '';
+      var color = safeColor(part.color);
+      return '<span' + (color ? ' style="color:' + color + '"' : '') + '>' + escapeHtml(part.text) + '</span>';
+    }).join('');
+  }
+
+  function captionPanel(body, w, bg) {
+    return '<div class="logo-face-panel logo-caption" style="' + panelBox(w, bg) + '"><p><span class="logo-cap-line">' + body + '</span></p></div>';
+  }
+
+  function captionHtml(cfg, bg) {
+    var lines = captionLines(cfg);
+    if (!lines.length) return { html: '', width: 0 };
+    var w = captionWidthAt(cfg && cfg.caption, 0);
     var body = lines.map(function (line) {
-      var parts = Array.isArray(line) ? line : [];
-      var spans = parts.map(function (part) {
-        if (!part || part.text == null || part.text === '') return '';
-        var color = safeColor(part.color);
-        return '<span' + (color ? ' style="color:' + color + '"' : '') + '>' + escapeHtml(part.text) + '</span>';
-      }).join('');
-      return '<span class="logo-cap-line">' + spans + '</span>';
+      return '<span class="logo-cap-line">' + lineBody(line) + '</span>';
     }).join('');
     return {
       html: '<div class="logo-face-panel logo-caption" style="' + panelBox(w, bg) + '"><p>' + body + '</p></div>',
@@ -90,9 +112,28 @@
     if (!images.length) return { html: '', setWidth: 0, panelCount: 0 };
     var parts = [];
     var setWidth = 0;
-    var caption = captionHtml(cfg, bg);
-    var between = !!(caption.html && cfg.caption && cfg.caption.place === 'between' && images.length >= 2);
-    images.forEach(function (img, i) {
+    var cap = cfg && cfg.caption;
+    var lines = captionLines(cfg);
+    var split = !!(lines.length && cap && cap.place === 'split' && images.length >= 2);
+    if (split) {
+      images.forEach(function (img, i) {
+        var w = img.panelWidth || fallbackW;
+        setWidth += w;
+        parts.push(faceHtml(img, w, bg));
+        if (!lines[i]) return;
+        var lw = captionWidthAt(cap, i);
+        setWidth += lw;
+        parts.push(captionPanel(lineBody(lines[i]), lw, bg));
+      });
+      for (var extra = images.length; extra < lines.length; extra++) {
+        var ew = captionWidthAt(cap, extra);
+        setWidth += ew;
+        parts.push(captionPanel(lineBody(lines[extra]), ew, bg));
+      }
+    }
+    var caption = split ? { html: '', width: 0 } : captionHtml(cfg, bg);
+    var between = !!(caption.html && cap && cap.place === 'between' && images.length >= 2);
+    if (!split) images.forEach(function (img, i) {
       if (between && i === 1) {
         parts.push(caption.html);
         setWidth += caption.width;
