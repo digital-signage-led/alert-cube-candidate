@@ -1473,6 +1473,15 @@
         html.site-dm-0014 #sceneSsc .ssc-bar-label,
         html.site-dm-0014 #sceneSsc .ssc-unit,
         html.site-dm-0014 #sceneSsc .ssc-num { color: #1a1a1a; }
+        /* 4面は気象観測と同じ黒。見出しの大きさも天気・気温に揃える */
+        html.site-dm-0013 #sceneSsc .ssc-panel .ssc-bar-label {
+            color: #000;
+            font-size: 20px;
+            line-height: 1.05;
+            letter-spacing: 0.2px;
+        }
+        html.site-dm-0013 #sceneSsc .ssc-panel .ssc-num { color: #000; font-size: 44px; }
+        html.site-dm-0013 #sceneSsc .ssc-panel .ssc-unit { color: #000; font-size: 20px; }
         #sceneSsc .ssc-unit { color: #ebebeb; }
         #sceneSsc .ssc-num.ssc-pending {
             font-size: 22px; font-weight: 800; font-variant-numeric: normal;
@@ -1513,6 +1522,22 @@
         #ssc-meta-track .ssc-meta-line .s2-meta-panel-txt.ssc-meta-source {
             width: auto; max-width: 496px; flex: 0 1 auto;
             text-align: center; text-overflow: clip;
+        }
+        #ssc-meta-track .ssc-meta-source:has(.foot-source-logo),
+        #scene4 .fc-lv-msg-full:has(.foot-source-logo) {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        /* 483×225 のうち上150pxが記録chセカンド。下の Powered by は出さない */
+        .foot-source-logo-clip {
+            display: block; height: 26px; width: 84px; overflow: hidden; flex: 0 0 auto;
+        }
+        .foot-source-logo {
+            width: 84px; height: 39px; max-width: none;
+            object-fit: fill; object-position: top center;
+            display: block; background: transparent;
         }
         #sceneNews {
             width: 512px; height: 128px; overflow: hidden; background: #0B4F9C;
@@ -4461,6 +4486,26 @@
         query.get('moeFallback') || (siteCfg_().moe && siteCfg_().moe.fallbackPoint) || '';
     function getFootSourceText_() {
         return siteCfg_().footSource || SCENE4_FOOT_ATTR;
+    }
+    /** 白帯は「気象庁・環境省」のあとに記録chセカンドのロゴを置く */
+    function footSourceWithLogoHtml_() {
+        const text = getFootSourceText_();
+        const logo = sscSourceLogo_();
+        if (!logo) return escapeS1Html(text);
+        const mark = '記録ｃｈセカンド';
+        const at = text.indexOf(mark);
+        let before = text;
+        let after = '';
+        if (at >= 0) {
+            before = text.slice(0, at).replace(/[・\s]+$/, '');
+            after = text.slice(at + mark.length).replace(/^[（(][^）)]*[）)]/, '').replace(/^[・\s]+/, '');
+        }
+        const img = '<span class="foot-source-logo-clip"><img class="foot-source-logo" src="' + escapeS1Html(logo) + '" alt="記録chセカンド"></span>';
+        return escapeS1Html(before) + img + (after ? escapeS1Html(after) : '');
+    }
+    function sscSourceLogo_() {
+        const d = (siteCfg_() && siteCfg_().densho) || {};
+        return String(d.sourceLogo || '').trim();
     }
     function moePointCodesToTry_() {
         const list = [String(MOE_WBGT_POINT)];
@@ -11747,7 +11792,7 @@
         return Number(((siteCfg_() && siteCfg_().presentation) || {}).scrollFaces) === 3;
     }
     function buildFcLvSetHtml(text) {
-        const msg = '<span class="fc-lv-msg-full">' + escapeS1Html(text) + '</span>';
+        const msg = '<span class="fc-lv-msg-full">' + footSourceWithLogoHtml_() + '</span>';
         const logo = hasContentLogo_() ? '<div class="fc-lv-slot fc-lv-slot-logo" aria-hidden="true"></div>' : '';
         if (face3Foot_()) {
             const src = '<div class="fc-lv-slot fc-lv-slot-src" style="width:384px;max-width:384px;flex:0 0 384px">' + msg + '</div>';
@@ -14906,7 +14951,7 @@
             : window.EdamSsc.metaLine(metaCfg, lastSscValues_ || window.EdamSsc.pendingValues(), ready);
         const withLogo = !!(sceneSsc && sceneSsc.classList.contains('ssc-with-logo'));
         const span = '<span class="s2-meta-panel-txt' + (sourceOnly ? ' ssc-meta-source' : '') + '">' +
-            window.EdamSsc.escapeHtml(line) + '</span>';
+            (sourceOnly ? footSourceWithLogoHtml_() : window.EdamSsc.escapeHtml(line)) + '</span>';
         const lineHtml = sourceOnly
             ? '<div class="ssc-meta-line ssc-meta-source-line">' + span + '</div>'
             : '<div class="ssc-meta-line"><div class="ssc-meta-line-track">' + span + '</div></div>';

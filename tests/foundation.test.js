@@ -2750,6 +2750,13 @@ test('未確定案件: ニッケン白浜町は DM-0011', function () {
   assert.strictEqual(meiban5.location, meiban.location);
   assert.strictEqual(meiban5.jma.amedasPoint, '72086');
   assert.strictEqual(meiban5.jma.warnCity, '3720100');
+  assert.strictEqual(meiban.greeting.lines[0], 'ご迷惑をおかけしてまことに申し訳ありません。安全第一で作業中です。ご協力をお願いします。');
+  assert.strictEqual(meiban5.greeting.lines[0], 'ご迷惑をおかけしてまことに申し訳ありません。安全第一で作業中です。ご協力をお願いします。');
+  assert.ok(meiban.footSource.indexOf('記録ｃｈセカンド') >= 0);
+  assert.ok(meiban5.footSource.indexOf('記録ｃｈセカンド') >= 0);
+  assert.ok(meiban.densho.sourceLogo.indexOf('kiroku-ch-second.png') >= 0);
+  assert.ok(meiban5.densho.sourceLogo.indexOf('kiroku-ch-second.png') >= 0);
+  assert.ok(fs.existsSync(path.join(root, 'assets', 'demo', 'DM-0013', 'kiroku-ch-second.png')));
   assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0011' && row.siteName === '白浜町'; }));
   assert.strictEqual(site.projectId, 'DM-0011');
   assert.strictEqual(site.status, 'demo');
