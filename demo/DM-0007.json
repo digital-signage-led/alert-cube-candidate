@@ -4,14 +4,13 @@
   "status": "demo",
   "customer": "鴻池組",
   "rental": "",
-  "label": "鴻池組",
-  "projectName": "鴻池組 宮津市",
-  "siteName": "宮津市",
-  "location": "京都府宮津市",
-  "latitude": 35.535023,
-  "longitude": 135.195496,
+  "projectName": "鴻池組 デモカー",
+  "siteName": "大阪市",
+  "location": "大阪府大阪市",
+  "latitude": 34.693737,
+  "longitude": 135.502165,
   "elevation": null,
-  "memo": "未確定のデモ。鴻池組、京都府宮津市。請求しない。本番端末へ登録しない。4面512×128。コンテンツの並びは志摩機械と同じ。コンテンツ末尾はKONOIKEの文字とマーク。時刻下の白帯はKONOIKEの文字。標語「まじめに、まっすぐ」は128px面に入らないので出さない。地点名「宮津市」。地図は宮津市役所（柳縄手）付近。現場の番地は未指定。WBGT・アメダスは宮津61076（気温・降水・風・湿度。気圧は舞鶴61111で補完）。予報は京都府260000、詳細は北部260020、気温の発表地点は舞鶴61111。警報は京都府260000、宮津市2620500。近隣挨拶は共通画像を2周。工程表は月曜から足場組立、外装工事、内装工事、仕上げ、検査。気象観測・WBGT・4日予報・多言語は1周。注意報・警報は発表中だけ2周。台風は発表中だけ2周。暑さ指数と多言語は、環境省の発表期間だけ出す。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
+  "memo": "デモカー用。鴻池組、大阪府大阪市。請求しない。本番端末へ登録しない。公開URLは ?site=DM-0007&layout512=1&native640=1。4面512×128。ロゴは出さない。時刻下の白帯は地点名「大阪市」。標語「まじめに、まっすぐ」は128px面に入らないので出さない。地図は大阪市役所（中之島）付近。現場の番地は未指定。WBGT・アメダスは大阪62078、補完は堺62091。予報は大阪府270000、気温の発表地点は大阪62078。警報は大阪府270000、大阪市2710000。近隣挨拶は共通画像を2周。工程表は月曜から足場組立、外装工事、内装工事、仕上げ、検査。気象観測・WBGT・4日予報・多言語は1周。注意報・警報は発表中だけ2周。台風は発表中だけ2周。暑さ指数と多言語は、環境省の発表期間だけ出す。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
   "inundation": { "expectedDepthM": null },
   "evacuation": {
     "assembly": "",
@@ -31,30 +30,30 @@
   "footSource": "出典：気象庁・環境省データ",
   "releasePin": null,
   "logo": {
-    "src": "./assets/demo/DM-0007/logo_end.png?v=1",
+    "src": "",
     "footSrc": "",
     "panelBg": "#ffffff",
-    "bannerSrc": "./assets/demo/DM-0007/logo_foot.png?v=1"
+    "bannerSrc": ""
   },
   "moe": {
     "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
-    "point": "61076",
-    "fallbackPoint": "61111",
-    "pointName": "宮津",
-    "alertArea": "京都府",
+    "point": "62078",
+    "fallbackPoint": "62091",
+    "pointName": "大阪",
+    "alertArea": "大阪府",
     "region": "07",
-    "prefecture": "61"
+    "prefecture": "62"
   },
   "jma": {
-    "amedasPoint": "61076",
-    "amedasSupplementPoint": "61111",
-    "forecastArea": "260000",
-    "forecastDetail": "260020",
-    "forecastPoint": "61111",
-    "forecastLabel": "宮津市",
-    "warnArea": "260000",
-    "warnCity": "2620500",
-    "warnCityLabel": "宮津市"
+    "amedasPoint": "62078",
+    "amedasSupplementPoint": "62091",
+    "forecastArea": "270000",
+    "forecastDetail": "270000",
+    "forecastPoint": "62078",
+    "forecastLabel": "大阪市",
+    "warnArea": "270000",
+    "warnCity": "2710000",
+    "warnCityLabel": "大阪市"
   },
   "wbgt": {
     "seasonStart": { "month": 4, "day": 22 },
@@ -93,8 +92,8 @@
     "warningLaps": 2,
     "typhoonLaps": 2,
     "logoRotate": false,
-    "observationTrailingLogo": true,
-    "i18nTrailingLogo": true
+    "observationTrailingLogo": false,
+    "i18nTrailingLogo": false
   },
   "news": {
     "badge": "新着情報",
