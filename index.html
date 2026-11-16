@@ -14924,14 +14924,13 @@
     function applySscValuesToDom_(vals) {
         if (!vals) return;
         lastSscValues_ = vals;
-        if (!sceneDomOpen_(sceneSsc)) return;
         const pendingLabel = window.EdamSsc ? window.EdamSsc.PENDING : '取得中';
         const nText = vals.noise != null ? String(vals.noise) : pendingLabel;
         const vText = vals.vibration != null ? String(vals.vibration) : pendingLabel;
         document.querySelectorAll('.ssc-noise-val').forEach(function (el) { el.textContent = nText; });
         document.querySelectorAll('.ssc-vib-val').forEach(function (el) { el.textContent = vText; });
         syncSscPendingDom_();
-        buildSscMetaTrack_();
+        if (sceneDomOpen_(sceneSsc)) buildSscMetaTrack_();
     }
     function denshoSscUrl_() {
         const d = siteCfg_().densho || {};
@@ -14982,63 +14981,88 @@
         const urls = denshoFetchUrls_(apiUrl);
         let lastErr = null;
         for (let i = 0; i < urls.length; i++) {
+            const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+            const timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 5000);
             try {
                 const res = await fetch(urls[i], {
                     cache: 'no-store',
+                    signal: ctrl ? ctrl.signal : undefined,
                     headers: { Accept: 'application/json' }
                 });
                 if (!res.ok) throw new Error('Densho SSC HTTP ' + res.status);
                 return window.AlertCubeDensho.unwrapPayload(await res.json());
             } catch (err) {
                 lastErr = err;
+            } finally {
+                clearTimeout(timer);
             }
         }
         throw lastErr || new Error('見守り伝書鳩の取得に失敗');
     }
-    async function fetchDenshoSsc_() {
-        const apiUrls = denshoSscUrls_();
-        if (!apiUrls.length || !window.AlertCubeDensho || !window.AlertCubeDensho.parseSignage) {
-            if (window.EdamSsc) applySscValuesToDom_(window.EdamSsc.pendingValues());
-            return null;
-        }
-        const parts = [];
-        let lastErr = null;
-        for (let i = 0; i < apiUrls.length; i++) {
-            try {
-                const json = await fetchDenshoJson_(apiUrls[i]);
-                parts.push(window.AlertCubeDensho.parseSignage(json));
-            } catch (err) {
-                lastErr = err;
-            }
-        }
-        if (!parts.length) {
-            console.warn('[SSC] 見守り伝書鳩失敗:', lastErr && lastErr.message ? lastErr.message : lastErr);
-            if (!lastSscValues_ || (lastSscValues_.noise == null && lastSscValues_.vibration == null)) {
-                applySscValuesToDom_(window.EdamSsc ? window.EdamSsc.pendingValues() : { noise: null, vibration: null, pending: true });
-            }
-            return null;
-        }
-        const parsed = window.AlertCubeDensho.mergeSignage
-            ? window.AlertCubeDensho.mergeSignage(parts)
-            : parts[0];
+    function applyDenshoSscPart_(part) {
+        if (!part || (part.noise == null && part.vibration == null)) return;
+        const prev = lastSscValues_ || {};
+        const prevMeta = lastSscMetaCfg_ || {};
         lastSscMetaCfg_ = {
-            siteName: parsed.termName || '',
-            sensorLabel: parsed.sensorLabel || '騒音計',
-            noiseMetric: parsed.noiseMetric || '',
-            vibMetric: parsed.vibMetric || '',
+            siteName: part.termName || prevMeta.siteName || '',
+            sensorLabel: part.sensorLabel || prevMeta.sensorLabel || '騒音計',
+            noiseMetric: part.noiseMetric || prevMeta.noiseMetric || '',
+            vibMetric: part.vibMetric || prevMeta.vibMetric || '',
             source: 'みまわり伝書鳩'
         };
-        const vals = {
-            noise: parsed.noise,
-            vibration: parsed.vibration,
-            time: parsed.time,
-            pending: parsed.noise == null && parsed.vibration == null
-        };
-        applySscValuesToDom_(vals);
-        console.log('[SSC] 見守り伝書鳩', parsed.termName || '',
-            parsed.noise != null ? parsed.noise + 'dB' : '',
-            parsed.vibration != null ? parsed.vibration + 'dB' : '');
-        return vals;
+        const noise = part.noise != null ? part.noise : (prev.noise != null ? prev.noise : null);
+        const vibration = part.vibration != null ? part.vibration : (prev.vibration != null ? prev.vibration : null);
+        applySscValuesToDom_({
+            noise: noise,
+            vibration: vibration,
+            time: part.time || prev.time || '',
+            pending: noise == null && vibration == null
+        });
+    }
+    let sscFetchFlight_ = null;
+    function fetchDenshoSsc_() {
+        if (sscFetchFlight_) return sscFetchFlight_;
+        const run = (async function () {
+            const apiUrls = denshoSscUrls_();
+            if (!apiUrls.length || !window.AlertCubeDensho || !window.AlertCubeDensho.parseSignage) {
+                return null;
+            }
+            const settled = await Promise.all(apiUrls.map(function (url) {
+                return fetchDenshoJson_(url).then(function (json) {
+                    const part = window.AlertCubeDensho.parseSignage(json);
+                    applyDenshoSscPart_(part);
+                    return part;
+                }).catch(function (err) {
+                    return err;
+                });
+            }));
+            const parts = [];
+            let lastErr = null;
+            settled.forEach(function (item) {
+                if (item instanceof Error) lastErr = item;
+                else if (item) parts.push(item);
+            });
+            if (!parts.length) {
+                console.warn('[SSC] 見守り伝書鳩失敗:', lastErr && lastErr.message ? lastErr.message : lastErr);
+                return null;
+            }
+            const parsed = window.AlertCubeDensho.mergeSignage
+                ? window.AlertCubeDensho.mergeSignage(parts)
+                : parts[0];
+            console.log('[SSC] 見守り伝書鳩', parsed.termName || '',
+                parsed.noise != null ? parsed.noise + 'dB' : '',
+                parsed.vibration != null ? parsed.vibration + 'dB' : '');
+            return {
+                noise: parsed.noise,
+                vibration: parsed.vibration,
+                time: parsed.time,
+                pending: parsed.noise == null && parsed.vibration == null
+            };
+        })();
+        sscFetchFlight_ = run;
+        const clear = function () { if (sscFetchFlight_ === run) sscFetchFlight_ = null; };
+        run.then(clear, clear);
+        return run;
     }
     function fetchSscNow_() {
         if (denshoSscUrl_()) return fetchDenshoSsc_();
@@ -15074,7 +15098,9 @@
         if (denshoSscUrl_() && !lastSscMetaCfg_) {
             lastSscMetaCfg_ = { siteName: '', sensorLabel: '騒音計', source: 'みまわり伝書鳩' };
         }
-        if (window.EdamSsc) applySscValuesToDom_(lastSscValues_ || window.EdamSsc.pendingValues());
+        if (lastSscValues_ && (lastSscValues_.noise != null || lastSscValues_.vibration != null)) {
+            applySscValuesToDom_(lastSscValues_);
+        }
         if (denshoSscUrl_()) {
             fetchDenshoSsc_();
             const sec = Number((siteCfg_().densho || {}).dataIntervalSec);
@@ -15121,6 +15147,9 @@
         applyDisplayRefreshAtSceneEntry_(sceneSsc);
         applyPendingSignageBgAtScene_();
         mountSscTrailingLogo_();
+        if (lastSscValues_ && (lastSscValues_.noise != null || lastSscValues_.vibration != null)) {
+            applySscValuesToDom_(lastSscValues_);
+        }
         buildSscMetaTrack_();
         fetchSscNow_();
         if (sceneSscAnimId) { cancelAnimationFrame(sceneSscAnimId); sceneSscAnimId = null; }
