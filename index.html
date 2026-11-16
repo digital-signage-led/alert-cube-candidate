@@ -8657,13 +8657,16 @@
         const cell = function (inner) {
             return '<div class="dm14-card-cell">' + inner + '</div>';
         };
-        const noise = cell(
+        const held = function (inner) {
+            return '<div class="dm14-card-cell" style="visibility:hidden">' + inner + '</div>';
+        };
+        const noise = held(
             '<div class="s2-panel-data s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">騒音</span></div>' +
-            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-noise">--</span><span class="s2-unit">dB</span></div></div></div>'
+            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-noise"></span><span class="s2-unit">dB</span></div></div></div>'
         );
-        const vib = cell(
+        const vib = held(
             '<div class="s2-panel-data s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">振動</span></div>' +
-            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-vib">--</span><span class="s2-unit">dB</span></div></div></div>'
+            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-vib"></span><span class="s2-unit">dB</span></div></div></div>'
         );
         const cells = [cell(scene2PanelHtml_('weather')), noise, vib];
         const seq = cells.concat(cells, cells);
@@ -8691,14 +8694,20 @@
                 });
             }
             const ssc = (typeof lastSscValues_ !== 'undefined' && lastSscValues_) || null;
-            const nText = ssc && ssc.noise != null ? String(ssc.noise) : '--';
-            const vText = ssc && ssc.vibration != null ? String(ssc.vibration) : '--';
+            const nOn = !!(ssc && ssc.noise != null);
+            const vOn = !!(ssc && ssc.vibration != null);
+            const nText = nOn ? String(ssc.noise) : '';
+            const vText = vOn ? String(ssc.vibration) : '';
             cards.forEach(function (root) {
                 root.querySelectorAll('.dm14-noise').forEach(function (el) {
                     if (el.textContent !== nText) el.textContent = nText;
+                    const slot = el.closest('.dm14-card-cell');
+                    if (slot) slot.style.visibility = nOn ? 'visible' : 'hidden';
                 });
                 root.querySelectorAll('.dm14-vib').forEach(function (el) {
                     if (el.textContent !== vText) el.textContent = vText;
+                    const slot = el.closest('.dm14-card-cell');
+                    if (slot) slot.style.visibility = vOn ? 'visible' : 'hidden';
                 });
             });
         }
@@ -14957,6 +14966,12 @@
             if (num) num.classList.toggle('ssc-pending', pending);
         });
     }
+    function sscShowReady_() {
+        const vals = lastSscValues_;
+        if (!vals) return false;
+        if (denshoSscUrls_().length >= 2) return vals.noise != null && vals.vibration != null;
+        return vals.noise != null || vals.vibration != null;
+    }
     function applySscValuesToDom_(vals) {
         if (!vals) return;
         lastSscValues_ = vals;
@@ -15157,6 +15172,7 @@
     let sscMetaLapPx = 512;
     let sscMetaTextPx = 0;
     let sscMetaTextShift = 0;
+    let sscGateGen_ = 0;
     let lastSscValues_ = null;
     let lastSscMetaCfg_ = null;
     function mountSscTrailingLogo_() {
@@ -15285,10 +15301,22 @@
                 break;
             case 'forecast': transitionToScene(s5, playScene5); break;
             case 'short-forecast': startShortForecastOrSkip_(); break;
-            case 'ssc':
+            case 'ssc': {
+                sscGateGen_ += 1;
+                const gate = sscGateGen_;
                 if (!contentOn_('ssc') || !sceneSsc) { advanceContentOrder_(); break; }
-                transitionToScene(sceneSsc, playSceneSsc);
+                const goSsc_ = function () {
+                    if (gate !== sscGateGen_) return;
+                    if (!sscShowReady_()) { advanceContentOrder_(); return; }
+                    applySscValuesToDom_(lastSscValues_);
+                    transitionToScene(sceneSsc, playSceneSsc);
+                };
+                if (sscShowReady_()) { goSsc_(); break; }
+                const pending = fetchSscNow_();
+                const giveUp = new Promise(function (resolve) { setTimeout(resolve, 6000); });
+                Promise.race([Promise.resolve(pending).catch(function () {}), giveUp]).then(goSsc_);
                 break;
+            }
             case 'wbgt-i18n':
                 if (wbgtDemoCycle_()) { transitionToScene(s3, playScene3); break; }
                 if (!wbgtMultilingualOn_() || temperatureDisplay_() || wbgtOffSeason || !(hasFull4Slots(lastGoodWbgtSlots_) || hasFull4Slots(lastWbgtSlots))) { advanceContentOrder_(); break; }
