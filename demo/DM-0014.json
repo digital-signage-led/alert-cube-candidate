@@ -132,6 +132,7 @@
     "typhoonLaps": 2,
     "observationTrailingLogo": true,
     "i18nTrailingLogo": true,
+    "scrollFaces": 3,
     "scrollHoldMs": 0,
     "endHoldMs": 0,
     "wbgtDemoCycle": true,
