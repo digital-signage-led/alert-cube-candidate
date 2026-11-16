@@ -88,8 +88,30 @@
     }).join('');
   }
 
+  function rowsHtml(line) {
+    var parts = Array.isArray(line) ? line : [];
+    var rows = [];
+    var row = [];
+    function pushRow() {
+      if (row.length) rows.push(row);
+      row = [];
+    }
+    parts.forEach(function (part) {
+      if (part && part.br) {
+        pushRow();
+        return;
+      }
+      if (!part || part.text == null || part.text === '') return;
+      row.push(part);
+    });
+    pushRow();
+    return rows.map(function (one) {
+      return '<span class="logo-cap-line">' + lineBody(one) + '</span>';
+    }).join('');
+  }
+
   function captionPanel(body, w, bg) {
-    return '<div class="logo-face-panel logo-caption" style="' + panelBox(w, bg) + '"><p><span class="logo-cap-line">' + body + '</span></p></div>';
+    return '<div class="logo-face-panel logo-caption" style="' + panelBox(w, bg) + '"><p>' + body + '</p></div>';
   }
 
   function captionHtml(cfg, bg) {
@@ -123,12 +145,12 @@
         if (!lines[i]) return;
         var lw = captionWidthAt(cap, i);
         setWidth += lw;
-        parts.push(captionPanel(lineBody(lines[i]), lw, bg));
+        parts.push(captionPanel(rowsHtml(lines[i]), lw, bg));
       });
       for (var extra = images.length; extra < lines.length; extra++) {
         var ew = captionWidthAt(cap, extra);
         setWidth += ew;
-        parts.push(captionPanel(lineBody(lines[extra]), ew, bg));
+        parts.push(captionPanel(rowsHtml(lines[extra]), ew, bg));
       }
     }
     var caption = split ? { html: '', width: 0 } : captionHtml(cfg, bg);
