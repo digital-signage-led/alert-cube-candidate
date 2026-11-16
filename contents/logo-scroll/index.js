@@ -90,13 +90,18 @@
     if (!images.length) return { html: '', setWidth: 0, panelCount: 0 };
     var parts = [];
     var setWidth = 0;
-    images.forEach(function (img) {
+    var caption = captionHtml(cfg, bg);
+    var between = !!(caption.html && cfg.caption && cfg.caption.place === 'between' && images.length >= 2);
+    images.forEach(function (img, i) {
+      if (between && i === 1) {
+        parts.push(caption.html);
+        setWidth += caption.width;
+      }
       var w = img.panelWidth || fallbackW;
       setWidth += w;
       parts.push(faceHtml(img, w, bg));
     });
-    var caption = captionHtml(cfg, bg);
-    if (caption.html) {
+    if (caption.html && !between) {
       parts.push(caption.html);
       setWidth += caption.width;
     }

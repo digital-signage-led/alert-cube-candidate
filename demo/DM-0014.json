@@ -95,31 +95,26 @@
         "wing": "./assets/demo/meibird/meibird-wing.svg",
         "motion": "meibird",
         "alt": "メイバード",
-        "panelWidth": 128
+        "panelWidth": 80
       },
       {
         "src": "./assets/demo/meibird/meidory.svg",
         "wing": "./assets/demo/meibird/meidory-wing.svg",
         "motion": "meidory",
         "alt": "メイドリィ",
-        "panelWidth": 128
+        "panelWidth": 80
       }
     ],
     "caption": {
-      "width": 256,
+      "place": "between",
+      "width": 650,
       "lines": [
         [
-          { "text": "ご迷惑をおかけして", "color": "#111111" }
-        ],
-        [
-          { "text": "まことに申し訳ありません", "color": "#111111" }
+          { "text": "ご迷惑をおかけしてまことに申し訳ありません", "color": "#111111" }
         ],
         [
           { "text": "安全第一", "color": "#5DAD3D" },
-          { "text": "で作業中です", "color": "#111111" }
-        ],
-        [
-          { "text": "ご協力をお願いします", "color": "#111111" }
+          { "text": "で作業中ですご協力をお願いします", "color": "#111111" }
         ]
       ]
     }

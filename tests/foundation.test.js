@@ -2763,6 +2763,14 @@ test('未確定案件: ニッケン白浜町は DM-0011', function () {
   assert.strictEqual(meiban5.logoScroll.caption.lines.map(function (line) {
     return line.map(function (part) { return part.text; }).join('');
   }).join(''), 'ご迷惑をおかけしてまことに申し訳ありません安全第一で作業中ですご協力をお願いします');
+  assert.strictEqual(meiban.logoScroll.caption.place, 'between');
+  assert.strictEqual(meiban5.logoScroll.caption.place, 'between');
+  var logoApi = require('../contents/logo-scroll/index.js');
+  var betweenHtml = logoApi.buildTrackHtml(meiban.logoScroll).html;
+  var birdAt = betweenHtml.indexOf('meibird.svg');
+  var capAt = betweenHtml.indexOf('logo-caption');
+  var doryAt = betweenHtml.indexOf('meidory.svg');
+  assert.ok(birdAt >= 0 && capAt > birdAt && doryAt > capAt);
   assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0011' && row.siteName === '白浜町'; }));
   assert.strictEqual(site.projectId, 'DM-0011');
   assert.strictEqual(site.status, 'demo');
