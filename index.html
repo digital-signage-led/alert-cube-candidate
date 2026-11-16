@@ -14165,31 +14165,9 @@
         img.src = src;
         setTimeout(function () { finish(0); }, 1200);
     }
-    function mountPromoJapanesePreview_(cfg) {
-        const lines = Array.isArray(cfg.lines) ? cfg.lines : [];
-        const idx = promoLineIndex_(Math.max(1, lines.length));
-        const marks = (cfg.emphasis && cfg.emphasis[idx]) || [];
-        const titles = (Array.isArray(cfg.titles) && cfg.titles.length) ? cfg.titles : [cfg.title || ''];
-        const titleHtml = cfg.titleLogo
-            ? '<img class="promo-title-logo" style="height:26px" src="' + escapeS1Html(cfg.titleLogo) + '" alt="' + escapeS1Html(cfg.title || '') + '">'
-            : titles.map(function (t) { return escapeS1Html(t); }).join('　　');
-        const bodyHtml = promoHtml_(lines[idx] || '', marks);
-        const footMarks = cfg.footEmphasis || [];
-        const footHtml = cfg.footLogo
-            ? '<img class="promo-wordmark" style="width:94px;height:24px" src="' + escapeS1Html(cfg.footLogo) + '" alt="">'
-            : (cfg.foot ? '<span class="promo-foot-text">' + promoHtml_(String(cfg.foot), footMarks) + '</span>' : '');
-        sceneGreeting.innerHTML =
-            '<div class="ng-shell promo-shell">' +
-            '<div class="promo-top"><div class="promo-track"><span class="promo-unit">' + titleHtml + '</span></div></div>' +
-            '<div class="promo-body"><div class="promo-track"><span class="promo-unit">' + bodyHtml + '</span></div></div>' +
-            '<div class="promo-foot"><div class="promo-track"><span class="promo-unit">' + footHtml + '</span></div></div>' +
-            '</div>';
-        paintPromoChrome_();
-    }
     function playPromoJapanese_() {
         const cfg = greetingCfg_();
-        /* ロゴ幅とフォントを待つ間も、ひな型の近隣挨拶は出さない */
-        mountPromoJapanesePreview_(cfg);
+        /* 幅が決まる前の左寄せを出さない。決まった座標で一度だけ置く */
         function start(logoW) {
             const go = function () { playPromoJapaneseBuilt_(cfg, logoW); };
             if (cfg.seamless && document.fonts && document.fonts.ready) {
