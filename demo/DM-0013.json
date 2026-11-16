@@ -94,19 +94,19 @@
         "wing": "./assets/demo/meibird/meibird-wing.svg",
         "motion": "meibird",
         "alt": "メイバード",
-        "panelWidth": 72
+        "panelWidth": 52
       },
       {
         "src": "./assets/demo/meibird/meidory.svg",
         "wing": "./assets/demo/meibird/meidory-wing.svg",
         "motion": "meidory",
         "alt": "メイドリィ",
-        "panelWidth": 72
+        "panelWidth": 52
       }
     ],
     "caption": {
       "place": "between",
-      "width": 590,
+      "width": 408,
       "lines": [
         [
           { "text": "ご迷惑をおかけしてまことに申し訳ありません", "color": "#111111" }
