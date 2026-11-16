@@ -8848,6 +8848,7 @@
     let scene4AnimId = null;
     let scene4HoldTimerId = null;
     let scene4FcLvLapPx = SCENE4_LV_LAP_PX;
+    let fcLvFlowMoved_ = 0;
     const SCENE4_LV_LAPS = 2;
     const SCENE4_LV_SETS = 3;
     const SCENE4_LV_SPEED_PX = 0.6;
@@ -11848,6 +11849,15 @@
     function fitFcLvSourceText_() {
         if (!fcLvTrack) return;
         fcLvTrack.querySelectorAll('.fc-lv-msg-full').forEach(function (el) {
+            if (face3Foot_()) {
+                el.style.width = '100%';
+                el.style.maxWidth = '100%';
+                el.style.boxSizing = 'border-box';
+                el.style.padding = '0 16px';
+                el.style.justifyContent = 'space-between';
+                el.style.fontSize = '18px';
+                return;
+            }
             const slot = el.closest('.fc-lv-slot-src');
             const limit = Math.max(120, (slot && slot.clientWidth ? slot.clientWidth : 248) - 2);
             el.style.letterSpacing = '0px';
@@ -11865,13 +11875,22 @@
         const text = getFcLvText();
         if (clearTimers) clearScene4Timers();
         lastFcLvText_ = text;
-        const copies = scrollCopyCount_(wbgtSceneLaps_());
+        const copies = face3Foot_() ? 2 : scrollCopyCount_(wbgtSceneLaps_());
         let lvHtml = '';
         for (let c = 0; c < copies; c++) lvHtml += buildFcLvSetHtml(text);
         fcLvTrack.innerHTML = lvHtml;
         fitFcLvSourceText_();
         scene4FcLvLapPx = scene4SetWidth;
+        fcLvFlowMoved_ = 0;
         applyScrollX_(fcLvTrack, 0);
+    }
+    /** 5面の出典は1文を3面（384px）に置く。次の文は次の3面から流す */
+    function stepFace3Foot_() {
+        if (!face3Foot_() || !fcLvTrack) return;
+        const lap = 384;
+        fcLvFlowMoved_ += getScrollSpeedPx_();
+        if (fcLvFlowMoved_ >= lap) fcLvFlowMoved_ -= lap;
+        applyScrollX_(fcLvTrack, -fcLvFlowMoved_);
     }
     function clearScene4Timers() {
         if (scene4AnimId) { cancelAnimationFrame(scene4AnimId); scene4AnimId = null; }
@@ -13390,7 +13409,8 @@
             const speed = getScrollSpeedPx_();
             totalScrolled = Math.min(totalPx, totalScrolled + speed);
             applyScrollX_(fcConveyor, -totalScrolled);
-            if (!face3Foot_()) applyScrollX_(fcLvTrack, -totalScrolled);
+            if (face3Foot_()) stepFace3Foot_();
+            else applyScrollX_(fcLvTrack, -totalScrolled);
             if (sample) {
                 const lap = Math.min(DEMO_LEVEL_ORDER.length - 1, Math.floor(totalScrolled / wbgtSet));
                 if (lap !== wbgtCycleLap_) {
