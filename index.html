@@ -15022,11 +15022,23 @@
         });
         return urls;
     }
-    async function fetchDenshoJson_(apiUrl) {
-        const urls = denshoFetchUrls_(apiUrl);
+    function denshoRelayUrls_(apiUrl) {
+        const urls = [];
         if (window.AlertCubeDensho && window.AlertCubeDensho.allowedApiUrl(apiUrl)) {
-            urls.unshift('https://proxy.cors.dev/' + apiUrl);
+            urls.push('https://proxy.cors.dev/' + apiUrl);
+            urls.push('https://cors.tools/' + apiUrl);
         }
+        denshoFetchUrls_(apiUrl).forEach(function (url) {
+            if (url && urls.indexOf(url) < 0) urls.push(url);
+        });
+        return urls;
+    }
+    function denshoPayloadOk_(json) {
+        const block = json && (json.signage_data || json);
+        return !!(block && Array.isArray(block.values) && block.values.length);
+    }
+    async function fetchDenshoJson_(apiUrl) {
+        const urls = denshoRelayUrls_(apiUrl);
         let lastErr = null;
         for (let i = 0; i < urls.length; i++) {
             const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -15038,7 +15050,9 @@
                     headers: { Accept: 'application/json' }
                 });
                 if (!res.ok) throw new Error('Densho SSC HTTP ' + res.status);
-                return window.AlertCubeDensho.unwrapPayload(await res.json());
+                const json = window.AlertCubeDensho.unwrapPayload(await res.json());
+                if (!denshoPayloadOk_(json)) throw new Error('Densho SSC empty');
+                return json;
             } catch (err) {
                 lastErr = err;
             } finally {
