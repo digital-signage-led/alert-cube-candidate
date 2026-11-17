@@ -1601,8 +1601,11 @@
             font-size: var(--led-foot-font); font-weight: 700; color: #1a1a1a;
             font-family: "Noto Sans JP", sans-serif;
         }
+        /* :has が無いサイネージでも、ロゴを次の行へ落とさない */
         #ssc-meta-track .ssc-meta-line .s2-meta-panel-txt.ssc-meta-source {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
             width: auto; max-width: 496px; flex: 0 1 auto;
+            overflow: visible; white-space: nowrap;
             text-align: center; text-overflow: clip;
         }
         #ssc-meta-track .ssc-meta-source:has(.foot-source-logo),
@@ -1614,7 +1617,8 @@
         }
         /* 483×225 のうち上150pxが記録chセカンド。下の Powered by は出さない */
         .foot-source-logo-clip {
-            display: block; height: 26px; width: 84px; overflow: hidden; flex: 0 0 auto;
+            display: inline-block; vertical-align: middle; line-height: 0;
+            height: 26px; width: 84px; overflow: hidden; flex: 0 0 auto;
         }
         .foot-source-logo {
             width: 84px; height: 39px; max-width: none;
