@@ -11685,9 +11685,13 @@
         if (!body) return line;
         return line + '　' + body;
     }
+    /* 見本の段階は暑さ指数の面だけ。時刻の下帯は、期間外と同じ気温にする */
+    function clockFootUsesTemperature_() {
+        return temperatureDisplay_() || wbgtDemoCycle_();
+    }
     function getS1WbgtMessageJp() {
         const rain = getRainAlertMessageJp();
-        if (temperatureDisplay_()) {
+        if (clockFootUsesTemperature_()) {
             const tempMsg = temperatureFootMessageJp_();
             if (rain && tempMsg) return withClockFootLine_(rain + '　' + tempMsg);
             return withClockFootLine_(rain || tempMsg);
