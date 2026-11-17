@@ -13468,19 +13468,30 @@
         let totalScrolled = 0;
         let cycleMoved = 0;
         let cycleLevel = 0;
+        let footMoved = 0;
         applyScrollX_(fcConveyor, 0);
         applyScrollX_(fcLvTrack, 0);
+        function fourFaceFootLap_() {
+            const setEl = fcLvTrack && fcLvTrack.querySelector('.fc-lv-set');
+            const w = setEl ? setEl.offsetWidth : 0;
+            return w > 0 ? w : 512;
+        }
+        /* 4面の出典は段階の先頭へ戻さない。1周分ずらして同じ文言を続ける */
+        function stepFourFaceFoot_() {
+            if (face3Foot_() || !fcLvTrack) return;
+            footMoved += getScrollSpeedPx_();
+            fcLvTrack.style.transition = 'none';
+            applyScrollX_(fcLvTrack, seamlessScrollX_(footMoved, fourFaceFootLap_()));
+        }
         function snapWbgtCycle_(x) {
             if (fcConveyor) fcConveyor.style.transition = 'none';
-            if (fcLvTrack) fcLvTrack.style.transition = 'none';
             applyScrollX_(fcConveyor, x);
-            /* 4面の出典は面と一緒に流す。5面は3面幅で別に流す */
-            if (!face3Foot_()) applyScrollX_(fcLvTrack, x);
         }
         function animateScene4_() {
             const speed = getScrollSpeedPx_();
             if (sample) {
                 if (face3Foot_()) stepFace3Foot_();
+                else stepFourFaceFoot_();
                 cycleMoved += speed;
                 if (cycleMoved >= totalPx) {
                     /* 危険まで出したら次へ。段階の境目は先頭へ戻し、その場で替える */
