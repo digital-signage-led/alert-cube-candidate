@@ -13472,7 +13472,10 @@
         applyScrollX_(fcLvTrack, 0);
         function snapWbgtCycle_(x) {
             if (fcConveyor) fcConveyor.style.transition = 'none';
+            if (fcLvTrack) fcLvTrack.style.transition = 'none';
             applyScrollX_(fcConveyor, x);
+            /* 4面の出典は面と一緒に流す。5面は3面幅で別に流す */
+            if (!face3Foot_()) applyScrollX_(fcLvTrack, x);
         }
         function animateScene4_() {
             const speed = getScrollSpeedPx_();
