@@ -325,6 +325,15 @@
             justify-content: center;
             overflow: hidden;
         }
+        /* 騒音・振動のカードは地色で塗る。透明だと512の面が黒く抜ける */
+        html.site-dm-0014 .dm14-card-cell:has(.dm14-noise),
+        html.site-dm-0014 .dm14-card-cell:has(.dm14-vib) {
+            background-color: var(--signage-bg, #EA5503);
+        }
+        html.site-dm-0014 .dm14-card-cell:has(.dm14-noise) .s2-top-bar,
+        html.site-dm-0014 .dm14-card-cell:has(.dm14-vib) .s2-top-bar {
+            background-color: var(--signage-bar, #FF8A3D);
+        }
         html.site-dm-0014 .dm14-card .s2-panel,
         html.site-dm-0014 .dm14-card .s2-panel-data {
             width: 112px;
@@ -1524,9 +1533,14 @@
         .content-area.news-canvas > .scene-strip-bg { display: none !important; }
         .content-area.kotei-canvas { background: #071428 !important; }
         .content-area.kotei-canvas > .scene-strip-bg { display: none !important; }
-        #sceneSsc { display: none; overflow: hidden; }
+        #sceneSsc { display: none; overflow: hidden; background-color: var(--signage-bg, #C4472A); }
         #sceneSsc.active { display: block; }
         #sceneSsc .ssc-scroll-wrap { width: 512px; height: var(--led-col-main-h); overflow: hidden; position: relative; z-index: 1; }
+        html.site-dm-0014 #sceneSsc { contain: paint; }
+        html.site-dm-0014 #sceneSsc .ssc-scroll-wrap,
+        html.site-dm-0014 #sceneSsc .s2-meta-bar { width: 384px; }
+        #sceneSsc .ssc-panel:not([data-ssc="logo"]) .col-bg-layer { width: calc(100% + 1px); }
+        #sceneSsc .ssc-panel:not([data-ssc="logo"]):has(+ .ssc-logo-panel) .col-bg-layer { width: 100%; }
         #sceneSsc .ssc-track {
             display: flex; flex-direction: row; flex-wrap: nowrap; width: 1024px; height: 100%;
             transition: none; will-change: transform;
@@ -3888,6 +3902,14 @@
     }
 
     function refreshScene2(levelIdx, displayMode) {
+        const colors = colorsForDisplay(levelIdx, displayMode);
+        const scene = document.getElementById('sceneSsc');
+        const content = document.querySelector('.content-area');
+        if (colors && colors.bgColor) {
+            if (scene) scene.style.backgroundColor = colors.bgColor;
+            if (content) content.style.setProperty('--signage-bg', colors.bgColor);
+        }
+        if (colors && colors.barColor && content) content.style.setProperty('--signage-bar', colors.barColor);
         document.querySelectorAll('#scene2 .s2-panel, #scene2 .s2-panel-data, #sceneSsc .ssc-panel').forEach(panel => {
             if (panel.classList.contains('s2-logo-panel') || panel.classList.contains('ssc-logo-panel') || panel.getAttribute('data-s2') === 'logo' || panel.getAttribute('data-ssc') === 'logo') {
                 panel.querySelectorAll('.col-bg-layer').forEach(function (el) { el.remove(); });
