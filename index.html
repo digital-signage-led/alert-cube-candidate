@@ -11363,7 +11363,10 @@
         if (paintObs) applyScene2WeatherIcon_(lastForecastWeatherCode_ || amedasToTelopsCode_(obs));
         const temp = amedasFieldValue(obs.temp);
         const parsedTemp = window.AlertCubeCore ? window.AlertCubeCore.parseTemperature(temp) : (Number.isFinite(Number(temp)) ? Number(temp) : null);
-        if (parsedTemp != null) lastAmedasTempC_ = parsedTemp;
+        if (parsedTemp != null) {
+            lastAmedasTempC_ = parsedTemp;
+            if (wbgtDemoCycle_()) queueOrRefreshS1FootBar_();
+        }
         const humi = amedasFieldValue(obs.humidity);
         const p10 = amedasFieldValue(obs.precipitation10m);
         const p1h = amedasFieldValue(obs.precipitation1h);
