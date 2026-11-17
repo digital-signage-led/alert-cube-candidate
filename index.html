@@ -1418,11 +1418,11 @@
             width: 128px; flex: 0 0 128px; min-width: 128px; max-width: 128px;
             height: var(--led-foot-bar-h); background: transparent;
         }
-        /* 4面の出典は騒音・振動と同じく、1文とロゴを繰り返して流す。左右の空きは同じ */
-        #scene4 .fc-lv-set-phrase {
+        /* 4面の出典は文の幅で繰り返す。次の文はすぐ後ろ。512px枠に置くとあいだが空く */
+        #scene4 .fc-lv-set.fc-lv-set-sync.fc-lv-set-phrase {
             display: flex; flex-direction: row; align-items: center; justify-content: flex-start;
             width: max-content; max-width: none; flex: 0 0 auto; gap: 20px;
-            padding: 0 10px; box-sizing: border-box;
+            padding: 0 28px; box-sizing: border-box; overflow: visible;
             height: var(--led-foot-bar-h); background: var(--led-foot-bar-bg);
         }
         #scene4 .fc-lv-set-phrase .fc-lv-words,
@@ -8890,6 +8890,7 @@
     let scene4HoldTimerId = null;
     let scene4FcLvLapPx = SCENE4_LV_LAP_PX;
     let fcLvFlowMoved_ = 0;
+    let fcLvFlowLapPx = 0;
     const SCENE4_LV_LAPS = 2;
     const SCENE4_LV_SETS = 3;
     const SCENE4_LV_SPEED_PX = 0.6;
@@ -11930,11 +11931,27 @@
         const text = getFcLvText();
         if (clearTimers) clearScene4Timers();
         lastFcLvText_ = text;
-        const copies = face3Foot_() ? 2 : scrollCopyCount_(wbgtSceneLaps_());
+        let copies = face3Foot_() ? 2 : 1;
         let lvHtml = '';
         for (let c = 0; c < copies; c++) lvHtml += buildFcLvSetHtml(text);
         fcLvTrack.innerHTML = lvHtml;
         fitFcLvSourceText_();
+        if (!face3Foot_()) {
+            const one = fcLvTrack.querySelector('.fc-lv-set');
+            const lap = one && one.offsetWidth > 0 ? one.offsetWidth : 512;
+            copies = Math.max(2, Math.ceil((lap + 512) / lap));
+            lvHtml = '';
+            for (let c = 0; c < copies; c++) lvHtml += buildFcLvSetHtml(text);
+            fcLvTrack.innerHTML = lvHtml;
+            fcLvFlowLapPx = lap;
+        }
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(function () {
+                if (face3Foot_() || !fcLvTrack) return;
+                const one = fcLvTrack.querySelector('.fc-lv-set-phrase');
+                if (one && one.offsetWidth > 0) fcLvFlowLapPx = one.offsetWidth;
+            });
+        }
         scene4FcLvLapPx = scene4SetWidth;
         fcLvFlowMoved_ = 0;
         applyScrollX_(fcLvTrack, 0);
@@ -13494,17 +13511,19 @@
         let footMoved = 0;
         applyScrollX_(fcConveyor, 0);
         applyScrollX_(fcLvTrack, 0);
-        function fourFaceFootLap_() {
-            const setEl = fcLvTrack && fcLvTrack.querySelector('.fc-lv-set');
-            const w = setEl ? setEl.offsetWidth : 0;
-            return w > 0 ? w : 512;
-        }
-        /* 4面の出典は騒音・振動と同じく流す。段階が替わっても先頭へ戻さない */
+        /* 4面の出典は文をすぐ後ろに繰り返す。1周の幅で戻すと、見えている文が飛ばない */
         function stepFourFaceFoot_() {
             if (face3Foot_() || !fcLvTrack) return;
-            footMoved += getScrollSpeedPx_();
+            let lap = fcLvFlowLapPx;
+            if (!(lap > 0)) {
+                const setEl = fcLvTrack.querySelector('.fc-lv-set');
+                lap = setEl && setEl.offsetWidth > 0 ? setEl.offsetWidth : 512;
+                fcLvFlowLapPx = lap;
+            }
+            fcLvFlowMoved_ += getScrollSpeedPx_();
+            if (fcLvFlowMoved_ >= lap) fcLvFlowMoved_ -= lap;
             fcLvTrack.style.transition = 'none';
-            applyScrollX_(fcLvTrack, seamlessScrollX_(footMoved, fourFaceFootLap_()));
+            applyScrollX_(fcLvTrack, -fcLvFlowMoved_);
         }
         function snapWbgtCycle_(x) {
             if (fcConveyor) fcConveyor.style.transition = 'none';
