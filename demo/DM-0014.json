@@ -95,14 +95,14 @@
         "wing": "./assets/demo/meibird/meibird-wing.svg",
         "motion": "meibird",
         "alt": "メイバード",
-        "panelWidth": 80
+        "panelWidth": 100
       },
       {
         "src": "./assets/demo/meibird/meidory.svg",
         "wing": "./assets/demo/meibird/meidory-wing.svg",
         "motion": "meidory",
         "alt": "メイドリィ",
-        "panelWidth": 80
+        "panelWidth": 100
       }
     ],
     "caption": {
