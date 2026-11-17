@@ -1413,6 +1413,18 @@
             width: 128px; flex: 0 0 128px; min-width: 128px; max-width: 128px;
             height: var(--led-foot-bar-h); background: transparent;
         }
+        /* 4面の出典は1文とロゴ。左右の空きは同じ。256pxに押し込むと先頭が消える */
+        #scene4 .fc-lv-set-phrase {
+            display: flex; flex-direction: row; align-items: center;
+            width: max-content; flex: 0 0 auto; gap: 20px;
+            padding: 0 10px; box-sizing: border-box;
+            height: var(--led-foot-bar-h); background: var(--led-foot-bar-bg);
+        }
+        #scene4 .fc-lv-set-phrase .fc-lv-words {
+            font-size: 18px; font-weight: 700; color: #1a1a1a;
+            font-family: "Noto Sans JP", sans-serif;
+            line-height: var(--led-foot-bar-h); white-space: nowrap;
+        }
         .fc-wbgt {
             display: inline-flex; align-items: baseline; justify-content: center; gap: 2px;
             max-width: 112px; text-align: center; white-space: nowrap; overflow: hidden;
@@ -11870,7 +11882,7 @@
     function footSourceLogoSlotHtml_() {
         const logo = sscSourceLogo_();
         if (!logo) return '';
-        return '<div class="fc-lv-slot fc-lv-slot-mark"><span class="foot-source-logo-clip"><img class="foot-source-logo" src="' + escapeS1Html(logo) + '" alt="記録chセカンド"></span></div>';
+        return '<span class="foot-source-logo-clip"><img class="foot-source-logo" src="' + escapeS1Html(logo) + '" alt="記録chセカンド"></span>';
     }
     function buildFcLvSetHtml(text) {
         const msg = '<span class="fc-lv-msg-full">' + footSourceWithLogoHtml_() + '</span>';
@@ -11879,14 +11891,14 @@
             const src = '<div class="fc-lv-slot fc-lv-slot-src fc-lv-slot-src-3"><span class="fc-lv-msg-full">' + footSourceWithLogoHtml_() + '</span></div>';
             return '<div class="fc-lv-set fc-lv-set-sync">' + src + '</div>';
         }
-        const src = '<div class="fc-lv-slot fc-lv-slot-src">' + msg + '</div>';
-        return '<div class="fc-lv-set fc-lv-set-sync">' + src + src + logo + '</div>';
+        const words = '<span class="fc-lv-words">' + footSourceSentenceHtml_() + '</span>';
+        return '<div class="fc-lv-set fc-lv-set-sync fc-lv-set-phrase">' + words + footSourceLogoSlotHtml_() + '</div>';
     }
     /** 出典は省略記号にせず、256px列の中に先頭から末尾まで収める */
     function fitFcLvSourceText_() {
         if (!fcLvTrack) return;
         fcLvTrack.querySelectorAll('.fc-lv-msg-full').forEach(function (el) {
-            if (face3Foot_()) {
+            if (face3Foot_() || el.closest('.fc-lv-set-phrase')) {
                 el.style.fontSize = '18px';
                 return;
             }
@@ -13504,8 +13516,15 @@
                     }
                     cycleLevel += 1;
                     cycleMoved = 0;
+                    footMoved = 0;
+                    fcLvFlowMoved_ = 0;
                     paintWbgtCycleLevel_(cycleLevel);
                     snapWbgtCycle_(0);
+                    /* 面が先頭で揃ったときは、出典も「出典：」から出す */
+                    if (fcLvTrack) {
+                        fcLvTrack.style.transition = 'none';
+                        applyScrollX_(fcLvTrack, 0);
+                    }
                     scene4AnimId = requestAnimationFrame(animateScene4_);
                     return;
                 }
