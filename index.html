@@ -764,6 +764,11 @@
             font-variant-numeric: tabular-nums;
             font-family: "Inter", sans-serif;
         }
+        /* 黒文字の面は日付も時刻も #000。クラスは panel-clock 自身に付く */
+        #scene1 .panel-clock.col-bg-dark-text .s1-bar-label,
+        #scene1 .panel-clock.col-bg-dark-text .time-val {
+            color: #000;
+        }
         .clock-hm .clock-h,
         .clock-hm .clock-m {
             flex-shrink: 0;
@@ -1413,12 +1418,16 @@
             width: 128px; flex: 0 0 128px; min-width: 128px; max-width: 128px;
             height: var(--led-foot-bar-h); background: transparent;
         }
-        /* 4面の出典は1文とロゴ。左右の空きは同じ。256pxに押し込むと先頭が消える */
+        /* 4面の出典は1文とロゴ。帯の幅に置き、左右の空きを同じにする。流して端で切らない */
         #scene4 .fc-lv-set-phrase {
-            display: flex; flex-direction: row; align-items: center;
-            width: max-content; flex: 0 0 auto; gap: 20px;
-            padding: 0 10px; box-sizing: border-box;
+            display: flex; flex-direction: row; align-items: center; justify-content: center;
+            width: 512px; max-width: 512px; flex: 0 0 512px; gap: 20px;
+            padding: 0; box-sizing: border-box;
             height: var(--led-foot-bar-h); background: var(--led-foot-bar-bg);
+        }
+        #scene4 .fc-lv-set-phrase .fc-lv-words,
+        #scene4 .fc-lv-set-phrase .foot-source-logo-clip {
+            flex: 0 0 auto;
         }
         #scene4 .fc-lv-set-phrase .fc-lv-words {
             font-size: 18px; font-weight: 700; color: #1a1a1a;
@@ -13488,9 +13497,14 @@
             const w = setEl ? setEl.offsetWidth : 0;
             return w > 0 ? w : 512;
         }
-        /* 4面の出典は段階の先頭へ戻さない。1周分ずらして同じ文言を続ける */
+        /* 段階のあいだは出典を続ける。段階が替わって面が揃ったら「出典：」へ戻す */
         function stepFourFaceFoot_() {
             if (face3Foot_() || !fcLvTrack) return;
+            /* 4面の出典は帯の中に全文を置く。流すと先頭が端で切れる */
+            if (fcLvTrack.querySelector('.fc-lv-set-phrase')) {
+                applyScrollX_(fcLvTrack, 0);
+                return;
+            }
             footMoved += getScrollSpeedPx_();
             fcLvTrack.style.transition = 'none';
             applyScrollX_(fcLvTrack, seamlessScrollX_(footMoved, fourFaceFootLap_()));
@@ -13535,7 +13549,7 @@
             totalScrolled = Math.min(totalPx, totalScrolled + speed);
             applyScrollX_(fcConveyor, -totalScrolled);
             if (face3Foot_()) stepFace3Foot_();
-            else applyScrollX_(fcLvTrack, -totalScrolled);
+            else if (!(fcLvTrack && fcLvTrack.querySelector('.fc-lv-set-phrase'))) applyScrollX_(fcLvTrack, -totalScrolled);
             if (totalScrolled >= totalPx) {
                 scene4AnimId = null;
                 stopLogoSpinInterval();
