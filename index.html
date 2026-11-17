@@ -806,17 +806,24 @@
         .scene1-state { display: none; width: 512px; height: var(--led-col-main-h); flex-direction: row; flex-shrink: 0; }
         .scene1-state.active { display: flex; }
         .panel-clock .s1-foot { display: none; }
-        html.site-dm-0014 #scene4 .fc-lv-bar { width: 384px; }
-        html.site-dm-0014 #scene4 .fc-lv-slot-mark {
-            width: 128px; max-width: 128px; flex: 0 0 128px;
-            height: var(--led-foot-bar-h);
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; box-sizing: border-box;
-            background: var(--led-foot-bar-bg);
+        html.site-dm-0014 #scene4 .fc-lv-bar { width: 384px; max-width: 384px; }
+        /* 5面の出典は1文。文言とロゴは中央。左右に余白を置く。サイネージもWEBも同じ */
+        html.site-dm-0014 #scene4 .fc-lv-slot-src-3 {
+            width: 384px; max-width: 384px; flex: 0 0 384px;
+            justify-content: center; overflow: hidden; padding: 0; box-sizing: border-box;
         }
         html.site-dm-0014 #scene4 .fc-lv-slot-src-3 .fc-lv-msg-full {
-            display: flex; align-items: center; justify-content: center;
-            width: 100%; overflow: hidden; text-align: center; white-space: nowrap;
+            display: flex !important;
+            align-items: center;
+            justify-content: center !important;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            padding: 0 36px !important;
+            gap: 20px !important;
+            overflow: hidden;
+            text-align: center;
+            white-space: nowrap;
         }
         .s1-wbgt-bar, .fc-lv-bar, .s2-meta-bar {
             position: absolute; left: 0; bottom: 0; width: 512px; height: var(--led-foot-bar-h);
@@ -9297,7 +9304,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261117-meiban-foot', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261117-meiban-switch', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -9465,7 +9472,8 @@
         return false;
     }
     function updateForecastSlots(slots) {
-        if (wbgtDemoCycle_() && document.querySelector('#scene4 .fc-panel[data-fc-slot="1"]')) return;
+        /* 見本の周回中に取得が来ても、いま塗っている段階をほぼ安全へ戻さない */
+        if (wbgtDemoCycle_() && wbgtCycleShowing_) return;
         if (temperatureDisplay_() && !wbgtDemoCycle_()) {
             refreshSignageBgIfChanged_();
             return;
@@ -9518,33 +9526,38 @@
     function hasContentLogo_() {
         return !!contentEndLogoSrc_();
     }
-    /** 見本は段階を先に横へ並べる。切替のたびに止めて塗り直さない */
-    function paintWbgtCycleSets_() {
+    /** 見本は今の段階だけを全面に置く。次の段階は流し込まず、先頭へ戻して切り替える */
+    function paintWbgtCycleLevel_(levelIdx) {
         if (!fcConveyor || !wbgtDemoCycle_()) return;
-        const per = SCENE4_DATA_COUNT;
-        const panels = fcConveyor.querySelectorAll('.fc-panel:not(.fc-logo-panel)');
-        panels.forEach(function (panel, i) {
-            const level = Math.min(DEMO_LEVEL_ORDER.length - 1, Math.floor(i / per));
-            const w = DEMO_WBGT_BY_LEVEL[level];
-            panel.setAttribute('data-fc-slot', String(level));
-            panel.querySelectorAll('.fc-val-live').forEach(function (el) {
-                el.innerHTML = formatFcWbgtHtml(w);
+        const lv = Math.max(0, Math.min(DEMO_LEVEL_ORDER.length - 1, levelIdx | 0));
+        const html = formatFcWbgtHtml(DEMO_WBGT_BY_LEVEL[lv]);
+        fcConveyor.querySelectorAll('.fc-panel:not(.fc-logo-panel)').forEach(function (panel, i) {
+            panel.setAttribute('data-fc-slot', String(lv));
+            const face = i % SCENE4_DATA_COUNT;
+            panel.querySelectorAll('.fc-bar-label').forEach(function (el) {
+                el.textContent = fcBarLabelForPanel_(face);
             });
+            panel.querySelectorAll('.fc-val-live').forEach(function (el) { el.innerHTML = html; });
         });
+        wbgtCycleLap_ = lv;
+        wbgtCyclePainted_ = lv;
+        currentWbgtLevel = lv;
+        lastWbgtSlots = mockSlotsForDemoLevel(lv);
+        fcConveyor.style.transition = 'none';
+        applyWbgtCycleChrome_(lv);
         if (window.SignageBg && typeof SignageBg.refreshForecast === 'function') {
-            SignageBg.refreshForecast(DEMO_LEVEL_ORDER.map(function (lv) {
-                return { wbgt: DEMO_WBGT_BY_LEVEL[lv], levelIdx: lv, hour: '現在' };
-            }), 'wbgt-demo');
+            SignageBg.refreshForecast(lastWbgtSlots, 'normal');
         }
     }
     function compactScene4Panels() {
         if (!fcConveyor) return;
-        const withLogo = hasContentLogo_();
+        const withLogo = hasContentLogo_() && !wbgtDemoCycle_();
         document.querySelectorAll('#scene4 .fc-logo-panel').forEach(function (el) {
             el.style.display = withLogo ? '' : 'none';
         });
         const per = withLogo ? SCENE4_PANEL_COUNT : SCENE4_DATA_COUNT;
-        const copies = scrollCopyCount_(wbgtSceneLaps_());
+        let copies = scrollCopyCount_(wbgtSceneLaps_());
+        if (wbgtDemoCycle_()) copies = Math.max(copies, wbgtCycleCopyCount_(per * 128));
         repeatTrackSets_(fcConveyor, per, copies);
         scene4SetWidth = per * 128;
         fcConveyor.style.width = (scene4SetWidth * copies) + 'px';
@@ -11863,8 +11876,8 @@
         const msg = '<span class="fc-lv-msg-full">' + footSourceWithLogoHtml_() + '</span>';
         const logo = hasContentLogo_() ? '<div class="fc-lv-slot fc-lv-slot-logo" aria-hidden="true"></div>' : '';
         if (face3Foot_()) {
-            const src = '<div class="fc-lv-slot fc-lv-slot-src fc-lv-slot-src-3" style="width:256px;max-width:256px;flex:0 0 256px"><span class="fc-lv-msg-full">' + footSourceSentenceHtml_() + '</span></div>';
-            return '<div class="fc-lv-set fc-lv-set-sync">' + src + footSourceLogoSlotHtml_() + '</div>';
+            const src = '<div class="fc-lv-slot fc-lv-slot-src fc-lv-slot-src-3"><span class="fc-lv-msg-full">' + footSourceWithLogoHtml_() + '</span></div>';
+            return '<div class="fc-lv-set fc-lv-set-sync">' + src + '</div>';
         }
         const src = '<div class="fc-lv-slot fc-lv-slot-src">' + msg + '</div>';
         return '<div class="fc-lv-set fc-lv-set-sync">' + src + src + logo + '</div>';
@@ -11874,11 +11887,6 @@
         if (!fcLvTrack) return;
         fcLvTrack.querySelectorAll('.fc-lv-msg-full').forEach(function (el) {
             if (face3Foot_()) {
-                el.style.width = '100%';
-                el.style.maxWidth = '100%';
-                el.style.boxSizing = 'border-box';
-                el.style.padding = '0 8px';
-                el.style.justifyContent = 'center';
                 el.style.fontSize = '18px';
                 return;
             }
@@ -13344,8 +13352,39 @@
         return p.wbgtDemoCycle === true;
     }
     function wbgtSceneLaps_() {
-        if (wbgtDemoCycle_()) return DEMO_LEVEL_ORDER.length;
+        /* 見本は1段階を1周。段階の境目で先頭へ戻して切り替える */
+        if (wbgtDemoCycle_()) return 1;
         return presentationLaps_('wbgtLaps', SCENE4_LAPS);
+    }
+    /** 暑さ指数の数字が見える幅。5面は左3面だけ。右の壁紙は数えない */
+    function wbgtCycleViewPx_() {
+        if (face3Foot_()) return 384;
+        const scene = document.getElementById('scene4');
+        const sw = scene && scene.clientWidth;
+        if (sw >= 128) return sw;
+        return signageViewPx_();
+    }
+    /**
+     * 1周ぶん流しても、見えている面は数字のカードの上に残す。
+     * 列はセットの次にも同じ数字を置く。画面がセットより広くても、下地だけにはしない。
+     */
+    function wbgtCycleCutPxFrom_(setWidth, viewPx, copies, logoInScroll) {
+        const set = Math.max(128, Number(setWidth) || 0);
+        const view = Math.max(128, Number(viewPx) || 0);
+        const n = Math.max(2, Math.floor(Number(copies) || 2));
+        const covered = Math.max(0, set * n - view);
+        const lap = logoInScroll ? Math.max(0, set - Math.min(view, set)) : set;
+        return Math.max(0, Math.min(lap, covered));
+    }
+    function wbgtCycleCopyCount_(setWidth) {
+        const set = Math.max(128, Number(setWidth) || 0);
+        const view = Math.max(128, wbgtCycleViewPx_());
+        return Math.max(2, Math.ceil((set + view) / set));
+    }
+    /** 見本の1段階を流す距離。数字が欠ける位置までは進まない */
+    function wbgtCycleCutPx_(setWidth) {
+        const set = Math.max(128, Number(setWidth) || 0);
+        return wbgtCycleCutPxFrom_(set, wbgtCycleViewPx_(), wbgtCycleCopyCount_(set), false);
     }
     function applyWbgtCycleChrome_(levelIdx) {
         if (!window.SignageBg || typeof SignageBg.colorsForLevel !== 'function') return;
@@ -13412,7 +13451,7 @@
             syncWbgtSlotsToDomIfReady_();
         }
         compactScene4Panels();
-        if (sample) paintWbgtCycleSets_();
+        if (sample) paintWbgtCycleLevel_(0);
         buildFcLvTrack(false);
         applyPendingSignageBgAtScene_();
         if (sample) applyWbgtCycleChrome_(0);
@@ -13425,28 +13464,49 @@
         }
         const wbgtTimes = wbgtSceneLaps_();
         const wbgtSet = Math.max(128, scene4SetWidth);
-        const totalPx = fullPassScrollPx_(wbgtSet, wbgtTimes);
+        const totalPx = sample ? wbgtCycleCutPx_(wbgtSet) : fullPassScrollPx_(wbgtSet, wbgtTimes);
         let totalScrolled = 0;
+        let cycleMoved = 0;
+        let cycleLevel = 0;
         applyScrollX_(fcConveyor, 0);
         applyScrollX_(fcLvTrack, 0);
+        function snapWbgtCycle_(x) {
+            if (fcConveyor) fcConveyor.style.transition = 'none';
+            applyScrollX_(fcConveyor, x);
+        }
         function animateScene4_() {
             const speed = getScrollSpeedPx_();
+            if (sample) {
+                if (face3Foot_()) stepFace3Foot_();
+                cycleMoved += speed;
+                if (cycleMoved >= totalPx) {
+                    /* 危険まで出したら次へ。段階の境目は先頭へ戻し、その場で替える */
+                    if (cycleLevel >= DEMO_LEVEL_ORDER.length - 1) {
+                        snapWbgtCycle_(-totalPx);
+                        scene4AnimId = null;
+                        stopLogoSpinInterval();
+                        finishScene4();
+                        return;
+                    }
+                    cycleLevel += 1;
+                    cycleMoved = 0;
+                    paintWbgtCycleLevel_(cycleLevel);
+                    snapWbgtCycle_(0);
+                    scene4AnimId = requestAnimationFrame(animateScene4_);
+                    return;
+                }
+                snapWbgtCycle_(-cycleMoved);
+                scene4AnimId = requestAnimationFrame(animateScene4_);
+                return;
+            }
             totalScrolled = Math.min(totalPx, totalScrolled + speed);
             applyScrollX_(fcConveyor, -totalScrolled);
             if (face3Foot_()) stepFace3Foot_();
             else applyScrollX_(fcLvTrack, -totalScrolled);
-            if (sample) {
-                const lap = Math.min(DEMO_LEVEL_ORDER.length - 1, Math.floor(totalScrolled / wbgtSet));
-                if (lap !== wbgtCycleLap_) {
-                    wbgtCycleLap_ = lap;
-                    wbgtCyclePainted_ = lap;
-                }
-            }
             if (totalScrolled >= totalPx) {
                 scene4AnimId = null;
                 stopLogoSpinInterval();
-                if (sample) finishScene4();
-                else runAfterSceneEndHold_(finishScene4);
+                runAfterSceneEndHold_(finishScene4);
                 return;
             }
             scene4AnimId = requestAnimationFrame(animateScene4_);
