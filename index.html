@@ -807,6 +807,17 @@
         .scene1-state.active { display: flex; }
         .panel-clock .s1-foot { display: none; }
         html.site-dm-0014 #scene4 .fc-lv-bar { width: 384px; }
+        html.site-dm-0014 #scene4 .fc-lv-slot-mark {
+            width: 128px; max-width: 128px; flex: 0 0 128px;
+            height: var(--led-foot-bar-h);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; box-sizing: border-box;
+            background: var(--led-foot-bar-bg);
+        }
+        html.site-dm-0014 #scene4 .fc-lv-slot-src-3 .fc-lv-msg-full {
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; overflow: hidden; text-align: center; white-space: nowrap;
+        }
         .s1-wbgt-bar, .fc-lv-bar, .s2-meta-bar {
             position: absolute; left: 0; bottom: 0; width: 512px; height: var(--led-foot-bar-h);
             background: var(--led-foot-bar-bg); overflow: hidden; z-index: 12; box-sizing: border-box;
@@ -9286,7 +9297,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261111-sato-boards', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261117-meiban-foot', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -11835,12 +11846,25 @@
     function face3Foot_() {
         return Number(((siteCfg_() && siteCfg_().presentation) || {}).scrollFaces) === 3;
     }
+    function footSourceSentenceHtml_() {
+        const text = getFootSourceText_();
+        const logo = sscSourceLogo_();
+        const mark = '記録ｃｈセカンド';
+        const at = logo ? text.indexOf(mark) : -1;
+        if (at < 0) return escapeS1Html(text);
+        return escapeS1Html(text.slice(0, at).replace(/[・\s]+$/, ''));
+    }
+    function footSourceLogoSlotHtml_() {
+        const logo = sscSourceLogo_();
+        if (!logo) return '';
+        return '<div class="fc-lv-slot fc-lv-slot-mark"><span class="foot-source-logo-clip"><img class="foot-source-logo" src="' + escapeS1Html(logo) + '" alt="記録chセカンド"></span></div>';
+    }
     function buildFcLvSetHtml(text) {
         const msg = '<span class="fc-lv-msg-full">' + footSourceWithLogoHtml_() + '</span>';
         const logo = hasContentLogo_() ? '<div class="fc-lv-slot fc-lv-slot-logo" aria-hidden="true"></div>' : '';
         if (face3Foot_()) {
-            const src = '<div class="fc-lv-slot fc-lv-slot-src" style="width:384px;max-width:384px;flex:0 0 384px">' + msg + '</div>';
-            return '<div class="fc-lv-set fc-lv-set-sync">' + src + '</div>';
+            const src = '<div class="fc-lv-slot fc-lv-slot-src fc-lv-slot-src-3" style="width:256px;max-width:256px;flex:0 0 256px"><span class="fc-lv-msg-full">' + footSourceSentenceHtml_() + '</span></div>';
+            return '<div class="fc-lv-set fc-lv-set-sync">' + src + footSourceLogoSlotHtml_() + '</div>';
         }
         const src = '<div class="fc-lv-slot fc-lv-slot-src">' + msg + '</div>';
         return '<div class="fc-lv-set fc-lv-set-sync">' + src + src + logo + '</div>';
@@ -11853,8 +11877,8 @@
                 el.style.width = '100%';
                 el.style.maxWidth = '100%';
                 el.style.boxSizing = 'border-box';
-                el.style.padding = '0 16px';
-                el.style.justifyContent = 'space-between';
+                el.style.padding = '0 8px';
+                el.style.justifyContent = 'center';
                 el.style.fontSize = '18px';
                 return;
             }
