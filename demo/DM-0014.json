@@ -95,20 +95,20 @@
         "wing": "./assets/demo/meibird/meibird-wing.svg",
         "motion": "meibird",
         "alt": "メイバード",
-        "panelWidth": 100
+        "panelWidth": 128
       },
       {
         "src": "./assets/demo/meibird/meidory.svg",
         "wing": "./assets/demo/meibird/meidory-wing.svg",
         "motion": "meidory",
         "alt": "メイドリィ",
-        "panelWidth": 100
+        "panelWidth": 128
       }
     ],
     "caption": {
       "place": "split",
-      "width": 480,
-      "widths": [480],
+      "width": 256,
+      "widths": [256],
       "lines": [
         [
           { "text": "今日", "color": "#EF7A00" },

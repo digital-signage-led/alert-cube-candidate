@@ -2765,8 +2765,12 @@ test('未確定案件: ニッケン白浜町は DM-0011', function () {
   }).join(''), '今日もふたりで、安全と笑顔を。');
   assert.strictEqual(meiban.logoScroll.caption.place, 'split');
   assert.strictEqual(meiban5.logoScroll.caption.place, 'split');
-  assert.deepStrictEqual(meiban.logoScroll.caption.widths, [440]);
-  assert.deepStrictEqual(meiban5.logoScroll.caption.widths, [480]);
+  assert.deepStrictEqual(meiban.logoScroll.caption.widths, [256]);
+  assert.deepStrictEqual(meiban5.logoScroll.caption.widths, [256]);
+  assert.strictEqual(meiban.logoScroll.images[0].panelWidth, 128);
+  assert.strictEqual(meiban.logoScroll.images[1].panelWidth, 128);
+  assert.strictEqual(meiban5.logoScroll.images[0].panelWidth, 128);
+  assert.strictEqual(meiban5.logoScroll.images[1].panelWidth, 128);
   var logoApi = require('../contents/logo-scroll/index.js');
   var splitHtml = logoApi.buildTrackHtml(meiban.logoScroll).html;
   var birdAt = splitHtml.indexOf('meibird.svg');
