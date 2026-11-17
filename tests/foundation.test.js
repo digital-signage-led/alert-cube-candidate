@@ -2758,24 +2758,24 @@ test('未確定案件: ニッケン白浜町は DM-0011', function () {
   assert.ok(meiban5.densho.sourceLogo.indexOf('kiroku-ch-second.png') >= 0);
   assert.ok(fs.existsSync(path.join(root, 'assets', 'demo', 'DM-0013', 'kiroku-ch-second.png')));
   assert.strictEqual(meiban.logoScroll.caption.lines.map(function (line) {
-    return line.map(function (part) { return part.text; }).join('');
-  }).join(''), 'ご迷惑をおかけしてまことに申し訳ありません安全第一で作業中ですご協力をお願いします');
+    return line.map(function (part) { return part.text || ''; }).join('');
+  }).join(''), '今日もふたりで、安全と笑顔を。');
   assert.strictEqual(meiban5.logoScroll.caption.lines.map(function (line) {
-    return line.map(function (part) { return part.text; }).join('');
-  }).join(''), 'ご迷惑をおかけしてまことに申し訳ありません安全第一で作業中ですご協力をお願いします');
+    return line.map(function (part) { return part.text || ''; }).join('');
+  }).join(''), '今日もふたりで、安全と笑顔を。');
   assert.strictEqual(meiban.logoScroll.caption.place, 'split');
   assert.strictEqual(meiban5.logoScroll.caption.place, 'split');
-  assert.deepStrictEqual(meiban.logoScroll.caption.widths, [784, 752]);
-  assert.deepStrictEqual(meiban5.logoScroll.caption.widths, [868, 832]);
+  assert.deepStrictEqual(meiban.logoScroll.caption.widths, [440]);
+  assert.deepStrictEqual(meiban5.logoScroll.caption.widths, [480]);
   var logoApi = require('../contents/logo-scroll/index.js');
   var splitHtml = logoApi.buildTrackHtml(meiban.logoScroll).html;
   var birdAt = splitHtml.indexOf('meibird.svg');
-  var line1 = splitHtml.indexOf('ご迷惑をおかけして');
+  var line1 = splitHtml.indexOf('今日');
   var doryAt = splitHtml.indexOf('meidory.svg');
-  var line2 = splitHtml.indexOf('安全第一');
-  assert.ok(birdAt >= 0 && line1 > birdAt && doryAt > line1 && line2 > doryAt);
-  assert.strictEqual((splitHtml.slice(birdAt, doryAt).match(/logo-cap-line/g) || []).length, 1);
-  assert.strictEqual((splitHtml.slice(doryAt, splitHtml.indexOf('meibird.svg', birdAt + 1)).match(/logo-cap-line/g) || []).length, 1);
+  assert.ok(birdAt >= 0 && line1 > birdAt && doryAt > line1);
+  assert.strictEqual((splitHtml.slice(birdAt, doryAt).match(/logo-cap-line/g) || []).length, 2);
+  assert.ok(splitHtml.indexOf('color:#EF7A00') >= 0);
+  assert.ok(splitHtml.indexOf('color:#0269B8') >= 0);
   assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0011' && row.siteName === '白浜町'; }));
   assert.strictEqual(site.projectId, 'DM-0011');
   assert.strictEqual(site.status, 'demo');
