@@ -4652,7 +4652,17 @@
         query.get('jmaSupplementPoint') || (siteCfg_().jma && siteCfg_().jma.amedasSupplementPoint) || '';
     let JMA_FORECAST_AREA_CODE =
         query.get('jmaArea') || (siteCfg_().jma && siteCfg_().jma.forecastArea) || '270000';
-    const JMA_FETCH_HEADERS = { cache: 'no-store' };
+    /* 気象庁への1回の取得は10秒で打ち切る。応答が返らないまま止まると、以後の定時取得がすべて「前回が未完了」で飛ばされる */
+    const JMA_FETCH_TIMEOUT_MS = 10000;
+    const JMA_FETCH_HEADERS = {
+        cache: 'no-store',
+        get signal() {
+            if (typeof AbortController === 'undefined') return undefined;
+            const ctrl = new AbortController();
+            setTimeout(function () { ctrl.abort(); }, JMA_FETCH_TIMEOUT_MS);
+            return ctrl.signal;
+        }
+    };
     /* 気象庁 高解像度降水ナウキャスト（雨雲レーダー）— https://www.jma.go.jp/bosai/nowc/ */
     const JMA_NOWC_TARGET_TIMES_URL = 'https://www.jma.go.jp/bosai/jmatile/data/nowc/targetTimes_N2.json';
     const JMA_NOWC_TILE_URL = 'https://www.jma.go.jp/bosai/jmatile/data/nowc/{basetime}/none/{validtime}/surf/hrpns/{z}/{x}/{y}.png';
@@ -4706,9 +4716,17 @@
             .join('_');
     }
     const AMEDAS_MAX_AGE_MS = 30 * 60 * 1000;
+    /* 取得に失敗しても、観測値はこの時間まで前回値を出し続ける（時刻表示は観測時刻のまま） */
+    const AMEDAS_HOLD_MS = 3 * 60 * 60 * 1000;
+    /* 1項目だけ欠測したとき、直前の値で埋めてよい時間 */
+    const AMEDAS_GAP_FILL_MS = 60 * 60 * 1000;
+    /* 観測時刻がこれより古くなったら、定時を待たずに取り直す */
+    const AMEDAS_WATCHDOG_MS = 25 * 60 * 1000;
+    /* 1回の定時取得全体の上限。超えたら失敗扱いにして再試行へ回す */
+    const FETCH_ROUND_TIMEOUT_MS = 45000;
     const WBGT_MAX_AGE_MS = 45 * 60 * 1000;
     const FORECAST_MAX_AGE_MS = 14 * 60 * 60 * 1000;
-    const SIGNAGE_STATE_CACHE_MAX_AGE_MS = 30 * 60 * 1000;
+    const SIGNAGE_STATE_CACHE_MAX_AGE_MS = 3 * 60 * 60 * 1000;
     const MOE_GAS_FETCH_TIMEOUT_MS = 12000;
     const MOE_JSONP_TIMEOUT_MS = 10000;
     /* 環境省が提供期間外と返したときだけ true。取得失敗では true にしない */
@@ -5271,10 +5289,64 @@
         }
         return true;
     }
+    const AMEDAS_SNAPSHOT_FIELDS_ = [
+        ['temp', 'temp', false], ['humidity', 'humi', false], ['precipitation10m', 'rain', false],
+        ['wind', 'wind', false], ['windDirection', 'wdir', false], ['gust', 'gust', false],
+        ['maxTemp', 'maxT', true], ['minTemp', 'minT', true]
+    ];
+    function jstYmdOfMs_(ms) {
+        const p = jstPartsFromMs(ms);
+        return p.year * 10000 + p.month * 100 + p.day;
+    }
+    /* 気象庁は品質の悪い項目を null で返す。その10分だけ空欄にならないよう、1時間以内の直前値で埋める */
+    function fillAmedasGaps_(obs, latest) {
+        const snap = lastAmedasSnapshot_;
+        if (!obs || !snap || !snap.time) return obs;
+        const snapAt = Date.parse(snap.time);
+        const at = latest instanceof Date ? latest.getTime() : (latest ? Date.parse(latest) : getNowMs());
+        if (!Number.isFinite(snapAt) || !Number.isFinite(at)) return obs;
+        const fieldAt = snap.at || {};
+        const out = Object.assign({}, obs);
+        const filledAt = Object.assign({}, obs.__filledAt || {});
+        const filled = [];
+        function fieldFresh_(key) {
+            const t = Number(fieldAt[key]) || snapAt;
+            return at - t <= AMEDAS_GAP_FILL_MS && at - t >= -AMEDAS_GAP_FILL_MS ? t : null;
+        }
+        AMEDAS_SNAPSHOT_FIELDS_.forEach(function (f) {
+            const src = f[0], key = f[1], sameDayOnly = f[2];
+            if (amedasFieldValue(out[src]) != null || snap[key] == null) return;
+            const t = fieldFresh_(key);
+            if (t == null) return;
+            if (sameDayOnly && jstYmdOfMs_(t) !== jstYmdOfMs_(at)) return;
+            out[src] = [snap[key]];
+            filledAt[key] = t;
+            filled.push(key);
+        });
+        if (amedasFieldValue(out.normalPressure) == null && amedasFieldValue(out.pressure) == null && snap.pres != null) {
+            const t = fieldFresh_('pres');
+            if (t != null) {
+                out.normalPressure = [snap.pres];
+                filledAt.pres = t;
+                filled.push('pres');
+            }
+        }
+        if (!filled.length) return obs;
+        out.__filledAt = filledAt;
+        console.log('[JMA] 欠測項目を直前値で補完', filled.join(','));
+        return out;
+    }
     function captureAmedasSnapshot_(obs, latest) {
         if (!obs) return;
         const when = latest instanceof Date ? latest : (latest ? new Date(latest) : null);
+        const whenMs = when && !isNaN(when.getTime()) ? when.getTime() : getNowMs();
+        const filledAt = obs.__filledAt || {};
+        const at = {};
+        AMEDAS_SNAPSHOT_FIELDS_.map(function (f) { return f[1]; }).concat(['pres']).forEach(function (key) {
+            at[key] = Number(filledAt[key]) || whenMs;
+        });
         lastAmedasSnapshot_ = {
+            at: at,
             time: when && !isNaN(when.getTime()) ? when.toISOString() : null,
             temp: amedasFieldValue(obs.temp),
             humi: amedasFieldValue(obs.humidity),
@@ -5302,6 +5374,7 @@
             minTemp: snap.minT != null ? [snap.minT] : null,
             gust: snap.gust != null ? [snap.gust] : null
         };
+        if (snap.at) obs.__filledAt = snap.at;
         const when = snap.time ? new Date(snap.time) : null;
         if (snap.weatherCode) lastForecastWeatherCode_ = snap.weatherCode;
         applyJmaAmedasToDom(obs, when && !isNaN(when.getTime()) ? when : null);
@@ -5328,7 +5401,7 @@
     }
     function expireStaleDisplayedData_() {
         const now = getNowMs();
-        if (lastAmedasObsTime && now - lastAmedasObsTime.getTime() > AMEDAS_MAX_AGE_MS) {
+        if (lastAmedasObsTime && now - lastAmedasObsTime.getTime() > AMEDAS_HOLD_MS) {
             clearStaleAmedasDisplay_();
         }
         if (lastForecastSuccessAtMs_ && now - lastForecastSuccessAtMs_ > FORECAST_MAX_AGE_MS) {
@@ -5377,7 +5450,7 @@
             const wbgtFetchedAt = Number(data.wbgtFetchedAt || data.savedAt || 0);
             const wbgtFresh = wbgtFetchedAt > 0 && now - wbgtFetchedAt <= WBGT_MAX_AGE_MS;
             const amedasAt = data.amedas && data.amedas.time ? Date.parse(data.amedas.time) : NaN;
-            const amedasFresh = Number.isFinite(amedasAt) && now - amedasAt <= AMEDAS_MAX_AGE_MS;
+            const amedasFresh = Number.isFinite(amedasAt) && now - amedasAt <= AMEDAS_HOLD_MS;
             if (data.wbgtOffSeason && wbgtFresh) {
                 wbgtOffSeason = true;
                 wbgtUnavailable = false;
@@ -9333,7 +9406,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261117-meiban-switch', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261118-obs-hold', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }
@@ -10172,7 +10245,14 @@
                 timings['気象庁'] = Math.round(performance.now() - s);
             })());
         }
-        await Promise.all(jobs);
+        let roundTimedOut = false;
+        await Promise.race([
+            Promise.all(jobs),
+            new Promise(function (resolve) {
+                setTimeout(function () { roundTimedOut = true; resolve(); }, FETCH_ROUND_TIMEOUT_MS);
+            })
+        ]);
+        if (roundTimedOut) console.warn('[取得] ' + (FETCH_ROUND_TIMEOUT_MS / 1000) + '秒で終わらないため打ち切り、再試行へ');
         const total = Math.round(performance.now() - tAll);
         const tag = (plan.labels || []).join(', ');
         const deferNote = shouldDeferDisplayRefresh_() ? ' · ループ中のため表示組み替えは保留' : '';
@@ -10192,7 +10272,12 @@
         if (lastFetchFail) {
             console.warn('[Schedule] 取得失敗のため', FETCH_RETRY_MS / 1000, '秒後に再試行');
             dataRefreshTimerId = setTimeout(async function() {
-                await runScheduledFetch({ jma: true, moe: true, nowc: true, forecast: true, labels: ['retry'] });
+                try {
+                    await runScheduledFetch({ jma: true, moe: true, nowc: true, forecast: true, labels: ['retry'] });
+                } catch (e) {
+                    console.error('[Schedule] 再試行中の例外', e);
+                    lastFetchFail = true;
+                }
                 scheduleDataRefresh();
             }, FETCH_RETRY_MS);
             return;
@@ -10207,9 +10292,27 @@
         const kinds = (next.labels || []).join(', ') || 'fetch';
         console.log('[Schedule] 次回', formatScheduleJst(next.at), '(' + kinds + ')', 'あと', Math.round(delay / 1000), '秒');
         dataRefreshTimerId = setTimeout(async function() {
-            await runScheduledFetch(next);
+            try {
+                await runScheduledFetch(next);
+            } catch (e) {
+                console.error('[Schedule] 定時取得中の例外', e);
+                lastFetchFail = true;
+            }
             scheduleDataRefresh();
         }, delay);
+    }
+    /* 見張り: 観測時刻が古いまま止まっていたら、定時を待たずに裏で取り直す（表示は前回値のまま） */
+    let amedasWatchdogId_ = null;
+    function startAmedasWatchdog_() {
+        if (amedasWatchdogId_ != null) return;
+        amedasWatchdogId_ = setInterval(function () {
+            if (!siteOperable_() || scheduledFetchInFlight_ || denshoLive_()) return;
+            if (window.AlertCubeContent && !contentShouldFetch_('jma-amedas')) return;
+            const obsAt = lastAmedasObsTime ? lastAmedasObsTime.getTime() : 0;
+            if (getNowMs() - obsAt < AMEDAS_WATCHDOG_MS) return;
+            console.warn('[見張り] 観測値の更新が止まっているため取り直し');
+            startBackgroundFetch_({ jma: true, moe: true, nowc: true, forecast: true, labels: ['見張り'] });
+        }, 120000);
     }
     async function fetchMoeJsonFromGasUrl_(url) {
         async function fetchOnce_() {
@@ -10566,6 +10669,33 @@
         const dt = new Date(iso);
         return Number.isFinite(dt.getTime()) ? dt : null;
     }
+    /* 同じ地点ファイルの中で、最新の10分だけ欠測した項目は、1時間以内の手前の値で埋める */
+    const AMEDAS_BLOCK_BACKFILL_KEYS_ = [
+        'temp', 'humidity', 'precipitation10m', 'wind', 'windDirection',
+        'pressure', 'normalPressure', 'maxTemp', 'minTemp', 'gust'
+    ];
+    function backfillFromBlock_(data, keys, idx) {
+        const base = data[keys[idx]];
+        const out = Object.assign({}, base);
+        const baseAt = slotTimeFromKey_(keys[idx]);
+        const filledAt = {};
+        const fieldName = { temp: 'temp', humidity: 'humi', precipitation10m: 'rain', wind: 'wind',
+            windDirection: 'wdir', pressure: 'pres', normalPressure: 'pres', maxTemp: 'maxT', minTemp: 'minT', gust: 'gust' };
+        AMEDAS_BLOCK_BACKFILL_KEYS_.forEach(function (k) {
+            if (amedasFieldValue(out[k]) != null) return;
+            for (let j = idx - 1; j >= 0 && j >= idx - 6; j--) {
+                const prev = data[keys[j]];
+                const at = slotTimeFromKey_(keys[j]);
+                if (!prev || !at || (baseAt && baseAt.getTime() - at.getTime() > AMEDAS_GAP_FILL_MS)) break;
+                if (amedasFieldValue(prev[k]) == null) continue;
+                out[k] = prev[k];
+                filledAt[fieldName[k]] = at.getTime();
+                break;
+            }
+        });
+        if (Object.keys(filledAt).length) out.__filledAt = filledAt;
+        return out;
+    }
     function pickPointBlockObs_(data, exactKey) {
         if (data.temp) {
             if (!amedasSlotHasMeasurement_(data)) throw new Error('地点JSONが欠測');
@@ -10578,7 +10708,7 @@
         for (let i = pool.length - 1; i >= 0; i--) {
             if (!amedasSlotHasMeasurement_(data[pool[i]])) continue;
             data[pool[i]].__slotKey = pool[i];
-            return data[pool[i]];
+            return backfillFromBlock_(data, pool, i);
         }
         const key = pool[pool.length - 1];
         if (data[key]) data[key].__slotKey = key;
@@ -10682,9 +10812,20 @@
         if (obs && obs.__slotKey) delete obs.__slotKey;
         return obs;
     }
+    function amedasPointBlockUrlAt_(ms) {
+        const p = jstPartsFromMs(ms);
+        const ymd = String(p.year) + String(p.month).padStart(2, '0') + String(p.day).padStart(2, '0');
+        const blockH = String(Math.floor(p.hour / 3) * 3).padStart(2, '0');
+        return `https://www.jma.go.jp/bosai/amedas/data/point/${JMA_AMEDAS_POINT}/${ymd}_${blockH}.json`;
+    }
     async function fetchJmaAmedasObservation_() {
+        /* 最新時刻の確認を待たずに、今の3時間枠の地点ファイルを先に取りに行く。枠が合えばそのまま使う */
+        const guessUrl = amedasPointBlockUrlAt_(getNowMs());
+        const guessData = fetch(guessUrl, JMA_FETCH_HEADERS)
+            .then(function (res) { return res.ok ? res.json() : null; })
+            .catch(function () { return null; });
         const latest = await fetchJmaLatestTime_();
-        if (getNowMs() - latest.getTime() > AMEDAS_MAX_AGE_MS) {
+        if (getNowMs() - latest.getTime() > AMEDAS_HOLD_MS) {
             throw new Error('JMA AMeDAS stale ' + latest.toISOString());
         }
         const fmt = new Intl.DateTimeFormat('en-CA', {
@@ -10705,9 +10846,12 @@
         let lastErr = null;
         for (const entry of urls) {
             try {
-                const res = await fetch(entry.url, JMA_FETCH_HEADERS);
-                if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + entry.url);
-                const data = await res.json();
+                let data = entry.url === guessUrl ? await guessData : null;
+                if (!data) {
+                    const res = await fetch(entry.url, JMA_FETCH_HEADERS);
+                    if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + entry.url);
+                    data = await res.json();
+                }
                 if (entry.kind === 'map') {
                     let obs = data[JMA_AMEDAS_POINT];
                     if (!obs) throw new Error('mapに地点なし');
@@ -11357,7 +11501,15 @@
             if ((el.textContent || '').slice(-2) === '時点') el.textContent = stamp;
         });
     }
+    /* 再生中の面は組み替えない方針。ただし空欄（-- を含む）の数値だけはその場で埋める */
+    function fillBlankAll_(selector, text) {
+        document.querySelectorAll(selector).forEach(function (el) {
+            const cur = (el.textContent || '').trim();
+            if (cur === '' || cur === '--') el.textContent = text;
+        });
+    }
     function applyJmaAmedasToDom(obs, latest) {
+        obs = fillAmedasGaps_(obs, latest);
         if (latest) lastAmedasObsTime = latest instanceof Date ? latest : new Date(latest);
         const paintObs = sceneDomOpen_(s2);
         if (paintObs) applyScene2WeatherIcon_(lastForecastWeatherCode_ || amedasToTelopsCode_(obs));
@@ -11378,19 +11530,17 @@
         const gust = amedasFieldValue(obs.gust);
         if (parsedTemp != null) syncAnnualMode_();
         lastAmedasRainNow = (p10 != null && Number(p10) > 0) || (p1h != null && Number(p1h) > 0);
+        const put = paintObs ? setTextAll : fillBlankAll_;
+        put('.temp-val', parsedTemp != null ? String(Math.round(parsedTemp)) : '--');
+        put('.humi-val', humi != null ? String(Math.round(Number(humi))) : '--');
+        put('.rain-val', p10 != null ? Number(p10).toFixed(1) : '--');
+        put('.pres-val', pres != null ? String(Math.round(Number(pres))) : '--');
+        put('.dir-val', wdir != null ? jmaWindDirFromCode(wdir) : '--');
+        put('.wind-val', wind != null ? Number(wind).toFixed(1) : '--');
+        put('.tmaxmax-val', maxT != null ? String(Math.round(Number(maxT))) : '--');
+        put('.tmin-val', minT != null ? String(Math.round(Number(minT))) : '--');
+        put('.gust-val', gust != null ? Number(gust).toFixed(1) : '--');
         if (paintObs) {
-            setTextAll('.temp-val', parsedTemp != null ? String(Math.round(parsedTemp)) : '');
-            setTextAll('.humi-val', humi != null ? String(Math.round(Number(humi))) : '');
-            setTextAll('.rain-val', p10 != null ? Number(p10).toFixed(1) : '');
-            setTextAll('.pres-val', pres != null ? String(Math.round(Number(pres))) : '');
-            const windDirTxt = wdir != null ? jmaWindDirFromCode(wdir) : '';
-            setTextAll('.dir-val', windDirTxt);
-            setTextAll('.wind-val', wind != null ? Number(wind).toFixed(1) : '');
-            const maxTxt = maxT != null ? Math.round(Number(maxT)) : null;
-            const minTxt = minT != null ? Math.round(Number(minT)) : null;
-            setTextAll('.tmaxmax-val', maxTxt != null ? String(maxTxt) : '--');
-            setTextAll('.tmin-val', minTxt != null ? String(minTxt) : '--');
-            setTextAll('.gust-val', gust != null ? Number(gust).toFixed(1) : '');
             if (shouldDeferDisplayRefresh_()) queueDisplayRefresh_();
             else buildScene2MetaTrack(lastAmedasObsTime);
             fitScene2BodyText();
@@ -16257,6 +16407,7 @@
         restoreSignageStateCache_();
         mainLoopStarted_ = true;
         scheduleDataRefresh();
+        startAmedasWatchdog_();
         function go() {
             try {
                 startSequence();
