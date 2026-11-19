@@ -174,7 +174,7 @@
     "disaster": { "on": true },
     "heat": { "on": false },
     "schedule": { "on": true },
-    "news": { "on": true },
+    "news": { "on": false },
     "boards": { "on": true },
     "logo-scroll": { "on": true },
     "progress": { "on": true },

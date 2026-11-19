@@ -68,7 +68,7 @@
     "urls": ["./assets/sites/AC-0011/news.json"],
     "cacheKey": "AC-0011-news"
   },
-  "contentOrder": [ "typhoon", "clock", "observation", "rain-radar", "forecast", "wbgt-i18n", "wbgt", "news"],
+  "contentOrder": [ "typhoon", "clock", "observation", "rain-radar", "forecast", "wbgt-i18n", "wbgt"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -90,7 +90,7 @@
     "disaster": { "on": true },
     "heat": { "on": false },
     "schedule": { "on": false },
-    "news": { "on": true },
+    "news": { "on": false },
     "boards": { "on": false },
     "logo-scroll": { "on": false },
     "pollen": { "on": false },

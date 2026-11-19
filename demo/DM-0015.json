@@ -88,7 +88,7 @@
     "urls": [],
     "cacheKey": "DM-0015-news"
   },
-  "contentOrder": ["warning", "typhoon", "news"],
+  "contentOrder": ["warning", "typhoon"],
   "contents": {
     "clock": { "on": false },
     "observation": { "on": false },
@@ -114,7 +114,7 @@
     "heat": { "on": false },
     "schedule": { "on": false },
     "greeting": { "on": false },
-    "news": { "on": true },
+    "news": { "on": false },
     "boards": { "on": false },
     "logo-scroll": { "on": false },
     "progress": { "on": false },

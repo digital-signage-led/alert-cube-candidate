@@ -134,7 +134,7 @@
       { "src": "./assets/sites/AC-0004/logo_stack.png?v=6", "panelWidth": 256 }
     ]
   },
-  "contentOrder": [ "typhoon", "clock", "observation", "rain-radar", "wbgt", "forecast", "news", "boards", "wbgt-i18n"],
+  "contentOrder": [ "typhoon", "clock", "observation", "rain-radar", "wbgt", "forecast", "boards", "wbgt-i18n"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -156,7 +156,7 @@
     "disaster": { "on": false },
     "heat": { "on": false },
     "schedule": { "on": false },
-    "news": { "on": true },
+    "news": { "on": false },
     "boards": { "on": true },
     "logo-scroll": { "on": false },
     "pollen": { "on": false },

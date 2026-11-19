@@ -80,7 +80,7 @@
     "freshDays": 0,
     "cacheKey": "DM-0001-news"
   },
-  "contentOrder": [ "typhoon", "clock", "observation", "rain-radar", "lightning", "wbgt", "wbgt-i18n", "forecast", "schedule", "news"],
+  "contentOrder": [ "typhoon", "clock", "observation", "rain-radar", "lightning", "wbgt", "wbgt-i18n", "forecast", "schedule"],
   "contents": {
     "clock": { "on": true },
     "weather": { "on": true },
@@ -102,7 +102,7 @@
     "disaster": { "on": true },
     "heat": { "on": false },
     "schedule": { "on": true },
-    "news": { "on": true },
+    "news": { "on": false },
     "boards": { "on": false },
     "logo-scroll": { "on": false },
     "pollen": { "on": false },
