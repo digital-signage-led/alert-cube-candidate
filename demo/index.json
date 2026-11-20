@@ -19,6 +19,8 @@
     { "projectId": "DM-0013", "status": "demo", "customer": "株式会社仙台銘板", "siteName": "高松市" },
     { "projectId": "DM-0014", "status": "demo", "customer": "株式会社仙台銘板", "siteName": "高松市" },
     { "projectId": "DM-0015", "status": "demo", "customer": "デジタルサイネージ", "siteName": "住之江区" },
-    { "projectId": "DM-0017", "status": "demo", "customer": "株式会社ドトキューブ", "siteName": "春日市" }
+    { "projectId": "DM-0017", "status": "demo", "customer": "株式会社ドトキューブ", "siteName": "春日市" },
+    { "projectId": "DM-0018", "status": "demo", "customer": "株式会社ノバック", "siteName": "姫路市" },
+    { "projectId": "DM-0018", "status": "demo", "customer": "株式会社ノバック", "siteName": "姫路市" }
   ]
 }
