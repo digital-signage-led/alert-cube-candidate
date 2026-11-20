@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "projectId": "DM-0017",
+  "status": "demo",
+  "customer": "株式会社ドトキューブ",
+  "rental": "",
+  "label": "ドトキューブ",
+  "projectName": "ドトキューブ 春日市",
+  "siteName": "春日市",
+  "location": "福岡県春日市小倉3-198-2",
+  "latitude": 33.530369,
+  "longitude": 130.450653,
+  "elevation": null,
+  "memo": "未確定のデモ。株式会社ドトキューブ、担当は佐々木。請求しない。本番端末へ登録しない。5面640×128。地点は本社の春日市小倉。右端とコンテンツ末尾は立方体のマーク（黒地）。時刻下の白帯は DO TO CUBE。告知は足元注意を4面に出す。WBGT・アメダスは太宰府82191（気温・降水・風・湿度。気圧は福岡82182で補完）。予報は福岡県400000、福岡地方400010、気温の発表地点は福岡82182。警報は福岡県400000、春日市4021800。熱中症アラートは出さない。ニュースは出さない。暑さ指数と多言語は、環境省の発表期間だけ出す。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
+  "inundation": { "expectedDepthM": null },
+  "evacuation": {
+    "assembly": "",
+    "shelter": "",
+    "shelterName": "",
+    "distanceM": null
+  },
+  "hazard": {
+    "minIntensity": "5弱",
+    "earthquakeVisibleMinutes": 30,
+    "faceMs": 4000
+  },
+  "resolution": "640x128",
+  "layout": "AC-640",
+  "faces": 5,
+  "timeZone": "Asia/Tokyo",
+  "footSource": "出典：気象庁・環境省データ",
+  "releasePin": null,
+  "logo": {
+    "src": "./assets/demo/DM-0017/logo_mark.png?v=1",
+    "footSrc": "",
+    "panelBg": "#000000",
+    "bannerSrc": "./assets/demo/DM-0017/logo_foot.png?v=4"
+  },
+  "moe": {
+    "gasUrl": "https://script.google.com/macros/s/AKfycbzSTsappgfJTaJruOBJsbnCXSTPkeTBp39CXpvoSZsPQ0mWGs4KjSonC8_eZ2b1EeUXTQ/exec",
+    "point": "82191",
+    "fallbackPoint": "",
+    "pointName": "太宰府",
+    "alertArea": "福岡県",
+    "region": "10",
+    "prefecture": "82"
+  },
+  "jma": {
+    "amedasPoint": "82191",
+    "amedasSupplementPoint": "82182",
+    "forecastArea": "400000",
+    "forecastDetail": "400010",
+    "forecastPoint": "82182",
+    "forecastLabel": "春日市",
+    "warnArea": "400000",
+    "warnCity": "4021800",
+    "warnCityLabel": "春日市"
+  },
+  "wbgt": {
+    "seasonStart": { "month": 4, "day": 22 },
+    "seasonEnd": { "month": 10, "day": 22 }
+  },
+  "season": { "override": null },
+  "updateSettings": { "refreshMs": 60000 },
+  "schedule": { "enabled": false, "weekStartsOn": 1, "items": [] },
+  "greeting": {
+    "enabled": false,
+    "mode": "image",
+    "image": "./assets/greeting/neighborhood.jpg?v=1",
+    "title": "近隣の皆様へ",
+    "lines": [],
+    "foot": ""
+  },
+  "presentation": {
+    "sequence": "contentOrder",
+    "observationMode": "scroll",
+    "clockLaps": 1,
+    "observationLaps": 1,
+    "wbgtLaps": 1,
+    "forecastLaps": 1,
+    "i18nLaps": 1,
+    "warningLaps": 2,
+    "typhoonLaps": 2,
+    "logoRotate": false,
+    "observationTrailingLogo": true,
+    "i18nTrailingLogo": true
+  },
+  "news": {
+    "badge": "新着情報",
+    "laps": 1,
+    "speed": 1,
+    "maxItems": 2,
+    "pageUrl": "",
+    "urls": [],
+    "cacheKey": ""
+  },
+  "boards": {
+    "laps": 1,
+    "background": "#000000",
+    "phases": [
+      {
+        "id": "watch-step",
+        "label": "足元注意",
+        "layout": "posters",
+        "play": "slide",
+        "laps": 1,
+        "images": [
+          { "src": "./assets/demo/DM-0017/watch-step.png?v=3", "alt": "足元注意" },
+          { "src": "./assets/demo/DM-0017/watch-step.png?v=3", "alt": "足元注意" },
+          { "src": "./assets/demo/DM-0017/watch-step.png?v=3", "alt": "足元注意" },
+          { "src": "./assets/demo/DM-0017/watch-step.png?v=3", "alt": "足元注意" }
+        ]
+      }
+    ]
+  },
+  "contentOrder": [ "warning", "typhoon", "clock", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n", "boards"],
+  "contents": {
+    "clock": { "on": true },
+    "weather": { "on": true },
+    "temperature": { "on": true },
+    "rain": { "on": true },
+    "wind": { "on": true },
+    "humidity": { "on": true },
+    "pressure": { "on": true },
+    "temp-range": { "on": true },
+    "wbgt": { "on": true },
+    "wbgt-i18n": { "on": true },
+    "forecast": { "on": true },
+    "warning": { "on": true },
+    "warning-hero": { "on": false },
+    "rain-nowcast": { "on": true },
+    "typhoon": { "on": true },
+    "rain-radar": { "on": true },
+    "lightning": { "on": true },
+    "disaster": { "on": true },
+    "heat": { "on": false },
+    "schedule": { "on": false },
+    "greeting": { "on": false },
+    "news": { "on": false },
+    "boards": { "on": true },
+    "logo-scroll": { "on": false },
+    "hazard": { "on": false },
+    "eew": { "on": false },
+    "uv": { "on": false },
+    "illuminance": { "on": false },
+    "cumtemp": { "on": false },
+    "rain-1h": { "on": false },
+    "rain-24h": { "on": false },
+    "pollen": { "on": false },
+    "pm25": { "on": false }
+  }
+}

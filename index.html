@@ -68,7 +68,7 @@
     }
     var localDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     var siteId = String(q.get('site') || '').toUpperCase();
-    var wide = siteId === 'AC-0014' || siteId === 'AC-0021' || siteId === 'AC-0026' || siteId === 'AC-0027' || siteId === 'AC-0028' || siteId === 'AC-0030' || siteId === 'DM-0014' || q.get('layout') === '640';
+    var wide = siteId === 'AC-0014' || siteId === 'AC-0021' || siteId === 'AC-0026' || siteId === 'AC-0027' || siteId === 'AC-0028' || siteId === 'AC-0030' || siteId === 'DM-0014' || siteId === 'DM-0017' || q.get('layout') === '640';
     if (wide) q.delete('layout512');
     else if (!q.has('layout512')) q.set('layout512', '1');
     var forceNative = localDev
@@ -503,6 +503,35 @@
         }
         html.site-ac-0031 .logo-img {
             width: 120px; max-width: 120px; height: 120px; max-height: 120px;
+        }
+        html.site-dm-0017 .logo-stack {
+            width: 128px; height: 128px; max-height: 128px; gap: 0; padding: 0;
+        }
+        html.site-dm-0017 .logo-img {
+            width: 128px; max-width: 128px; height: 128px; max-height: 128px;
+        }
+        html.site-dm-0017 .logo-corp-img { display: none !important; }
+        html.site-dm-0017 .logo-panel,
+        html.site-dm-0017 #scene2 .s2-logo-panel,
+        html.site-dm-0017 #scene2 .s2-logo-panel .s2-body,
+        html.site-dm-0017 #scene2 .s2-logo-face-img,
+        html.site-dm-0017 #scene4 .fc-logo-panel,
+        html.site-dm-0017 #scene4 .fc-logo-panel .fc-logo-face-img,
+        html.site-dm-0017 #scene5 .d5-logo-panel,
+        html.site-dm-0017 #scene5 .d5-logo-panel .d5-logo-face-img,
+        html.site-dm-0017 #sceneLogo,
+        html.site-dm-0017 #sceneLogo .logo-face-panel,
+        html.site-dm-0017 #sceneLogo .logo-face-img {
+            background: #000000 !important;
+        }
+        html.site-dm-0017 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
+            height: auto;
+            max-height: 22px;
+            width: auto;
+            max-width: 236px;
+            transform: none;
+            object-fit: contain;
+            object-position: center center;
         }
         html.site-ac-0029 .logo-panel,
         html.site-ac-0030 .logo-panel,
@@ -4195,6 +4224,7 @@
         document.documentElement.classList.toggle('site-dm-0012', String(c.projectId || '') === 'DM-0012');
         document.documentElement.classList.toggle('site-dm-0013', String(c.projectId || '') === 'DM-0013');
         document.documentElement.classList.toggle('site-dm-0014', String(c.projectId || '') === 'DM-0014');
+        document.documentElement.classList.toggle('site-dm-0017', String(c.projectId || '') === 'DM-0017');
         document.documentElement.classList.toggle('wbgt-demo-cycle', !!((c.presentation || {}).wbgtDemoCycle));
         applyFaceLayout_();
         if (typeof compactScene4Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s4))) compactScene4Panels();
@@ -4396,7 +4426,7 @@
         if (loadedId && (!qSite || loadedId === qSite)) {
             return c.profile === 'AC-640' || c.layout === 'AC-640' || Number(c.faces) >= 5;
         }
-        return qSite === 'AC-0014' || qSite === 'AC-0021' || qSite === 'AC-0026' || qSite === 'AC-0027' || qSite === 'AC-0028' || qSite === 'AC-0030' || qSite === 'DM-0014' || query.get('layout') === '640';
+        return qSite === 'AC-0014' || qSite === 'AC-0021' || qSite === 'AC-0026' || qSite === 'AC-0027' || qSite === 'AC-0028' || qSite === 'AC-0030' || qSite === 'DM-0014' || qSite === 'DM-0017' || query.get('layout') === '640';
     }
     function applyFaceLayout_() {
         const wide = faceLayoutWide_();
