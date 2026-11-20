@@ -44,6 +44,7 @@ npx --yes serve -l 3200
 - http://127.0.0.1:3200/?site=AC-0028 （JGC 千代田町赤岩。5面）
 - http://127.0.0.1:3200/?site=AC-0029 （志摩機械 舞鶴市。4面）
 - http://127.0.0.1:3200/?site=AC-0033 （山陽工業 西広島バイパス。4面）
+- http://127.0.0.1:3200/?site=AC-0034 （昭和土木 潮凪橋改良工事。4面）
 - http://127.0.0.1:3200/?site=AC-0000 （内部テスト。本番端末へ登録しない）
 - http://127.0.0.1:3200/contents/ （V2.0コンテンツ確認一覧）
 - http://127.0.0.1:3200/?offseason=1
@@ -102,6 +103,7 @@ docs/               運用
 | AC-0028 | active | 日揮株式会社 / 〒370-0503 群馬県邑楽郡千代田町赤岩くらかけ2716-1。5面 |
 | AC-0029 | active | 志摩機械株式会社 / 〒624-0951 京都府舞鶴市字上福井117番地。4面 |
 | AC-0033 | active | 山陽工業株式会社 / 西広島バイパス国泰寺高架橋（広島市中区東千田町1丁目）。4面。仙台銘板 |
+| AC-0034 | active | 昭和土木株式会社 / 潮凪橋改良工事（その5）（名古屋市港区）。4面。窓口は仙台銘板の石黒 |
 
 発行済み ID は再利用しない。追加するときは `sites/_template.json` を新しい番号へ複製する。環境クラウドの騒音・振動がある案件は `sites/_template-ssc.json` を複製し、地点と `edamSsc.idNum` を入れる。デモは別番号で `status: demo` とし、`demoSites` にだけ入れる。`?demo=1` は演出で、外してもその番号は本番にならない。
 
@@ -150,6 +152,7 @@ node tests/visual-live.js http://127.0.0.1:3200
 - AC-0028: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0028
 - AC-0029: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0029
 - AC-0033: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0033 （山陽工業 西広島バイパス。4面）
+- AC-0034: https://digital-signage-led.github.io/alert-cube-candidate/?site=AC-0034 （昭和土木 潮凪橋改良工事。4面）
 - DM-0004: https://digital-signage-led.github.io/alert-cube-candidate/?site=DM-0004 （インテックス大阪 展示会。レンタルのニッケン。5面。本番端末へ登録しない）
 - DM-0008: https://digital-signage-led.github.io/alert-cube-candidate/?site=DM-0008 （短時間予報。本番端末へ登録しない）
 - DM-0015: https://digital-signage-led.github.io/alert-cube-candidate/?site=DM-0015&layout512=1&native640=0 （新しい見出しを2件。画面にはNHKニュースと書かない。パソコンでは画面いっぱいに拡大。本番端末へ登録しない）

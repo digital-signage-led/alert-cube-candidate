@@ -258,6 +258,7 @@ test('DEFAULT_SITE は本番 AC-0001、AC-0000 はテスト', function () {
   assert.ok(index.productionSites.indexOf('AC-0029') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0031') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0033') >= 0);
+  assert.ok(index.productionSites.indexOf('AC-0034') >= 0);
   assert.ok(index.productionSites.indexOf('AC-0000') < 0);
   assert.ok(Array.isArray(index.demoSites));
   index.demoSites.forEach(function (id) {
@@ -2504,7 +2505,7 @@ test('注意報・警報・危険警報・特別警報は全案件でオフ、�
   var tpl = require('../sites/_template.json');
   index.sites.forEach(function (row) {
     var site = require('../sites/' + row.projectId + '.json');
-    if (row.projectId === 'AC-0029' || row.projectId === 'AC-0030' || row.projectId === 'AC-0033') {
+    if (row.projectId === 'AC-0029' || row.projectId === 'AC-0030' || row.projectId === 'AC-0033' || row.projectId === 'AC-0034') {
       assert.strictEqual(site.contents.warning.on, true, row.projectId + ' warning');
       assert.strictEqual(site.contents['warning-hero'].on, false, row.projectId + ' warning-hero');
       assert.strictEqual(site.contentOrder[0], 'warning', row.projectId + ' order warning');
@@ -2836,6 +2837,39 @@ test('AC-0033 は山陽工業・西広島バイパスの4面本番設定', funct
   assert.ok(foundation.validateSiteConfig(site).ok);
   assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', 'sites', 'AC-0033', 'logo_mark.png')));
   assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', 'sites', 'AC-0033', 'logo_foot.png')));
+});
+
+test('AC-0034 は昭和土木・名古屋市港区の4面本番設定', function () {
+  var site = require('../sites/AC-0034.json');
+  var index = require('../sites/index.json');
+  var fs = require('fs');
+  var path = require('path');
+  assert.strictEqual(site.projectId, 'AC-0034');
+  assert.strictEqual(site.status, 'active');
+  assert.strictEqual(site.customer, '昭和土木株式会社');
+  assert.strictEqual(site.rental, '仙台銘板');
+  assert.strictEqual(site.siteName, '愛知県名古屋市港区');
+  assert.strictEqual(site.location, '愛知県名古屋市港区（潮凪橋改良工事（その5））');
+  assert.strictEqual(site.faces, 4);
+  assert.strictEqual(site.resolution, '512x128');
+  assert.strictEqual(site.layout, 'AC-512');
+  assert.strictEqual(site.latitude, 35.07345);
+  assert.strictEqual(site.longitude, 136.855746);
+  assert.strictEqual(site.moe.point, '51106');
+  assert.strictEqual(site.jma.forecastDetail, '230010');
+  assert.strictEqual(site.jma.forecastLabel, '名古屋市港区');
+  assert.strictEqual(site.jma.warnCity, '2310000');
+  assert.strictEqual(site.jma.warnCityLabel, '名古屋市港区');
+  assert.strictEqual(site.contents.heat.on, false);
+  assert.strictEqual(site.contents['warning-hero'].on, false);
+  assert.strictEqual(site.contents.warning.on, true);
+  assert.strictEqual(site.presentation.observationTrailingLogo, true);
+  assert.deepStrictEqual(site.contentOrder, ['warning', 'typhoon', 'clock', 'observation', 'rain-radar', 'lightning', 'wbgt', 'forecast', 'wbgt-i18n']);
+  assert.ok(index.productionSites.indexOf('AC-0034') >= 0);
+  assert.ok(index.demoSites.indexOf('AC-0034') < 0);
+  assert.ok(foundation.validateSiteConfig(site).ok);
+  assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', 'sites', 'AC-0034', 'logo_mark.png')));
+  assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', 'sites', 'AC-0034', 'logo_foot.png')));
 });
 
 console.log('');

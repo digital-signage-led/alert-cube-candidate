@@ -4231,7 +4231,7 @@
         if (typeof compactScene5Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s5))) compactScene5Panels();
         if (typeof MOE_POINT_CFG !== 'undefined') MOE_POINT_CFG.pointName = getSiteLocationLabel_();
         if (typeof rainWarnMeta !== 'undefined') {
-            rainWarnMeta.cityName = (JMA_WARN_CITY_LABELS && JMA_WARN_CITY_LABELS[JMA_WARN_CITY]) || getSiteLocationLabel_();
+            rainWarnMeta.cityName = getWarnPlaceLabel_() || getSiteLocationLabel_();
         }
         refineOnlyParam_();
         if (typeof startSscRefreshLoop_ === 'function') startSscRefreshLoop_();
@@ -4587,6 +4587,10 @@
         return (siteCfg_().site && siteCfg_().site.locationLabel)
             || (siteCfg_().jma && siteCfg_().jma.forecastLabel)
             || '住之江区';
+    }
+    function getWarnPlaceLabel_() {
+        const jma = siteCfg_().jma || {};
+        return String(jma.warnCityLabel || '').trim();
     }
     function applySiteLocationLabels_() {
         const label = getSiteLocationLabel_();
@@ -7058,7 +7062,7 @@
     let JMA_WARN_CITY = query.get('warnCity') || (siteCfg_().jma && siteCfg_().jma.warnCity) || '2710000';
     const JMA_WARN_CITY_LABELS = { '2710000': '大阪市', '270000': '大阪府' };
     let rainWarnMeta = {
-        cityName: JMA_WARN_CITY_LABELS[JMA_WARN_CITY] || getSiteLocationLabel_(),
+        cityName: getWarnPlaceLabel_() || JMA_WARN_CITY_LABELS[JMA_WARN_CITY] || getSiteLocationLabel_(),
         updatedAt: ''
     };
     const RAIN_WHITE_LEVEL_CHIP = {
@@ -7519,7 +7523,8 @@
     }
     function applyRainWarnMeta_(payload, warnJson) {
         const cityFromJma = warnJson ? jmaAreaNameFromWarnJson_(warnJson, JMA_WARN_CITY) : '';
-        rainWarnMeta.cityName = cityFromJma
+        rainWarnMeta.cityName = getWarnPlaceLabel_()
+            || cityFromJma
             || (payload && payload.cityName)
             || JMA_WARN_CITY_LABELS[JMA_WARN_CITY]
             || getSiteLocationLabel_();
