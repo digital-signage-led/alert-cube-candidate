@@ -15807,10 +15807,11 @@
         const n = Number(lastAmedasTempC_);
         return Number.isFinite(n) ? n : null;
     }
-    /* アメダスの気温が showBelowC 未満のときだけ凍結を出す。閾値が無い案件はそのまま出す。 */
+    /* デモは気温にかかわらず凍結を流す。本番はアメダスが showBelowC 未満のときだけ。 */
     function icingDue_() {
         const limit = icingLimitC_();
         if (limit == null) return true;
+        if (String((siteCfg_() && siteCfg_().status) || '') === 'demo') return true;
         const temp = observedTempC_();
         return temp != null && temp < limit;
     }
@@ -15885,7 +15886,7 @@
                 startRainRadarOrSkip_();
                 break;
             case 'logo-scroll': {
-                if (icingLimitC_() == null || observedTempC_() != null) {
+                if (icingLimitC_() == null || icingDue_() || observedTempC_() != null) {
                     playIcingOrSkip_();
                     break;
                 }
