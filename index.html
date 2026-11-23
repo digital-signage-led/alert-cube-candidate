@@ -11,7 +11,7 @@
     <script src="./contents/modules.js?v=20261111-wxtech-public"></script>
     <script src="./contents/news/index.js?v=20261112-news-newest"></script>
     <script src="./contents/boards/index.js?v=20261111-sato-boards"></script>
-    <script src="./contents/logo-scroll/index.js?v=20261123-icing-quad"></script>
+    <script src="./contents/logo-scroll/index.js?v=20261123-icing-cell"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
     <script src="./contents/rain-radar/index.js?v=20261116-coast-map"></script>
@@ -548,23 +548,15 @@
         html.site-dm-0017 .logo-wx-icon { width: 72px; height: 72px; object-fit: contain; }
         html.site-dm-0017 .logo-icing { position: relative; height: 128px; overflow: hidden; }
         html.site-dm-0017 .logo-icing-base { display: block; width: 100%; height: 128px; }
+        html.site-dm-0017 .logo-icing-cell {
+            position: absolute; top: 0; width: 128px; height: 128px; overflow: hidden;
+        }
         html.site-dm-0017 .logo-icing-part { position: absolute; width: auto; height: auto; }
         html.site-dm-0017 .logo-icing-part.is-drive { animation: icingDrive 2.2s ease-in-out infinite; }
-        html.site-dm-0017 .logo-icing-part.is-snow { animation: icingSnow 1.8s ease-in-out infinite; }
-        html.site-dm-0017 .logo-icing-part.is-slip { animation: icingSlip 0.42s ease-in-out infinite; }
         html.site-dm-0017 .logo-icing-part.is-step { animation: icingStep 0.9s ease-in-out infinite; transform-origin: 50% 90%; }
         @keyframes icingDrive {
             0%, 100% { transform: translateX(0); }
             50% { transform: translateX(-12px); }
-        }
-        @keyframes icingSnow {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
-        }
-        @keyframes icingSlip {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
         }
         @keyframes icingStep {
             0%, 100% { transform: rotate(-8deg); }
@@ -15797,7 +15789,34 @@
             });
         }, 8000);
     }
+    function icingLimitC_() {
+        const n = Number(siteCfg_() && siteCfg_().logoScroll && siteCfg_().logoScroll.showBelowC);
+        return Number.isFinite(n) ? n : null;
+    }
+    function observedTempC_() {
+        if (window.AlertCubeCore && window.AlertCubeCore.parseTemperature) {
+            return window.AlertCubeCore.parseTemperature(lastAmedasTempC_);
+        }
+        const n = Number(lastAmedasTempC_);
+        return Number.isFinite(n) ? n : null;
+    }
+    /* アメダスの気温が showBelowC 未満のときだけ凍結を出す。閾値が無い案件はそのまま出す。 */
+    function icingDue_() {
+        const limit = icingLimitC_();
+        if (limit == null) return true;
+        const temp = observedTempC_();
+        return temp != null && temp < limit;
+    }
+    let icingGateGen_ = 0;
+    function playIcingOrSkip_() {
+        if (!icingDue_()) {
+            advanceContentOrder_();
+            return;
+        }
+        transitionToScene(sceneLogo, function () { playSceneLogoScroll(); });
+    }
     function playContentById_(id) {
+        icingGateGen_ += 1;
         rememberPlaylistId_(id);
         if (id !== 'news') {
             newsPlayGen_ += 1;
@@ -15858,7 +15877,22 @@
                 if (!contentOn_('rain-radar') || !sceneRainRadar) { advanceContentOrder_(); break; }
                 startRainRadarOrSkip_();
                 break;
-            case 'logo-scroll': transitionToScene(sceneLogo, function () { playSceneLogoScroll(); }); break;
+            case 'logo-scroll': {
+                if (icingLimitC_() == null || observedTempC_() != null) {
+                    playIcingOrSkip_();
+                    break;
+                }
+                const gate = icingGateGen_;
+                const started = Date.now();
+                const wait = setInterval(function () {
+                    if (gate !== icingGateGen_) { clearInterval(wait); return; }
+                    if (observedTempC_() == null && Date.now() - started < 8000) return;
+                    clearInterval(wait);
+                    if (gate !== icingGateGen_) return;
+                    playIcingOrSkip_();
+                }, 200);
+                break;
+            }
             case 'brand':
                 transitionToScene(sceneLogo, function () {
                     playSceneLogoScroll({ id: 'brand', cfg: (siteCfg_() && siteCfg_().brandScroll) || {} });

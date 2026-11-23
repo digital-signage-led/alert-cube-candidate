@@ -55,11 +55,15 @@
     var parts = Array.isArray(img.parts) ? img.parts : [];
     var bits = parts.map(function (part) {
       if (!part || !part.src) return '';
-      var anim = part.anim === 'drive' || part.anim === 'snow' || part.anim === 'slip' || part.anim === 'step' ? part.anim : '';
+      var anim = part.anim === 'drive' || part.anim === 'step' ? part.anim : '';
       var x = Number(part.x); var y = Number(part.y);
       if (!Number.isFinite(x)) x = 0;
       if (!Number.isFinite(y)) y = 0;
-      return '<img class="logo-icing-part' + (anim ? ' is-' + anim : '') + '" src="' + escapeHtml(part.src) + '" alt="" style="left:' + x + 'px;top:' + y + 'px" decoding="sync">';
+      var imgTag = '<img class="logo-icing-part' + (anim ? ' is-' + anim : '') + '" src="' + escapeHtml(part.src) + '" alt="" style="left:' + (anim ? (x - Math.floor(x / 128) * 128) : x) + 'px;top:' + y + 'px" decoding="sync">';
+      if (!anim) return imgTag;
+      var face = Math.floor(x / 128) * 128;
+      if (face < 0) face = 0;
+      return '<div class="logo-icing-cell" style="left:' + face + 'px">' + imgTag + '</div>';
     }).join('');
     return '<div class="logo-face-panel logo-icing" style="' + panelBox(w, '') + '">' +
       '<img class="logo-icing-base" src="' + escapeHtml(img.base || img.src) + '" alt="' + escapeHtml(img.alt) + '" decoding="sync">' +
