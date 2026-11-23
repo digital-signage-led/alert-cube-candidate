@@ -24,8 +24,11 @@
         alt: img.alt != null ? String(img.alt) : '',
         panelWidth: Number.isFinite(w) && w > 0 ? w : 0,
         wing: img.wing ? String(img.wing) : '',
-        motion: img.motion === 'icing-quad' ? 'icing-quad' : (img.motion === 'meidory' ? 'meidory' : (img.wing ? 'meibird' : '')),
+        motion: img.motion === 'face-switch' ? 'face-switch' : (img.motion === 'icing-quad' ? 'icing-quad' : (img.motion === 'meidory' ? 'meidory' : (img.wing ? 'meibird' : ''))),
         base: img.base ? String(img.base) : '',
+        with: img.with ? String(img.with) : '',
+        faces: Number(img.faces) || 0,
+        faceMs: Number(img.faceMs) || 0,
         parts: Array.isArray(img.parts) ? img.parts : []
       };
     });
@@ -70,7 +73,27 @@
       bits + '</div>';
   }
 
+  function faceSwitchHtml(img, w) {
+    var faces = Number(img.faces);
+    if (!Number.isFinite(faces) || faces < 2) faces = 4;
+    faces = Math.min(8, Math.floor(faces));
+    var faceW = Math.max(1, Math.round(w / faces));
+    var ms = Number(img.faceMs);
+    if (!Number.isFinite(ms) || ms < 200) ms = 800;
+    var size = w + 'px 128px';
+    var cells = '';
+    for (var i = 0; i < faces; i++) {
+      var pos = (-i * faceW) + 'px 0';
+      cells += '<div class="logo-switch-cell">' +
+        '<div class="logo-switch-layer" style="background-image:url(\'' + escapeHtml(img.src) + '\');background-size:' + size + ';background-position:' + pos + '"></div>' +
+        '<div class="logo-switch-layer is-next" style="background-image:url(\'' + escapeHtml(img.with) + '\');background-size:' + size + ';background-position:' + pos + '"></div>' +
+        '</div>';
+    }
+    return '<div class="logo-face-switch" data-face-ms="' + Math.floor(ms) + '" style="' + panelBox(w, '#000000') + '">' + cells + '</div>';
+  }
+
   function faceHtml(img, w, bg) {
+    if (img.motion === 'face-switch' && img.with) return faceSwitchHtml(img, w);
     if (img.motion === 'icing-quad' && img.base) return icingQuadHtml(img, w);
     if (!img.wing) {
       return '<div class="logo-face-panel" style="' + panelBox(w, '') + '">' +
@@ -153,8 +176,9 @@
     var images = imagesOf(cfg);
     var fallbackW = panelWidthOf(cfg);
     var bg = cfg && cfg.background ? String(cfg.background) : '';
-    if (!images.length) return { html: '', setWidth: 0, panelCount: 0 };
+    if (!images.length) return { html: '', setWidth: 0, panelCount: 0, switches: [] };
     var parts = [];
+    var switches = [];
     var setWidth = 0;
     var cap = cfg && cfg.caption;
     var lines = captionLines(cfg);
@@ -178,6 +202,10 @@
     var caption = split ? { html: '', width: 0 } : captionHtml(cfg, bg);
     var between = !!(caption.html && cap && cap.place === 'between' && images.length >= 2);
     if (!split) images.forEach(function (img, i) {
+      if (img.motion === 'face-switch' && img.with) {
+        switches.push(faceHtml(img, img.panelWidth || fallbackW, bg));
+        return;
+      }
       if (between && i === 1) {
         parts.push(caption.html);
         setWidth += caption.width;
@@ -191,7 +219,12 @@
       setWidth += caption.width;
     }
     var one = parts.join('');
-    return { html: one + one, setWidth: setWidth, panelCount: images.length + (caption.html ? 1 : 0) };
+    return {
+      html: one ? one + one : '',
+      setWidth: setWidth,
+      panelCount: images.length + (caption.html ? 1 : 0),
+      switches: switches
+    };
   }
 
   var api = {

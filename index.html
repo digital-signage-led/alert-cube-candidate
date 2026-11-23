@@ -11,7 +11,7 @@
     <script src="./contents/modules.js?v=20261111-wxtech-public"></script>
     <script src="./contents/news/index.js?v=20261112-news-newest"></script>
     <script src="./contents/boards/index.js?v=20261111-sato-boards"></script>
-    <script src="./contents/logo-scroll/index.js?v=20261123-icing-cell"></script>
+    <script src="./contents/logo-scroll/index.js?v=20261123-face-switch"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
     <script src="./contents/rain-radar/index.js?v=20261116-coast-map"></script>
@@ -554,6 +554,11 @@
         html.site-dm-0017 .logo-icing-part { position: absolute; width: auto; height: auto; }
         html.site-dm-0017 .logo-icing-part.is-drive { animation: icingDrive 2.2s ease-in-out infinite; }
         html.site-dm-0017 .logo-icing-part.is-step { animation: icingStep 0.9s ease-in-out infinite; transform-origin: 50% 90%; }
+        html.site-dm-0017 .logo-face-switch { display: flex; height: 128px; overflow: hidden; }
+        html.site-dm-0017 .logo-switch-cell { position: relative; width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
+        html.site-dm-0017 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; }
+        html.site-dm-0017 .logo-switch-layer.is-next { transform: translateY(100%); }
+        html.site-dm-0017 .logo-switch-cell.is-on .logo-switch-layer.is-next { transform: translateY(0); transition: transform 0.42s ease; }
         @keyframes icingDrive {
             0%, 100% { transform: translateX(0); }
             50% { transform: translateX(-12px); }
@@ -9057,6 +9062,7 @@
     let scene5SetWidth = SCENE5_PANEL_COUNT * 128;
     let scene5AnimId = null;
     let sceneLogoAnimId = null;
+    let logoSwitchTimerId = null;
     let sceneNewsAnimId = null;
     let newsCanvasTimerId_ = null;
     let sceneBoardsAnimId = null;
@@ -9339,6 +9345,7 @@
         if (scene5AnimId) { cancelAnimationFrame(scene5AnimId); scene5AnimId = null; }
         if (window.AlertCubeShortForecast) window.AlertCubeShortForecast.stop();
         if (sceneLogoAnimId) { cancelAnimationFrame(sceneLogoAnimId); sceneLogoAnimId = null; }
+        if (logoSwitchTimerId) { clearTimeout(logoSwitchTimerId); logoSwitchTimerId = null; }
         if (sceneNewsAnimId) { cancelAnimationFrame(sceneNewsAnimId); sceneNewsAnimId = null; }
         if (sceneBoardsAnimId) { cancelAnimationFrame(sceneBoardsAnimId); sceneBoardsAnimId = null; }
         if (progressAnimId) { cancelAnimationFrame(progressAnimId); progressAnimId = null; }
@@ -16548,24 +16555,62 @@
                     });
                 }
             }
-            if (!built.html) {
+            if (!built.html && !(built.switches && built.switches.length)) {
                 if (DEMO_ONLY === 'logo' || DEMO_ONLY === scrollId) return;
                 playlistHandoff_();
                 return;
             }
             markPlaylistHeld_();
             if (cfg.background) sceneLogo.style.background = cfg.background;
+            const laps = api.lapsOf(cfg);
+            function finishLogo_() {
+                runAfterSceneEndHold_(function () {
+                    if (demoOnlyLoop_(scrollId, function () { playSceneLogoScroll(opts); })) return;
+                    playlistHandoff_();
+                });
+            }
+            function playOneFaceSwitch_(html, done) {
+                if (logoSwitchTimerId) { clearTimeout(logoSwitchTimerId); logoSwitchTimerId = null; }
+                logoFaceTrack.innerHTML = html;
+                logoFaceTrack.style.width = '512px';
+                applyScrollX_(logoFaceTrack, 0);
+                const root = logoFaceTrack.querySelector('.logo-face-switch');
+                const cells = root ? root.querySelectorAll('.logo-switch-cell') : [];
+                if (!root || !cells.length) { done(); return; }
+                const ms = Math.max(200, Number(root.getAttribute('data-face-ms')) || 800);
+                let i = 0;
+                function step() {
+                    if (!root.isConnected) return;
+                    if (i >= cells.length) {
+                        logoSwitchTimerId = setTimeout(done, 700);
+                        return;
+                    }
+                    cells[i].classList.add('is-on');
+                    i += 1;
+                    logoSwitchTimerId = setTimeout(step, ms);
+                }
+                logoSwitchTimerId = setTimeout(step, 280);
+            }
+            function playFaceSwitches_(list, done) {
+                const queue = Array.isArray(list) ? list.slice() : [];
+                function next() {
+                    if (!queue.length) { done(); return; }
+                    playOneFaceSwitch_(queue.shift(), next);
+                }
+                next();
+            }
+            function afterLogoScroll_() {
+                playFaceSwitches_(built.switches, finishLogo_);
+            }
+            if (!built.html || !built.setWidth) {
+                afterLogoScroll_();
+                return;
+            }
             logoFaceTrack.innerHTML = built.html;
             logoFaceTrack.style.width = (built.setWidth * 2) + 'px';
             applyScrollX_(logoFaceTrack, 0);
-            const laps = api.lapsOf(cfg);
             runSceneScrollAfterHold_(function () {
-                runLapScroll_(logoFaceTrack, built.setWidth, laps, 1, 'logo', function () {
-                    runAfterSceneEndHold_(function () {
-                        if (demoOnlyLoop_(scrollId, function () { playSceneLogoScroll(opts); })) return;
-                        playlistHandoff_();
-                    });
-                });
+                runLapScroll_(logoFaceTrack, built.setWidth, laps, 1, 'logo', afterLogoScroll_);
             });
         } catch (err) {
             console.error('[logo-scroll]', err);
