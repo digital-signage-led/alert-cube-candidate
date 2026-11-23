@@ -79,21 +79,22 @@
     faces = Math.min(8, Math.floor(faces));
     var faceW = Math.max(1, Math.round(w / faces));
     var ms = Number(img.faceMs);
-    if (!Number.isFinite(ms) || ms < 200) ms = 800;
+    if (!Number.isFinite(ms) || ms < 200) ms = 1000;
     var size = w + 'px 128px';
     var cells = '';
     for (var i = 0; i < faces; i++) {
-      var pos = (-i * faceW) + 'px 0';
-      cells += '<div class="logo-switch-cell">' +
-        '<div class="logo-switch-layer" style="background-image:url(\'' + escapeHtml(img.src) + '\');background-size:' + size + ';background-position:' + pos + '"></div>' +
-        '<div class="logo-switch-layer is-next" style="background-image:url(\'' + escapeHtml(img.with) + '\');background-size:' + size + ';background-position:' + pos + '"></div>' +
-        '</div>';
+      var layers = '';
+      for (var g = 0; g < faces; g++) {
+        var pos = (-g * faceW) + 'px 0';
+        layers += '<div class="logo-switch-layer" data-glyph="' + g + '" style="background-image:url(\'' + escapeHtml(img.src) + '\');background-size:' + size + ';background-position:' + pos + '"></div>';
+      }
+      cells += '<div class="logo-switch-cell">' + layers + '</div>';
     }
-    return '<div class="logo-face-switch" data-face-ms="' + Math.floor(ms) + '" style="' + panelBox(w, '#000000') + '">' + cells + '</div>';
+    return '<div class="logo-face-switch" data-face-ms="' + Math.floor(ms) + '" data-glyphs="' + faces + '" style="' + panelBox(w, '#000000') + '">' + cells + '</div>';
   }
 
   function faceHtml(img, w, bg) {
-    if (img.motion === 'face-switch' && img.with) return faceSwitchHtml(img, w);
+    if (img.motion === 'face-switch') return faceSwitchHtml(img, w);
     if (img.motion === 'icing-quad' && img.base) return icingQuadHtml(img, w);
     if (!img.wing) {
       return '<div class="logo-face-panel" style="' + panelBox(w, '') + '">' +
@@ -176,9 +177,10 @@
     var images = imagesOf(cfg);
     var fallbackW = panelWidthOf(cfg);
     var bg = cfg && cfg.background ? String(cfg.background) : '';
-    if (!images.length) return { html: '', setWidth: 0, panelCount: 0, switches: [] };
+    if (!images.length) return { html: '', setWidth: 0, panelCount: 0, switches: [], steps: [] };
     var parts = [];
     var switches = [];
+    var steps = [];
     var setWidth = 0;
     var cap = cfg && cfg.caption;
     var lines = captionLines(cfg);
@@ -201,9 +203,19 @@
     }
     var caption = split ? { html: '', width: 0 } : captionHtml(cfg, bg);
     var between = !!(caption.html && cap && cap.place === 'between' && images.length >= 2);
+    function pushScrollStep() {
+      if (!parts.length) return;
+      var chunk = parts.join('');
+      steps.push({ type: 'scroll', html: chunk + chunk, setWidth: setWidth });
+      parts = [];
+      setWidth = 0;
+    }
     if (!split) images.forEach(function (img, i) {
-      if (img.motion === 'face-switch' && img.with) {
-        switches.push(faceHtml(img, img.panelWidth || fallbackW, bg));
+      if (img.motion === 'face-switch') {
+        pushScrollStep();
+        var switchHtml = faceHtml(img, img.panelWidth || fallbackW, bg);
+        switches.push(switchHtml);
+        steps.push({ type: 'switch', html: switchHtml });
         return;
       }
       if (between && i === 1) {
@@ -218,12 +230,17 @@
       parts.push(caption.html);
       setWidth += caption.width;
     }
-    var one = parts.join('');
+    pushScrollStep();
+    var firstScroll = null;
+    for (var s = 0; s < steps.length; s++) {
+      if (steps[s].type === 'scroll') { firstScroll = steps[s]; break; }
+    }
     return {
-      html: one ? one + one : '',
-      setWidth: setWidth,
+      html: firstScroll ? firstScroll.html : '',
+      setWidth: firstScroll ? firstScroll.setWidth : 0,
       panelCount: images.length + (caption.html ? 1 : 0),
-      switches: switches
+      switches: switches,
+      steps: steps
     };
   }
 

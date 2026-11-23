@@ -10,8 +10,8 @@
     <script src="./contents/registry.js?v=20261111-wxtech-public"></script>
     <script src="./contents/modules.js?v=20261111-wxtech-public"></script>
     <script src="./contents/news/index.js?v=20261112-news-newest"></script>
-    <script src="./contents/boards/index.js?v=20261111-sato-boards"></script>
-    <script src="./contents/logo-scroll/index.js?v=20261123-face-switch"></script>
+    <script src="./contents/boards/index.js?v=20261123-car-same"></script>
+    <script src="./contents/logo-scroll/index.js?v=20261123-face-same"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
     <script src="./contents/rain-radar/index.js?v=20261116-coast-map"></script>
@@ -511,7 +511,10 @@
             width: 128px; max-width: 128px; height: 128px; max-height: 128px;
         }
         html.site-dm-0017 .logo-corp-img { display: none !important; }
-        html.site-dm-0017 .logo-panel,
+        /* 右端128（x≥512）の地は、凍結注意の上帯と同じ水色 */
+        html.site-dm-0017 .logo-panel {
+            background: #79D3EE !important;
+        }
         html.site-dm-0017 #scene2 .s2-logo-panel,
         html.site-dm-0017 #scene2 .s2-logo-panel .s2-body,
         html.site-dm-0017 #scene2 .s2-logo-face-img,
@@ -527,19 +530,24 @@
         html.site-dm-0017 .logo-wx {
             position: absolute; inset: 0; z-index: 2; overflow: hidden;
             background: transparent; pointer-events: none;
+            perspective: 640px;
         }
-        html.site-dm-0017 .logo-wx-track {
-            display: flex; flex-direction: column; width: 128px; will-change: transform;
+        html.site-dm-0017 .logo-wx-rotor {
+            width: 128px; height: 128px; position: relative;
+            transform-origin: center center;
+        }
+        html.site-dm-0017 .logo-wx-face {
+            position: absolute; top: 0; left: 0; width: 128px; height: 128px;
         }
         html.site-dm-0017 .logo-wx-cell {
             width: 128px; height: 128px; flex: 0 0 128px; box-sizing: border-box;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            gap: 2px; background: transparent; color: #ebebeb;
-            font-family: "Noto Sans JP", sans-serif; text-shadow: 0 1px 2px #000;
+            gap: 2px; background: transparent; color: #000;
+            font-family: "Noto Sans JP", sans-serif;
         }
         html.site-dm-0017 .logo-wx-label,
         html.site-dm-0017 .logo-wx-num,
-        html.site-dm-0017 .logo-wx-unit { color: #ebebeb; font-weight: 700; }
+        html.site-dm-0017 .logo-wx-unit { color: #000; font-weight: 700; }
         html.site-dm-0017 .logo-wx-label { font-size: 18px; line-height: 1.1; }
         html.site-dm-0017 .logo-wx-line { display: flex; align-items: baseline; justify-content: center; gap: 2px; }
         html.site-dm-0017 .logo-wx-num { font-size: 40px; line-height: 1; }
@@ -553,11 +561,13 @@
         }
         html.site-dm-0017 .logo-icing-part { position: absolute; width: auto; height: auto; }
         html.site-dm-0017 .logo-icing-part.is-drive { animation: icingDrive 2.2s ease-in-out infinite; }
-        html.site-dm-0017 .logo-icing-part.is-step { animation: icingStep 0.9s ease-in-out infinite; transform-origin: 50% 90%; }
+        html.site-dm-0017 .logo-icing-part.is-step { width: 88px; height: 80px; animation: none; }
         html.site-dm-0017 .logo-face-switch { display: flex; height: 128px; overflow: hidden; }
         html.site-dm-0017 .logo-switch-cell { position: relative; width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
-        html.site-dm-0017 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; }
-        html.site-dm-0017 .logo-switch-layer.is-next { transform: translateY(100%); }
+        html.site-dm-0017 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; opacity: 0; }
+        html.site-dm-0017 .logo-switch-cell.is-char .logo-switch-layer:not(.is-next) { opacity: 1; }
+        html.site-dm-0017 .logo-switch-layer.is-show { opacity: 1; }
+        html.site-dm-0017 .logo-switch-layer.is-next { opacity: 1; transform: translateY(100%); }
         html.site-dm-0017 .logo-switch-cell.is-on .logo-switch-layer.is-next { transform: translateY(0); transition: transform 0.42s ease; }
         @keyframes icingDrive {
             0%, 100% { transform: translateX(0); }
@@ -1851,6 +1861,33 @@
         @keyframes koteiPush {
             from { transform: translateY(0); }
             to { transform: translateY(-136px); }
+        }
+        .content-area.kotei-walk-on { background: #000 !important; }
+        .kotei-walk {
+            position: relative; width: 512px; height: 128px; flex: 0 0 512px;
+            overflow: hidden; background: #000;
+        }
+        .kotei-walk-fig {
+            position: absolute; left: 50%; top: 0; width: 128px; height: 127px; margin-left: -64px;
+            background-repeat: no-repeat; background-size: calc(var(--walk-frames, 12) * 128px) 127px;
+            transform-origin: center top;
+            transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .kotei-walk.is-stopped .kotei-walk-fig { transform: scale(0.6875); }
+        .kotei-walk-cap {
+            position: absolute; left: 0; right: 0; bottom: 0; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            background: #000; color: #ebebeb;
+            font-family: "Noto Sans JP", sans-serif;
+            font-size: 34px; font-weight: 900; letter-spacing: 0.16em; line-height: 1;
+            transform: translateY(100%);
+        }
+        .kotei-walk.is-stopped .kotei-walk-cap {
+            animation: koteiWalkRise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        @keyframes koteiWalkRise {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
         .kotei-col {
             width: 128px; height: 128px; flex: 0 0 128px; max-width: 128px; box-sizing: border-box;
@@ -3674,7 +3711,10 @@
             </div>
         </div>
         <div class="logo-wx" id="logo-wx" hidden>
-            <div class="logo-wx-track" id="logo-wx-track"></div>
+            <div class="logo-wx-rotor" id="logo-wx-rotor">
+                <div class="logo-wx-face" data-wx-face="front"></div>
+                <div class="logo-wx-face" data-wx-face="next"></div>
+            </div>
         </div>
     </div>
     <div class="dm14-card-union" id="dm14-card-union" aria-hidden="true">
@@ -9072,6 +9112,7 @@
     let rainRadarGen_ = 0;
     let boardsCanvasTimerId_ = null;
     let boardsHoldTimerId_ = null;
+    let boardsWalkTimerId_ = null;
     let boardsPhaseIdx_ = 0;
     let scene5HoldTimerId = null;
     const SCENE_SCHEDULE_PANEL_COUNT = 4;
@@ -9129,11 +9170,24 @@
         if (Number.isFinite(n) && n > 0) return n;
         return GLOBAL_SCROLL_SPEED_PX;
     }
-    /* ドトキューブの右端128。立方体は残し、その上に気象の値を縦に流す */
-    let logoWxRaf_ = 0;
+    /* ドトキューブの右端128。立方体は残す。文字は90度ずつ回す。値は同じ位置で替える */
+    const LOGO_WX_HOLD_MS = 2800;
+    const LOGO_WX_TURN_MS = 700;
+    let logoWxHoldTimer_ = 0;
+    let logoWxTurnTimer_ = 0;
+    let logoWxGen_ = 0;
     function logoWxOn_() {
         const p = (siteCfg_() && siteCfg_().presentation) || {};
         return p.logoWeatherScroll === true;
+    }
+    function logoWxTurnDeg_() {
+        const n = Number(((siteCfg_() && siteCfg_().presentation) || {}).logoWeatherTurn);
+        return (Number.isFinite(n) && n > 0) ? n : 90;
+    }
+    function stopLogoWx_() {
+        logoWxGen_ += 1;
+        if (logoWxHoldTimer_) { clearTimeout(logoWxHoldTimer_); logoWxHoldTimer_ = 0; }
+        if (logoWxTurnTimer_) { clearTimeout(logoWxTurnTimer_); logoWxTurnTimer_ = 0; }
     }
     function logoWxTypes_() {
         if (!logoWxOn_()) return [];
@@ -9197,26 +9251,50 @@
             if (img.getAttribute('src') !== url) img.src = url;
         });
     }
+    function logoWxPlace_(el, deg, animate) {
+        if (!el) return;
+        el.style.transition = animate ? ('transform ' + LOGO_WX_TURN_MS + 'ms ease-in-out') : 'none';
+        el.style.transform = 'rotate(' + deg + 'deg)';
+    }
     function startLogoWx_() {
         const host = document.getElementById('logo-wx');
-        const track = document.getElementById('logo-wx-track');
-        if (!host || !track) return;
-        if (logoWxRaf_) { cancelAnimationFrame(logoWxRaf_); logoWxRaf_ = 0; }
+        if (!host) return;
+        stopLogoWx_();
         const types = logoWxTypes_();
-        if (!types.length) { host.hidden = true; track.innerHTML = ''; return; }
+        if (!types.length) { host.hidden = true; return; }
         host.hidden = false;
-        const one = types.map(logoWxCellHtml_).join('');
-        track.innerHTML = one + one;
-        const setH = types.length * 128;
-        let y = 0;
-        function frame() {
-            y += getScrollSpeedPx_();
-            if (y >= setH) y -= setH;
-            track.style.transform = 'translate3d(0,' + (-y) + 'px,0)';
+        host.innerHTML = '<div class="logo-wx-rotor" id="logo-wx-rotor">' +
+            '<div class="logo-wx-face" data-wx-face="front"></div></div>';
+        const face = host.querySelector('[data-wx-face="front"]');
+        const rotor = host.querySelector('.logo-wx-rotor');
+        const turn = logoWxTurnDeg_();
+        const gen = logoWxGen_;
+        let idx = 0;
+        let deg = 0;
+        function showAt_(i) {
+            face.innerHTML = logoWxCellHtml_(types[i]);
             logoWxPaint_();
-            logoWxRaf_ = requestAnimationFrame(frame);
         }
-        logoWxRaf_ = requestAnimationFrame(frame);
+        showAt_(0);
+        logoWxPlace_(rotor, 0, false);
+        function arm() {
+            if (gen !== logoWxGen_ || types.length < 2) return;
+            logoWxHoldTimer_ = setTimeout(step, LOGO_WX_HOLD_MS);
+        }
+        function step() {
+            if (gen !== logoWxGen_) return;
+            logoWxHoldTimer_ = 0;
+            deg += turn;
+            logoWxPlace_(rotor, deg, true);
+            logoWxTurnTimer_ = setTimeout(function () {
+                if (gen !== logoWxGen_) return;
+                logoWxTurnTimer_ = 0;
+                idx = (idx + 1) % types.length;
+                showAt_(idx);
+                arm();
+            }, LOGO_WX_TURN_MS);
+        }
+        arm();
     }
     let sceneSlideAnimId = null;
     let sceneSlideSettledFn_ = null;
@@ -11723,6 +11801,7 @@
         }
         /* 暑さ指数は updateForecastSlots（環境省）側で .wbgt-val を更新 */
         captureAmedasSnapshot_(obs, latest);
+        if (typeof logoWxPaint_ === 'function') logoWxPaint_();
         if (sceneDomOpen_(s5)) applyD5ObservedHumidity_();
         persistSignageStateCache_();
         return {
@@ -16150,6 +16229,11 @@
     }
     function clearBoardsHold_() {
         if (boardsHoldTimerId_) { clearTimeout(boardsHoldTimerId_); boardsHoldTimerId_ = null; }
+        if (boardsWalkTimerId_) { clearInterval(boardsWalkTimerId_); boardsWalkTimerId_ = null; }
+    }
+    function setWalkCanvas_(on) {
+        const content = contentAreaEl_();
+        if (content) content.classList.toggle('kotei-walk-on', !!on);
     }
     function progressStoreKey_() {
         const id = (siteCfg_() && siteCfg_().projectId) || 'site';
@@ -16459,6 +16543,7 @@
             function playPhase_() {
                 if (gen !== boardsPlayGen_) return;
                 if (boardsPhaseIdx_ >= phases.length) {
+                    setWalkCanvas_(false);
                     setBoardsCanvasMode_(false, sceneSlideMs_());
                     if (demoOnlyLoop_('boards', playSceneBoards)) return;
                     playlistHandoff_();
@@ -16471,6 +16556,59 @@
                         boardsPhaseIdx_ += 1;
                         playPhase_();
                     });
+                }
+                if (phase.layout === 'walk' && typeof api.walkHtml === 'function') {
+                    const html = api.walkHtml(phase);
+                    if (!html) {
+                        boardsPhaseIdx_ += 1;
+                        playPhase_();
+                        return;
+                    }
+                    boardsTrack.innerHTML = html;
+                    applyScrollX_(boardsTrack, 0);
+                    setWalkCanvas_(true);
+                    const root = boardsTrack.querySelector('.kotei-walk');
+                    const fig = boardsTrack.querySelector('.kotei-walk-fig');
+                    const frames = Math.max(1, Number(root.getAttribute('data-frames')) || 12);
+                    const frameMs = Math.max(40, Number(root.getAttribute('data-frame-ms')) || 110);
+                    const frameW = 128;
+                    let step = 0;
+                    fig.style.backgroundPosition = '0 0';
+                    let risen = false;
+                    function finishWalk_() {
+                        if (risen || gen !== boardsPlayGen_) return;
+                        risen = true;
+                        clearBoardsHold_();
+                        boardsHoldTimerId_ = setTimeout(function () {
+                            boardsHoldTimerId_ = null;
+                            if (gen !== boardsPlayGen_) return;
+                            setWalkCanvas_(false);
+                            advancePhase_();
+                        }, 2200);
+                    }
+                    function raiseCaption_() {
+                        if (gen !== boardsPlayGen_) return;
+                        root.classList.add('is-stopped');
+                        const cap = root.querySelector('.kotei-walk-cap');
+                        if (cap) cap.addEventListener('animationend', finishWalk_);
+                        boardsHoldTimerId_ = setTimeout(finishWalk_, 1000);
+                    }
+                    boardsWalkTimerId_ = setInterval(function () {
+                        if (gen !== boardsPlayGen_) {
+                            clearBoardsHold_();
+                            return;
+                        }
+                        step += 1;
+                        if (step >= frames) {
+                            clearInterval(boardsWalkTimerId_);
+                            boardsWalkTimerId_ = null;
+                            fig.style.backgroundPosition = ((frames - 1) * -frameW) + 'px 0';
+                            boardsHoldTimerId_ = setTimeout(raiseCaption_, 450);
+                            return;
+                        }
+                        fig.style.backgroundPosition = (step * -frameW) + 'px 0';
+                    }, frameMs);
+                    return;
                 }
                 if (phase.layout === 'posters' && phase.play !== 'slide') {
                     const faces = Math.max(1, Number((siteCfg_() && siteCfg_().faces) || 4));
@@ -16556,7 +16694,7 @@
                     });
                 }
             }
-            if (!built.html && !(built.switches && built.switches.length)) {
+            if (!built.html && !(built.switches && built.switches.length) && !(built.steps && built.steps.length)) {
                 if (DEMO_ONLY === 'logo' || DEMO_ONLY === scrollId) return;
                 playlistHandoff_();
                 return;
@@ -16578,19 +16716,19 @@
                 const root = logoFaceTrack.querySelector('.logo-face-switch');
                 const cells = root ? root.querySelectorAll('.logo-switch-cell') : [];
                 if (!root || !cells.length) { done(); return; }
-                const ms = Math.max(200, Number(root.getAttribute('data-face-ms')) || 800);
-                let i = 0;
-                function step() {
+                const ms = Math.max(200, Number(root.getAttribute('data-face-ms')) || 1000);
+                const glyphs = Math.max(1, Number(root.getAttribute('data-glyphs')) || 1);
+                let step = 0;
+                function showSame() {
                     if (!root.isConnected) return;
-                    if (i >= cells.length) {
-                        logoSwitchTimerId = setTimeout(done, 700);
-                        return;
-                    }
-                    cells[i].classList.add('is-on');
-                    i += 1;
-                    logoSwitchTimerId = setTimeout(step, ms);
+                    if (step >= glyphs) { done(); return; }
+                    root.querySelectorAll('.logo-switch-layer').forEach(function (el) {
+                        el.classList.toggle('is-show', Number(el.getAttribute('data-glyph')) === step);
+                    });
+                    step += 1;
+                    logoSwitchTimerId = setTimeout(showSame, ms);
                 }
-                logoSwitchTimerId = setTimeout(step, 280);
+                showSame();
             }
             function playFaceSwitches_(list, done) {
                 const queue = Array.isArray(list) ? list.slice() : [];
@@ -16599,6 +16737,29 @@
                     playOneFaceSwitch_(queue.shift(), next);
                 }
                 next();
+            }
+            function playScrollChunk_(html, setWidth, done) {
+                logoFaceTrack.innerHTML = html;
+                logoFaceTrack.style.width = (setWidth * 2) + 'px';
+                applyScrollX_(logoFaceTrack, 0);
+                runLapScroll_(logoFaceTrack, setWidth, laps, 1, 'logo', done);
+            }
+            function playBuiltSteps_() {
+                const steps = built.steps || [];
+                let n = 0;
+                function nextStep() {
+                    if (n >= steps.length) { finishLogo_(); return; }
+                    const step = steps[n];
+                    n += 1;
+                    if (step.type === 'switch') playOneFaceSwitch_(step.html, nextStep);
+                    else playScrollChunk_(step.html, step.setWidth, nextStep);
+                }
+                nextStep();
+            }
+            if (built.steps && built.steps.length) {
+                if (built.steps[0].type === 'scroll') runSceneScrollAfterHold_(playBuiltSteps_);
+                else playBuiltSteps_();
+                return;
             }
             function afterLogoScroll_() {
                 playFaceSwitches_(built.switches, finishLogo_);

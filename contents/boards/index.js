@@ -64,7 +64,7 @@
   function phasesOf(cfg) {
     var list = cfg && Array.isArray(cfg.phases) ? cfg.phases : [];
     return list.filter(function (p) {
-      return p && (p.layout === 'cards' || p.layout === 'columns' || p.layout === 'safety' || p.layout === 'posters');
+      return p && (p.layout === 'cards' || p.layout === 'columns' || p.layout === 'safety' || p.layout === 'posters' || p.layout === 'walk');
     });
   }
 
@@ -269,6 +269,20 @@
       posterRowHtml(images[next], n, 'kotei-set') + '</div></div>';
   }
 
+  function walkHtml(phase) {
+    if (!phase || !phase.src) return '';
+    var frames = Number(phase.frames);
+    if (!Number.isFinite(frames) || frames < 1) frames = 12;
+    frames = Math.min(48, Math.floor(frames));
+    var frameMs = Number(phase.frameMs);
+    if (!Number.isFinite(frameMs) || frameMs < 40) frameMs = 110;
+    frameMs = Math.min(4000, Math.floor(frameMs));
+    var caption = phase.caption != null ? String(phase.caption) : (phase.label != null ? String(phase.label) : '');
+    return '<div class="kotei-walk" style="--walk-frames:' + frames + '" data-frames="' + frames + '" data-frame-ms="' + frameMs + '">' +
+      '<div class="kotei-walk-fig" style="background-image:url(\'' + escapeHtml(phase.src) + '\')" role="img" aria-label="' + escapeHtml(caption) + '"></div>' +
+      '<div class="kotei-walk-cap">' + escapeHtml(caption) + '</div></div>';
+  }
+
   function setWidthOf(phase) {
     var stated = Number(phase && phase.width);
     if (Number.isFinite(stated) && stated > 0) return stated;
@@ -317,6 +331,7 @@
     posterFrameHtml: posterFrameHtml,
     posterSlideHtml: posterSlideHtml,
     posterSwapHtml: posterSwapHtml,
+    walkHtml: walkHtml,
     shouldLoad: function () {
       return !global.AlertCubeContent || global.AlertCubeContent.isOn('boards');
     }
