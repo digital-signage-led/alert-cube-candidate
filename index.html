@@ -11,7 +11,7 @@
     <script src="./contents/modules.js?v=20261111-wxtech-public"></script>
     <script src="./contents/news/index.js?v=20261112-news-newest"></script>
     <script src="./contents/boards/index.js?v=20261111-sato-boards"></script>
-    <script src="./contents/logo-scroll/index.js?v=20261117-meiban-lines"></script>
+    <script src="./contents/logo-scroll/index.js?v=20261123-icing-quad"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
     <script src="./contents/rain-radar/index.js?v=20261116-coast-map"></script>
@@ -546,6 +546,30 @@
         html.site-dm-0017 .logo-wx-dir { font-size: 28px; }
         html.site-dm-0017 .logo-wx-unit { font-size: 16px; line-height: 1; }
         html.site-dm-0017 .logo-wx-icon { width: 72px; height: 72px; object-fit: contain; }
+        html.site-dm-0017 .logo-icing { position: relative; height: 128px; overflow: hidden; }
+        html.site-dm-0017 .logo-icing-base { display: block; width: 100%; height: 128px; }
+        html.site-dm-0017 .logo-icing-part { position: absolute; width: auto; height: auto; }
+        html.site-dm-0017 .logo-icing-part.is-drive { animation: icingDrive 2.2s ease-in-out infinite; }
+        html.site-dm-0017 .logo-icing-part.is-snow { animation: icingSnow 1.8s ease-in-out infinite; }
+        html.site-dm-0017 .logo-icing-part.is-slip { animation: icingSlip 0.42s ease-in-out infinite; }
+        html.site-dm-0017 .logo-icing-part.is-step { animation: icingStep 0.9s ease-in-out infinite; transform-origin: 50% 90%; }
+        @keyframes icingDrive {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(-12px); }
+        }
+        @keyframes icingSnow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        @keyframes icingSlip {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        @keyframes icingStep {
+            0%, 100% { transform: rotate(-8deg); }
+            50% { transform: rotate(8deg); }
+        }
         html.site-dm-0017 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
             height: 32px;
             max-height: 32px;

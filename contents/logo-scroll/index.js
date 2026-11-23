@@ -24,7 +24,9 @@
         alt: img.alt != null ? String(img.alt) : '',
         panelWidth: Number.isFinite(w) && w > 0 ? w : 0,
         wing: img.wing ? String(img.wing) : '',
-        motion: img.motion === 'meidory' ? 'meidory' : (img.wing ? 'meibird' : '')
+        motion: img.motion === 'icing-quad' ? 'icing-quad' : (img.motion === 'meidory' ? 'meidory' : (img.wing ? 'meibird' : '')),
+        base: img.base ? String(img.base) : '',
+        parts: Array.isArray(img.parts) ? img.parts : []
       };
     });
   }
@@ -49,7 +51,23 @@
     return Math.min(8, Math.floor(n));
   }
 
+  function icingQuadHtml(img, w) {
+    var parts = Array.isArray(img.parts) ? img.parts : [];
+    var bits = parts.map(function (part) {
+      if (!part || !part.src) return '';
+      var anim = part.anim === 'drive' || part.anim === 'snow' || part.anim === 'slip' || part.anim === 'step' ? part.anim : '';
+      var x = Number(part.x); var y = Number(part.y);
+      if (!Number.isFinite(x)) x = 0;
+      if (!Number.isFinite(y)) y = 0;
+      return '<img class="logo-icing-part' + (anim ? ' is-' + anim : '') + '" src="' + escapeHtml(part.src) + '" alt="" style="left:' + x + 'px;top:' + y + 'px" decoding="sync">';
+    }).join('');
+    return '<div class="logo-face-panel logo-icing" style="' + panelBox(w, '') + '">' +
+      '<img class="logo-icing-base" src="' + escapeHtml(img.base || img.src) + '" alt="' + escapeHtml(img.alt) + '" decoding="sync">' +
+      bits + '</div>';
+  }
+
   function faceHtml(img, w, bg) {
+    if (img.motion === 'icing-quad' && img.base) return icingQuadHtml(img, w);
     if (!img.wing) {
       return '<div class="logo-face-panel" style="' + panelBox(w, '') + '">' +
         '<img class="logo-face-img" src="' + escapeHtml(img.src) + '" alt="' + escapeHtml(img.alt) + '" decoding="sync">' +
