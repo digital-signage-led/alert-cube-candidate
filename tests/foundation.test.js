@@ -2850,7 +2850,7 @@ test('AC-0034 は昭和土木・名古屋市港区の4面本番設定', function
   assert.strictEqual(site.status, 'active');
   assert.strictEqual(site.customer, '昭和土木株式会社');
   assert.strictEqual(site.rental, '仙台銘板');
-  assert.strictEqual(site.siteName, '愛知県名古屋市港区');
+  assert.strictEqual(site.siteName, '名古屋市港区');
   assert.strictEqual(site.location, '愛知県名古屋市港区（潮凪橋改良工事（その5））');
   assert.strictEqual(site.faces, 4);
   assert.strictEqual(site.resolution, '512x128');
