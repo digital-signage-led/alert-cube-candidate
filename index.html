@@ -11,7 +11,7 @@
     <script src="./contents/modules.js?v=20261111-wxtech-public"></script>
     <script src="./contents/news/index.js?v=20261112-news-newest"></script>
     <script src="./contents/boards/index.js?v=20261111-sato-boards"></script>
-    <script src="./contents/logo-scroll/index.js?v=20261123-face-switch"></script>
+    <script src="./contents/logo-scroll/index.js?v=20261123-face-char"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
     <script src="./contents/rain-radar/index.js?v=20261116-coast-map"></script>
@@ -556,9 +556,10 @@
         html.site-dm-0017 .logo-icing-part.is-step { animation: icingStep 0.9s ease-in-out infinite; transform-origin: 50% 90%; }
         html.site-dm-0017 .logo-face-switch { display: flex; height: 128px; overflow: hidden; }
         html.site-dm-0017 .logo-switch-cell { position: relative; width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
-        html.site-dm-0017 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; }
-        html.site-dm-0017 .logo-switch-layer.is-next { opacity: 0; }
-        html.site-dm-0017 .logo-switch-cell.is-on .logo-switch-layer.is-next { opacity: 1; }
+        html.site-dm-0017 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; opacity: 0; }
+        html.site-dm-0017 .logo-switch-cell.is-char .logo-switch-layer:not(.is-next) { opacity: 1; }
+        html.site-dm-0017 .logo-switch-layer.is-next { opacity: 1; transform: translateY(100%); }
+        html.site-dm-0017 .logo-switch-cell.is-on .logo-switch-layer.is-next { transform: translateY(0); transition: transform 0.42s ease; }
         @keyframes icingDrive {
             0%, 100% { transform: translateX(0); }
             50% { transform: translateX(-12px); }
@@ -16578,12 +16579,32 @@
                 const root = logoFaceTrack.querySelector('.logo-face-switch');
                 const cells = root ? root.querySelectorAll('.logo-switch-cell') : [];
                 if (!root || !cells.length) { done(); return; }
-                const ms = Math.max(200, Number(root.getAttribute('data-face-ms')) || 800);
-                logoSwitchTimerId = setTimeout(function () {
+                const ms = Math.max(200, Number(root.getAttribute('data-face-ms')) || 1000);
+                const hasBanner = !!root.querySelector('.logo-switch-layer.is-next');
+                let i = 0;
+                function showChar() {
                     if (!root.isConnected) return;
-                    cells.forEach(function (cell) { cell.classList.add('is-on'); });
-                    logoSwitchTimerId = setTimeout(done, ms);
-                }, ms);
+                    if (i >= cells.length) {
+                        i = 0;
+                        if (hasBanner) showBanner();
+                        else logoSwitchTimerId = setTimeout(done, ms);
+                        return;
+                    }
+                    cells[i].classList.add('is-char');
+                    i += 1;
+                    logoSwitchTimerId = setTimeout(showChar, ms);
+                }
+                function showBanner() {
+                    if (!root.isConnected) return;
+                    if (i >= cells.length) {
+                        logoSwitchTimerId = setTimeout(done, ms);
+                        return;
+                    }
+                    cells[i].classList.add('is-on');
+                    i += 1;
+                    logoSwitchTimerId = setTimeout(showBanner, ms);
+                }
+                showChar();
             }
             function playFaceSwitches_(list, done) {
                 const queue = Array.isArray(list) ? list.slice() : [];

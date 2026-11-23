@@ -79,7 +79,7 @@
     faces = Math.min(8, Math.floor(faces));
     var faceW = Math.max(1, Math.round(w / faces));
     var ms = Number(img.faceMs);
-    if (!Number.isFinite(ms) || ms < 200) ms = 800;
+    if (!Number.isFinite(ms) || ms < 200) ms = 1000;
     var size = w + 'px 128px';
     var cells = '';
     for (var i = 0; i < faces; i++) {
