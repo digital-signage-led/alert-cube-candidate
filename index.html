@@ -524,6 +524,28 @@
         html.site-dm-0017 #sceneLogo .logo-face-img {
             background: #000000 !important;
         }
+        html.site-dm-0017 .logo-wx {
+            position: absolute; inset: 0; z-index: 2; overflow: hidden;
+            background: transparent; pointer-events: none;
+        }
+        html.site-dm-0017 .logo-wx-track {
+            display: flex; flex-direction: column; width: 128px; will-change: transform;
+        }
+        html.site-dm-0017 .logo-wx-cell {
+            width: 128px; height: 128px; flex: 0 0 128px; box-sizing: border-box;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 2px; background: transparent; color: #ebebeb;
+            font-family: "Noto Sans JP", sans-serif; text-shadow: 0 1px 2px #000;
+        }
+        html.site-dm-0017 .logo-wx-label,
+        html.site-dm-0017 .logo-wx-num,
+        html.site-dm-0017 .logo-wx-unit { color: #ebebeb; font-weight: 700; }
+        html.site-dm-0017 .logo-wx-label { font-size: 18px; line-height: 1.1; }
+        html.site-dm-0017 .logo-wx-line { display: flex; align-items: baseline; justify-content: center; gap: 2px; }
+        html.site-dm-0017 .logo-wx-num { font-size: 40px; line-height: 1; }
+        html.site-dm-0017 .logo-wx-dir { font-size: 28px; }
+        html.site-dm-0017 .logo-wx-unit { font-size: 16px; line-height: 1; }
+        html.site-dm-0017 .logo-wx-icon { width: 72px; height: 72px; object-fit: contain; }
         html.site-dm-0017 #scene1 .s1-wbgt-site-slot .s1-wbgt-banner {
             height: auto;
             max-height: 22px;
@@ -3629,6 +3651,9 @@
                 <img class="logo-corp-img" src="" alt="" decoding="sync">
             </div>
         </div>
+        <div class="logo-wx" id="logo-wx" hidden>
+            <div class="logo-wx-track" id="logo-wx-track"></div>
+        </div>
     </div>
     <div class="dm14-card-union" id="dm14-card-union" aria-hidden="true">
         <div class="dm14-card" id="dm14-card">
@@ -4235,6 +4260,7 @@
         }
         refineOnlyParam_();
         if (typeof startSscRefreshLoop_ === 'function') startSscRefreshLoop_();
+        if (typeof startLogoWx_ === 'function') startLogoWx_();
         if (window.AlertCubeShortForecast) window.AlertCubeShortForecast.start();
         if (typeof paintStoredForecast_ === 'function') paintStoredForecast_();
     }
@@ -9079,6 +9105,95 @@
         const n = Number(cfg.scrollSpeedPx);
         if (Number.isFinite(n) && n > 0) return n;
         return GLOBAL_SCROLL_SPEED_PX;
+    }
+    /* ドトキューブの右端128。立方体は残し、その上に気象の値を縦に流す */
+    let logoWxRaf_ = 0;
+    function logoWxOn_() {
+        const p = (siteCfg_() && siteCfg_().presentation) || {};
+        return p.logoWeatherScroll === true;
+    }
+    function logoWxTypes_() {
+        if (!logoWxOn_()) return [];
+        const enabled = scene2TypesOn_();
+        return scene2ScrollOrder_().filter(function (type) {
+            return enabled.indexOf(type) >= 0;
+        });
+    }
+    const LOGO_WX_LABEL_ = {
+        weather: '天気', temp: '気温', rain: '降水量', wdir: '風向', wind: '風速',
+        gust: '瞬間風速', humi: '湿度', pres: '気圧', tmaxmin: '最高/最低',
+        uvi: '紫外線', illumi: '照度', cumtemp: '積算温度', rain1h: '1時間雨量', rain24h: '24時間雨量'
+    };
+    const LOGO_WX_UNIT_ = {
+        temp: '℃', rain: 'mm', wind: 'm/s', gust: 'm/s', humi: '%', pres: 'hPa',
+        tmaxmin: '℃', illumi: 'lx', cumtemp: '℃', rain1h: 'mm', rain24h: 'mm'
+    };
+    function logoWxCellHtml_(type) {
+        const label = LOGO_WX_LABEL_[type] || type;
+        if (type === 'weather') {
+            return '<div class="logo-wx-cell"><span class="logo-wx-label">' + label + '</span><img class="logo-wx-icon" alt="" data-wx-val="icon"></div>';
+        }
+        if (type === 'wdir') {
+            return '<div class="logo-wx-cell"><span class="logo-wx-label">' + label + '</span><span class="logo-wx-num logo-wx-dir" data-wx-val="wdir">--</span></div>';
+        }
+        if (type === 'tmaxmin') {
+            return '<div class="logo-wx-cell"><span class="logo-wx-label">' + label + '</span><span class="logo-wx-line"><span class="logo-wx-num" data-wx-val="maxT">--</span><span class="logo-wx-unit">/</span><span class="logo-wx-num" data-wx-val="minT">--</span><span class="logo-wx-unit">℃</span></span></div>';
+        }
+        const unit = LOGO_WX_UNIT_[type] || '';
+        return '<div class="logo-wx-cell"><span class="logo-wx-label">' + label + '</span><span class="logo-wx-line"><span class="logo-wx-num" data-wx-val="' + type + '">--</span>' + (unit ? '<span class="logo-wx-unit">' + unit + '</span>' : '') + '</span></div>';
+    }
+    function logoWxText_(key) {
+        const snap = lastAmedasSnapshot_;
+        if (!snap || snap[key] == null || snap[key] === '') return '--';
+        const n = snap[key];
+        if (key === 'wdir') return jmaWindDirFromCode(n);
+        if (key === 'temp' || key === 'humi' || key === 'pres' || key === 'maxT' || key === 'minT') {
+            const rounded = Math.round(Number(n));
+            return Number.isFinite(rounded) ? String(rounded) : '--';
+        }
+        if (key === 'rain' || key === 'wind' || key === 'gust') {
+            const num = Number(n);
+            return Number.isFinite(num) ? num.toFixed(1) : '--';
+        }
+        return String(n);
+    }
+    function logoWxPaint_() {
+        const root = document.getElementById('logo-wx');
+        if (!root || root.hidden) return;
+        ['temp', 'rain', 'wind', 'humi', 'pres', 'wdir', 'maxT', 'minT', 'gust'].forEach(function (key) {
+            const text = logoWxText_(key);
+            root.querySelectorAll('[data-wx-val="' + key + '"]').forEach(function (el) {
+                if (el.textContent !== text) el.textContent = text;
+            });
+        });
+        const snap = lastAmedasSnapshot_;
+        const code = (snap && (snap.weatherCode || snap.icon)) || lastForecastWeatherCode_;
+        const url = code ? resolveJmaWeatherIconUrl_(code) : '';
+        if (!url) return;
+        root.querySelectorAll('[data-wx-val="icon"]').forEach(function (img) {
+            if (img.getAttribute('src') !== url) img.src = url;
+        });
+    }
+    function startLogoWx_() {
+        const host = document.getElementById('logo-wx');
+        const track = document.getElementById('logo-wx-track');
+        if (!host || !track) return;
+        if (logoWxRaf_) { cancelAnimationFrame(logoWxRaf_); logoWxRaf_ = 0; }
+        const types = logoWxTypes_();
+        if (!types.length) { host.hidden = true; track.innerHTML = ''; return; }
+        host.hidden = false;
+        const one = types.map(logoWxCellHtml_).join('');
+        track.innerHTML = one + one;
+        const setH = types.length * 128;
+        let y = 0;
+        function frame() {
+            y += getScrollSpeedPx_();
+            if (y >= setH) y -= setH;
+            track.style.transform = 'translate3d(0,' + (-y) + 'px,0)';
+            logoWxPaint_();
+            logoWxRaf_ = requestAnimationFrame(frame);
+        }
+        logoWxRaf_ = requestAnimationFrame(frame);
     }
     let sceneSlideAnimId = null;
     let sceneSlideSettledFn_ = null;
