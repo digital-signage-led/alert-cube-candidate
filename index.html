@@ -557,8 +557,8 @@
         html.site-dm-0017 .logo-face-switch { display: flex; height: 128px; overflow: hidden; }
         html.site-dm-0017 .logo-switch-cell { position: relative; width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
         html.site-dm-0017 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; }
-        html.site-dm-0017 .logo-switch-layer.is-next { transform: translateY(100%); }
-        html.site-dm-0017 .logo-switch-cell.is-on .logo-switch-layer.is-next { transform: translateY(0); transition: transform 0.42s ease; }
+        html.site-dm-0017 .logo-switch-layer.is-next { opacity: 0; }
+        html.site-dm-0017 .logo-switch-cell.is-on .logo-switch-layer.is-next { opacity: 1; }
         @keyframes icingDrive {
             0%, 100% { transform: translateX(0); }
             50% { transform: translateX(-12px); }
@@ -16579,18 +16579,11 @@
                 const cells = root ? root.querySelectorAll('.logo-switch-cell') : [];
                 if (!root || !cells.length) { done(); return; }
                 const ms = Math.max(200, Number(root.getAttribute('data-face-ms')) || 800);
-                let i = 0;
-                function step() {
+                logoSwitchTimerId = setTimeout(function () {
                     if (!root.isConnected) return;
-                    if (i >= cells.length) {
-                        logoSwitchTimerId = setTimeout(done, 700);
-                        return;
-                    }
-                    cells[i].classList.add('is-on');
-                    i += 1;
-                    logoSwitchTimerId = setTimeout(step, ms);
-                }
-                logoSwitchTimerId = setTimeout(step, 280);
+                    cells.forEach(function (cell) { cell.classList.add('is-on'); });
+                    logoSwitchTimerId = setTimeout(done, ms);
+                }, ms);
             }
             function playFaceSwitches_(list, done) {
                 const queue = Array.isArray(list) ? list.slice() : [];
