@@ -543,37 +543,85 @@
         html.site-dm-0017 .logo-wx-face {
             position: absolute; top: 0; left: 0; width: 128px; height: 128px;
         }
+        /* 右端の天気は、512を流れる気象観測の白いカード。地はパネルのまま */
         html.site-dm-0017 .logo-wx-cell {
             width: 128px; height: 128px; flex: 0 0 128px; box-sizing: border-box;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            gap: 2px; background: transparent; color: #ebebeb;
+            display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
+            gap: 0; background: transparent; color: #ebebeb;
             font-family: "Noto Sans JP", sans-serif;
         }
-        html.site-dm-0017 .logo-wx-label,
-        html.site-dm-0017 .logo-wx-num,
-        html.site-dm-0017 .logo-wx-unit { color: #ebebeb; font-weight: 700; }
-        html.site-dm-0017 .logo-wx-label { font-size: 18px; line-height: 1.1; }
-        html.site-dm-0017 .logo-wx-line { display: flex; align-items: baseline; justify-content: center; gap: 2px; }
-        html.site-dm-0017 .logo-wx-num { font-size: 40px; line-height: 1; }
-        html.site-dm-0017 .logo-wx-dir { font-size: 28px; }
-        html.site-dm-0017 .logo-wx-unit { font-size: 16px; line-height: 1; }
-        html.site-dm-0017 .logo-wx-icon { width: 72px; height: 72px; object-fit: contain; }
-        html.site-dm-0017 .logo-icing { position: relative; height: 128px; overflow: hidden; }
-        html.site-dm-0017 .logo-icing-base { display: block; width: 100%; height: 128px; }
-        html.site-dm-0017 .logo-icing-cell {
+        html.site-dm-0017 .logo-wx-cell .s2-top-bar { background: transparent; }
+        html.site-dm-0017 .logo-wx-cell .s2-bar-label {
+            font-size: 20px; line-height: 1.05; letter-spacing: 0.2px; color: #ebebeb;
+        }
+        html.site-dm-0017 .logo-wx-cell .s2-body {
+            height: 64px; max-height: 64px; background: transparent; color: #ebebeb;
+        }
+        html.site-dm-0017 .logo-wx-cell .s2-value-card {
+            display: inline-flex; align-items: baseline; justify-content: center;
+            gap: 2px; padding: 3px 7px 4px;
+            background: #ffffff; border-radius: 8px;
+            max-width: 118px; box-sizing: border-box; overflow: hidden;
+            white-space: nowrap; line-height: 1;
+        }
+        html.site-dm-0017 .logo-wx-cell .s2-num {
+            font-size: 44px; font-weight: 800; color: #ebebeb;
+        }
+        html.site-dm-0017 .logo-wx-cell .s2-unit {
+            font-size: 20px; font-weight: 600; color: #ebebeb;
+        }
+        html.site-dm-0017 .logo-wx-cell .s2-dir-text {
+            font-size: 34px; font-weight: 800; line-height: 1; color: #ebebeb;
+        }
+        html.site-dm-0017 .logo-wx-cell .s2-value-card .s2-tmax-high { color: #e02020; }
+        html.site-dm-0017 .logo-wx-cell .s2-value-card .s2-tmax-low { color: #2060e0; }
+        html.site-dm-0017 .logo-wx-cell .s2-value-card .s2-tmax-sep,
+        html.site-dm-0017 .logo-wx-cell .s2-value-card .s2-tmax-unit { color: #1a1a1a; }
+        html.site-dm-0017 .logo-wx-cell .weather-icon-cell {
+            width: 76px; height: 58px; max-width: 76px; max-height: 58px;
+            overflow: hidden; background: #ffffff; border-radius: 8px;
+        }
+        html.site-dm-0017 .logo-wx-cell .weather-icon-cell::before {
+            width: 76px; height: 58px; border-radius: 8px; background: #ffffff;
+        }
+        html.site-dm-0017 .logo-wx-cell .weather-svg {
+            width: 60px; height: 60px; max-width: 60px; max-height: 60px;
+            visibility: visible; transform: translate(-50%, -50%) scale(1.05);
+        }
+        html.site-dm-0017 .logo-wx-cell .s2-tmax-high,
+        html.site-dm-0017 .logo-wx-cell .s2-tmax-low { font-size: 40px; }
+        html.site-dm-0017 .logo-wx-cell .s2-tmax-sep { font-size: 40px; font-weight: 800; }
+        html.site-dm-0017 .logo-wx-cell .s2-tmax-unit { font-size: 16px; }
+        html.site-dm-0017 .logo-icing,
+        html.site-dm-0013 .logo-icing { position: relative; height: 128px; overflow: hidden; }
+        html.site-dm-0017 .logo-icing-base,
+        html.site-dm-0013 .logo-icing-base { display: block; width: 100%; height: 128px; }
+        html.site-dm-0017 .logo-icing-cell,
+        html.site-dm-0013 .logo-icing-cell {
             position: absolute; top: 0; width: 128px; height: 128px; overflow: hidden;
         }
-        html.site-dm-0017 .logo-icing-part { position: absolute; width: auto; height: auto; }
-        html.site-dm-0017 .logo-icing-part.is-drive { animation: icingDrive 2.2s ease-in-out infinite; }
+        html.site-dm-0017 .logo-icing-part,
+        html.site-dm-0013 .logo-icing-part { position: absolute; width: auto; height: auto; }
+        html.site-dm-0017 .logo-icing-part.is-drive,
+        html.site-dm-0013 .logo-icing-part.is-drive { animation: icingDrive 2.2s ease-in-out infinite; }
         html.site-dm-0017 .logo-icing-part.is-step,
-        html.site-dm-0017 .logo-icing-part.is-car { width: 110px; height: 110px; object-fit: contain; animation: none; }
-        html.site-dm-0017 .logo-face-switch { display: flex; height: 128px; overflow: hidden; }
-        html.site-dm-0017 .logo-switch-cell { position: relative; width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
-        html.site-dm-0017 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; opacity: 0; }
-        html.site-dm-0017 .logo-switch-cell.is-char .logo-switch-layer:not(.is-next) { opacity: 1; }
-        html.site-dm-0017 .logo-switch-layer.is-show { opacity: 1; }
-        html.site-dm-0017 .logo-switch-layer.is-next { opacity: 1; transform: translateY(100%); }
-        html.site-dm-0017 .logo-switch-cell.is-on .logo-switch-layer.is-next { transform: translateY(0); transition: transform 0.42s ease; }
+        html.site-dm-0017 .logo-icing-part.is-car,
+        html.site-dm-0013 .logo-icing-part.is-step,
+        html.site-dm-0013 .logo-icing-part.is-car { width: 110px; height: 110px; object-fit: contain; animation: none; }
+        html.site-dm-0017 .logo-face-switch,
+        html.site-dm-0013 .logo-face-switch { display: flex; height: 128px; overflow: hidden; }
+        html.site-dm-0017 .logo-switch-cell,
+        html.site-dm-0013 .logo-switch-cell { position: relative; width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
+        html.site-dm-0017 .logo-switch-layer,
+        html.site-dm-0013 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; opacity: 0; }
+        html.site-dm-0017 .logo-switch-cell.is-char .logo-switch-layer:not(.is-next),
+        html.site-dm-0013 .logo-switch-cell.is-char .logo-switch-layer:not(.is-next) { opacity: 1; }
+        html.site-dm-0017 .logo-switch-layer.is-show,
+        html.site-dm-0013 .logo-switch-layer.is-show { opacity: 1; }
+        html.site-dm-0017 .logo-switch-layer.is-next,
+        html.site-dm-0013 .logo-switch-layer.is-next { opacity: 1; transform: translateY(100%); }
+        html.site-dm-0017 .logo-switch-cell.is-on .logo-switch-layer.is-next,
+        html.site-dm-0013 .logo-switch-cell.is-on .logo-switch-layer.is-next { transform: translateY(0); transition: transform 0.42s ease; }
         @keyframes icingDrive {
             0%, 100% { transform: translateX(0); }
             50% { transform: translateX(-12px); }
@@ -4506,6 +4554,7 @@
         if (v === 'rain-radar' || v === 'radar') return 'rain-radar';
         if (v === 'short-forecast' || v === 'short') return 'short-forecast';
         if (v === 'logo') return 'logo';
+        if (v === 'icing') return 'icing';
         if (v === 'ssc' || v === 'noise' || v === 'vib') return 'ssc';
         const map = { '1': 's1', '2': 's2', '3': 's4', '4': 's5', '5': 's3', s1: 's1', s2: 's2', s3: 's3', s4: 's4', s5: 's5' };
         return map[v] || null;
@@ -9207,7 +9256,8 @@
     }
     function logoWxTypes_() {
         if (!logoWxOn_()) return [];
-        return ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin'];
+        const types = scene2TypesOn_();
+        return types.length ? types : ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin'];
     }
     const LOGO_WX_LABEL_ = {
         weather: '天気', temp: '気温', rain: '降水量', wdir: '風向', wind: '風速',
@@ -9219,18 +9269,21 @@
         tmaxmin: '℃', illumi: 'lx', cumtemp: '℃', rain1h: 'mm', rain24h: 'mm'
     };
     function logoWxCellHtml_(type) {
-        const label = LOGO_WX_LABEL_[type] || type;
+        const label = SCENE2_META_LABELS[type] || LOGO_WX_LABEL_[type] || type;
+        const bar = '<div class="s2-top-bar"><span class="s2-bar-label">' + label + '</span></div>';
+        let body;
         if (type === 'weather') {
-            return '<div class="logo-wx-cell"><span class="logo-wx-label">' + label + '</span><img class="logo-wx-icon" alt="" data-wx-val="icon"></div>';
+            body = '<span class="weather-icon-cell"><img class="weather-svg weather-icon-img" alt="" data-wx-val="icon"></span>';
+        } else if (type === 'wdir') {
+            body = '<div class="s2-dir-text dir-val" data-wx-val="wdir">--</div>';
+        } else if (type === 'tmaxmin') {
+            body = '<div class="s2-value-card s2-tmaxmin-card"><span class="s2-tmax-high" data-wx-val="maxT">--</span><span class="s2-tmax-sep">/</span><span class="s2-tmax-low" data-wx-val="minT">--</span><span class="s2-tmax-unit">℃</span></div>';
+        } else {
+            const unit = LOGO_WX_UNIT_[type] || '';
+            body = '<div class="s2-val"><span class="s2-num" data-wx-val="' + type + '">--</span>' +
+                (unit ? '<span class="s2-unit">' + unit + '</span>' : '') + '</div>';
         }
-        if (type === 'wdir') {
-            return '<div class="logo-wx-cell"><span class="logo-wx-label">' + label + '</span><span class="logo-wx-num logo-wx-dir" data-wx-val="wdir">--</span></div>';
-        }
-        if (type === 'tmaxmin') {
-            return '<div class="logo-wx-cell"><span class="logo-wx-label">' + label + '</span><span class="logo-wx-line"><span class="logo-wx-num" data-wx-val="maxT">--</span><span class="logo-wx-unit">/</span><span class="logo-wx-num" data-wx-val="minT">--</span><span class="logo-wx-unit">℃</span></span></div>';
-        }
-        const unit = LOGO_WX_UNIT_[type] || '';
-        return '<div class="logo-wx-cell"><span class="logo-wx-label">' + label + '</span><span class="logo-wx-line"><span class="logo-wx-num" data-wx-val="' + type + '">--</span>' + (unit ? '<span class="logo-wx-unit">' + unit + '</span>' : '') + '</span></div>';
+        return '<div class="logo-wx-cell">' + bar + '<div class="s2-body">' + body + '</div></div>';
     }
     function logoWxText_(key) {
         const snap = lastAmedasSnapshot_;
@@ -9259,9 +9312,39 @@
         const snap = lastAmedasSnapshot_;
         const code = (snap && (snap.weatherCode || snap.icon)) || lastForecastWeatherCode_;
         const url = code ? resolveJmaWeatherIconUrl_(code) : '';
-        if (!url) return;
-        root.querySelectorAll('[data-wx-val="icon"]').forEach(function (img) {
-            if (img.getAttribute('src') !== url) img.src = url;
+        if (url) {
+            root.querySelectorAll('[data-wx-val="icon"]').forEach(function (img) {
+                if (img.getAttribute('src') !== url) img.src = url;
+            });
+        }
+        logoWxFitCards_();
+    }
+    function logoWxFitCards_() {
+        const root = document.getElementById('logo-wx');
+        if (!root) return;
+        root.querySelectorAll('.s2-value-card').forEach(function (card) {
+            const maxW = 118;
+            const hi = card.querySelector('.s2-tmax-high');
+            const lo = card.querySelector('.s2-tmax-low');
+            const sep = card.querySelector('.s2-tmax-sep');
+            const num = card.querySelector('.s2-num');
+            const dir = card.querySelector('.s2-dir-text');
+            const unit = card.querySelector('.s2-tmax-unit, .s2-unit');
+            let size = dir ? 34 : (hi ? 40 : 44);
+            const minSize = 18;
+            function apply(next) {
+                if (hi) hi.style.fontSize = next + 'px';
+                if (lo) lo.style.fontSize = next + 'px';
+                if (sep) sep.style.fontSize = next + 'px';
+                if (num) num.style.fontSize = next + 'px';
+                if (dir) dir.style.fontSize = next + 'px';
+                if (unit) unit.style.fontSize = Math.max(12, Math.round(next * (hi ? 0.4 : 0.45))) + 'px';
+            }
+            apply(size);
+            while (size > minSize && card.scrollWidth > maxW) {
+                size -= 1;
+                apply(size);
+            }
         });
     }
     function logoWxShow_(face, rotor, type, deg, enter) {
@@ -15248,6 +15331,9 @@
                 case 'progress': showOnlyScene_(sceneProgress, playSceneProgress); break;
                 case 'rain-radar': showOnlyScene_(sceneRainRadar, playSceneRainRadar); break;
                 case 'logo': showOnlyScene_(sceneLogo, playSceneLogoScroll); break;
+                case 'icing': showOnlyScene_(sceneLogo, function () {
+                    playSceneLogoScroll({ id: 'icing', cfg: (siteCfg_() && siteCfg_().icingScroll) || {} });
+                }); break;
                 default: break;
             }
         }
@@ -15987,6 +16073,11 @@
             case 'rain-radar':
                 if (!contentOn_('rain-radar') || !sceneRainRadar) { advanceContentOrder_(); break; }
                 startRainRadarOrSkip_();
+                break;
+            case 'icing':
+                transitionToScene(sceneLogo, function () {
+                    playSceneLogoScroll({ id: 'icing', cfg: (siteCfg_() && siteCfg_().icingScroll) || {} });
+                });
                 break;
             case 'logo-scroll': {
                 if (icingLimitC_() == null || icingDue_() || observedTempC_() != null) {
