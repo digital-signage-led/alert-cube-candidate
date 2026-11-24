@@ -11,7 +11,7 @@
     <script src="./contents/modules.js?v=20261111-wxtech-public"></script>
     <script src="./contents/news/index.js?v=20261112-news-newest"></script>
     <script src="./contents/boards/index.js?v=20261123-car-same"></script>
-    <script src="./contents/logo-scroll/index.js?v=20261123-face-same"></script>
+    <script src="./contents/logo-scroll/index.js?v=20261124-car-frame"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
     <script src="./contents/rain-radar/index.js?v=20261116-coast-map"></script>
@@ -511,9 +511,9 @@
             width: 128px; max-width: 128px; height: 128px; max-height: 128px;
         }
         html.site-dm-0017 .logo-corp-img { display: none !important; }
-        /* 右端128（x≥512）の地は、凍結注意の上帯と同じ水色 */
+        /* 右端128（x≥512）の地は、最初の黒 */
         html.site-dm-0017 .logo-panel {
-            background: #79D3EE !important;
+            background: #000000 !important;
         }
         html.site-dm-0017 #scene2 .s2-logo-panel,
         html.site-dm-0017 #scene2 .s2-logo-panel .s2-body,
@@ -542,12 +542,12 @@
         html.site-dm-0017 .logo-wx-cell {
             width: 128px; height: 128px; flex: 0 0 128px; box-sizing: border-box;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            gap: 2px; background: transparent; color: #000;
+            gap: 2px; background: transparent; color: #ebebeb;
             font-family: "Noto Sans JP", sans-serif;
         }
         html.site-dm-0017 .logo-wx-label,
         html.site-dm-0017 .logo-wx-num,
-        html.site-dm-0017 .logo-wx-unit { color: #000; font-weight: 700; }
+        html.site-dm-0017 .logo-wx-unit { color: #ebebeb; font-weight: 700; }
         html.site-dm-0017 .logo-wx-label { font-size: 18px; line-height: 1.1; }
         html.site-dm-0017 .logo-wx-line { display: flex; align-items: baseline; justify-content: center; gap: 2px; }
         html.site-dm-0017 .logo-wx-num { font-size: 40px; line-height: 1; }
@@ -561,7 +561,8 @@
         }
         html.site-dm-0017 .logo-icing-part { position: absolute; width: auto; height: auto; }
         html.site-dm-0017 .logo-icing-part.is-drive { animation: icingDrive 2.2s ease-in-out infinite; }
-        html.site-dm-0017 .logo-icing-part.is-step { width: 88px; height: 80px; animation: none; }
+        html.site-dm-0017 .logo-icing-part.is-step,
+        html.site-dm-0017 .logo-icing-part.is-car { width: 110px; height: 110px; object-fit: contain; animation: none; }
         html.site-dm-0017 .logo-face-switch { display: flex; height: 128px; overflow: hidden; }
         html.site-dm-0017 .logo-switch-cell { position: relative; width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
         html.site-dm-0017 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; opacity: 0; }
@@ -9170,7 +9171,7 @@
         if (Number.isFinite(n) && n > 0) return n;
         return GLOBAL_SCROLL_SPEED_PX;
     }
-    /* ドトキューブの右端128。立方体は残す。文字は90度ずつ回す。値は同じ位置で替える */
+    /* ドトキューブの右端128。立方体は残す。値は90度ずつ、途中を出さずその場で替える */
     const LOGO_WX_HOLD_MS = 2800;
     const LOGO_WX_TURN_MS = 700;
     let logoWxHoldTimer_ = 0;
@@ -9191,10 +9192,7 @@
     }
     function logoWxTypes_() {
         if (!logoWxOn_()) return [];
-        const enabled = scene2TypesOn_();
-        return scene2ScrollOrder_().filter(function (type) {
-            return enabled.indexOf(type) >= 0;
-        });
+        return ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin'];
     }
     const LOGO_WX_LABEL_ = {
         weather: '天気', temp: '気温', rain: '降水量', wdir: '風向', wind: '風速',
@@ -9285,14 +9283,11 @@
             if (gen !== logoWxGen_) return;
             logoWxHoldTimer_ = 0;
             deg += turn;
-            logoWxPlace_(rotor, deg, true);
-            logoWxTurnTimer_ = setTimeout(function () {
-                if (gen !== logoWxGen_) return;
-                logoWxTurnTimer_ = 0;
-                idx = (idx + 1) % types.length;
-                showAt_(idx);
-                arm();
-            }, LOGO_WX_TURN_MS);
+            if (deg >= 360) deg = deg % 360;
+            idx = (idx + 1) % types.length;
+            showAt_(idx);
+            logoWxPlace_(rotor, deg, false);
+            arm();
         }
         arm();
     }
@@ -10355,8 +10350,8 @@
         if (window.AlertCubeContent) {
             if (!contentShouldFetch_('moe-wbgt') && !contentShouldFetch_('moe-heat')) plan.moe = false;
             if (!contentShouldFetch_('jma-nowc')) plan.nowc = false;
-            if (!contentShouldFetch_('jma-forecast')) plan.forecast = false;
-            if (!contentShouldFetch_('jma-amedas') && !contentShouldFetch_('jma-forecast') && !contentShouldFetch_('jma-warning') && !contentShouldFetch_('jma-typhoon')) {
+            if (!contentShouldFetch_('jma-forecast') && !logoWxOn_()) plan.forecast = false;
+            if (!contentShouldFetch_('jma-amedas') && !contentShouldFetch_('jma-forecast') && !contentShouldFetch_('jma-warning') && !contentShouldFetch_('jma-typhoon') && !logoWxOn_()) {
                 plan.jma = false;
             }
         }
@@ -10559,7 +10554,7 @@
         if (amedasWatchdogId_ != null) return;
         amedasWatchdogId_ = setInterval(function () {
             if (!siteOperable_() || scheduledFetchInFlight_ || denshoLive_()) return;
-            if (window.AlertCubeContent && !contentShouldFetch_('jma-amedas')) return;
+            if (window.AlertCubeContent && !contentShouldFetch_('jma-amedas') && !logoWxOn_()) return;
             const obsAt = lastAmedasObsTime ? lastAmedasObsTime.getTime() : 0;
             if (getNowMs() - obsAt < AMEDAS_WATCHDOG_MS) return;
             console.warn('[見張り] 観測値の更新が止まっているため取り直し');
@@ -16738,11 +16733,18 @@
                 }
                 next();
             }
-            function playScrollChunk_(html, setWidth, done) {
+            function playScrollChunk_(html, setWidth, done, holdMs, times) {
                 logoFaceTrack.innerHTML = html;
                 logoFaceTrack.style.width = (setWidth * 2) + 'px';
                 applyScrollX_(logoFaceTrack, 0);
-                runLapScroll_(logoFaceTrack, setWidth, laps, 1, 'logo', done);
+                const wait = Math.max(0, Number(holdMs) || 0);
+                function start() {
+                    logoSwitchTimerId = null;
+                    runLapScroll_(logoFaceTrack, setWidth, times > 0 ? times : laps, 1, 'logo', done);
+                }
+                if (wait <= 0) { start(); return; }
+                if (logoSwitchTimerId) { clearTimeout(logoSwitchTimerId); logoSwitchTimerId = null; }
+                logoSwitchTimerId = setTimeout(start, wait);
             }
             function playBuiltSteps_() {
                 const steps = built.steps || [];
@@ -16752,7 +16754,7 @@
                     const step = steps[n];
                     n += 1;
                     if (step.type === 'switch') playOneFaceSwitch_(step.html, nextStep);
-                    else playScrollChunk_(step.html, step.setWidth, nextStep);
+                    else playScrollChunk_(step.html, step.setWidth, nextStep, n > 1 ? 1000 : 0, step.laps);
                 }
                 nextStep();
             }

@@ -29,6 +29,10 @@
         with: img.with ? String(img.with) : '',
         faces: Number(img.faces) || 0,
         faceMs: Number(img.faceMs) || 0,
+        laps: (function () {
+          var n = Number(img.laps);
+          return Number.isFinite(n) && n > 0 ? Math.min(8, Math.floor(n)) : 0;
+        })(),
         parts: Array.isArray(img.parts) ? img.parts : []
       };
     });
@@ -58,7 +62,7 @@
     var parts = Array.isArray(img.parts) ? img.parts : [];
     var bits = parts.map(function (part) {
       if (!part || !part.src) return '';
-      var anim = part.anim === 'drive' || part.anim === 'step' ? part.anim : '';
+      var anim = part.anim === 'drive' || part.anim === 'step' || part.anim === 'car' ? part.anim : '';
       var x = Number(part.x); var y = Number(part.y);
       if (!Number.isFinite(x)) x = 0;
       if (!Number.isFinite(y)) y = 0;
@@ -203,12 +207,14 @@
     }
     var caption = split ? { html: '', width: 0 } : captionHtml(cfg, bg);
     var between = !!(caption.html && cap && cap.place === 'between' && images.length >= 2);
+    var scrollLaps = 0;
     function pushScrollStep() {
       if (!parts.length) return;
       var chunk = parts.join('');
-      steps.push({ type: 'scroll', html: chunk + chunk, setWidth: setWidth });
+      steps.push({ type: 'scroll', html: chunk + chunk, setWidth: setWidth, laps: scrollLaps });
       parts = [];
       setWidth = 0;
+      scrollLaps = 0;
     }
     if (!split) images.forEach(function (img, i) {
       if (img.motion === 'face-switch') {
@@ -224,6 +230,7 @@
       }
       var w = img.panelWidth || fallbackW;
       setWidth += w;
+      if (img.laps) scrollLaps = img.laps;
       parts.push(faceHtml(img, w, bg));
     });
     if (caption.html && !between) {
