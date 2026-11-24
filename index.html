@@ -11,7 +11,7 @@
     <script src="./contents/modules.js?v=20261111-wxtech-public"></script>
     <script src="./contents/news/index.js?v=20261112-news-newest"></script>
     <script src="./contents/boards/index.js?v=20261123-car-same"></script>
-    <script src="./contents/logo-scroll/index.js?v=20261123-face-same"></script>
+    <script src="./contents/logo-scroll/index.js?v=20261124-banner2"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
     <script src="./contents/rain-radar/index.js?v=20261116-coast-map"></script>
@@ -16738,11 +16738,11 @@
                 }
                 next();
             }
-            function playScrollChunk_(html, setWidth, done) {
+            function playScrollChunk_(html, setWidth, times, done) {
                 logoFaceTrack.innerHTML = html;
                 logoFaceTrack.style.width = (setWidth * 2) + 'px';
                 applyScrollX_(logoFaceTrack, 0);
-                runLapScroll_(logoFaceTrack, setWidth, laps, 1, 'logo', done);
+                runLapScroll_(logoFaceTrack, setWidth, times > 0 ? times : laps, 1, 'logo', done);
             }
             function playBuiltSteps_() {
                 const steps = built.steps || [];
@@ -16752,7 +16752,7 @@
                     const step = steps[n];
                     n += 1;
                     if (step.type === 'switch') playOneFaceSwitch_(step.html, nextStep);
-                    else playScrollChunk_(step.html, step.setWidth, nextStep);
+                    else playScrollChunk_(step.html, step.setWidth, step.laps, nextStep);
                 }
                 nextStep();
             }
