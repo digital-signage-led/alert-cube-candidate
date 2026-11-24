@@ -595,6 +595,12 @@
         html.site-dm-0017 .logo-wx-cell .s2-tmax-low { font-size: 40px; }
         html.site-dm-0017 .logo-wx-cell .s2-tmax-sep { font-size: 40px; font-weight: 800; }
         html.site-dm-0017 .logo-wx-cell .s2-tmax-unit { font-size: 16px; }
+        html.site-dm-0017 .logo-wx-sign {
+            gap: 0; padding: 0; background: #000000;
+        }
+        html.site-dm-0017 .logo-wx-sign img {
+            width: 128px; height: 128px; display: block; object-fit: fill;
+        }
         html.site-dm-0017 .logo-icing,
         html.site-dm-0013 .logo-icing { position: relative; height: 128px; overflow: hidden; }
         html.site-dm-0017 .logo-icing-base,
@@ -9252,7 +9258,7 @@
         if (Number.isFinite(n) && n > 0) return n;
         return GLOBAL_SCROLL_SPEED_PX;
     }
-    /* ドトキューブの右端128。値は90度ずつ。切り替えは文字の下から中央へ入る */
+    /* ドトキューブの右端128。道路の10面、センサーの15面。気象の値は出さない。90度ずつ。切り替えは下から中央へ入る */
     const LOGO_WX_HOLD_MS = 2800;
     const LOGO_WX_TURN_MS = 700;
     let logoWxHoldTimer_ = 0;
@@ -9275,6 +9281,25 @@
         if (!logoWxOn_()) return [];
         const types = scene2TypesOn_();
         return types.length ? types : ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin'];
+    }
+    function logoWxAttr_(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    }
+    function logoWxEdgeSigns_() {
+        const raw = ((siteCfg_() && siteCfg_().presentation) || {}).logoEdgeSigns;
+        if (!Array.isArray(raw)) return [];
+        const out = [];
+        raw.forEach(function (row) {
+            const src = String((row && row.src) || row || '').trim();
+            if (!src) return;
+            out.push({ kind: 'sign', src: src, alt: String((row && row.alt) || '').trim() });
+        });
+        return out;
+    }
+    function logoWxItems_() {
+        const items = logoWxTypes_().map(function (type) { return { kind: 'wx', type: type }; });
+        return items.concat(logoWxEdgeSigns_());
     }
     const LOGO_WX_LABEL_ = {
         weather: '天気', temp: '気温', rain: '降水量', wdir: '風向', wind: '風速',
@@ -9301,6 +9326,12 @@
                 (unit ? '<span class="s2-unit">' + unit + '</span>' : '') + '</div>';
         }
         return '<div class="logo-wx-cell">' + bar + '<div class="s2-body">' + body + '</div></div>';
+    }
+    function logoWxFaceHtml_(item) {
+        if (item && item.kind === 'sign') {
+            return '<div class="logo-wx-cell logo-wx-sign"><img alt="' + logoWxAttr_(item.alt) + '" src="' + logoWxAttr_(item.src) + '"></div>';
+        }
+        return logoWxCellHtml_(item && item.type);
     }
     function logoWxText_(key) {
         const snap = lastAmedasSnapshot_;
@@ -9395,11 +9426,11 @@
             }
         });
     }
-    function logoWxShow_(face, rotor, type, deg, enter) {
+    function logoWxShow_(face, rotor, item, deg, enter) {
         rotor.style.transition = 'none';
         rotor.style.transform = 'rotate(' + deg + 'deg)';
-        face.innerHTML = logoWxCellHtml_(type);
-        logoWxPaint_();
+        face.innerHTML = logoWxFaceHtml_(item);
+        if (!item || item.kind !== 'sign') logoWxPaint_();
         face.style.transition = 'none';
         face.style.transform = enter ? 'translate3d(0,128px,0)' : 'translate3d(0,0,0)';
         if (!enter) return;
@@ -9411,8 +9442,8 @@
         const host = document.getElementById('logo-wx');
         if (!host) return;
         stopLogoWx_();
-        const types = logoWxTypes_();
-        if (!types.length) { host.hidden = true; return; }
+        const items = logoWxItems_();
+        if (!items.length) { host.hidden = true; return; }
         host.hidden = false;
         host.innerHTML = '<div class="logo-wx-rotor" id="logo-wx-rotor">' +
             '<div class="logo-wx-face" data-wx-face="front"></div></div>';
@@ -9422,17 +9453,17 @@
         const gen = logoWxGen_;
         let idx = 0;
         let deg = 0;
-        logoWxShow_(face, rotor, types[0], 0, false);
+        logoWxShow_(face, rotor, items[0], 0, false);
         function arm() {
-            if (gen !== logoWxGen_ || types.length < 2) return;
+            if (gen !== logoWxGen_ || items.length < 2) return;
             logoWxHoldTimer_ = setTimeout(step, LOGO_WX_HOLD_MS);
         }
         function step() {
             if (gen !== logoWxGen_) return;
             logoWxHoldTimer_ = 0;
             deg = (deg + turn) % 360;
-            idx = (idx + 1) % types.length;
-            logoWxShow_(face, rotor, types[idx], deg, true);
+            idx = (idx + 1) % items.length;
+            logoWxShow_(face, rotor, items[idx], deg, true);
             arm();
         }
         arm();
