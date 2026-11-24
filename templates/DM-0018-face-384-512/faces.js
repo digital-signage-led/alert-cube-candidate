@@ -95,6 +95,6 @@ function startDm18CornerScroll_() {
     }
     mark.onload = paintWhenReady;
     wide.onload = paintWhenReady;
-    mark.src = './assets/demo/DM-0018/logo_mark.png?v=2';
+    mark.src = './assets/demo/DM-0018/logo_face4.jpg?v=1';
     wide.src = './assets/demo/DM-0018/logo_512.jpg?v=1';
 }
