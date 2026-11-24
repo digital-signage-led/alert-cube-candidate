@@ -511,9 +511,9 @@
             width: 128px; max-width: 128px; height: 128px; max-height: 128px;
         }
         html.site-dm-0017 .logo-corp-img { display: none !important; }
-        /* 右端128（x≥512）は黒地。立方体のマークは出さない */
+        /* 右端128（x≥512）は紅葉の上段。立方体のマークだけ出さない */
         html.site-dm-0017 .logo-panel {
-            background: #000000 !important;
+            background: #E06A42 !important;
         }
         html.site-dm-0017 .logo-panel .logo-rotator,
         html.site-dm-0017 .logo-panel .logo-img {
@@ -16707,7 +16707,7 @@
                     playlistHandoff_();
                 });
             }
-            function playOneFaceSwitch_(html, done) {
+            function playOneFaceSwitch_(html, done, edgeHoldMs) {
                 if (logoSwitchTimerId) { clearTimeout(logoSwitchTimerId); logoSwitchTimerId = null; }
                 logoFaceTrack.innerHTML = html;
                 logoFaceTrack.style.width = '512px';
@@ -16717,17 +16717,33 @@
                 if (!root || !cells.length) { done(); return; }
                 const ms = Math.max(200, Number(root.getAttribute('data-face-ms')) || 1000);
                 const glyphs = Math.max(1, Number(root.getAttribute('data-glyphs')) || 1);
+                const edge = Math.max(0, Number(edgeHoldMs) || 0);
                 let step = 0;
+                function showGlyph(index) {
+                    root.querySelectorAll('.logo-switch-layer').forEach(function (el) {
+                        el.classList.toggle('is-show', Number(el.getAttribute('data-glyph')) === index);
+                    });
+                }
                 function showSame() {
                     if (!root.isConnected) return;
-                    if (step >= glyphs) { done(); return; }
-                    root.querySelectorAll('.logo-switch-layer').forEach(function (el) {
-                        el.classList.toggle('is-show', Number(el.getAttribute('data-glyph')) === step);
-                    });
+                    if (step >= glyphs) {
+                        if (edge <= 0) { done(); return; }
+                        logoSwitchTimerId = setTimeout(function () {
+                            logoSwitchTimerId = null;
+                            done();
+                        }, edge);
+                        return;
+                    }
+                    showGlyph(step);
                     step += 1;
                     logoSwitchTimerId = setTimeout(showSame, ms);
                 }
-                showSame();
+                showGlyph(0);
+                if (edge <= 0) { showSame(); return; }
+                logoSwitchTimerId = setTimeout(function () {
+                    logoSwitchTimerId = null;
+                    showSame();
+                }, edge);
             }
             function playFaceSwitches_(list, done) {
                 const queue = Array.isArray(list) ? list.slice() : [];
@@ -16737,14 +16753,21 @@
                 }
                 next();
             }
-            function playScrollChunk_(html, setWidth, done, holdMs, times) {
+            function playScrollChunk_(html, setWidth, done, holdMs, times, endHoldMs) {
                 logoFaceTrack.innerHTML = html;
                 logoFaceTrack.style.width = (setWidth * 2) + 'px';
                 applyScrollX_(logoFaceTrack, 0);
                 const wait = Math.max(0, Number(holdMs) || 0);
+                const endWait = Math.max(0, Number(endHoldMs) || 0);
                 function start() {
                     logoSwitchTimerId = null;
-                    runLapScroll_(logoFaceTrack, setWidth, times > 0 ? times : laps, 1, 'logo', done);
+                    runLapScroll_(logoFaceTrack, setWidth, times > 0 ? times : laps, 1, 'logo', function () {
+                        if (endWait <= 0) { done(); return; }
+                        logoSwitchTimerId = setTimeout(function () {
+                            logoSwitchTimerId = null;
+                            done();
+                        }, endWait);
+                    });
                 }
                 if (wait <= 0) { start(); return; }
                 if (logoSwitchTimerId) { clearTimeout(logoSwitchTimerId); logoSwitchTimerId = null; }
@@ -16752,18 +16775,20 @@
             }
             function playBuiltSteps_() {
                 const steps = built.steps || [];
+                const icing = String((siteCfg_() && siteCfg_().projectId) || '') === 'DM-0017';
                 let n = 0;
                 function nextStep() {
                     if (n >= steps.length) { finishLogo_(); return; }
                     const step = steps[n];
                     n += 1;
-                    if (step.type === 'switch') playOneFaceSwitch_(step.html, nextStep);
-                    else playScrollChunk_(step.html, step.setWidth, nextStep, n > 1 ? 1000 : 0, step.laps);
+                    if (step.type === 'switch') playOneFaceSwitch_(step.html, nextStep, icing ? 1000 : 0);
+                    else playScrollChunk_(step.html, step.setWidth, nextStep, icing ? 1000 : (n > 1 ? 1000 : 0), step.laps, icing ? 1000 : 0);
                 }
                 nextStep();
             }
             if (built.steps && built.steps.length) {
-                if (built.steps[0].type === 'scroll') runSceneScrollAfterHold_(playBuiltSteps_);
+                const icing = String((siteCfg_() && siteCfg_().projectId) || '') === 'DM-0017';
+                if (built.steps[0].type === 'scroll' && !icing) runSceneScrollAfterHold_(playBuiltSteps_);
                 else playBuiltSteps_();
                 return;
             }
