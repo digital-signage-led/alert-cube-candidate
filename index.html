@@ -11,7 +11,7 @@
     <script src="./contents/modules.js?v=20261111-wxtech-public"></script>
     <script src="./contents/news/index.js?v=20261112-news-newest"></script>
     <script src="./contents/boards/index.js?v=20261123-car-same"></script>
-    <script src="./contents/logo-scroll/index.js?v=20261124-car-frame"></script>
+    <script src="./contents/logo-scroll/index.js?v=20261124-ltr"></script>
     <script src="./contents/progress/index.js?v=20261005-progress-sheet"></script>
     <script src="./contents/rain-radar/prefectures.js?v=20261005-rain-radar14"></script>
     <script src="./contents/rain-radar/index.js?v=20261116-coast-map"></script>
@@ -15464,10 +15464,11 @@
     function clearNewsRetry_() {
         if (newsRetryTimerId_) { clearTimeout(newsRetryTimerId_); newsRetryTimerId_ = null; }
     }
-    function runLapScroll_(track, setWidth, laps, speedMult, slot, onDone) {
+    function runLapScroll_(track, setWidth, laps, speedMult, slot, onDone, dir) {
         const width = Math.max(1, Number(setWidth) || 0);
         const times = Math.max(1, Number(laps) || 1);
         const speed = getScrollSpeedPx_() * (Number(speedMult) > 0 ? Number(speedMult) : 1);
+        const toRight = dir === 'ltr';
         let total = 0;
         const scrollTotal = width * times;
         function storeId(id) {
@@ -15485,7 +15486,8 @@
             total += speed;
             const done = total >= scrollTotal;
             /* 2周分の端まで進むと、画面幅の分だけ中身のあとに空白が出る */
-            applyScrollX_(track, wrapScrollX_(done ? -scrollTotal : -total, width));
+            if (toRight) applyScrollX_(track, -width + (done ? 0 : (total % width)));
+            else applyScrollX_(track, wrapScrollX_(done ? -scrollTotal : -total, width));
             if (done) {
                 storeId(null);
                 if (typeof onDone === 'function') onDone();
@@ -16753,10 +16755,10 @@
                 }
                 next();
             }
-            function playScrollChunk_(html, setWidth, done, holdMs, times, endHoldMs) {
+            function playScrollChunk_(html, setWidth, done, holdMs, times, endHoldMs, dir) {
                 logoFaceTrack.innerHTML = html;
                 logoFaceTrack.style.width = (setWidth * 2) + 'px';
-                applyScrollX_(logoFaceTrack, 0);
+                applyScrollX_(logoFaceTrack, dir === 'ltr' ? -setWidth : 0);
                 const wait = Math.max(0, Number(holdMs) || 0);
                 const endWait = Math.max(0, Number(endHoldMs) || 0);
                 function start() {
@@ -16767,7 +16769,7 @@
                             logoSwitchTimerId = null;
                             done();
                         }, endWait);
-                    });
+                    }, dir);
                 }
                 if (wait <= 0) { start(); return; }
                 if (logoSwitchTimerId) { clearTimeout(logoSwitchTimerId); logoSwitchTimerId = null; }
@@ -16782,7 +16784,7 @@
                     const step = steps[n];
                     n += 1;
                     if (step.type === 'switch') playOneFaceSwitch_(step.html, nextStep, icing ? 1000 : 0);
-                    else playScrollChunk_(step.html, step.setWidth, nextStep, icing ? 1000 : (n > 1 ? 1000 : 0), step.laps, icing ? 1000 : 0);
+                    else playScrollChunk_(step.html, step.setWidth, nextStep, icing ? 1000 : (n > 1 ? 1000 : 0), step.laps, icing ? 1000 : 0, step.dir);
                 }
                 nextStep();
             }
