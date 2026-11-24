@@ -536,9 +536,9 @@
             background: transparent; pointer-events: none;
             perspective: 640px;
         }
-        html.site-dm-0017 .logo-wx-rotor,
-        html.site-dm-0017 .logo-wx-slot {
-            width: 128px; height: 128px; position: absolute; top: 0; left: 0;
+        html.site-dm-0017 .logo-wx-rotor {
+            width: 128px; height: 128px; position: relative;
+            transform-origin: center center;
         }
         html.site-dm-0017 .logo-wx-face {
             position: absolute; top: 0; left: 0; width: 128px; height: 128px;
@@ -9175,7 +9175,7 @@
         if (Number.isFinite(n) && n > 0) return n;
         return GLOBAL_SCROLL_SPEED_PX;
     }
-    /* ドトキューブの右端128。値は90度ずつその場の向き。切り替えは下から中央へ入る */
+    /* ドトキューブの右端128。値は90度ずつ。切り替えは文字の下から中央へ入る */
     const LOGO_WX_HOLD_MS = 2800;
     const LOGO_WX_TURN_MS = 700;
     let logoWxHoldTimer_ = 0;
@@ -9253,10 +9253,17 @@
             if (img.getAttribute('src') !== url) img.src = url;
         });
     }
-    function logoWxPlace_(el, deg, animate) {
-        if (!el) return;
-        el.style.transition = animate ? ('transform ' + LOGO_WX_TURN_MS + 'ms ease-in-out') : 'none';
-        el.style.transform = 'rotate(' + deg + 'deg)';
+    function logoWxShow_(face, rotor, type, deg, enter) {
+        rotor.style.transition = 'none';
+        rotor.style.transform = 'rotate(' + deg + 'deg)';
+        face.innerHTML = logoWxCellHtml_(type);
+        logoWxPaint_();
+        face.style.transition = 'none';
+        face.style.transform = enter ? 'translate3d(0,128px,0)' : 'translate3d(0,0,0)';
+        if (!enter) return;
+        void face.offsetWidth;
+        face.style.transition = 'transform ' + LOGO_WX_TURN_MS + 'ms ease-out';
+        face.style.transform = 'translate3d(0,0,0)';
     }
     function startLogoWx_() {
         const host = document.getElementById('logo-wx');
@@ -9265,23 +9272,15 @@
         const types = logoWxTypes_();
         if (!types.length) { host.hidden = true; return; }
         host.hidden = false;
-        host.innerHTML = '';
+        host.innerHTML = '<div class="logo-wx-rotor" id="logo-wx-rotor">' +
+            '<div class="logo-wx-face" data-wx-face="front"></div></div>';
+        const face = host.querySelector('[data-wx-face="front"]');
+        const rotor = host.querySelector('.logo-wx-rotor');
         const turn = logoWxTurnDeg_();
         const gen = logoWxGen_;
         let idx = 0;
         let deg = 0;
-        let current = null;
-        function makeSlot_(i, y, rotation) {
-            const slot = document.createElement('div');
-            slot.className = 'logo-wx-slot';
-            slot.innerHTML = '<div class="logo-wx-face">' + logoWxCellHtml_(types[i]) + '</div>';
-            slot.querySelector('.logo-wx-face').style.transform = 'rotate(' + rotation + 'deg)';
-            slot.style.transform = 'translateY(' + y + 'px)';
-            host.appendChild(slot);
-            logoWxPaint_();
-            return slot;
-        }
-        current = makeSlot_(0, 0, 0);
+        logoWxShow_(face, rotor, types[0], 0, false);
         function arm() {
             if (gen !== logoWxGen_ || types.length < 2) return;
             logoWxHoldTimer_ = setTimeout(step, LOGO_WX_HOLD_MS);
@@ -9291,21 +9290,8 @@
             logoWxHoldTimer_ = 0;
             deg = (deg + turn) % 360;
             idx = (idx + 1) % types.length;
-            const next = makeSlot_(idx, 128, deg);
-            const prev = current;
-            current = next;
-            next.getBoundingClientRect();
-            const ms = LOGO_WX_TURN_MS;
-            prev.style.transition = 'transform ' + ms + 'ms ease-out';
-            next.style.transition = 'transform ' + ms + 'ms ease-out';
-            prev.style.transform = 'translateY(-128px)';
-            next.style.transform = 'translateY(0px)';
-            logoWxTurnTimer_ = setTimeout(function () {
-                logoWxTurnTimer_ = 0;
-                if (gen !== logoWxGen_) return;
-                if (prev.parentNode) prev.parentNode.removeChild(prev);
-                arm();
-            }, ms);
+            logoWxShow_(face, rotor, types[idx], deg, true);
+            arm();
         }
         arm();
     }
