@@ -230,6 +230,8 @@
         parts.push(caption.html);
         setWidth += caption.width;
       }
+      /* 周回を持つ帯は、前の帯とつなげず別に流す */
+      if (parts.length && img.laps) pushScrollStep();
       var w = img.panelWidth || fallbackW;
       setWidth += w;
       if (img.laps) scrollLaps = img.laps;
