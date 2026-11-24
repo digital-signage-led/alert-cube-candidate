@@ -52,6 +52,7 @@
     <!-- clock: jst-network-v1 -->
     <title>Alert Cube</title>
     <link rel="preload" as="image" href="./images/logo.svg?v=20260921-suminoe">
+    <link rel="stylesheet" href="./templates/DM-0018-face-384-512/faces.css">
     <script>
 /** 4面は 512×128。5面（AC-0014 など）は右端ロゴ列付き 640×128 */
 (function () {
@@ -68,7 +69,7 @@
     }
     var localDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     var siteId = String(q.get('site') || '').toUpperCase();
-    var wide = siteId === 'AC-0014' || siteId === 'AC-0021' || siteId === 'AC-0026' || siteId === 'AC-0027' || siteId === 'AC-0028' || siteId === 'AC-0030' || siteId === 'DM-0014' || siteId === 'DM-0017' || q.get('layout') === '640';
+    var wide = siteId === 'AC-0014' || siteId === 'AC-0021' || siteId === 'AC-0026' || siteId === 'AC-0027' || siteId === 'AC-0028' || siteId === 'AC-0030' || siteId === 'DM-0014' || siteId === 'DM-0017' || siteId === 'DM-0018' || q.get('layout') === '640';
     if (wide) q.delete('layout512');
     else if (!q.has('layout512')) q.set('layout512', '1');
     var forceNative = localDev
@@ -975,6 +976,24 @@
         html.site-dm-0014 #scene4 .fc-lv-slot-src-3 {
             width: 384px; max-width: 384px; flex: 0 0 384px;
             justify-content: center; overflow: hidden; padding: 0; box-sizing: border-box;
+        }
+        html.site-dm-0018 #scene4 .fc-lv-bar { width: 384px; max-width: 384px; }
+        html.site-dm-0018 #scene4 .fc-lv-slot-src-3 {
+            width: 384px; max-width: 384px; flex: 0 0 384px;
+            justify-content: center; overflow: hidden; padding: 0; box-sizing: border-box;
+        }
+        html.site-dm-0018 #scene4 .fc-lv-slot-src-3 .fc-lv-msg-full {
+            display: flex !important;
+            align-items: center;
+            justify-content: center !important;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            padding: 0 36px !important;
+            gap: 20px !important;
+            overflow: hidden;
+            text-align: center;
+            white-space: nowrap;
         }
         html.site-dm-0014 #scene4 .fc-lv-slot-src-3 .fc-lv-msg-full {
             display: flex !important;
@@ -4399,6 +4418,7 @@
         document.documentElement.classList.toggle('site-dm-0013', String(c.projectId || '') === 'DM-0013');
         document.documentElement.classList.toggle('site-dm-0014', String(c.projectId || '') === 'DM-0014');
         document.documentElement.classList.toggle('site-dm-0017', String(c.projectId || '') === 'DM-0017');
+        document.documentElement.classList.toggle('site-dm-0018', String(c.projectId || '') === 'DM-0018');
         document.documentElement.classList.toggle('wbgt-demo-cycle', !!((c.presentation || {}).wbgtDemoCycle));
         applyFaceLayout_();
         if (typeof compactScene4Panels === 'function' && (typeof sceneDomOpen_ !== 'function' || sceneDomOpen_(s4))) compactScene4Panels();
@@ -4602,7 +4622,7 @@
         if (loadedId && (!qSite || loadedId === qSite)) {
             return c.profile === 'AC-640' || c.layout === 'AC-640' || Number(c.faces) >= 5;
         }
-        return qSite === 'AC-0014' || qSite === 'AC-0021' || qSite === 'AC-0026' || qSite === 'AC-0027' || qSite === 'AC-0028' || qSite === 'AC-0030' || qSite === 'DM-0014' || qSite === 'DM-0017' || query.get('layout') === '640';
+        return qSite === 'AC-0014' || qSite === 'AC-0021' || qSite === 'AC-0026' || qSite === 'AC-0027' || qSite === 'AC-0028' || qSite === 'AC-0030' || qSite === 'DM-0014' || qSite === 'DM-0017' || qSite === 'DM-0018' || query.get('layout') === '640';
     }
     function applyFaceLayout_() {
         const wide = faceLayoutWide_();
@@ -8983,6 +9003,7 @@
             logoRotator.style.transform = 'rotate(0deg)';
         }
         startDm14CornerScroll_();
+        startDm18CornerScroll_();
     }
     /** 384は下から上。512は右から左。中身はどちらも 180。384の上を出た項目が右から入る。 */
     function startDm14Card_() {
@@ -9118,6 +9139,103 @@
             paintFaceBottomOnRight(canvas5, srcH);
         };
         img.src = './assets/demo/DM-0014/wall.jpg?v=1';
+    }
+    /** ノバック。384は下から上。512は右から左。中身はどちらも 180。カードは気象。 */
+    function startDm18Card_() {
+        const track = document.getElementById('dm14-card-track');
+        const trackX = document.getElementById('dm14-card-track-x');
+        const rotor = document.getElementById('dm14-card-rotor');
+        if (!track || !trackX || !rotor || startDm18Card_.on) return;
+        startDm18Card_.on = true;
+        const cell = function (inner) {
+            return '<div class="dm14-card-cell">' + inner + '</div>';
+        };
+        const wxOrder = ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin'];
+        const wxOn = scene2TypesOn_();
+        const types = wxOrder.filter(function (type) { return wxOn.indexOf(type) >= 0; });
+        if (!types.length) types.push('weather');
+        const cells = types.map(function (type) { return cell(scene2PanelHtml_(type)); });
+        const seq = cells.concat(cells, cells);
+        track.innerHTML = seq.join('');
+        trackX.innerHTML = seq.join('');
+        const cellH = 128;
+        const setH = (track.children.length / 3) * cellH;
+        const cards = [track, trackX];
+        let seam = setH * 2;
+        function sync() {
+            types.forEach(function (type) {
+                const src = document.querySelector('#scene2 [data-s2="' + type + '"] .s2-body');
+                if (!src) return;
+                const html = src.innerHTML;
+                cards.forEach(function (root) {
+                    root.querySelectorAll('[data-s2="' + type + '"] .s2-body').forEach(function (dst) {
+                        if (dst.innerHTML !== html) dst.innerHTML = html;
+                    });
+                });
+            });
+        }
+        function place() {
+            const s = Math.round(seam * 100) / 100;
+            track.style.transform = 'translate3d(0,' + (-(s + 128)) + 'px,0)';
+            rotor.style.transform = 'translate3d(' + (-s) + 'px,128px,0) rotate(-90deg)';
+        }
+        function frame() {
+            sync();
+            seam += getScrollSpeedPx_();
+            if (seam >= setH * 2) seam -= setH;
+            place();
+            requestAnimationFrame(frame);
+        }
+        place();
+        requestAnimationFrame(frame);
+    }
+    function startDm18CornerScroll_() {
+        if (startDm18CornerScroll_.on) return;
+        const canvas4 = document.getElementById('dm14-face4-canvas');
+        const canvas5 = document.getElementById('dm14-face5-canvas');
+        if (!canvas4 || !canvas5) return;
+        const site = typeof siteCfg_ === 'function' ? siteCfg_() : null;
+        if (!site || site.projectId !== 'DM-0018') return;
+        startDm18CornerScroll_.on = true;
+        if (typeof markDisplayReady_ === 'function') markDisplayReady_();
+        startDm18Card_();
+        const mark = new Image();
+        const wide = new Image();
+        let ready = 0;
+        function paintWhenReady() {
+            ready += 1;
+            if (ready < 2) return;
+            const sw = 128;
+            function fit(ctx, image) {
+                const iw = image.naturalWidth || sw;
+                const ih = image.naturalHeight || sw;
+                const scale = Math.min(sw / iw, sw / ih);
+                const dw = iw * scale;
+                const dh = ih * scale;
+                ctx.drawImage(image, (sw - dw) / 2, (sw - dh) / 2, dw, dh);
+            }
+            canvas4.width = sw;
+            canvas4.height = sw;
+            const ctx4 = canvas4.getContext('2d');
+            ctx4.imageSmoothingEnabled = true;
+            ctx4.imageSmoothingQuality = 'high';
+            ctx4.fillStyle = '#ffffff';
+            ctx4.fillRect(0, 0, sw, sw);
+            fit(ctx4, mark);
+            canvas5.width = sw;
+            canvas5.height = sw;
+            const ctx5 = canvas5.getContext('2d');
+            ctx5.imageSmoothingEnabled = true;
+            ctx5.imageSmoothingQuality = 'high';
+            ctx5.fillStyle = '#ffffff';
+            ctx5.fillRect(0, 0, sw, sw);
+            ctx5.setTransform(0, 1, -1, 0, sw, 0);
+            fit(ctx5, wide);
+        }
+        mark.onload = paintWhenReady;
+        wide.onload = paintWhenReady;
+        mark.src = './assets/demo/DM-0018/logo_mark.png?v=2';
+        wide.src = './assets/demo/DM-0018/logo_512.jpg?v=1';
     }
     function beginLogoSceneScroll(panelWidthPx) {
         // スクロール追従回転は行わない

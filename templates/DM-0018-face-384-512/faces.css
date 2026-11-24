@@ -1,0 +1,156 @@
+/* ノバック（DM-0018）。face-384-512 の写し。クラス名はそのまま。仙台銘板のセレクタは触らない。 */
+html.site-dm-0018 .logo-panel {
+    background: #ffffff !important;
+    overflow: hidden;
+}
+.dm14-logo-track { width: 128px; height: 128px; }
+.dm14-face5-canvas { display: none; }
+.dm14-logo-track > .logo-rotator[aria-hidden="true"] { display: none; }
+html.site-dm-0018 .dm14-logo-track { display: none !important; }
+html.site-dm-0018 .logo-panel .logo-rotator,
+html.site-dm-0018 .logo-panel .logo-wx { display: none !important; }
+html.site-dm-0018 .dm14-face5-canvas {
+    display: block;
+    width: 128px;
+    height: 128px;
+    image-rendering: auto;
+}
+/* 仙台銘板5面: 壁紙は固定。背景の下は512、上は384 */
+html.site-dm-0018 .content-area > .scene { width: 384px; }
+html.site-dm-0018 .dm14-face4 {
+    display: block;
+    position: absolute;
+    left: 384px;
+    top: 0;
+    width: 128px;
+    height: 128px;
+    z-index: 40;
+    background: #ffffff;
+    pointer-events: none;
+    overflow: hidden;
+}
+html.site-dm-0018 .dm14-face4-canvas {
+    display: block;
+    width: 128px;
+    height: 128px;
+    image-rendering: auto;
+}
+html.site-dm-0018 .dm14-card-union {
+    display: block;
+    position: absolute;
+    left: 384px;
+    top: 0;
+    width: 256px;
+    height: 128px;
+    z-index: 50;
+    pointer-events: none;
+}
+html.site-dm-0018 .dm14-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 128px;
+    height: 128px;
+    border-radius: 0;
+    background: transparent;
+    overflow: hidden;
+    z-index: 1;
+}
+html.site-dm-0018 #dm14-card-x {
+    left: 128px;
+}
+html.site-dm-0018 .dm14-card-track {
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+}
+/* 帯の移動は -90 のまま。512の中身は 180 で頭が右、底が左。流れは右から左。384の中身も 180 */
+html.site-dm-0018 .dm14-card-rotor {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+}
+html.site-dm-0018 #dm14-card > .dm14-card-track > .dm14-card-cell,
+html.site-dm-0018 #dm14-card-track-x > .dm14-card-cell {
+    transform: rotate(180deg);
+}
+html.site-dm-0018 .dm14-card-track-x {
+    display: flex;
+    flex-direction: column;
+    width: 128px;
+}
+html.site-dm-0018 .dm14-card-cell {
+    width: 128px;
+    height: 128px;
+    flex: 0 0 128px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+html.site-dm-0018 .dm14-card .s2-panel,
+html.site-dm-0018 .dm14-card .s2-panel-data {
+    width: 112px;
+    height: 96px;
+    justify-content: center;
+}
+html.site-dm-0018 .dm14-card .weather-icon-cell {
+    width: 58px;
+    height: 58px;
+    max-width: 58px;
+    max-height: 58px;
+    overflow: visible;
+}
+html.site-dm-0018 .dm14-card .weather-svg {
+    width: 58px;
+    height: 58px;
+    max-width: 58px;
+    max-height: 58px;
+}
+html.site-dm-0018 .dm14-card .weather-icon-cell::before {
+    width: 54px;
+    height: 54px;
+}
+html.site-dm-0018 .dm14-card .weather-icon-cell.is-ready img.weather-icon-img {
+    visibility: visible !important;
+}
+html.site-dm-0018 .dm14-card .dm14-num-card {
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 1px;
+    background: #ffffff;
+    border-radius: 4px;
+    padding: 6px 8px 7px;
+    box-sizing: border-box;
+    max-width: 104px;
+}
+html.site-dm-0018 .dm14-card .dm14-num-card .s2-num {
+    font-size: 28px;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+}
+html.site-dm-0018 .dm14-card .dm14-num-card .s2-unit {
+    font-size: 13px;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+}
+/* 白縁は影。線にするとサイネージが縁を文字の上に塗る */
+html.site-dm-0018 .dm14-card .s2-bar-label,
+html.site-dm-0018 .dm14-card .s2-num,
+html.site-dm-0018 .dm14-card .s2-dir-text,
+html.site-dm-0018 .dm14-card .s2-unit,
+html.site-dm-0018 .dm14-card .clock-hm,
+html.site-dm-0018 .dm14-card .s2-tmax-sep,
+html.site-dm-0018 .dm14-card .s2-tmax-unit {
+    color: #000;
+    -webkit-text-stroke: 0;
+    paint-order: normal;
+    text-shadow:
+        -3px 0 0 #fff, 3px 0 0 #fff, 0 -3px 0 #fff, 0 3px 0 #fff,
+        -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff, 3px 3px 0 #fff,
+        -2px -3px 0 #fff, 2px -3px 0 #fff, -2px 3px 0 #fff, 2px 3px 0 #fff,
+        -3px -2px 0 #fff, 3px -2px 0 #fff, -3px 2px 0 #fff, 3px 2px 0 #fff;
+}
