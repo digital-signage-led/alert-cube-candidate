@@ -16946,7 +16946,12 @@
                     const step = steps[n];
                     n += 1;
                     if (step.type === 'switch') playOneFaceSwitch_(step.html, nextStep, icing ? 1000 : 0);
-                    else playScrollChunk_(step.html, step.setWidth, nextStep, icing ? 1000 : (n > 1 ? 1000 : 0), step.laps, icing ? 1000 : 0, step.dir);
+                    else {
+                        const wind = !!(step.html && step.html.indexOf('wind-banner') >= 0);
+                        const hold = wind ? 0 : (icing ? 1000 : (n > 1 ? 1000 : 0));
+                        const endHold = wind ? 0 : (icing ? 1000 : 0);
+                        playScrollChunk_(step.html, step.setWidth, nextStep, hold, step.laps, endHold, step.dir);
+                    }
                 }
                 nextStep();
             }
