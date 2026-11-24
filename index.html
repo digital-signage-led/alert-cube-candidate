@@ -511,9 +511,13 @@
             width: 128px; max-width: 128px; height: 128px; max-height: 128px;
         }
         html.site-dm-0017 .logo-corp-img { display: none !important; }
-        /* 右端128（x≥512）の地は、最初の黒 */
+        /* 右端128（x≥512）は黒地。立方体のマークは出さない */
         html.site-dm-0017 .logo-panel {
             background: #000000 !important;
+        }
+        html.site-dm-0017 .logo-panel .logo-rotator,
+        html.site-dm-0017 .logo-panel .logo-img {
+            display: none !important;
         }
         html.site-dm-0017 #scene2 .s2-logo-panel,
         html.site-dm-0017 #scene2 .s2-logo-panel .s2-body,
