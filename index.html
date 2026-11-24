@@ -14755,20 +14755,32 @@
     }
     function playPromoJapanese_() {
         const cfg = greetingCfg_();
-        /* 幅が決まる前の左寄せを出さない。決まった座標で一度だけ置く */
-        function start(logoW) {
-            const go = function () { playPromoJapaneseBuilt_(cfg, logoW); };
-            if (cfg.seamless && document.fonts && document.fonts.ready) {
-                document.fonts.ready.then(go).catch(go);
-                return;
-            }
-            go();
+        /* 3段は同じターンで出す。ロゴ幅を待つと、地色だけが先に見える */
+        let logoW = 0;
+        function applyLogoW_() {
+            if (!(logoW > 0) || !sceneGreeting) return;
+            sceneGreeting.querySelectorAll('.promo-title-logo').forEach(function (img) {
+                img.style.width = logoW + 'px';
+            });
         }
+        function show() {
+            playPromoJapaneseBuilt_(cfg, logoW);
+        }
+        show();
         if (cfg.seamless && cfg.titleLogo) {
-            promoLogoWidth_(String(cfg.titleLogo), 26, start);
-            return;
+            promoLogoWidth_(String(cfg.titleLogo), 26, function (w) {
+                if (!(w > 0) || !sceneGreeting || !sceneGreeting.classList.contains('greeting-promo')) return;
+                logoW = w;
+                applyLogoW_();
+            });
         }
-        start(0);
+        if (!(cfg.seamless && document.fonts && document.fonts.status !== 'loaded')) return;
+        document.fonts.ready.then(function () {
+            if (!sceneGreeting || !sceneGreeting.classList.contains('greeting-promo')) return;
+            clearGreetingHoldTimer_();
+            clearSceneEndHoldTimer_();
+            show();
+        }).catch(function () {});
     }
     function playPromoJapaneseBuilt_(cfg, logoW) {
         const lines = Array.isArray(cfg.lines) ? cfg.lines : [];
