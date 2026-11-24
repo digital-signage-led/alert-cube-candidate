@@ -2737,9 +2737,9 @@ test('未確定案件: ニッケン白浜町は DM-0011', function () {
   assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0017' && row.customer === '株式会社ドトキューブ' && row.siteName === '春日市'; }));
   var dotocube = JSON.parse(fs.readFileSync(path.join(root, 'demo', 'DM-0017.json'), 'utf8'));
   assert.strictEqual(dotocube.presentation.logoWeatherScroll, false);
-  assert.strictEqual(dotocube.presentation.logoEdgeSigns.length, 25);
-  assert.strictEqual(dotocube.presentation.logoEdgeSigns[0].alt, 'この先工事中');
-  assert.strictEqual(dotocube.presentation.logoEdgeSigns[24].alt, '照度');
+  assert.strictEqual(dotocube.presentation.logoEdgeSigns.length, 15);
+  assert.strictEqual(dotocube.presentation.logoEdgeSigns[0].alt, '騒音');
+  assert.strictEqual(dotocube.presentation.logoEdgeSigns[14].alt, '照度');
   assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0018' && row.customer === '株式会社ノバック' && row.siteName === '姫路市'; }));
   assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0018' && row.customer === '株式会社ノバック' && row.siteName === '姫路市'; }));
   assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0013' && row.customer === '株式会社仙台銘板' && row.siteName === '高松市'; }));
