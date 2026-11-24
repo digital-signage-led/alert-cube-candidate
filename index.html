@@ -9348,8 +9348,8 @@
         }
         return String(n);
     }
-    function logoWxPaint_() {
-        const root = document.getElementById('logo-wx');
+    function logoWxPaint_(scope) {
+        const root = scope || document.getElementById('logo-wx');
         if (!root || root.hidden) return;
         ['temp', 'rain', 'wind', 'humi', 'pres', 'wdir', 'maxT', 'minT', 'gust'].forEach(function (key) {
             const text = logoWxText_(key);
@@ -9365,10 +9365,10 @@
                 if (img.getAttribute('src') !== url) img.src = url;
             });
         }
-        logoWxFitCards_();
+        logoWxFitCards_(root);
     }
-    function logoWxFitCards_() {
-        const root = document.getElementById('logo-wx');
+    function logoWxFitCards_(scope) {
+        const root = scope || document.getElementById('logo-wx');
         if (!root) return;
         root.querySelectorAll('.s2-value-card').forEach(function (card) {
             const maxW = 118;
@@ -9426,17 +9426,33 @@
             }
         });
     }
-    function logoWxShow_(face, rotor, item, deg, enter) {
+    /* 次の面が、いまの面を押し出して入る。出ていく面の向きは変えない */
+    function logoWxShift_(deg, y) {
+        const rad = deg * Math.PI / 180;
+        return { x: Math.round(-y * Math.sin(rad)), y: Math.round(y * Math.cos(rad)) };
+    }
+    function logoWxPlace_(face, rotDeg, alongDeg, y, animate) {
+        const p = logoWxShift_(alongDeg, y);
+        face.style.transformOrigin = 'center center';
+        face.style.transition = animate ? ('transform ' + LOGO_WX_TURN_MS + 'ms ease-out') : 'none';
+        face.style.transform = 'translate3d(' + p.x + 'px,' + p.y + 'px,0) rotate(' + rotDeg + 'deg)';
+    }
+    function logoWxShow_(current, spare, rotor, item, newDeg, oldDeg, enter) {
         rotor.style.transition = 'none';
-        rotor.style.transform = 'rotate(' + deg + 'deg)';
-        face.innerHTML = logoWxFaceHtml_(item);
-        if (!item || item.kind !== 'sign') logoWxPaint_();
-        face.style.transition = 'none';
-        face.style.transform = enter ? 'translate3d(0,128px,0)' : 'translate3d(0,0,0)';
-        if (!enter) return;
-        void face.offsetWidth;
-        face.style.transition = 'transform ' + LOGO_WX_TURN_MS + 'ms ease-out';
-        face.style.transform = 'translate3d(0,0,0)';
+        rotor.style.transform = 'none';
+        const incoming = enter ? spare : current;
+        incoming.innerHTML = logoWxFaceHtml_(item);
+        if (!item || item.kind !== 'sign') logoWxPaint_(incoming);
+        if (!enter) {
+            logoWxPlace_(current, newDeg, newDeg, 0, false);
+            logoWxPlace_(spare, newDeg, newDeg, 128, false);
+            return;
+        }
+        logoWxPlace_(spare, newDeg, newDeg, 128, false);
+        logoWxPlace_(current, oldDeg, newDeg, 0, false);
+        void spare.offsetWidth;
+        logoWxPlace_(spare, newDeg, newDeg, 0, true);
+        logoWxPlace_(current, oldDeg, newDeg, -128, true);
     }
     function startLogoWx_() {
         const host = document.getElementById('logo-wx');
@@ -9446,14 +9462,17 @@
         if (!items.length) { host.hidden = true; return; }
         host.hidden = false;
         host.innerHTML = '<div class="logo-wx-rotor" id="logo-wx-rotor">' +
-            '<div class="logo-wx-face" data-wx-face="front"></div></div>';
-        const face = host.querySelector('[data-wx-face="front"]');
+            '<div class="logo-wx-face" data-wx-face="front"></div>' +
+            '<div class="logo-wx-face" data-wx-face="next"></div></div>';
+        const faces = host.querySelectorAll('.logo-wx-face');
+        let current = faces[0];
+        let spare = faces[1];
         const rotor = host.querySelector('.logo-wx-rotor');
         const turn = logoWxTurnDeg_();
         const gen = logoWxGen_;
         let idx = 0;
         let deg = 0;
-        logoWxShow_(face, rotor, items[0], 0, false);
+        logoWxShow_(current, spare, rotor, items[0], 0, 0, false);
         function arm() {
             if (gen !== logoWxGen_ || items.length < 2) return;
             logoWxHoldTimer_ = setTimeout(step, LOGO_WX_HOLD_MS);
@@ -9461,9 +9480,13 @@
         function step() {
             if (gen !== logoWxGen_) return;
             logoWxHoldTimer_ = 0;
+            const oldDeg = deg;
             deg = (deg + turn) % 360;
             idx = (idx + 1) % items.length;
-            logoWxShow_(face, rotor, items[idx], deg, true);
+            logoWxShow_(current, spare, rotor, items[idx], deg, oldDeg, true);
+            const outgoing = current;
+            current = spare;
+            spare = outgoing;
             arm();
         }
         arm();
