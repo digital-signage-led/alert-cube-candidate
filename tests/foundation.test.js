@@ -2756,6 +2756,11 @@ test('未確定案件: ニッケン白浜町は DM-0011', function () {
   assert.strictEqual(meiban5.jma.warnCity, '3720100');
   assert.strictEqual(meiban.greeting.lines[0], '株式会社仙台銘板ブースへようこそ！');
   assert.strictEqual(meiban5.greeting.lines[0], '株式会社仙台銘板ブースへようこそ！');
+  assert.strictEqual(meiban.contentOrder[0], 'icing');
+  assert.strictEqual(meiban5.contentOrder[0], 'icing');
+  assert.strictEqual(meiban.icingScroll.images[1].faceMs, 1000);
+  assert.strictEqual(meiban5.icingScroll.images[2].laps, 2);
+  assert.strictEqual(foundation.toLegacySignageConfig(meiban).icingScroll.images[0].motion, 'icing-quad');
   assert.ok(meiban.footSource.indexOf('記録ｃｈセカンド') >= 0);
   assert.ok(meiban5.footSource.indexOf('記録ｃｈセカンド') >= 0);
   assert.ok(meiban.densho.sourceLogo.indexOf('kiroku-ch-second.png') >= 0);

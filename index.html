@@ -24,7 +24,7 @@
     <script src="./services/wxtech/index.js?v=20261112-wxtech-hold"></script>
     <script src="./contents/short-forecast/index.js?v=20261112-short-prec"></script>
     <script src="./data/jma-regions.js?v=20260921-suminoe"></script>
-    <script src="./core/foundation.js?v=20261111-wxtech-public"></script>
+    <script src="./core/foundation.js?v=20261124-icing"></script>
     <script src="./services/densho/index.js?v=20261110-densho-vib"></script>
     <script src="./services/remote.js?v=20261016-dm0002"></script>
     <script src="./services/typhoon/index.js?v=20260921-suminoe"></script>
@@ -621,7 +621,21 @@
         html.site-dm-0017 .logo-switch-layer.is-next,
         html.site-dm-0013 .logo-switch-layer.is-next { opacity: 1; transform: translateY(100%); }
         html.site-dm-0017 .logo-switch-cell.is-on .logo-switch-layer.is-next,
-        html.site-dm-0013 .logo-switch-cell.is-on .logo-switch-layer.is-next { transform: translateY(0); transition: transform 0.42s ease; }
+        html.site-dm-0013 .logo-switch-cell.is-on .logo-switch-layer.is-next,
+        html.site-dm-0014 .logo-switch-cell.is-on .logo-switch-layer.is-next { transform: translateY(0); transition: transform 0.42s ease; }
+        html.site-dm-0014 .logo-icing { position: relative; height: 128px; overflow: hidden; }
+        html.site-dm-0014 .logo-icing-base { display: block; width: 100%; height: 128px; }
+        html.site-dm-0014 .logo-icing-cell { position: absolute; top: 0; width: 128px; height: 128px; overflow: hidden; }
+        html.site-dm-0014 .logo-icing-part { position: absolute; width: auto; height: auto; }
+        html.site-dm-0014 .logo-icing-part.is-drive { animation: icingDrive 2.2s ease-in-out infinite; }
+        html.site-dm-0014 .logo-icing-part.is-step,
+        html.site-dm-0014 .logo-icing-part.is-car { width: 110px; height: 110px; object-fit: contain; animation: none; }
+        html.site-dm-0014 .logo-face-switch { display: flex; height: 128px; overflow: hidden; }
+        html.site-dm-0014 .logo-switch-cell { position: relative; width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
+        html.site-dm-0014 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; opacity: 0; }
+        html.site-dm-0014 .logo-switch-cell.is-char .logo-switch-layer:not(.is-next) { opacity: 1; }
+        html.site-dm-0014 .logo-switch-layer.is-show { opacity: 1; }
+        html.site-dm-0014 .logo-switch-layer.is-next { opacity: 1; transform: translateY(100%); }
         @keyframes icingDrive {
             0%, 100% { transform: translateX(0); }
             50% { transform: translateX(-12px); }
@@ -9751,7 +9765,7 @@
     function watchLiveUpdates_() {
         var LIVE_UPDATE_MS = 5000;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=20261118-obs-hold', { updateViaCache: 'none' }).then(function (reg) {
+            navigator.serviceWorker.register('./sw.js?v=20261124-icing', { updateViaCache: 'none' }).then(function (reg) {
                 setInterval(function () { reg.update().catch(function () {}); }, LIVE_UPDATE_MS);
             }).catch(function () {});
         }

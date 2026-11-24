@@ -328,6 +328,7 @@
       boards: site.boards || null,
       progress: site.progress || null,
       logoScroll: site.logoScroll || null,
+      icingScroll: site.icingScroll || null,
       brandScroll: site.brandScroll || null,
       elevation: site.elevation != null ? site.elevation : null,
       inundation: site.inundation || null,
@@ -374,6 +375,7 @@
     if (json.boards) base.boards = json.boards;
     if (json.progress) base.progress = json.progress;
     if (json.logoScroll) base.logoScroll = json.logoScroll;
+    if (json.icingScroll) base.icingScroll = json.icingScroll;
     if (json.brandScroll) base.brandScroll = json.brandScroll;
     if (json.faces != null) base.faces = json.faces;
     if (json.profile || json.layout) base.profile = json.layout || json.profile;

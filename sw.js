@@ -1,6 +1,6 @@
 /* 固定素材キャッシュ。HTMLはネット優先、?v= 付きはキャッシュ優先
    事前キャッシュは全案件共通のコードだけ。案件ごとのロゴ・設定は、その案件を開いたときに1回だけ保存する */
-var CACHE_NAME = 'alert-cube-sites-20261118-obs-hold';
+var CACHE_NAME = 'alert-cube-sites-20261124-icing';
 var PRECACHE = [
   './config/site-config.js?v=20260921-suminoe',
   './safety/version.js?v=20260921-suminoe',
@@ -21,7 +21,7 @@ var PRECACHE = [
   './services/wxtech/index.js?v=20261112-wxtech-hold',
   './contents/short-forecast/index.js?v=20261112-short-prec',
   './data/jma-regions.js?v=20260921-suminoe',
-  './core/foundation.js?v=20261111-wxtech-public',
+  './core/foundation.js?v=20261124-icing',
   './services/densho/index.js?v=20261110-densho-vib',
   './services/remote.js?v=20261016-dm0002',
   './services/typhoon/index.js?v=20260921-suminoe',
