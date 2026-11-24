@@ -9360,6 +9360,37 @@
                 apply(size);
             }
         });
+        /* 気圧 hPa や m/s は、数値の横で128の面からはみ出す。単位ごと収める */
+        root.querySelectorAll('.logo-wx-cell .s2-val').forEach(function (wrap) {
+            const num = wrap.querySelector('.s2-num');
+            const unit = wrap.querySelector('.s2-unit');
+            if (!num) return;
+            const body = wrap.parentElement;
+            let maxW = 112;
+            if (body) {
+                const cs = window.getComputedStyle(body);
+                const pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+                maxW = Math.max(80, body.clientWidth - pad - 4);
+            }
+            let size = 44;
+            let unitSize = unit && unit.textContent ? 20 : 0;
+            num.style.fontSize = size + 'px';
+            if (unit && unitSize) unit.style.fontSize = unitSize + 'px';
+            let guard = 40;
+            while (guard-- > 0 && measureS2ValContentWidth_(wrap) > maxW) {
+                if (size > 22) {
+                    size -= 1;
+                    num.style.fontSize = size + 'px';
+                    continue;
+                }
+                if (unit && unitSize > 12) {
+                    unitSize -= 1;
+                    unit.style.fontSize = unitSize + 'px';
+                    continue;
+                }
+                break;
+            }
+        });
     }
     function logoWxShow_(face, rotor, type, deg, enter) {
         rotor.style.transition = 'none';
