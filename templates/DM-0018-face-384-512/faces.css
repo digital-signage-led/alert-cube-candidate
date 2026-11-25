@@ -182,3 +182,16 @@ html.site-dm-0018 .dm14-card .s2-tmax-low {
     paint-order: normal;
     text-shadow: none;
 }
+html.site-dm-0018 .logo-icing { position: relative; height: 128px; overflow: hidden; }
+html.site-dm-0018 .logo-icing-base { display: block; width: 100%; height: 128px; }
+html.site-dm-0018 .logo-icing-cell { position: absolute; top: 0; width: 128px; height: 128px; overflow: hidden; }
+html.site-dm-0018 .logo-icing-part { position: absolute; width: auto; height: auto; }
+html.site-dm-0018 .logo-icing-part.is-step,
+html.site-dm-0018 .logo-icing-part.is-car { width: 110px; height: 110px; object-fit: contain; animation: none; }
+html.site-dm-0018 .logo-face-switch { display: flex; height: 128px; overflow: hidden; }
+html.site-dm-0018 .logo-switch-cell { position: relative; width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
+html.site-dm-0018 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; opacity: 0; }
+html.site-dm-0018 .logo-switch-cell.is-char .logo-switch-layer:not(.is-next) { opacity: 1; }
+html.site-dm-0018 .logo-switch-layer.is-show { opacity: 1; }
+html.site-dm-0018 .logo-switch-layer.is-next { opacity: 1; transform: translateY(100%); }
+html.site-dm-0018 .logo-switch-cell.is-on .logo-switch-layer.is-next { transform: translateY(0); transition: transform 0.42s ease; }
