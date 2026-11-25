@@ -18,7 +18,7 @@
     <script src="./contents/ssc/index.js?v=20261110-densho-vib"></script>
     <script src="./contents/eew/evaluate.js?v=20260929-eew1"></script>
     <script src="./contents/hazard/evaluate.js?v=20260929-eew1"></script>
-    <script src="./contents/hazard/player.js?v=20260929-eew1"></script>
+    <script src="./contents/hazard/player.js?v=20261125-demo-quake"></script>
     <script src="./data/jma-weather-icons.js?v=20260921-suminoe"></script>
     <script src="./data/wxtech-icons.js?v=20261111-wxtech-public"></script>
     <script src="./services/wxtech/index.js?v=20261112-wxtech-hold"></script>
@@ -16277,6 +16277,14 @@
                 if (!contentOn_('rain-radar') || !sceneRainRadar) { advanceContentOrder_(); break; }
                 startRainRadarOrSkip_();
                 break;
+            case 'hazard': {
+                if (!contentOn_('hazard') || String((siteCfg_() && siteCfg_().status) || '') !== 'demo' || !window.AlertCubeHazard || typeof window.AlertCubeHazard.playDemo !== 'function') {
+                    advanceContentOrder_();
+                    break;
+                }
+                window.AlertCubeHazard.playDemo('earthquake', function () { advanceContentOrder_(); });
+                break;
+            }
             case 'icing':
                 transitionToScene(sceneLogo, function () {
                     playSceneLogoScroll({ id: 'icing', cfg: (siteCfg_() && siteCfg_().icingScroll) || {} });

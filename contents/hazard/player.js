@@ -10,6 +10,7 @@
   var QUAKE_URL = 'https://www.jma.go.jp/bosai/quake/data/list.json';
   var EEW_URL = 'https://api.p2pquake.net/v2/history?codes=556&limit=20';
   var started_ = false;
+  var demoHold_ = false;
   var timer_ = 0;
   var busy_ = false;
   var watch_ = null;
@@ -213,6 +214,7 @@
   }
 
   function show(presentation) {
+    if (demoHold_ && (!presentation || !presentation.frames || !presentation.frames.length)) return;
     var root = rootEl();
     if (!root || !presentation || !presentation.frames || !presentation.frames.length) {
       hide();
@@ -333,6 +335,29 @@
     }).then(function () { busy_ = false; });
   }
 
+  function playDemo(name, done) {
+    var evaluate = Eval();
+    var finish = function () { if (typeof done === 'function') done(); };
+    if (!evaluate) { finish(); return; }
+    var live = watch_ && watch_.presentation;
+    if (live && live.frames && live.frames.length) {
+      setTimeout(finish, (live.faceMs || 4000) * live.frames.length);
+      return;
+    }
+    var sample = evaluate.previewAlert(name || 'earthquake');
+    var presentation = sample
+      ? evaluate.present([sample], evaluate.siteFrom(cfg()), evaluate.settingsFrom(cfg()), layoutOf())
+      : null;
+    if (!presentation) { finish(); return; }
+    demoHold_ = true;
+    show(presentation);
+    setTimeout(function () {
+      demoHold_ = false;
+      if (!(watch_ && watch_.presentation)) hide();
+      finish();
+    }, (presentation.faceMs || 4000) * presentation.frames.length);
+  }
+
   function start() {
     if (started_) return;
     started_ = true;
@@ -347,7 +372,7 @@
     else boot();
   }
 
-  var api = { start: start, tick: tick };
+  var api = { start: start, tick: tick, playDemo: playDemo };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   global.AlertCubeHazard = api;
 })(typeof window !== 'undefined' ? window : this);

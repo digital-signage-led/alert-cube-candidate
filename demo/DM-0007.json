@@ -11,7 +11,7 @@
   "latitude": 35.303887,
   "longitude": 136.802918,
   "elevation": null,
-  "memo": "デモカー用。淺沼組、愛知県一宮市。本番端末はこのURLを開く。公開URLは ?site=DM-0007&layout512=1&native640=1。4面512×128。右端固定ロゴなし。時刻下の白帯は淺沼組の横ロゴ。気象観測・WBGT・4日間予報・多言語の末尾は淺沼組マーク。地点名「一宮市」。地図は一宮市役所（本町）付近。現場の番地は未指定。一宮市に気温まで取れるアメダスはなく、WBGT・アメダス・予報気温は名古屋51106。予報は愛知県230000、愛知県西部230010。警報は愛知県230000、一宮市2320300。近隣挨拶は共通画像を2周。工程表は月曜から足場組立、外装工事、内装工事、仕上げ、検査。気象観測・WBGT・4日予報・多言語は1周。注意報・警報は発表中だけ2周。台風は発表中だけ2周。暑さ指数と多言語は、環境省の発表期間だけ出す。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
+  "memo": "デモカー用。淺沼組、愛知県一宮市。本番端末はこのURLを開く。公開URLは ?site=DM-0007&layout512=1&native640=1。4面512×128。右端固定ロゴなし。時刻下の白帯は淺沼組の横ロゴ。気象観測・WBGT・4日間予報・多言語の末尾は淺沼組マーク。地点名「一宮市」。地図は一宮市役所（本町）付近。現場の番地は未指定。一宮市に気温まで取れるアメダスはなく、WBGT・アメダス・予報気温は名古屋51106。予報は愛知県230000、愛知県西部230010。警報は愛知県230000、一宮市2320300。近隣挨拶は共通画像を2周。工程表は月曜から足場組立、外装工事、内装工事、仕上げ、検査。気象観測・WBGT・4日予報・多言語は1周。注意報・警報は発表中だけ2周。台風は発表中だけ2周。暑さ指数と多言語は、環境省の発表期間だけ出す。凍結注意はデモのあいだ気温にかかわらず出す。4面を1周、凍・結・注・意を1秒ずつ、帯を2周。地震は再生のたびに震度5弱の見本を1巡し、一宮市が震度5弱以上のときは30分出す。緊急地震速報は届いたとき出す。騒音と振動は見守り伝書鳩のデモ計測を2周。現場が決まったら sites/ の次の AC 番号を発行する。この DM 番号は AC に付け替えない。",
   "inundation": { "expectedDepthM": null },
   "evacuation": {
     "assembly": "",
@@ -22,7 +22,15 @@
   "hazard": {
     "minIntensity": "5弱",
     "earthquakeVisibleMinutes": 30,
-    "faceMs": 4000
+    "faceMs": 4000,
+    "kinds": {
+      "earthquake": true,
+      "eew": true,
+      "tsunami": false,
+      "surge": false,
+      "flood": false,
+      "inundation": false
+    }
   },
   "resolution": "512x128",
   "layout": "AC-512",
@@ -55,6 +63,41 @@
     "warnArea": "230000",
     "warnCity": "2320300",
     "warnCityLabel": "一宮市"
+  },
+  "densho": {
+    "signageUrl": "https://densho-bato.com/member/json/get_signage_data?term_id=1&layout_id=5&design_id=0&pattern_id=0&pgn=test0824",
+    "vibrationUrl": "https://densho-bato.com/member/json/get_signage_data?term_id=1&layout_id=5&design_id=0&pattern_id=1&pgn=test0824",
+    "dataIntervalSec": 60
+  },
+  "icingScroll": {
+    "laps": 1,
+    "background": "#000000",
+    "panelWidth": 512,
+    "showBelowC": 3,
+    "images": [
+      {
+        "src": "./assets/demo/DM-0017/icing-four.png?v=11",
+        "alt": "凍結注意 車両徐行 スリップ注意 足元注意",
+        "panelWidth": 512,
+        "motion": "icing-quad",
+        "base": "./assets/demo/DM-0017/icing-four-base.png?v=11",
+        "parts": [
+          { "src": "./assets/demo/DM-0017/icing-part-freeze.png?v=2", "x": 18, "y": 14 },
+          { "src": "./assets/demo/DM-0017/icing-part-car.gif?v=3", "x": 137, "y": 9, "anim": "car" },
+          { "src": "./assets/demo/DM-0017/icing-part-slip.png?v=2", "x": 258, "y": 16 },
+          { "src": "./assets/demo/DM-0017/icing-part-step.gif?v=8", "x": 393, "y": 9, "anim": "step" }
+        ]
+      },
+      {
+        "src": "./assets/demo/DM-0017/icing-tiles.png?v=2",
+        "alt": "凍結注意",
+        "panelWidth": 512,
+        "motion": "face-switch",
+        "faces": 4,
+        "faceMs": 1000
+      },
+      { "src": "./assets/demo/DM-0017/icing-banner.png?v=1", "alt": "凍結注意", "panelWidth": 512, "laps": 2 }
+    ]
   },
   "wbgt": {
     "seasonStart": { "month": 4, "day": 22 },
@@ -92,6 +135,7 @@
     "i18nLaps": 1,
     "warningLaps": 2,
     "typhoonLaps": 2,
+    "sscLaps": 2,
     "logoRotate": false,
     "observationTrailingLogo": true,
     "i18nTrailingLogo": true
@@ -105,7 +149,7 @@
     "urls": [],
     "cacheKey": ""
   },
-  "contentOrder": [ "warning", "typhoon", "clock", "greeting", "observation", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n", "schedule"],
+  "contentOrder": [ "warning", "typhoon", "hazard", "clock", "greeting", "observation", "icing", "ssc", "rain-radar", "lightning", "wbgt", "forecast", "wbgt-i18n", "schedule"],
   "contents": {
     "clock": { "on": true },
     "observation": { "on": true },
@@ -125,6 +169,8 @@
     "typhoon": { "on": true },
     "rain-radar": { "on": true },
     "lightning": { "on": true },
+    "icing": { "on": true },
+    "ssc": { "on": true },
     "disaster": { "on": false },
     "heat": { "on": false },
     "schedule": { "on": true },
@@ -132,8 +178,8 @@
     "news": { "on": false },
     "boards": { "on": false },
     "logo-scroll": { "on": false },
-    "hazard": { "on": false },
-    "eew": { "on": false },
+    "hazard": { "on": true },
+    "eew": { "on": true },
     "uv": { "on": false },
     "illuminance": { "on": false },
     "cumtemp": { "on": false },
