@@ -4598,6 +4598,7 @@
         if (v === 'short-forecast' || v === 'short') return 'short-forecast';
         if (v === 'logo') return 'logo';
         if (v === 'icing') return 'icing';
+        if (v === 'hazard' || v === 'quake') return 'hazard';
         if (v === 'ssc' || v === 'noise' || v === 'vib') return 'ssc';
         const map = { '1': 's1', '2': 's2', '3': 's4', '4': 's5', '5': 's3', s1: 's1', s2: 's2', s3: 's3', s4: 's4', s5: 's5' };
         return map[v] || null;
@@ -4607,6 +4608,7 @@
         schedule: '工程表', greeting: '近隣挨拶',
         news: 'ニュース', boards: '告知ボード', logo: 'スクローリングロゴ', progress: '工事進捗',
         'rain-radar': '雨雲レーダー', 'short-forecast': '短時間予報', ssc: 'シーン3 騒音・振動',
+        icing: '凍結注意', hazard: '地震',
         alert: '熱中症アラート', rainwarn: '大雨警報', typhoon: '防災情報・台風'
     };
     let DEMO_ONLY = normalizeOnlyParam_(query.get('only'));
@@ -15536,6 +15538,15 @@
                 case 'logo': showOnlyScene_(sceneLogo, playSceneLogoScroll); break;
                 case 'icing': showOnlyScene_(sceneLogo, function () {
                     playSceneLogoScroll({ id: 'icing', cfg: (siteCfg_() && siteCfg_().icingScroll) || {} });
+                }); break;
+                case 'hazard': showOnlyScene_(sceneLogo, function () {
+                    const replay = function () {
+                        if (!window.AlertCubeHazard || typeof window.AlertCubeHazard.playDemo !== 'function') return;
+                        window.AlertCubeHazard.playDemo('earthquake', function () {
+                            if (demoOnlyLoop_('hazard', replay)) return;
+                        });
+                    };
+                    replay();
                 }); break;
                 default: break;
             }
