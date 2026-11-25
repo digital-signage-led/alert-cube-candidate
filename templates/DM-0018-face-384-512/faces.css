@@ -95,14 +95,24 @@ html.site-dm-0018 .dm14-card-cell {
     justify-content: center;
     overflow: hidden;
 }
+html.site-dm-0018 .dm18-logo-card {
+    width: 108px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    padding: 6px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
 html.site-dm-0018 .dm18-scroll-logo {
-    width: 128px;
-    height: 128px;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     background: transparent;
-}
-html.site-dm-0018 #scene2 .col-bg-body {
-    background-color: var(--dm18-band, #e06a42) !important;
 }
 html.site-dm-0018 .dm14-card .s2-panel,
 html.site-dm-0018 .dm14-card .s2-panel-data {
