@@ -52,7 +52,7 @@
     <!-- clock: jst-network-v1 -->
     <title>Alert Cube</title>
     <link rel="preload" as="image" href="./images/logo.svg?v=20260921-suminoe">
-    <link rel="stylesheet" href="./templates/DM-0018-face-384-512/faces.css?v=blackbg1">
+    <link rel="stylesheet" href="./templates/DM-0018-face-384-512/faces.css?v=band1">
     <script>
 /** 4面は 512×128。5面（AC-0014 など）は右端ロゴ列付き 640×128 */
 (function () {
@@ -9155,14 +9155,21 @@
         const types = wxOrder.filter(function (type) { return wxOn.indexOf(type) >= 0; });
         if (!types.length) types.push('weather');
         const cells = types.map(function (type) { return cell(scene2PanelHtml_(type)); });
-        const seq = cells.concat(cells, cells);
-        track.innerHTML = seq.join('');
-        trackX.innerHTML = seq.join('');
+        const logo4 = cell('<img class="dm18-scroll-logo" src="./assets/demo/DM-0018/logo_face4.jpg?v=1" alt="">');
+        const logo5 = cell('<img class="dm18-scroll-logo" src="./assets/demo/DM-0018/logo_face5.png?v=1" alt="">');
+        const seq4 = cells.concat(logo4);
+        const seq5 = cells.concat(logo5);
+        track.innerHTML = seq4.concat(seq4, seq4).join('');
+        trackX.innerHTML = seq5.concat(seq5, seq5).join('');
         const cellH = 128;
         const setH = (track.children.length / 3) * cellH;
         const cards = [track, trackX];
         let seam = setH * 2;
         function sync() {
+            const top = document.querySelector('#scene2 .col-bg-top');
+            if (top && top.style.backgroundColor) {
+                document.documentElement.style.setProperty('--dm18-band', top.style.backgroundColor);
+            }
             types.forEach(function (type) {
                 const src = document.querySelector('#scene2 [data-s2="' + type + '"] .s2-body');
                 if (!src) return;
@@ -9199,60 +9206,13 @@
         startDm18CornerScroll_.on = true;
         if (typeof markDisplayReady_ === 'function') markDisplayReady_();
         startDm18Card_();
-        const mark = new Image();
-        const wide = new Image();
-        let ready = 0;
-        function paintWhenReady() {
-            ready += 1;
-            if (ready < 2) return;
-            const sw = 128;
-            function fit(ctx, image, bottom, shrink) {
-                const iw = image.naturalWidth || sw;
-                const ih = image.naturalHeight || sw;
-                const scale = Math.min(sw / iw, sw / ih) * (shrink || 1);
-                const dw = iw * scale;
-                const dh = ih * scale;
-                const y = bottom ? (sw - dh) : (sw - dh) / 2;
-                ctx.drawImage(image, (sw - dw) / 2, y, dw, dh);
-            }
-            function prep(canvas, ratio) {
-                canvas.width = sw * ratio;
-                canvas.height = sw * ratio;
-                canvas.style.width = sw + 'px';
-                canvas.style.height = sw + 'px';
-                const ctx = canvas.getContext('2d');
-                ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, sw, sw);
-                return ctx;
-            }
-            function whiteOnBlack(ctx, canvas) {
-                const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const px = frame.data;
-                for (let i = 0; i < px.length; i += 4) {
-                    const ink = 255 - Math.min(px[i], px[i + 1], px[i + 2]);
-                    px[i] = ink;
-                    px[i + 1] = ink;
-                    px[i + 2] = ink;
-                    px[i + 3] = 255;
-                }
-                ctx.putImageData(frame, 0, 0);
-            }
-            fit(prep(canvas4, 4), mark, false, 0.84);
-            whiteOnBlack(canvas4.getContext('2d'), canvas4);
-            const ctx5 = prep(canvas5, 8);
-            ctx5.setTransform(0, 8, -8, 0, sw * 8, 0);
-            ctx5.imageSmoothingEnabled = true;
-            ctx5.imageSmoothingQuality = 'high';
-            fit(ctx5, wide, true);
-            whiteOnBlack(ctx5, canvas5);
-        }
-        mark.onload = paintWhenReady;
-        wide.onload = paintWhenReady;
-        mark.src = './assets/demo/DM-0018/logo_face4.jpg?v=1';
-        wide.src = './assets/demo/DM-0018/logo_face5.png?v=1';
+        [canvas4, canvas5].forEach(function (canvas) {
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, 128, 128);
+        });
     }
     function beginLogoSceneScroll(panelWidthPx) {
         // スクロール追従回転は行わない
