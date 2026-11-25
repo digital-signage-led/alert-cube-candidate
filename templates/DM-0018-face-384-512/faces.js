@@ -66,10 +66,10 @@ function startDm18CornerScroll_() {
         ready += 1;
         if (ready < 2) return;
         const sw = 128;
-        function fit(ctx, image, bottom) {
+        function fit(ctx, image, bottom, shrink) {
             const iw = image.naturalWidth || sw;
             const ih = image.naturalHeight || sw;
-            const scale = Math.min(sw / iw, sw / ih);
+            const scale = Math.min(sw / iw, sw / ih) * (shrink || 1);
             const dw = iw * scale;
             const dh = ih * scale;
             const y = bottom ? (sw - dh) : (sw - dh) / 2;
@@ -82,7 +82,7 @@ function startDm18CornerScroll_() {
         ctx4.imageSmoothingQuality = 'high';
         ctx4.fillStyle = '#ffffff';
         ctx4.fillRect(0, 0, sw, sw);
-        fit(ctx4, mark);
+        fit(ctx4, mark, false, 0.84);
         canvas5.width = sw;
         canvas5.height = sw;
         const ctx5 = canvas5.getContext('2d');
