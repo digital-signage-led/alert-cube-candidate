@@ -52,7 +52,7 @@
     <!-- clock: jst-network-v1 -->
     <title>Alert Cube</title>
     <link rel="preload" as="image" href="./images/logo.svg?v=20260921-suminoe">
-    <link rel="stylesheet" href="./templates/DM-0018-face-384-512/faces.css?v=fit1">
+    <link rel="stylesheet" href="./templates/DM-0018-face-384-512/faces.css?v=bgblack1">
     <script>
 /** 4面は 512×128。5面（AC-0014 など）は右端ロゴ列付き 640×128 */
 (function () {
@@ -9206,9 +9206,25 @@
             ready += 1;
             if (ready < 2) return;
             const sw = 128;
+            function cutWhite(image) {
+                const iw = image.naturalWidth || image.width;
+                const ih = image.naturalHeight || image.height;
+                const off = document.createElement('canvas');
+                off.width = iw;
+                off.height = ih;
+                const octx = off.getContext('2d');
+                octx.drawImage(image, 0, 0);
+                const pix = octx.getImageData(0, 0, iw, ih);
+                const d = pix.data;
+                for (let i = 0; i < d.length; i += 4) {
+                    if (d[i] >= 236 && d[i + 1] >= 236 && d[i + 2] >= 236) d[i + 3] = 0;
+                }
+                octx.putImageData(pix, 0, 0);
+                return off;
+            }
             function fit(ctx, image, bottom, shrink) {
-                const iw = image.naturalWidth || sw;
-                const ih = image.naturalHeight || sw;
+                const iw = image.naturalWidth || image.width || sw;
+                const ih = image.naturalHeight || image.height || sw;
                 const scale = Math.min(sw / iw, sw / ih) * (shrink || 1);
                 const dw = iw * scale;
                 const dh = ih * scale;
@@ -9224,16 +9240,16 @@
                 ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
-                ctx.fillStyle = '#ffffff';
+                ctx.fillStyle = '#000000';
                 ctx.fillRect(0, 0, sw, sw);
                 return ctx;
             }
-            fit(prep(canvas4, 4), mark, false, 0.84);
+            fit(prep(canvas4, 4), cutWhite(mark), false, 0.84);
             const ctx5 = prep(canvas5, 8);
             ctx5.setTransform(0, 8, -8, 0, sw * 8, 0);
             ctx5.imageSmoothingEnabled = true;
             ctx5.imageSmoothingQuality = 'high';
-            fit(ctx5, wide, true);
+            fit(ctx5, cutWhite(wide), true);
         }
         mark.onload = paintWhenReady;
         wide.onload = paintWhenReady;

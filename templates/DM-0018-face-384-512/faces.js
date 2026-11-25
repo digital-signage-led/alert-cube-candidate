@@ -84,7 +84,7 @@ function startDm18CornerScroll_() {
             ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, sw, sw);
             return ctx;
         }
