@@ -15912,19 +15912,20 @@
         const pres = (siteCfg_() && siteCfg_().presentation) || {};
         const footText = String(pres.sscFootText || '').trim();
         const sourceOnly = !footText && pres.sscFoot === 'source';
+        const singleLine = !!footText || sourceOnly;
         const line = footText
             ? footText
             : (sourceOnly
                 ? getFootSourceText_()
                 : window.EdamSsc.metaLine(metaCfg, lastSscValues_ || window.EdamSsc.pendingValues(), ready));
         const withLogo = !!(sceneSsc && sceneSsc.classList.contains('ssc-with-logo'));
-        const span = '<span class="s2-meta-panel-txt' + (sourceOnly ? ' ssc-meta-source' : '') + '">' +
+        const span = '<span class="s2-meta-panel-txt' + (singleLine ? ' ssc-meta-source' : '') + '">' +
             (sourceOnly ? footSourceWithLogoHtml_() : window.EdamSsc.escapeHtml(line)) + '</span>';
-        const lineHtml = sourceOnly
+        const lineHtml = singleLine
             ? '<div class="ssc-meta-line ssc-meta-source-line">' + span + '</div>'
             : '<div class="ssc-meta-line"><div class="ssc-meta-line-track">' + span + '</div></div>';
         const logo = withLogo ? '<div class="ssc-meta-logo" aria-hidden="true"></div>' : '';
-        const set = sourceOnly
+        const set = singleLine
             ? '<div class="s2-meta-set ssc-meta-set">' + lineHtml + logo + '</div>'
             : '<div class="s2-meta-set ssc-meta-set">' + lineHtml + lineHtml + logo + '</div>';
         sscMetaTrack.innerHTML = set + set;
