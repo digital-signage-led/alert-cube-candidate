@@ -105,6 +105,16 @@
     return Math.max(n, 1);
   }
 
+  function usesWideFaces(presentation) {
+    if (!presentation || presentation.layout === '256') return !!(presentation && presentation.layout === '256');
+    var frames = presentation.frames || [];
+    if (!frames.length) return false;
+    return frames.every(function (frame) {
+      var lines = frame.lines || [];
+      return lines.length === 1 && units(lines[0]) >= 3.2;
+    });
+  }
+
   function fontPx(frame, wide) {
     var lines = frame.lines || [];
     var longest = 1;
@@ -135,11 +145,15 @@
     var count = (frame.lines || []).length || 1;
     var gap = 8;
     var block = size * count + gap * (count - 1);
-    return Math.min(116, Math.round(block + 8));
+    var pad = count === 1 ? 36 : 12;
+    var h = Math.round(block + pad);
+    if (count === 1 && h < 96) h = 96;
+    if (h > 116) h = 116;
+    return h;
   }
 
   function uniformBandHeight(presentation) {
-    var wide = presentation.layout === '256';
+    var wide = usesWideFaces(presentation);
     var h = 0;
     (presentation.frames || []).forEach(function (frame) {
       var n = bandHeightFor(frame, wide);
@@ -196,7 +210,7 @@
       return;
     }
     var frame = presentation.frames[faceIndex_ % presentation.frames.length];
-    var wide = presentation.layout === '256';
+    var wide = usesWideFaces(presentation);
     var size = fontPx(frame, wide);
     root.querySelectorAll('.hz-copy').forEach(function (copy) {
       copy.innerHTML = '';
@@ -225,7 +239,7 @@
       return (frame.lines || []).join('/');
     }).join('|');
     var eewFace = presentation.kind === 'eew';
-    var wide = eewFace || presentation.layout === '256';
+    var wide = eewFace || usesWideFaces(presentation);
     var count = wide ? 2 : 4;
     if (root.getAttribute('data-key') !== key) {
       if (faceTimer_) clearInterval(faceTimer_);
