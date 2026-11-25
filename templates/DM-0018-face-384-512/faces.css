@@ -148,6 +148,15 @@ html.site-dm-0018 .dm14-card .s2-unit,
 html.site-dm-0018 .dm14-card .s2-bar-label {
     font-size: 12px !important;
 }
+html.site-dm-0018 .dm14-card .s2-dir-text {
+    font-size: 22px !important;
+    line-height: 1.1;
+    max-width: 96px;
+    letter-spacing: 0;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+}
 html.site-dm-0018 .dm14-card .weather-icon-cell {
     width: 40px;
     height: 40px;
