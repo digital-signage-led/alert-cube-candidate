@@ -96,5 +96,5 @@ function startDm18CornerScroll_() {
     mark.onload = paintWhenReady;
     wide.onload = paintWhenReady;
     mark.src = './assets/demo/DM-0018/logo_face4.jpg?v=1';
-    wide.src = './assets/demo/DM-0018/logo_512.jpg?v=1';
+    wide.src = './assets/demo/DM-0018/logo_face5.png?v=1';
 }
