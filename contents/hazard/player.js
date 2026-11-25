@@ -67,6 +67,9 @@
       '#sceneHazard .hz-face.hz-wide{width:256px;flex-basis:256px;}',
       '#sceneHazard .hz-copy{position:absolute;left:0;top:50%;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;height:104px;margin-top:-52px;overflow:hidden;}',
       '#sceneHazard .hz-line{max-width:100%;color:#fff;white-space:nowrap;letter-spacing:0;line-height:1;}',
+      '#sceneHazard .hz-marquee{position:absolute;left:0;width:100%;overflow:hidden;z-index:2;font-family:"Noto Sans JP",sans-serif;font-weight:900;}',
+      '#sceneHazard .hz-marquee-track{display:flex;flex-direction:row;align-items:center;height:100%;width:max-content;will-change:transform;}',
+      '#sceneHazard .hz-marquee .hz-line{flex:0 0 auto;max-width:none;padding:0 40px;font-weight:900;}',
       '#sceneHazard.hz-eew .hz-band{display:none;}',
       '#sceneHazard.hz-eew .hz-face{width:256px;flex:0 0 256px;height:128px;}',
       '#sceneHazard.hz-eew .hz-copy{top:0;left:0;width:100%;height:128px;margin-top:0;gap:8px;}',
@@ -88,7 +91,37 @@
     return root;
   }
 
+  var marqueeRaf_ = 0;
+  var marqueeX_ = 0;
+  var marqueeLast_ = 0;
+  var MARQUEE_SPEED = 56;
+
+  function stopMarquee() {
+    if (marqueeRaf_) cancelAnimationFrame(marqueeRaf_);
+    marqueeRaf_ = 0;
+    marqueeLast_ = 0;
+  }
+
+  function stepMarquee(root) {
+    var track = root && root.querySelector('.hz-marquee-track');
+    if (!track || !root.classList.contains('hz-on')) {
+      marqueeRaf_ = 0;
+      return;
+    }
+    var loop = track.scrollWidth / Math.max(track.children.length, 1);
+    if (loop > 1) {
+      var now = (global.performance && global.performance.now) ? global.performance.now() : Date.now();
+      if (!marqueeLast_) marqueeLast_ = now;
+      var dt = Math.min(0.05, (now - marqueeLast_) / 1000);
+      marqueeLast_ = now;
+      marqueeX_ = (marqueeX_ + MARQUEE_SPEED * dt) % loop;
+      track.style.transform = 'translateX(' + (-marqueeX_) + 'px)';
+    }
+    marqueeRaf_ = global.requestAnimationFrame(function () { stepMarquee(root); });
+  }
+
   function hide() {
+    stopMarquee();
     if (faceTimer_) { clearInterval(faceTimer_); faceTimer_ = 0; }
     var root = document.getElementById('sceneHazard');
     if (!root) return;
@@ -172,6 +205,35 @@
       copy.style.height = h + 'px';
       copy.style.marginTop = (-h / 2) + 'px';
     });
+    var marquee = root.querySelector('.hz-marquee');
+    if (marquee) {
+      marquee.style.height = h + 'px';
+      marquee.style.top = '50%';
+      marquee.style.marginTop = (-h / 2) + 'px';
+    }
+  }
+
+  function paintQuakeMarquee(root, presentation) {
+    var frame = presentation.frames[faceIndex_ % presentation.frames.length];
+    var line = (frame.lines && frame.lines[0]) || '';
+    var size = fontPx(frame, true);
+    var track = root.querySelector('.hz-marquee-track');
+    if (!track) return;
+    var sig = line + '|' + size;
+    if (track.getAttribute('data-sig') !== sig) {
+      track.textContent = '';
+      var i;
+      for (i = 0; i < 4; i++) {
+        var node = document.createElement('div');
+        node.className = 'hz-line';
+        node.style.fontSize = size + 'px';
+        node.textContent = line;
+        track.appendChild(node);
+      }
+      track.setAttribute('data-sig', sig);
+    }
+    applyBand(root, root._bandH || uniformBandHeight(presentation));
+    if (!marqueeRaf_) marqueeRaf_ = global.requestAnimationFrame(function () { stepMarquee(root); });
   }
 
   function fitLineEew(el) {
@@ -209,6 +271,10 @@
       paintEew(root, presentation);
       return;
     }
+    if (presentation && presentation.kind === 'earthquake') {
+      paintQuakeMarquee(root, presentation);
+      return;
+    }
     var frame = presentation.frames[faceIndex_ % presentation.frames.length];
     var wide = usesWideFaces(presentation);
     var size = fontPx(frame, wide);
@@ -244,12 +310,22 @@
     if (root.getAttribute('data-key') !== key) {
       if (faceTimer_) clearInterval(faceTimer_);
       faceIndex_ = 0;
+      marqueeX_ = 0;
+      marqueeLast_ = 0;
+      stopMarquee();
       root.innerHTML = '';
       var band = document.createElement('div');
       band.className = 'hz-band';
       root.appendChild(band);
       var i;
-      for (i = 0; i < count; i++) {
+      if (presentation.kind === 'earthquake') {
+        var marquee = document.createElement('div');
+        marquee.className = 'hz-marquee';
+        var track = document.createElement('div');
+        track.className = 'hz-marquee-track';
+        marquee.appendChild(track);
+        root.appendChild(marquee);
+      } else for (i = 0; i < count; i++) {
         var face = document.createElement('div');
         face.className = 'hz-face' + (wide ? ' hz-wide' : '');
         var copy = document.createElement('div');
