@@ -15910,10 +15910,13 @@
             ? sscCfg
             : Object.assign({}, sscCfg, { siteName: getSiteLocationLabel_() });
         const pres = (siteCfg_() && siteCfg_().presentation) || {};
-        const sourceOnly = pres.sscFoot === 'source';
-        const line = sourceOnly
-            ? getFootSourceText_()
-            : window.EdamSsc.metaLine(metaCfg, lastSscValues_ || window.EdamSsc.pendingValues(), ready);
+        const footText = String(pres.sscFootText || '').trim();
+        const sourceOnly = !footText && pres.sscFoot === 'source';
+        const line = footText
+            ? footText
+            : (sourceOnly
+                ? getFootSourceText_()
+                : window.EdamSsc.metaLine(metaCfg, lastSscValues_ || window.EdamSsc.pendingValues(), ready));
         const withLogo = !!(sceneSsc && sceneSsc.classList.contains('ssc-with-logo'));
         const span = '<span class="s2-meta-panel-txt' + (sourceOnly ? ' ssc-meta-source' : '') + '">' +
             (sourceOnly ? footSourceWithLogoHtml_() : window.EdamSsc.escapeHtml(line)) + '</span>';

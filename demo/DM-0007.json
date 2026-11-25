@@ -136,6 +136,7 @@
     "warningLaps": 2,
     "typhoonLaps": 2,
     "sscLaps": 2,
+    "sscFootText": "データ取得：みまわり伝書鳩",
     "logoRotate": false,
     "observationTrailingLogo": true,
     "i18nTrailingLogo": true
