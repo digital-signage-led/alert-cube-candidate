@@ -66,13 +66,14 @@ function startDm18CornerScroll_() {
         ready += 1;
         if (ready < 2) return;
         const sw = 128;
-        function fit(ctx, image) {
+        function fit(ctx, image, bottom) {
             const iw = image.naturalWidth || sw;
             const ih = image.naturalHeight || sw;
             const scale = Math.min(sw / iw, sw / ih);
             const dw = iw * scale;
             const dh = ih * scale;
-            ctx.drawImage(image, (sw - dw) / 2, (sw - dh) / 2, dw, dh);
+            const y = bottom ? (sw - dh) : (sw - dh) / 2;
+            ctx.drawImage(image, (sw - dw) / 2, y, dw, dh);
         }
         canvas4.width = sw;
         canvas4.height = sw;
@@ -91,7 +92,7 @@ function startDm18CornerScroll_() {
         ctx5.fillRect(0, 0, sw, sw);
         /* 512: 横ロゴ。下の辺が面の左辺、頭は右 */
         ctx5.setTransform(0, 1, -1, 0, sw, 0);
-        fit(ctx5, wide);
+        fit(ctx5, wide, true);
     }
     mark.onload = paintWhenReady;
     wide.onload = paintWhenReady;
