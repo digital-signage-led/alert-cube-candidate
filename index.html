@@ -1793,6 +1793,11 @@
             font-family: "Noto Sans JP", sans-serif;
         }
         /* :has が無いサイネージでも、ロゴを次の行へ落とさない */
+        #ssc-meta-track .ssc-meta-line .s2-meta-panel-txt.ssc-meta-slot {
+            width: 256px; max-width: 256px; flex: 0 0 256px;
+            padding: 0 6px; overflow: hidden; text-overflow: clip;
+            text-align: center;
+        }
         #ssc-meta-track .ssc-meta-line .s2-meta-panel-txt.ssc-meta-source {
             display: flex; align-items: center; justify-content: center; gap: 6px;
             width: auto; max-width: 496px; flex: 0 1 auto;
@@ -15912,23 +15917,23 @@
         const pres = (siteCfg_() && siteCfg_().presentation) || {};
         const footText = String(pres.sscFootText || '').trim();
         const sourceOnly = !footText && pres.sscFoot === 'source';
-        const singleLine = !!footText || sourceOnly;
         const line = footText
             ? footText
             : (sourceOnly
                 ? getFootSourceText_()
                 : window.EdamSsc.metaLine(metaCfg, lastSscValues_ || window.EdamSsc.pendingValues(), ready));
         const withLogo = !!(sceneSsc && sceneSsc.classList.contains('ssc-with-logo'));
-        const span = '<span class="s2-meta-panel-txt' + (singleLine ? ' ssc-meta-source' : '') + '">' +
+        const span = '<span class="s2-meta-panel-txt' + (footText ? ' ssc-meta-slot' : (sourceOnly ? ' ssc-meta-source' : '')) + '">' +
             (sourceOnly ? footSourceWithLogoHtml_() : window.EdamSsc.escapeHtml(line)) + '</span>';
-        const lineHtml = singleLine
+        const lineHtml = sourceOnly
             ? '<div class="ssc-meta-line ssc-meta-source-line">' + span + '</div>'
             : '<div class="ssc-meta-line"><div class="ssc-meta-line-track">' + span + '</div></div>';
         const logo = withLogo ? '<div class="ssc-meta-logo" aria-hidden="true"></div>' : '';
-        const set = singleLine
+        const set = sourceOnly
             ? '<div class="s2-meta-set ssc-meta-set">' + lineHtml + logo + '</div>'
             : '<div class="s2-meta-set ssc-meta-set">' + lineHtml + lineHtml + logo + '</div>';
         sscMetaTrack.innerHTML = set + set;
+        if (footText) fitSscFootSlots_();
         const setW = withLogo ? 640 : 512;
         sscMetaTrack.querySelectorAll('.ssc-meta-set').forEach(function (el) {
             el.style.width = setW + 'px';
@@ -15937,6 +15942,19 @@
             applyScrollX_(el, 0);
         });
         sscMetaLapPx = setW;
+    }
+    function fitSscFootSlots_() {
+        if (!sscMetaTrack) return;
+        sscMetaTrack.querySelectorAll('.ssc-meta-slot').forEach(function (el) {
+            var size = 18;
+            var guard = 8;
+            el.style.fontSize = size + 'px';
+            while (el.scrollWidth > 256 && size > 12 && guard > 0) {
+                size -= 1;
+                guard -= 1;
+                el.style.fontSize = size + 'px';
+            }
+        });
     }
     function denshoSscUrls_() {
         const d = siteCfg_().densho || {};
