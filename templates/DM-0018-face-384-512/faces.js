@@ -84,17 +84,31 @@ function startDm18CornerScroll_() {
             ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
-            ctx.fillStyle = '#000000';
+            ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, sw, sw);
             return ctx;
         }
+        function whiteOnBlack(ctx, canvas) {
+            const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const px = frame.data;
+            for (let i = 0; i < px.length; i += 4) {
+                const ink = 255 - Math.min(px[i], px[i + 1], px[i + 2]);
+                px[i] = ink;
+                px[i + 1] = ink;
+                px[i + 2] = ink;
+                px[i + 3] = 255;
+            }
+            ctx.putImageData(frame, 0, 0);
+        }
         fit(prep(canvas4, 4), mark, false, 0.84);
+        whiteOnBlack(canvas4.getContext('2d'), canvas4);
         const ctx5 = prep(canvas5, 8);
         /* 512: 横ロゴ。下の辺が面の左辺、頭は右 */
         ctx5.setTransform(0, 8, -8, 0, sw * 8, 0);
         ctx5.imageSmoothingEnabled = true;
         ctx5.imageSmoothingQuality = 'high';
         fit(ctx5, wide, true);
+        whiteOnBlack(ctx5, canvas5);
     }
     mark.onload = paintWhenReady;
     wide.onload = paintWhenReady;
