@@ -603,35 +603,49 @@
             width: 128px; height: 128px; display: block; object-fit: fill;
         }
         html.site-dm-0017 .logo-icing,
-        html.site-dm-0013 .logo-icing { position: relative; height: 128px; overflow: hidden; }
+        html.site-dm-0013 .logo-icing,
+        html.site-dm-0007 .logo-icing { position: relative; height: 128px; overflow: hidden; }
         html.site-dm-0017 .logo-icing-base,
-        html.site-dm-0013 .logo-icing-base { display: block; width: 100%; height: 128px; }
+        html.site-dm-0013 .logo-icing-base,
+        html.site-dm-0007 .logo-icing-base { display: block; width: 100%; height: 128px; }
         html.site-dm-0017 .logo-icing-cell,
-        html.site-dm-0013 .logo-icing-cell {
+        html.site-dm-0013 .logo-icing-cell,
+        html.site-dm-0007 .logo-icing-cell {
             position: absolute; top: 0; width: 128px; height: 128px; overflow: hidden;
         }
         html.site-dm-0017 .logo-icing-part,
-        html.site-dm-0013 .logo-icing-part { position: absolute; width: auto; height: auto; }
+        html.site-dm-0013 .logo-icing-part,
+        html.site-dm-0007 .logo-icing-part { position: absolute; width: auto; height: auto; }
         html.site-dm-0017 .logo-icing-part.is-drive,
-        html.site-dm-0013 .logo-icing-part.is-drive { animation: icingDrive 2.2s ease-in-out infinite; }
+        html.site-dm-0013 .logo-icing-part.is-drive,
+        html.site-dm-0007 .logo-icing-part.is-drive { animation: icingDrive 2.2s ease-in-out infinite; }
         html.site-dm-0017 .logo-icing-part.is-step,
         html.site-dm-0017 .logo-icing-part.is-car,
         html.site-dm-0013 .logo-icing-part.is-step,
-        html.site-dm-0013 .logo-icing-part.is-car { width: 110px; height: 110px; object-fit: contain; animation: none; }
+        html.site-dm-0013 .logo-icing-part.is-car,
+        html.site-dm-0007 .logo-icing-part.is-step,
+        html.site-dm-0007 .logo-icing-part.is-car { width: 110px; height: 110px; object-fit: contain; animation: none; }
         html.site-dm-0017 .logo-face-switch,
-        html.site-dm-0013 .logo-face-switch { display: flex; height: 128px; overflow: hidden; }
+        html.site-dm-0013 .logo-face-switch,
+        html.site-dm-0007 .logo-face-switch { display: flex; height: 128px; overflow: hidden; }
         html.site-dm-0017 .logo-switch-cell,
-        html.site-dm-0013 .logo-switch-cell { position: relative; width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
+        html.site-dm-0013 .logo-switch-cell,
+        html.site-dm-0007 .logo-switch-cell { position: relative; width: 128px; height: 128px; flex: 0 0 128px; overflow: hidden; }
         html.site-dm-0017 .logo-switch-layer,
-        html.site-dm-0013 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; opacity: 0; }
+        html.site-dm-0013 .logo-switch-layer,
+        html.site-dm-0007 .logo-switch-layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-repeat: no-repeat; opacity: 0; }
         html.site-dm-0017 .logo-switch-cell.is-char .logo-switch-layer:not(.is-next),
-        html.site-dm-0013 .logo-switch-cell.is-char .logo-switch-layer:not(.is-next) { opacity: 1; }
+        html.site-dm-0013 .logo-switch-cell.is-char .logo-switch-layer:not(.is-next),
+        html.site-dm-0007 .logo-switch-cell.is-char .logo-switch-layer:not(.is-next) { opacity: 1; }
         html.site-dm-0017 .logo-switch-layer.is-show,
-        html.site-dm-0013 .logo-switch-layer.is-show { opacity: 1; }
+        html.site-dm-0013 .logo-switch-layer.is-show,
+        html.site-dm-0007 .logo-switch-layer.is-show { opacity: 1; }
         html.site-dm-0017 .logo-switch-layer.is-next,
-        html.site-dm-0013 .logo-switch-layer.is-next { opacity: 1; transform: translateY(100%); }
+        html.site-dm-0013 .logo-switch-layer.is-next,
+        html.site-dm-0007 .logo-switch-layer.is-next { opacity: 1; transform: translateY(100%); }
         html.site-dm-0017 .logo-switch-cell.is-on .logo-switch-layer.is-next,
         html.site-dm-0013 .logo-switch-cell.is-on .logo-switch-layer.is-next,
+        html.site-dm-0007 .logo-switch-cell.is-on .logo-switch-layer.is-next,
         html.site-dm-0014 .logo-switch-cell.is-on .logo-switch-layer.is-next { transform: translateY(0); transition: transform 0.42s ease; }
         html.site-dm-0014 .logo-icing { position: relative; height: 128px; overflow: hidden; }
         html.site-dm-0014 .logo-icing-base { display: block; width: 100%; height: 128px; }
@@ -4412,6 +4426,7 @@
         document.documentElement.classList.toggle('site-ac-0031', String(c.projectId || '') === 'AC-0031');
         document.documentElement.classList.toggle('site-dm-0004', String(c.projectId || '') === 'DM-0004');
         document.documentElement.classList.toggle('site-dm-0005', String(c.projectId || '') === 'DM-0005');
+        document.documentElement.classList.toggle('site-dm-0007', String(c.projectId || '') === 'DM-0007');
         document.documentElement.classList.toggle('site-dm-0009', String(c.projectId || '') === 'DM-0009');
         document.documentElement.classList.toggle('site-dm-0011', String(c.projectId || '') === 'DM-0011');
         document.documentElement.classList.toggle('site-dm-0012', String(c.projectId || '') === 'DM-0012');
