@@ -2734,7 +2734,7 @@ test('未確定案件: ニッケン白浜町は DM-0011', function () {
   assert.strictEqual(catalog.nextId, 'DM-0016');
   assert.strictEqual(template.projectId, 'DM-0016');
   assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0015' && row.siteName === '住之江区'; }));
-  assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0017' && row.customer === '株式会社ドトキューブ' && row.siteName === '春日市'; }));
+  assert.ok(catalog.sites.some(function (row) { return row.projectId === 'DM-0017' && row.customer === '株式会社ドトキューブ' && row.siteName === '東京ビッグサイト'; }));
   var dotocube = JSON.parse(fs.readFileSync(path.join(root, 'demo', 'DM-0017.json'), 'utf8'));
   assert.strictEqual(dotocube.presentation.logoWeatherScroll, false);
   assert.strictEqual(dotocube.presentation.logoEdgeSigns.length, 15);
