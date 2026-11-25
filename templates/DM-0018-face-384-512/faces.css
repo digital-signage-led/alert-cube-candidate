@@ -35,6 +35,7 @@ html.site-dm-0018 .dm14-face4-canvas {
     height: 128px;
     image-rendering: auto;
 }
+html.site-dm-0018 #sceneHazard.hz-on { z-index: 80; }
 html.site-dm-0018 .dm14-card-union {
     display: block;
     position: absolute;
