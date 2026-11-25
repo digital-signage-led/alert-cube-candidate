@@ -15,7 +15,7 @@ function startDm18Card_() {
     if (!types.length) types.push('weather');
     const cells = types.map(function (type) { return cell(scene2PanelHtml_(type)); });
     const logo4 = cell('<div class="dm18-logo-card"><img class="dm18-scroll-logo" src="./assets/demo/DM-0018/logo_face4.jpg?v=1" alt=""></div>');
-    const logo5 = cell('<div class="dm18-logo-card"><img class="dm18-scroll-logo" src="./assets/demo/DM-0018/logo_face5.png?v=1" alt=""></div>');
+    const logo5 = cell('<div class="dm18-logo-card"><img class="dm18-scroll-logo" src="./assets/demo/DM-0018/logo_face4.jpg?v=1" alt=""></div>');
     const seq4 = cells.concat(logo4);
     const seq5 = cells.concat(logo5);
     track.innerHTML = seq4.concat(seq4, seq4).join('');
