@@ -52,7 +52,7 @@
     <!-- clock: jst-network-v1 -->
     <title>Alert Cube</title>
     <link rel="preload" as="image" href="./images/logo.svg?v=20260921-suminoe">
-    <link rel="stylesheet" href="./templates/DM-0018-face-384-512/faces.css?v=band1">
+    <link rel="stylesheet" href="./templates/DM-0018-face-384-512/faces.css?v=band2">
     <script>
 /** 4面は 512×128。5面（AC-0014 など）は右端ロゴ列付き 640×128 */
 (function () {
@@ -9167,9 +9167,15 @@
         let seam = setH * 2;
         function sync() {
             const top = document.querySelector('#scene2 .col-bg-top');
-            if (top && top.style.backgroundColor) {
-                document.documentElement.style.setProperty('--dm18-band', top.style.backgroundColor);
-            }
+            const band = (top && top.style.backgroundColor) || '#e06a42';
+            document.documentElement.style.setProperty('--dm18-band', band);
+            [document.getElementById('dm14-face4-canvas'), document.getElementById('dm14-face5-canvas')].forEach(function (canvas) {
+                if (!canvas || canvas.dataset.band === band) return;
+                canvas.dataset.band = band;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = band;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            });
             types.forEach(function (type) {
                 const src = document.querySelector('#scene2 [data-s2="' + type + '"] .s2-body');
                 if (!src) return;
@@ -9210,7 +9216,7 @@
             canvas.width = 128;
             canvas.height = 128;
             const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#000000';
+            ctx.fillStyle = '#e06a42';
             ctx.fillRect(0, 0, 128, 128);
         });
     }

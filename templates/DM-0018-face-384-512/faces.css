@@ -1,6 +1,6 @@
 /* ノバック（DM-0018）。face-384-512 の写し。クラス名はそのまま。仙台銘板のセレクタは触らない。 */
 html.site-dm-0018 .logo-panel {
-    background: #000 !important;
+    background: var(--dm18-band, #e06a42) !important;
     overflow: hidden;
 }
 .dm14-logo-track { width: 128px; height: 128px; }
@@ -25,7 +25,7 @@ html.site-dm-0018 .dm14-face4 {
     width: 128px;
     height: 128px;
     z-index: 40;
-    background: #000;
+    background: var(--dm18-band, #e06a42);
     pointer-events: none;
     overflow: hidden;
 }
@@ -84,7 +84,7 @@ html.site-dm-0018 .dm14-card-track-x {
 }
 html.site-dm-0018 .dm14-card,
 html.site-dm-0018 .dm14-card-cell {
-    background: #000;
+    background: var(--dm18-band, #e06a42);
 }
 html.site-dm-0018 .dm14-card-cell {
     width: 128px;
