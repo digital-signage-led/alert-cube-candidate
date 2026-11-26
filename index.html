@@ -9036,6 +9036,14 @@
         const cell = function (inner) {
             return '<div class="dm14-card-cell">' + inner + '</div>';
         };
+        const temp = cell(
+            '<div class="s2-panel-data s2-strip" data-s2="temp"><div class="s2-top-bar"><span class="s2-bar-label">気温</span></div>' +
+            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-temp">---</span><span class="s2-unit">℃</span></div></div></div>'
+        );
+        const wbgt = cell(
+            '<div class="s2-panel-data s2-strip" data-s2="wbgt"><div class="s2-top-bar"><span class="s2-bar-label">暑さ指数</span></div>' +
+            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-wbgt">---</span><span class="s2-unit">℃</span></div></div></div>'
+        );
         const noise = cell(
             '<div class="s2-panel-data s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">騒音</span></div>' +
             '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-noise">---</span><span class="s2-unit">dB</span></div></div></div>'
@@ -9044,7 +9052,7 @@
             '<div class="s2-panel-data s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">振動</span></div>' +
             '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-vib">---</span><span class="s2-unit">dB</span></div></div></div>'
         );
-        const cells = [cell(scene2PanelHtml_('weather')), noise, vib];
+        const cells = [cell(scene2PanelHtml_('weather')), temp, wbgt, noise, vib];
         const seq = cells.concat(cells, cells);
         track.innerHTML = seq.join('');
         trackX.innerHTML = seq.join('');
@@ -9072,7 +9080,26 @@
             const ssc = (typeof lastSscValues_ !== 'undefined' && lastSscValues_) || null;
             const nText = ssc && ssc.noise != null ? String(ssc.noise) : '---';
             const vText = ssc && ssc.vibration != null ? String(ssc.vibration) : '---';
+            const srcTemp = document.querySelector('#scene2 .temp-val');
+            let tText = srcTemp ? String(srcTemp.textContent || '').trim() : '';
+            if (!tText || tText === '--') {
+                tText = (lastAmedasTempC_ != null && Number.isFinite(Number(lastAmedasTempC_)))
+                    ? String(Math.round(Number(lastAmedasTempC_))) : '---';
+            }
+            let wText = Number(DEMO_WBGT_BY_LEVEL[2]).toFixed(1);
+            if (wbgtDemoCycle_() && wbgtCycleShowing_ && currentWbgtLevel >= 0 && currentWbgtLevel < DEMO_WBGT_BY_LEVEL.length) {
+                wText = Number(DEMO_WBGT_BY_LEVEL[currentWbgtLevel]).toFixed(1);
+            } else if (!temperatureDisplay_() && !wbgtOffSeason && lastWbgtSlots && lastWbgtSlots[0] &&
+                lastWbgtSlots[0].wbgt != null && Number.isFinite(Number(lastWbgtSlots[0].wbgt))) {
+                wText = Number(lastWbgtSlots[0].wbgt).toFixed(1);
+            }
             cards.forEach(function (root) {
+                root.querySelectorAll('.dm14-temp').forEach(function (el) {
+                    if (el.textContent !== tText) el.textContent = tText;
+                });
+                root.querySelectorAll('.dm14-wbgt').forEach(function (el) {
+                    if (el.textContent !== wText) el.textContent = wText;
+                });
                 root.querySelectorAll('.dm14-noise').forEach(function (el) {
                     if (el.textContent !== nText) el.textContent = nText;
                 });
