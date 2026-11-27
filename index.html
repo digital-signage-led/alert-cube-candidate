@@ -53,6 +53,7 @@
     <title>Alert Cube</title>
     <link rel="preload" as="image" href="./images/logo.svg?v=20260921-suminoe">
     <link rel="stylesheet" href="./templates/DM-0018-face-384-512/faces.css?v=band5">
+    <link rel="stylesheet" href="./templates/DM-0004-face-384-512/faces.css?v=nikken8">
     <script>
 /** 4面は 512×128。5面（AC-0014 など）は右端ロゴ列付き 640×128 */
 (function () {
@@ -69,7 +70,7 @@
     }
     var localDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     var siteId = String(q.get('site') || '').toUpperCase();
-    var wide = siteId === 'AC-0014' || siteId === 'AC-0021' || siteId === 'AC-0026' || siteId === 'AC-0027' || siteId === 'AC-0028' || siteId === 'AC-0030' || siteId === 'DM-0014' || siteId === 'DM-0017' || siteId === 'DM-0018' || q.get('layout') === '640';
+    var wide = siteId === 'AC-0014' || siteId === 'AC-0021' || siteId === 'AC-0026' || siteId === 'AC-0027' || siteId === 'AC-0028' || siteId === 'AC-0030' || siteId === 'DM-0004' || siteId === 'DM-0014' || siteId === 'DM-0017' || siteId === 'DM-0018' || q.get('layout') === '640';
     if (wide) q.delete('layout512');
     else if (!q.has('layout512')) q.set('layout512', '1');
     var forceNative = localDev
@@ -4643,7 +4644,7 @@
         if (loadedId && (!qSite || loadedId === qSite)) {
             return c.profile === 'AC-640' || c.layout === 'AC-640' || Number(c.faces) >= 5;
         }
-        return qSite === 'AC-0014' || qSite === 'AC-0021' || qSite === 'AC-0026' || qSite === 'AC-0027' || qSite === 'AC-0028' || qSite === 'AC-0030' || qSite === 'DM-0014' || qSite === 'DM-0017' || qSite === 'DM-0018' || query.get('layout') === '640';
+        return qSite === 'AC-0014' || qSite === 'AC-0021' || qSite === 'AC-0026' || qSite === 'AC-0027' || qSite === 'AC-0028' || qSite === 'AC-0030' || qSite === 'DM-0004' || qSite === 'DM-0014' || qSite === 'DM-0017' || qSite === 'DM-0018' || query.get('layout') === '640';
     }
     function applyFaceLayout_() {
         const wide = faceLayoutWide_();
@@ -9025,6 +9026,7 @@
         }
         startDm14CornerScroll_();
         startDm18CornerScroll_();
+        startDm04CornerScroll_();
     }
     /** 384は下から上。512は右から左。中身はどちらも 180。384の上を出た項目が右から入る。 */
     function startDm14Card_() {
@@ -9267,6 +9269,162 @@
             ctx.fillStyle = '#e06a42';
             ctx.fillRect(0, 0, 128, 128);
         });
+    }
+    /** ニッケン。384は下から上。512は右から左。中身はどちらも 180。カードは気象観測に騒音・振動。 */
+    function startDm04Card_() {
+        const track = document.getElementById('dm14-card-track');
+        const trackX = document.getElementById('dm14-card-track-x');
+        const rotor = document.getElementById('dm14-card-rotor');
+        if (!track || !trackX || !rotor || startDm04Card_.on) return;
+        startDm04Card_.on = true;
+        const cell = function (inner) {
+            return '<div class="dm14-card-cell">' + inner + '</div>';
+        };
+        const noise = cell(
+            '<div class="s2-panel-data s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">騒音</span></div>' +
+            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-noise">---</span><span class="s2-unit">dB</span></div></div></div>'
+        );
+        const vib = cell(
+            '<div class="s2-panel-data s2-strip"><div class="s2-top-bar"><span class="s2-bar-label">振動</span></div>' +
+            '<div class="s2-body"><div class="s2-val dm14-num-card"><span class="s2-num dm14-vib">---</span><span class="s2-unit">dB</span></div></div></div>'
+        );
+        const wxOrder = ['weather', 'temp', 'rain', 'wdir', 'wind', 'gust', 'humi', 'pres', 'tmaxmin'];
+        const wxOn = scene2TypesOn_();
+        const types = wxOrder.filter(function (type) { return wxOn.indexOf(type) >= 0; });
+        if (!types.length) types.push('weather', 'temp');
+        const cells = types.map(function (type) { return cell(scene2PanelHtml_(type)); }).concat([noise, vib]);
+        const seq = cells.concat(cells, cells);
+        track.innerHTML = seq.join('');
+        trackX.innerHTML = seq.join('');
+        const cellH = 128;
+        const setH = (track.children.length / 3) * cellH;
+        const cards = [track, trackX];
+        let seam = setH * 2;
+        function sync() {
+            types.forEach(function (type) {
+                const src = document.querySelector('#scene2 [data-s2="' + type + '"] .s2-body');
+                if (!src) return;
+                const html = src.innerHTML;
+                cards.forEach(function (root) {
+                    root.querySelectorAll('[data-s2="' + type + '"] .s2-body').forEach(function (dst) {
+                        if (dst.innerHTML !== html) dst.innerHTML = html;
+                    });
+                });
+            });
+            const ssc = (typeof lastSscValues_ !== 'undefined' && lastSscValues_) || null;
+            const nText = ssc && ssc.noise != null ? String(ssc.noise) : '---';
+            const vText = ssc && ssc.vibration != null ? String(ssc.vibration) : '---';
+            let tText = '';
+            const srcTemp = document.querySelector('#scene2 .temp-val');
+            if (srcTemp) tText = String(srcTemp.textContent || '').trim();
+            if (!tText || tText === '--') {
+                tText = (lastAmedasTempC_ != null && Number.isFinite(Number(lastAmedasTempC_)))
+                    ? String(Math.round(Number(lastAmedasTempC_))) : '';
+            }
+            cards.forEach(function (root) {
+                if (tText) {
+                    root.querySelectorAll('[data-s2="temp"] .temp-val').forEach(function (el) {
+                        if (el.textContent !== tText) el.textContent = tText;
+                    });
+                }
+                root.querySelectorAll('.dm14-noise').forEach(function (el) {
+                    if (el.textContent !== nText) el.textContent = nText;
+                });
+                root.querySelectorAll('.dm14-vib').forEach(function (el) {
+                    if (el.textContent !== vText) el.textContent = vText;
+                });
+            });
+        }
+        function place() {
+            const s = Math.round(seam * 100) / 100;
+            track.style.transform = 'translate3d(0,' + (-(s + 128)) + 'px,0)';
+            rotor.style.transform = 'translate3d(' + (-s) + 'px,128px,0) rotate(-90deg)';
+        }
+        function frame() {
+            sync();
+            seam += getScrollSpeedPx_();
+            if (seam >= setH * 2) seam -= setH;
+            place();
+            requestAnimationFrame(frame);
+        }
+        place();
+        requestAnimationFrame(frame);
+    }
+    /** ニッケン。壁紙の上は正立。下は下の辺が左、頭は右。 */
+    function startDm04CornerScroll_() {
+        if (startDm04CornerScroll_.on) return;
+        const canvas4 = document.getElementById('dm14-face4-canvas');
+        const canvas5 = document.getElementById('dm14-face5-canvas');
+        if (!canvas4 || !canvas5) return;
+        const site = typeof siteCfg_ === 'function' ? siteCfg_() : null;
+        if (!site || site.projectId !== 'DM-0004') return;
+        startDm04CornerScroll_.on = true;
+        if (typeof markDisplayReady_ === 'function') markDisplayReady_();
+        startDm04Card_();
+        const img = new Image();
+        img.onload = function () {
+            const sw = img.naturalWidth;
+            const sh = img.naturalHeight;
+            const srcH = sw;
+            const feetY = 900;
+            const period = 28;
+            const viewH = srcH * 2;
+            const sheet = document.createElement('canvas');
+            sheet.width = sw;
+            sheet.height = viewH;
+            const sx = sheet.getContext('2d');
+            let y = feetY - viewH;
+            let dest = 0;
+            while (dest < viewH && y < sh) {
+                let sy;
+                let slice;
+                if (y < 0) {
+                    const mod = ((y % period) + period) % period;
+                    slice = Math.min(viewH - dest, period - mod, -y);
+                    sy = mod;
+                } else {
+                    slice = Math.min(viewH - dest, sh - y);
+                    sy = y;
+                }
+                if (slice <= 0) break;
+                sx.drawImage(img, 0, sy, sw, slice, 0, dest, sw, slice);
+                y += slice;
+                dest += slice;
+            }
+            function paintFace(canvas, srcY) {
+                canvas.width = sw;
+                canvas.height = sw;
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(sheet, 0, srcY, sw, srcH, 0, 0, sw, sw);
+            }
+            function paintFaceBottomOnRight(canvas, srcY) {
+                canvas.width = sw;
+                canvas.height = sw;
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.setTransform(0, 1, -1, 0, sw, 0);
+                ctx.drawImage(sheet, 0, srcY, sw, srcH, 0, 0, sw, sw);
+            }
+            paintFace(canvas4, 0);
+            paintFaceBottomOnRight(canvas5, srcH);
+            const logo = new Image();
+            logo.onload = function () {
+                const ctx = canvas4.getContext('2d');
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                const dw = sw - 28;
+                const dh = Math.round(dw * logo.naturalHeight / logo.naturalWidth);
+                const dx = Math.round((sw - dw) / 2);
+                const dy = sw - dh - 18;
+                ctx.drawImage(logo, dx, dy, dw, dh);
+            };
+            logo.src = './assets/demo/DM-0004/logo_foot.png?v=1';
+        };
+        img.src = './assets/demo/DM-0004/wall.jpg?v=1';
     }
     function beginLogoSceneScroll(panelWidthPx) {
         // スクロール追従回転は行わない

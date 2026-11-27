@@ -1,0 +1,26 @@
+{
+  "name": "ニッケン・インテックス大阪5面の384と512",
+  "finished": "2026-11-27",
+  "sourceProject": "DM-0014",
+  "projectId": "DM-0004",
+  "frozen": false,
+  "note": "templates/face-384-512 の写し。仙台銘板の完成面は触らない。クラス名は dm14 のまま。壁紙は淡黄にニッケンのキャラクター2体。",
+  "files": ["faces.css", "faces.html", "faces.js"],
+  "layout": {
+    "canvas": "640x128",
+    "contentWidth": 384,
+    "face384": "左から4面目。壁紙の上側は正立。カードは下から上。中身は180度。",
+    "face512": "左から5面目。壁紙の下を左の辺に、頭は右。カードは右から左。中身は180度で頭が右。"
+  },
+  "presentation": {
+    "scrollFaces": 3,
+    "logoFixedDeg": -90
+  },
+  "cards": ["天気", "気温", "降水量", "風向き", "風速", "最大瞬間風速", "湿度", "気圧", "最高最低", "騒音", "振動"],
+  "wallpaper": {
+    "file": "wall.jpg",
+    "ground": "#FEFCD3",
+    "face384": "上側を正立のまま。下端にニッケンの文字ロゴ",
+    "face512": "setTransform(0, 1, -1, 0, sw, 0)"
+  }
+}
